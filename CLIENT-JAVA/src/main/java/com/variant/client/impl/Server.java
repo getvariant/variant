@@ -346,7 +346,7 @@ public class Server {
 
 		new CommonExceptionHandlerVoid() {
 			@Override void voidBlock() throws Exception {
-				adapter.post(serverUrl + "event", ((TraceEventSupport)event).toJson());
+				adapter.post(serverUrl + "event", TraceEventSupport.toJson(event));
 			}
 		}.run(ssn);
 	}

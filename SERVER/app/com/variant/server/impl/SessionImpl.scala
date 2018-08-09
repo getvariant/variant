@@ -105,7 +105,7 @@ class SessionImpl(val coreSession: CoreSession, val schemaGen: SchemaGen) extend
       coreReq.setResolvedStateVariant(variant)
       coreSession.setStateRequest(coreReq)
    }
-   
+      
    /*
     */
    def targetForState(state: State): StateRequest = {
@@ -116,8 +116,8 @@ class SessionImpl(val coreSession: CoreSession, val schemaGen: SchemaGen) extend
    /**
     * 
     */
-	def triggerEvent(event: TraceEvent) {
-		schemaGen.eventWriter.write(new FlushableTraceEventImpl(event.asInstanceOf[ServerTraceEvent], this));
+	def triggerEvent(event: ServerTraceEvent) {
+		schemaGen.eventWriter.write(new FlushableTraceEventImpl(event, this));
 	}
 	
 	/*

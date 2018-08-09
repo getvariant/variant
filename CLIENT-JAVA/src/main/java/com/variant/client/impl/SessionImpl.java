@@ -168,13 +168,10 @@ public class SessionImpl implements Session {
 		
 		server.requestCreate(this, state.getName());
 		
-		// This logic requires we have the request object back from the server
-		// and in the current session.
 		StateRequestImpl req = (StateRequestImpl) getStateRequest();
-		if (!state.getInstrumentedTests().isEmpty() && !req.getLiveExperiences().isEmpty()) {
-			req.createStateVisitedEvent();
-		}
-		return getStateRequest();
+		req.createStateVisitedEvent();
+
+		return req;
 	}
 	
 	/**

@@ -391,7 +391,7 @@ public class Runtime {
 	 * @param state
 	 * @param vector
 	 * @return Pair: arg1() indicates if this is resolvable and arg2() is the state variant, if resolvable.
-	 *         in the special case when it is resolvable trivially, i.e. all experiences are control or not
+	 *         in the special case when it is resolvable trivially, i.e. all experiences are control or
 	 *         not instrumented on this state or the instrumentation is invariant on this state, then the second
 	 *         element will be null.
 	 */
@@ -464,7 +464,7 @@ public class Runtime {
 		SessionImpl ssnImpl = (SessionImpl) session;
 		StateImpl stateImpl = (StateImpl) state;
 		
-		// All the heavy lifting happens here.
+		// All the complexity happens here.
 		target(ssnImpl, stateImpl);		
 		
 		// Targeting stabile contains targeted experiences.
@@ -484,26 +484,8 @@ public class Runtime {
 		}   
 			
 		// Create the state visited event if there are any tests instrumented on this state.
-		if (state.getInstrumentedTests().isEmpty()) {
-			
-			if (LOG.isTraceEnabled()) {
-				LOG.trace(
-						"Session [" + session.getId() + "] requested state [" + 
-						state.getName() +"] that does not have any instrumented tests.");
-			}   
-		}
-		else if (session.getStateRequest().getLiveExperiences().isEmpty()) {
-			if (LOG.isTraceEnabled()) {
-				LOG.trace(
-						"Session [" + session.getId() + "] requested state [" + 
-						state.getName() +"] that does not have live tests.");
-			}   			
-		}
-		else {
-			LOG.trace("Session [" + session.getId() + "] touched state [" + state.getName() +"]");
+		if (!((StateRequestImpl)ssnImpl.getStateRequest()).isBlank()) {			
 			ssnImpl.addTraversedState(stateImpl);
-			// Do not create state visited event on the server. See #158
-			// ((StateRequestImpl)session.getStateRequest()).createStateVisitedEvent();
 		}		
 	}
 	

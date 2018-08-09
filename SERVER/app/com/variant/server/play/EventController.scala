@@ -35,6 +35,7 @@ class EventController @Inject() (
    /**
     * POST
     * Trigger an event.
+    * TODO: Move unmarshalling to the object itself.
     */
    def post() = action { req =>
 

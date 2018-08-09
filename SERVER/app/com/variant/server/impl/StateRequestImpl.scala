@@ -75,6 +75,8 @@ class StateRequestImpl(private val session: Session, private val coreReq:CoreSta
    /*                                     PUBLIC EXT                                         */
    /*----------------------------------------------------------------------------------------*/
 
+	def isBlank = coreReq.isBlank
+	
    def setResolvedStateVariant(variant: StateVariantImpl): Unit = coreReq.setResolvedStateVariant(variant)
    
    def createStateVisitedEvent: Unit = coreReq.createStateVisitedEvent()

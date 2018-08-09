@@ -1,8 +1,12 @@
 package com.variant.core.impl;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.Map;
 
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.variant.core.schema.State;
 import com.variant.core.session.CoreSession;
 import com.variant.core.util.immutable.ImmutableMap;
@@ -34,8 +38,16 @@ public class StateVisitedEvent extends TraceEventSupport implements Serializable
 		super(session, EVENT_NAME);
 	}
 	
-	public static StateVisitedEvent fromJson(CoreSession session, Map<String,?> mappedJson) {
+	/**
+	 * Unmarschall from a JSON string.
+	 */
+	public static StateVisitedEvent fromJson(CoreSession session, String jsonStr) 
+			throws JsonParseException, JsonMappingException, IOException {
 		
+		ObjectMapper mapper = new ObjectMapper();		
+		@SuppressWarnings("unchecked")
+		Map<String,?> mappedJson = mapper.readValue(jsonStr, Map.class);
+
 		String sid = (String) mappedJson.get(FIELD_NAME_SID);
 		if (!sid.equals(session.getId()))
 			throw new CoreException.Internal(

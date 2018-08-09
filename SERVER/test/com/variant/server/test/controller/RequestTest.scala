@@ -46,8 +46,8 @@ class RequestTest extends EmbeddedServerSpec {
             .isOk         
             .withBodyJsonSession(sid, "big_conjoint_schema")
       }
-
-      "create and commit new state request" in {
+      
+      "create and commit new non-blank state request" in {
 
          // Get existing session.
          assertResp(route(app, httpReq(GET, context + "/session/big_conjoint_schema/" + sid)))
@@ -62,7 +62,7 @@ class RequestTest extends EmbeddedServerSpec {
             "sid" -> sid,
             "state" -> "state2"
             ).toString
-
+         
          // Target and get the request.
          assertResp(route(app, httpReq(POST, context + "/request").withTextBody(reqBody1)))
             .isOk
@@ -75,16 +75,31 @@ class RequestTest extends EmbeddedServerSpec {
                stateReq.getResolvedParameters.size mustBe 1
                stateReq.getSession.getId mustBe sid
                stateReq.getState mustBe schema.getState("state2")
-               stateReq.getStateVisitedEvent mustNot be (null)
+               stateReq.getStateVisitedEvent mustBe null  // We no longer create SVEs on the server.
             }
 
-         // Commit the request.
+         val serverSsn = server.ssnStore.get(sid).get.asInstanceOf[SessionImpl]
+
+         serverSsn.getStateRequest().isCommitted() mustBe false
+
+         // Bad commit body: no SVE.
          val reqBody2 = Json.obj(
             "sid" -> sid
             ).toString
-            
-         var stateReq: CoreStateRequest = null
+
          assertResp(route(app, httpReq(PUT, context + "/request").withTextBody(reqBody2)))
+            .isError(MissingStateVisitedEvent)
+
+         serverSsn.getStateRequest().isCommitted() mustBe false
+
+         // Good commit body with the SVE in it.
+         val reqBody3 = Json.obj(
+            "sid" -> sid,
+            "sve" -> s""" {"sid":"${sid}","ts":1533787754794,"name":"$$STATE_VISIT","value":"state2"} """
+            ).toString
+           
+         var stateReq: CoreStateRequest = null
+         assertResp(route(app, httpReq(PUT, context + "/request").withTextBody(reqBody3)))
             .isOk
             .withBodyJson { json => 
                val coreSsn = CoreSession.fromJson((json \ "session").as[String], schema)
@@ -97,9 +112,11 @@ class RequestTest extends EmbeddedServerSpec {
                stateReq.getState mustBe schema.getState("state2")
          }
          
+         serverSsn.getStateRequest().isCommitted() mustBe true
+
          // Try committing again... Should work because we don't actually check for this on the server.
          // and trust that the client will check before sending the request and check again after receiving.
-         assertResp(route(app, httpReq(PUT, context + "/request").withTextBody(reqBody2)))
+         assertResp(route(app, httpReq(PUT, context + "/request").withTextBody(reqBody3)))
             .isOk
 
          // Wait for event writer to flush and confirm we wrote 1 state visit event.
@@ -146,7 +163,7 @@ class RequestTest extends EmbeddedServerSpec {
                stateReq.getResolvedParameters.size mustBe 1
                stateReq.getSession.getId mustBe sid
                stateReq.getState mustBe schema.getState("state2")
-               stateReq.getStateVisitedEvent mustNot be (null)
+               stateReq.getStateVisitedEvent mustBe null  // We no longer create SVEs on the server
             }
 
          // Target again and get the error.
@@ -155,7 +172,8 @@ class RequestTest extends EmbeddedServerSpec {
 
          // Commit the request.
          val reqBody2 = Json.obj(
-            "sid" -> sid
+            "sid" -> sid,
+            "sve" -> s""" {"sid":"${sid}","ts":1533787754794,"name":"$$STATE_VISIT","value":"state2"} """
             ).toString
 
          var stateReq: CoreStateRequest = null
@@ -191,7 +209,7 @@ class RequestTest extends EmbeddedServerSpec {
                stateReq.getResolvedParameters.size mustBe 1
                stateReq.getSession.getId mustBe sid
                stateReq.getState mustBe schema.getState("state3")
-               stateReq.getStateVisitedEvent mustNot be (null)
+               stateReq.getStateVisitedEvent mustBe null // We no longer create SVEs on the server
             }
 
       }

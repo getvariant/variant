@@ -43,7 +43,7 @@ public class CoreStateRequest implements Serializable {
 	private final StateImpl state;
 	private StateVariant resolvedStateVariant;
 	private Map<String,String> resolvedParameterMap;
-	private StateVisitedEvent event  = null;
+	private StateVisitedEvent sve  = null;
 	
 	// For transitional server side use only.
 	// private String stateName = null;
@@ -69,7 +69,7 @@ public class CoreStateRequest implements Serializable {
 	//---------------------------------------------------------------------------------------------//
 
 	public void createStateVisitedEvent() {
-		event = new StateVisitedEvent(session, state);
+		sve = isBlank() ? null : new StateVisitedEvent(session, state);
 	}
 
 	public CoreSession getSession() {
@@ -81,7 +81,7 @@ public class CoreStateRequest implements Serializable {
 	}
 
 	public void commit() {
-		event = null;
+		sve = null;
 		committed = true;
 	}
 
@@ -110,9 +110,24 @@ public class CoreStateRequest implements Serializable {
 	}
 	
 	public StateVisitedEvent getStateVisitedEvent() {		
-		return event;
+		return sve;
 	}
 
+	/**
+	 * Is this state request blank, i.e. should we generate a state visited event
+	 * for this state request? 
+	 * 
+	 * @return
+	 */
+	public boolean isBlank() {
+		
+		for (Experience exp: getLiveExperiences()) { 
+			if (state.getInstrumentedTests().contains(exp.getTest()))
+				return false;
+		}
+		return true;
+	}
+	
 	/**
 	 * Live experiences don't change during the session, ok to cache as this is a session scoped object.
 	 * @return
@@ -184,7 +199,6 @@ public class CoreStateRequest implements Serializable {
 	private static final String FIELD_NAME_VARIANT = "variant";
 	private static final String FIELD_NAME_TEST = "test";
 	private static final String FIELD_NAME_OFFSET = "offset";
-	private static final String FIELD_NAME_EVENT = "event";
 
 	/**
 	 * Serialize to JSON.
@@ -221,11 +235,6 @@ public class CoreStateRequest implements Serializable {
 			}
 			jsonGen.writeNumberField(FIELD_NAME_OFFSET, offset);
 			jsonGen.writeEndObject();			
-		}
-
-		if (event != null) {
-			jsonGen.writeFieldName(FIELD_NAME_EVENT);
-			jsonGen.writeRawValue(event.toJson());
 		}
 		
 		Collection<Experience> liveExperiences = getLiveExperiences();
@@ -297,11 +306,6 @@ public class CoreStateRequest implements Serializable {
 				throw new CoreException.Internal("Unable to deserialzie request: bad params spec", e);
 			}
 			result.resolvedParameterMap = paramMap;
-		}
-
-		Map<String,?> eventMap = (Map<String,?>) fields.get(FIELD_NAME_EVENT);
-		if (eventMap != null) {
-			result.event = StateVisitedEvent.fromJson(session, eventMap);
 		}
 		
 		Object experiencesListObj = fields.get(FIELD_NAME_EXPERIENCES);

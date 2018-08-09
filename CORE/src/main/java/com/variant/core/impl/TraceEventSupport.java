@@ -75,7 +75,16 @@ abstract public class TraceEventSupport implements TraceEvent {
 	private static final String FIELD_NAME_PARAMS = "params";
 	private static final String FIELD_NAME_TIMESTAMP = "ts";
 	private static final String FIELD_NAME_VALUE = "value";
-	
+
+	/**
+	 * Static Method for convenience.
+	 * @param event
+	 * @return
+	 */
+	public static String toJson(TraceEvent event) {
+		return ((TraceEventSupport)event).toJson();
+	}
+
 	/**
 	 * Serialize to JSON string.
 	 * @return

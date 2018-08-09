@@ -18,6 +18,8 @@ import com.variant.server.impl.SessionImpl
 import com.variant.server.impl.StateRequestImpl
 import play.api.mvc.ControllerComponents
 import com.variant.server.boot.VariantServer
+import com.variant.core.impl.StateVisitedEvent
+import com.variant.server.event.ServerTraceEvent
 
 //@Singleton -- Is this for non-shared state controllers?
 class RequestController @Inject() (
@@ -73,26 +75,37 @@ class RequestController @Inject() (
       val sid = (bodyJson \ "sid").asOpt[String].getOrElse {
          throw new ServerException.Remote(MissingProperty, "sid")         
       }
+
+      val sveStr = (bodyJson \ "sve").asOpt[String]      
       
+
       val ssn = server.ssnStore.getOrBust(sid)
-      val stateReq = ssn.getStateRequest
-      val sve = stateReq.getStateVisitedEvent
-      
-		// We won't have an event if nothing is instrumented on this state, or session
-      // is disqualified for the test(s) instrumented on this state.
-      if (sve != null) {
-	      sve.setAttribute("$REQ_STATUS", ssn.getStateRequest.getStatus.name);
-			// log all resolved state params as event params.
-      	for ((key, value) <- ssn.getStateRequest.getResolvedParameters()) {
-		      sve.setAttribute(key, value);				
-	      }
-   		// Trigger state visited event
-	   	ssn.triggerEvent(sve);
+      val stateReq = ssn.getStateRequest.asInstanceOf[StateRequestImpl]
+
+      // If already committed, Noop.
+      if (!stateReq.isCommitted()) {
+         
+         if (!stateReq.isBlank) {
+            
+            if (sveStr.isDefined) {
+               val sve = StateVisitedEvent.fromJson(ssn.coreSession, sveStr.get)    
+      	      sve.setAttribute("$REQ_STATUS", ssn.getStateRequest.getStatus.name);
+   	   		// log all resolved state params as event params.
+            	for ((key, value) <- ssn.getStateRequest.getResolvedParameters()) {
+   		         sve.setAttribute(key, value);				
+   	         }
+         		// Trigger state visited event
+   	      	ssn.triggerEvent(new ServerTraceEvent(sve));
+            }
+            else {
+               throw new ServerException.Remote(MissingStateVisitedEvent)
+            }   
+         }
+   
+         // Actual commit.
+         stateReq.asInstanceOf[StateRequestImpl].commit(); 
       }
-
-      // Actual commit.
-      stateReq.asInstanceOf[StateRequestImpl].commit(); 
-
+      
       val response = JsObject(Seq(
          "session" -> JsString(ssn.coreSession.toJson)
       )).toString()

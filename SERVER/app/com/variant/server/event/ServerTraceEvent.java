@@ -28,7 +28,7 @@ public class ServerTraceEvent  implements TraceEvent {
 	}
 	
 	/**
-	 * Construct a trace event from a core trace event.
+	 * Construct a trace event from an SVE.
 	 */
 	public ServerTraceEvent(StateVisitedEvent sve) {
 		this.name = sve.getName();

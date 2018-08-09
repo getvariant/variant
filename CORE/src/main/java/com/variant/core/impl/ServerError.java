@@ -44,8 +44,8 @@ public class ServerError extends CommonError {
 	public static final ServerError MissingParamName = 
 			new ServerError(626, "Parameter name is missing");
 
-//	public static final ServerError MissingSchemaNameHeader = 
-//			new ServerError(627, "Missing header " + Constants.HTTP_HEADER_SCHEMAID);
+     public static final ServerError MissingStateVisitedEvent = 
+    		new ServerError(627, "State visited event was not sent when expected");
 
 	//
 	// 641-660 Internal, other.
