@@ -48,8 +48,6 @@ object ConnectionTest {
  */
 class ConnectionTest extends BaseSpecWithServerAsync {
    
-
-   import EventTest._
       
    val endpoint = context + "/connection"
 

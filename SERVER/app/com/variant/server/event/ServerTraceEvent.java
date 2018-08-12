@@ -15,16 +15,14 @@ public class ServerTraceEvent  implements TraceEvent {
 
 	private String name;
 	private String value;
-	private Date createDate = new Date();
 	private Map<String,String> attributes = new HashMap<String,String>();
 	
 	/**
 	 * Construct a trace event from scratch
 	 */
-	public ServerTraceEvent(String name, String value, Date createDate) {
+	public ServerTraceEvent(String name, String value) {
 		this.name = name;
 		this.value = value;
-		this.createDate = createDate;
 	}
 	
 	/**
@@ -33,18 +31,12 @@ public class ServerTraceEvent  implements TraceEvent {
 	public ServerTraceEvent(StateVisitedEvent sve) {
 		this.name = sve.getName();
 		this.value = sve.getValue();
-		this.createDate = sve.getCreateDate();
 		attributes.putAll(sve.getAttributes());
 	}
 
 	//---------------------------------------------------------------------------------------------//
 	//                                          PUBLIC                                             //
 	//---------------------------------------------------------------------------------------------//
-
-	@Override
-	public Date getCreateDate() {
-		return createDate;
-	}
 
 	@Override
 	public String getName() {

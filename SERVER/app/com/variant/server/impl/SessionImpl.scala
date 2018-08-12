@@ -15,6 +15,7 @@ import com.variant.server.api.ServerException
 import com.variant.core.impl.ServerError
 import com.variant.core.schema.impl.StateVariantImpl
 import com.variant.server.event.ServerTraceEvent
+import play.api.Logger
 
 /**
  * Server session enriches core session with server side functionality.
@@ -56,6 +57,8 @@ class SessionImpl(val coreSession: CoreSession, val schemaGen: SchemaGen) extend
       this(CoreSession.fromJson(json, schemaGen), schemaGen)
    }
    
+    private val logger = Logger(this.getClass)
+    
    /*----------------------------------------------------------------------------------------*/
    /*                                        PUBLIC                                          */
    /*----------------------------------------------------------------------------------------*/
@@ -117,7 +120,9 @@ class SessionImpl(val coreSession: CoreSession, val schemaGen: SchemaGen) extend
     * 
     */
 	def triggerEvent(event: ServerTraceEvent) {
-		schemaGen.eventWriter.write(new FlushableTraceEventImpl(event, this));
+	   val flushableEvent = new FlushableTraceEventImpl(event, this);
+		schemaGen.eventWriter.write(flushableEvent);
+		logger.trace(s"Flushaed event ${flushableEvent}")
 	}
 	
 	/*

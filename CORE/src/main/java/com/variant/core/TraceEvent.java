@@ -34,13 +34,6 @@ public interface TraceEvent {
 	 * @since 0.5
 	 */
 	public String getValue();	
-
-	/**
-	 * Event creation timestamp.
-	 * 
-	 * @since 0.5
-	 */
-	public Date getCreateDate();
 	
 	/**
 	 * Set a trace event attribute.

@@ -297,7 +297,7 @@ class RequestTest extends EmbeddedServerSpec {
             }
          
          // Send custom event.
-         val eventBody = EventTest.body.expand("sid" -> sid, "name" -> "eventName", "value" -> "eventValue")
+         val eventBody = TraceEventTest.body.expand("sid" -> sid, "name" -> "eventName", "value" -> "eventValue")
          //status(resp)(akka.util.Timeout(5 minutes)) mustBe OK
          assertResp(route(app, httpReq(POST, context + "/event").withTextBody(eventBody)))
             .isOk

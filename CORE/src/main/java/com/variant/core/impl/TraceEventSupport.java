@@ -22,7 +22,6 @@ abstract public class TraceEventSupport implements TraceEvent {
 	protected final CoreSession session;
 	protected String name;
 	protected String value;
-	protected Date createDate = new Date();
 	
 	//---------------------------------------------------------------------------------------------//
 	//                                          PUBLIC                                             //
@@ -46,11 +45,6 @@ abstract public class TraceEventSupport implements TraceEvent {
 	}
 	
 	@Override
-	public Date getCreateDate() {
-		return createDate;
-	}
-
-	@Override
 	public String setAttribute(String key, String value) {
 		return attributes.put(key, value);
 	}
@@ -73,7 +67,6 @@ abstract public class TraceEventSupport implements TraceEvent {
 	private static final String FIELD_NAME_KEY = "key";
 	private static final String FIELD_NAME_NAME = "name";
 	private static final String FIELD_NAME_ATTRIBUTES = "attrs";
-	private static final String FIELD_NAME_TIMESTAMP = "ts";
 	private static final String FIELD_NAME_VALUE = "value";
 
 	/**
@@ -96,7 +89,6 @@ abstract public class TraceEventSupport implements TraceEvent {
 			JsonGenerator jsonGen = new JsonFactory().createGenerator(result);
 			jsonGen.writeStartObject();
 			jsonGen.writeStringField(FIELD_NAME_SID, session.getId());
-			jsonGen.writeNumberField(FIELD_NAME_TIMESTAMP, getCreateDate().getTime());
 			jsonGen.writeStringField(FIELD_NAME_NAME, getName());
 			jsonGen.writeStringField(FIELD_NAME_VALUE, getValue());
 			
@@ -131,7 +123,6 @@ abstract public class TraceEventSupport implements TraceEvent {
 		
 		result.name = (String) mappedJson.get(FIELD_NAME_NAME);
 		result.value = (String) mappedJson.get(FIELD_NAME_VALUE);
-		result.createDate = new Date((Long) mappedJson.get(FIELD_NAME_TIMESTAMP));
 		
 		@SuppressWarnings("unchecked")
 		List<Map<String,String>> params = (List<Map<String,String>>) mappedJson.get(FIELD_NAME_ATTRIBUTES);

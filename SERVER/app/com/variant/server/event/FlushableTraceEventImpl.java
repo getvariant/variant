@@ -25,6 +25,7 @@ public class FlushableTraceEventImpl implements FlushableTraceEvent, Serializabl
 
 	private Session session;
 	private ServerTraceEvent userEvent;
+	private Date timestamp = new Date();
 	
 	/**
 	 * Constructor
@@ -51,11 +52,6 @@ public class FlushableTraceEventImpl implements FlushableTraceEvent, Serializabl
 	}
 
 	@Override
-	public Date getCreateDate() {
-		return userEvent.getCreateDate();
-	}
-
-	@Override
 	public Map<String,String> getAttributes() {
 		return userEvent.getAttributes();
 	}
@@ -75,7 +71,14 @@ public class FlushableTraceEventImpl implements FlushableTraceEvent, Serializabl
 		}
 		return result;
 	}
-	
+
+	/**
+	 * Add creation ts.
+	 */
+	public Date getCreateDate() {
+		return timestamp;
+	}
+
 	//---------------------------------------------------------------------------------------------//
 	//                                        PUBLIC EXT                                           //
 	//---------------------------------------------------------------------------------------------//	

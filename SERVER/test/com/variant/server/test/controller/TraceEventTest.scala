@@ -22,13 +22,12 @@ import com.variant.core.session.CoreSession
 import com.variant.server.impl.SessionImpl
 import java.util.Date
 
-object EventTest {
+object TraceEventTest {
    
    val body = ParameterizedString("""
       {"sid":"${sid:SID}",
        "name":"${name:NAME}",
        "value":"${value:VALUE}",
-       "ts":${ts:%d},
        "attrs":[{"name":"Name One","value":"Value One"},{"name":"Name Two","value":"Value Two"}]
       }
    """.format(System.currentTimeMillis()))
@@ -49,9 +48,9 @@ object EventTest {
 /**
  * Event Controller
  */
-class EventTest extends EmbeddedServerSpec {
+class TraceEventTest extends EmbeddedServerSpec {
    
-   import EventTest._
+   import TraceEventTest._
    
    val endpoint = context + "/event"
       
@@ -138,7 +137,7 @@ class EventTest extends EmbeddedServerSpec {
          // Commit request body
          val reqBody2 = Json.obj(
             "sid" -> sid,
-            "sve" -> s""" {"sid":"${sid}","ts":1533787754794,"name":"$$STATE_VISIT","value":"state3"} """
+            "sve" -> s""" {"sid":"${sid}","name":"$$STATE_VISIT","value":"state3"} """
             ).toString
            
          assertResp(route(app, httpReq(PUT, context + "/request").withTextBody(reqBody2)))
@@ -164,10 +163,9 @@ class EventTest extends EmbeddedServerSpec {
 
       "flush custom event with explicit timestamp" in {
 
-         val timestamp = System.currentTimeMillis()
          val eventName = Random.nextString(5)
          val eventValue = Random.nextString(5)
-         val eventBody = body.expand("sid" -> sid, "ts" -> timestamp, "name" -> eventName, "value" -> eventValue)
+         val eventBody = body.expand("sid" -> sid, "name" -> eventName, "value" -> eventValue)
          //status(resp)(akka.util.Timeout(5 minutes)) mustBe OK
          assertResp(route(app, httpReq(POST, endpoint).withBody(eventBody)))
             .isOk
@@ -175,7 +173,8 @@ class EventTest extends EmbeddedServerSpec {
          
          // Read events back from the db, but must wait for the asych flusher.
          eventWriter.maxDelayMillis  mustEqual 2000
-         Thread.sleep(eventWriter.maxDelayMillis + 500)
+         val millisToSleep = eventWriter.maxDelayMillis + 500
+         Thread.sleep(millisToSleep)
          val eventsFromDatabase = EventReader(eventWriter).read()
          eventsFromDatabase.size mustBe 2
          
@@ -187,7 +186,7 @@ class EventTest extends EmbeddedServerSpec {
                
                case `eventName` =>
                   
-                  event.getCreatedOn.getTime mustBe timestamp
+                  event.getCreatedOn.getTime mustBe (System.currentTimeMillis() - millisToSleep) +- 100
                   event.getValue mustBe eventValue
                   event.getSessionId mustBe sid
                   event.getEventExperiences.size() mustBe 5
@@ -197,7 +196,7 @@ class EventTest extends EmbeddedServerSpec {
                case "$STATE_VISIT" =>
                   event.getValue mustBe "state3"
                   event.getSessionId mustBe sid
-                  event.getCreatedOn.getTime mustBe 1533787754794L   
+                  event.getCreatedOn.getTime mustBe (System.currentTimeMillis() - millisToSleep) +- 100   
                   event.getEventExperiences.size() mustBe 5
                   // Test4 is not instrumented.
                   event.getEventExperiences.exists {_.getTestName == "test4"} mustBe false

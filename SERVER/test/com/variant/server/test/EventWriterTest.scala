@@ -59,16 +59,17 @@ class EventWriterTest extends EmbeddedServerSpec {
          
          val ssn = server.ssnStore.get(sid).get
          
-         val (name, value, timestamp) = (Random.nextString(5), Random.nextString(5), Random.nextLong())
-         val se = new ServerTraceEvent(name, value, new Date(timestamp));
+         val (name, value) = (Random.nextString(5), Random.nextString(5))
+         val se = new ServerTraceEvent(name, value);
          ssn.asInstanceOf[SessionImpl].triggerEvent(se);
          
          // Read events back from the db, but must wait for the asych flusher.
-         Thread.sleep(eventWriter.maxDelayMillis * 2)
+         val millisWaited = eventWriter.maxDelayMillis * 2
+         Thread.sleep(millisWaited)
          val eventsFromDatabase = eventReader.read(e => e.getSessionId == sid)
          eventsFromDatabase.size mustBe 1
          val event = eventsFromDatabase.head
-         event.getCreatedOn.getTime mustBe timestamp
+         event.getCreatedOn.getTime mustBe (System.currentTimeMillis() - millisWaited) +- 100
          event.getName mustBe name
          event.getValue mustBe value
          event.getSessionId mustBe sid
@@ -110,7 +111,7 @@ class EventWriterTest extends EmbeddedServerSpec {
          
          for (i <- 1 to eventWriter.fullSize) { 
             val (name, value, timestamp) = (Random.nextString(5), Random.nextString(5), Random.nextLong())
-            val se = new ServerTraceEvent(name, value, new Date(timestamp));
+            val se = new ServerTraceEvent(name, value);
             ssn.asInstanceOf[SessionImpl].triggerEvent(se);
          }
          
@@ -142,7 +143,7 @@ class EventWriterTest extends EmbeddedServerSpec {
 
          for (i <- 1 to eventWriter.fullSize + 1) { 
             val (name, value, timestamp) = (Random.nextString(5), Random.nextString(5), Random.nextLong())
-            val se = new ServerTraceEvent(name, value, new Date(timestamp));
+            val se = new ServerTraceEvent(name, value);
             ssn.asInstanceOf[SessionImpl].triggerEvent(se);
          }
          

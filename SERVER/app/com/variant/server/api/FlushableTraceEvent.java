@@ -8,9 +8,9 @@ import com.variant.core.TraceEvent;
 import com.variant.core.schema.Test.Experience;
 
 /**
- * A enriched Variant trace event that can be flushed by {@link EventFlusher}. Instantiated by Variant server
- * and passed to an externally configured implementation of {@link EventFlusher}.
- * Extends {@link TraceEvent} with methods exposing runtime details of the underlying {@code TraceEvent}.
+ * A enriched Variant trace event that can be flushed by an event flusher. 
+ * Instantiated by Variant server and passed to an externally configured implementation of {@link EventFlusher}.
+ * Extends {@link TraceEvent} with methods exposing runtime details about the triggering session.
  * 
  * @since 0.7
  */
@@ -44,7 +44,7 @@ public interface FlushableTraceEvent {
 	public Map<String, String> getAttributes();
 	
 	/**
-	 * The Variant session which created this trace event.
+	 * The Variant session which triggered this trace event.
 	 * 
 	 * @return An object of type {@link Session}.
 	 * 
@@ -53,7 +53,7 @@ public interface FlushableTraceEvent {
 	public Session getSession();
 	
 	/**
-	 * Live experiences in effect at the time this event was generated.
+	 * Live experiences in effect at the time this event was triggered.
 	 * 
 	 * @return A set of objects of type {@link Experience}.
 	 * 

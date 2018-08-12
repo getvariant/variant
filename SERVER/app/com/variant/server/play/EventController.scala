@@ -54,9 +54,7 @@ class EventController @Inject() (
       val value = (bodyJson \ "value").asOpt[String].getOrElse {
          throw new ServerException.Remote(MissingProperty, "value")         
       }
-      
-      val timestamp = (bodyJson \ "ts").asOpt[Long].getOrElse(System.currentTimeMillis())
-      
+            
       val params = (bodyJson \ "attrs").asOpt[List[JsObject]].getOrElse(List[JsObject]())
 
       val ssn = server.ssnStore.getOrBust(sid)
@@ -64,7 +62,7 @@ class EventController @Inject() (
       if (ssn.getStateRequest == null)
          throw new ServerException.Remote(UNKNOWN_STATE)   
 
-      val event = new ServerTraceEvent(name, value, new Date(timestamp));  
+      val event = new ServerTraceEvent(name, value);  
       
       params.foreach(p => {
          val name = (p \ "name").asOpt[String].getOrElse {
