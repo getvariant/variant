@@ -57,7 +57,7 @@ class EventController @Inject() (
       
       val timestamp = (bodyJson \ "ts").asOpt[Long].getOrElse(System.currentTimeMillis())
       
-      val params = (bodyJson \ "params").asOpt[List[JsObject]].getOrElse(List[JsObject]())
+      val params = (bodyJson \ "attrs").asOpt[List[JsObject]].getOrElse(List[JsObject]())
 
       val ssn = server.ssnStore.getOrBust(sid)
       

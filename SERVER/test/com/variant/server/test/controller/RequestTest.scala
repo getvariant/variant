@@ -130,10 +130,6 @@ class RequestTest extends EmbeddedServerSpec {
                mustBe stateReq.getLiveExperiences.toSet)
          }
          
-         // should not have produced a new event, i.e. still 1.
-         Thread.sleep(2000)
-         reader.read(e => e.getSessionId == sid).size mustBe 1
-
       }
       
       "refuse to create a new state request on top of an existing one" in {

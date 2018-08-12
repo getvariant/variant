@@ -72,7 +72,7 @@ abstract public class TraceEventSupport implements TraceEvent {
 	protected static final String FIELD_NAME_SID = "sid";
 	private static final String FIELD_NAME_KEY = "key";
 	private static final String FIELD_NAME_NAME = "name";
-	private static final String FIELD_NAME_PARAMS = "params";
+	private static final String FIELD_NAME_ATTRIBUTES = "attrs";
 	private static final String FIELD_NAME_TIMESTAMP = "ts";
 	private static final String FIELD_NAME_VALUE = "value";
 
@@ -101,7 +101,7 @@ abstract public class TraceEventSupport implements TraceEvent {
 			jsonGen.writeStringField(FIELD_NAME_VALUE, getValue());
 			
 			if (!attributes.isEmpty()) {
-				jsonGen.writeArrayFieldStart(FIELD_NAME_PARAMS);
+				jsonGen.writeArrayFieldStart(FIELD_NAME_ATTRIBUTES);
 				for (Map.Entry<String,String> e: attributes.entrySet()) {
 					jsonGen.writeStartObject();
 					jsonGen.writeStringField(FIELD_NAME_KEY, e.getKey());
@@ -134,7 +134,7 @@ abstract public class TraceEventSupport implements TraceEvent {
 		result.createDate = new Date((Long) mappedJson.get(FIELD_NAME_TIMESTAMP));
 		
 		@SuppressWarnings("unchecked")
-		List<Map<String,String>> params = (List<Map<String,String>>) mappedJson.get(FIELD_NAME_PARAMS);
+		List<Map<String,String>> params = (List<Map<String,String>>) mappedJson.get(FIELD_NAME_ATTRIBUTES);
 		if (params != null) {
 			for (Map<String,String> p: params) {
 				result.attributes.put(p.get(FIELD_NAME_KEY), p.get(FIELD_NAME_VALUE));

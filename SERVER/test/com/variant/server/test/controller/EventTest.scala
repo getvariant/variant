@@ -18,6 +18,9 @@ import play.api.Application
 import play.api.inject.guice.GuiceApplicationBuilder
 import com.variant.server.play.VariantApplicationLoader
 import play.api.Configuration
+import com.variant.core.session.CoreSession
+import com.variant.server.impl.SessionImpl
+import java.util.Date
 
 object EventTest {
    
@@ -26,7 +29,7 @@ object EventTest {
        "name":"${name:NAME}",
        "value":"${value:VALUE}",
        "ts":${ts:%d},
-       "params":[{"name":"Name One","value":"Value One"},{"name":"Name Two","value":"Value Two"}]
+       "attrs":[{"name":"Name One","value":"Value One"},{"name":"Name Two","value":"Value Two"}]
       }
    """.format(System.currentTimeMillis()))
       
@@ -37,7 +40,7 @@ object EventTest {
        "name":"NAME",
        "value":"VALUE",
        "ts":%d,
-       "params":[{"namee":"Name One","value":"Value One"}]
+       "attrs":[{"namee":"Name One","value":"Value One"}]
       }
    """.format(System.currentTimeMillis()))
 
@@ -96,31 +99,75 @@ class EventTest extends EmbeddedServerSpec {
             .isError(SESSION_EXPIRED, "foo")
       }
 
-      var ssn: Session = null;
+      val sid = newSid
 
       "obtain a session" in {
-         val sid = newSid()
-         val sessionJson = ParameterizedString(SessionTest.sessionJsonBigCovarPrototype.format(System.currentTimeMillis(), schema.id)).expand("sid" -> sid)
-         assertResp(route(app, httpReq(PUT, context + "/session/big_conjoint_schema").withBody(sessionJson)))
-            .isOk
-            .withNoBody
 
-         ssn = server.ssnStore.get(sid).get
+         assertResp(route(app, httpReq(POST, context + "/session/big_conjoint_schema/" + sid)))
+            .isOk         
+            .withBodyJsonSession(sid, "big_conjoint_schema")
+
+      }
+
+      "target for state5" in {
+         
+         val reqBody1 = Json.obj(
+            "sid" -> sid,
+            "state" -> "state3"
+            ).toString
+         
+         // Target and get the request.
+         assertResp(route(app, httpReq(POST, context + "/request").withTextBody(reqBody1)))
+            .isOk
+            .withBodyJson { json => 
+               val coreSsn = CoreSession.fromJson((json \ "session").as[String], schema)
+               val stateReq = coreSsn.getStateRequest
+               stateReq mustNot be (null)
+               stateReq.isCommitted() mustBe false
+               stateReq.getLiveExperiences.size mustBe 5
+               stateReq.getResolvedParameters.size mustBe 1
+               stateReq.getSession.getId mustBe sid
+               stateReq.getState mustBe schema.getState("state3")
+               stateReq.getStateVisitedEvent mustBe null 
+            }
+
+         val serverSsn = server.ssnStore.get(sid).get.asInstanceOf[SessionImpl]
+
+         serverSsn.getStateRequest().isCommitted() mustBe false
+
+         // Commit request body
+         val reqBody2 = Json.obj(
+            "sid" -> sid,
+            "sve" -> s""" {"sid":"${sid}","ts":1533787754794,"name":"$$STATE_VISIT","value":"state3"} """
+            ).toString
+           
+         assertResp(route(app, httpReq(PUT, context + "/request").withTextBody(reqBody2)))
+            .isOk
+            .withBodyJson { json => 
+               val coreSsn = CoreSession.fromJson((json \ "session").as[String], schema)
+               val stateReq = coreSsn.getStateRequest
+               stateReq mustNot be (null)
+               stateReq.isCommitted() mustBe true
+               stateReq.getLiveExperiences.size mustBe 5
+               stateReq.getResolvedParameters.size mustBe 1
+               stateReq.getSession.getId mustBe sid
+               stateReq.getState mustBe schema.getState("state3")
+         }
       }
 
       "return 400 and error on POST with missing param name" in {
 
-         val eventBody = bodyNoParamName.expand("sid" -> ssn.getId)
+         val eventBody = bodyNoParamName.expand("sid" -> sid)
          assertResp(route(app, httpReq(POST, endpoint).withBody(eventBody)))
             .isError(MissingParamName)
       }
 
-      "flush the event with explicit timestamp" in {
+      "flush custom event with explicit timestamp" in {
 
          val timestamp = System.currentTimeMillis()
          val eventName = Random.nextString(5)
          val eventValue = Random.nextString(5)
-         val eventBody = body.expand("sid" -> ssn.getId, "ts" -> timestamp, "name" -> eventName, "value" -> eventValue)
+         val eventBody = body.expand("sid" -> sid, "ts" -> timestamp, "name" -> eventName, "value" -> eventValue)
          //status(resp)(akka.util.Timeout(5 minutes)) mustBe OK
          assertResp(route(app, httpReq(POST, endpoint).withBody(eventBody)))
             .isOk
@@ -130,30 +177,36 @@ class EventTest extends EmbeddedServerSpec {
          eventWriter.maxDelayMillis  mustEqual 2000
          Thread.sleep(eventWriter.maxDelayMillis + 500)
          val eventsFromDatabase = EventReader(eventWriter).read()
-         eventsFromDatabase.size mustBe 1
-         val event = eventsFromDatabase.head
-         event.getCreatedOn.getTime mustBe timestamp
-         event.getName mustBe eventName
-         event.getValue mustBe eventValue
-         event.getSessionId mustBe ssn.getId
-         event.getEventExperiences.size() mustBe 3
-         event.getEventExperiences.foreach(ee => {
-            ee.getTestName match {
-               case "test1" => {
-                  ee.getExperienceName mustBe "A"
-                  ee.isControl() mustBe true
-               }
-               case "test2" => {
-                  ee.getExperienceName mustBe "B"
-                  ee.isControl() mustBe false
-               }
-               case "test3" => {
-                  ee.getExperienceName mustBe "C"
-                  ee.isControl() mustBe false
-               }
-               case t => throw new RuntimeException("Unexpected test %s".format(t))
+         eventsFromDatabase.size mustBe 2
+         
+         eventsFromDatabase.foreach { event =>
+            
+            //println("****\n" + event)
+            
+            event.getName match {
+               
+               case `eventName` =>
+                  
+                  event.getCreatedOn.getTime mustBe timestamp
+                  event.getValue mustBe eventValue
+                  event.getSessionId mustBe sid
+                  event.getEventExperiences.size() mustBe 5
+                  // Test4 is not instrumented.
+                  event.getEventExperiences.exists {_.getTestName == "test4"} mustBe false
+               
+               case "$STATE_VISIT" =>
+                  event.getValue mustBe "state3"
+                  event.getSessionId mustBe sid
+                  event.getCreatedOn.getTime mustBe 1533787754794L   
+                  event.getEventExperiences.size() mustBe 5
+                  // Test4 is not instrumented.
+                  event.getEventExperiences.exists {_.getTestName == "test4"} mustBe false
+                  
+               case name => fail(s"Unexpected event [${name}]")
+                  
             }
-         })
+            
+         }
       }
    }
 }
