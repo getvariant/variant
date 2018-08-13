@@ -33,9 +33,15 @@ class TraceEventFromDatabase (
     ***********************/
 	
 	override def toString(): String = {
-		 Json.obj(
-		  "id" -> id,
-		  "sessionId" -> sessionId
-		).toString
+		Json.prettyPrint( 
+   	   Json.obj(
+   		  "id" -> id,
+   		  "sessionId" -> sessionId,
+   		  "createdOn" -> createdOn.getTime,
+   		  "name" -> name,
+   		  "value" -> value,
+   		  "attrList" -> attributes,
+   		  "expList" -> Json.arr(eventExperiences)
+   		))
 	}
 }
