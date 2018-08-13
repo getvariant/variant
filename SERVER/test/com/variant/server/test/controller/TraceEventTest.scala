@@ -31,18 +31,11 @@ object TraceEventTest {
        "attrs":[{"name":"Name One","value":"Value One"},{"name":"Name Two","value":"Value Two"}]
       }
    """.format(System.currentTimeMillis()))
-      
+   
    val bodyNoSid = """{"name":"NAME","value":"VALUE"}"""
-   val bodyNoName = """{"sid":"SID","value":"VALUE"}"""
-   val bodyNoParamName = ParameterizedString("""
-      {"sid":"${sid:SID}",
-       "name":"NAME",
-       "value":"VALUE",
-       "ts":%d,
-       "attrs":[{"namee":"Name One","value":"Value One"}]
-      }
-   """.format(System.currentTimeMillis()))
 
+   val bodyNoName = """{"sid":"SID","value":"VALUE"}"""
+   
 }
 
 /**
@@ -98,24 +91,90 @@ class TraceEventTest extends EmbeddedServerSpec {
             .isError(SESSION_EXPIRED, "foo")
       }
 
-      val sid = newSid
+      "flush a state visited event on request commit without attributes" in {
 
-      "obtain a session" in {
+         // New session
+         val sid = newSid
 
          assertResp(route(app, httpReq(POST, context + "/session/big_conjoint_schema/" + sid)))
             .isOk         
             .withBodyJsonSession(sid, "big_conjoint_schema")
 
+         // Target and get the request.
+         val reqBody1 = Json.obj(
+            "sid" -> sid,
+            "state" -> "state4"
+            ).toString
+         
+         assertResp(route(app, httpReq(POST, context + "/request").withTextBody(reqBody1)))
+            .isOk
+            .withBodyJson { json => 
+               val coreSsn = CoreSession.fromJson((json \ "session").as[String], schema)
+               val stateReq = coreSsn.getStateRequest
+               stateReq mustNot be (null)
+               stateReq.isCommitted() mustBe false
+               stateReq.getLiveExperiences.size mustBe 5
+               stateReq.getResolvedParameters.size mustBe 1
+               stateReq.getSession.getId mustBe sid
+               stateReq.getState mustBe schema.getState("state4")
+               stateReq.getStateVisitedEvent mustBe null 
+            }
+
+         val serverSsn = server.ssnStore.get(sid).get.asInstanceOf[SessionImpl]
+
+         serverSsn.getStateRequest().isCommitted() mustBe false
+
+         // Commit request body with attributes
+         val reqBody2 = Json.obj(
+            "sid" -> sid
+            ).toString
+
+         assertResp(route(app, httpReq(PUT, context + "/request").withTextBody(reqBody2)))
+            .isOk
+            .withBodyJson { json => 
+               val coreSsn = CoreSession.fromJson((json \ "session").as[String], schema)
+               val stateReq = coreSsn.getStateRequest
+               stateReq mustNot be (null)
+               stateReq.isCommitted() mustBe true
+               stateReq.getLiveExperiences.size mustBe 5
+               stateReq.getResolvedParameters.size mustBe 1
+               stateReq.getSession.getId mustBe sid
+               stateReq.getState mustBe schema.getState("state4")
+         }
+         
+         // Read the event back from the db.
+         eventWriter.maxDelayMillis  mustEqual 2000
+         val millisToSleep = eventWriter.maxDelayMillis + 500
+         Thread.sleep(millisToSleep)
+         val eventsFromDatabase = TraceEventReader(eventWriter).read(_.sessionId == sid)
+         eventsFromDatabase.size mustBe 1
+         
+         val event = eventsFromDatabase.head
+         event.name mustBe "$STATE_VISIT"
+         event.value mustBe "state4"
+         event.sessionId mustBe sid
+         event.createdOn.getTime mustBe (System.currentTimeMillis() - millisToSleep) +- 100   
+         event.eventExperiences.size() mustBe 5
+         // Test4 is not instrumented.
+         event.eventExperiences.exists {_.testName == "test6"} mustBe false
+
       }
 
-      "target for state5" in {
-         
+      "flush a state visited event on request commit with attributes" in {
+
+         // New session
+         val sid = newSid
+
+         assertResp(route(app, httpReq(POST, context + "/session/big_conjoint_schema/" + sid)))
+            .isOk         
+            .withBodyJsonSession(sid, "big_conjoint_schema")
+
+         // Target and get the request.
          val reqBody1 = Json.obj(
             "sid" -> sid,
             "state" -> "state3"
             ).toString
          
-         // Target and get the request.
          assertResp(route(app, httpReq(POST, context + "/request").withTextBody(reqBody1)))
             .isOk
             .withBodyJson { json => 
@@ -134,12 +193,12 @@ class TraceEventTest extends EmbeddedServerSpec {
 
          serverSsn.getStateRequest().isCommitted() mustBe false
 
-         // Commit request body
+         // Commit request body with attributes
          val reqBody2 = Json.obj(
             "sid" -> sid,
-            "sve" -> s""" {"sid":"${sid}","name":"$$STATE_VISIT","value":"state3"} """
+            "attrList" -> Map("key1"->"val1", "key2"->"val2", "key3"->"val3")
             ).toString
-           
+
          assertResp(route(app, httpReq(PUT, context + "/request").withTextBody(reqBody2)))
             .isOk
             .withBodyJson { json => 
@@ -152,15 +211,26 @@ class TraceEventTest extends EmbeddedServerSpec {
                stateReq.getSession.getId mustBe sid
                stateReq.getState mustBe schema.getState("state3")
          }
+         
+         // Read the event back from the db.
+         eventWriter.maxDelayMillis  mustEqual 2000
+         val millisToSleep = eventWriter.maxDelayMillis + 500
+         Thread.sleep(millisToSleep)
+         val eventsFromDatabase = TraceEventReader(eventWriter).read(_.sessionId == sid)
+         eventsFromDatabase.size mustBe 1
+         
+         val event = eventsFromDatabase.head
+         event.name mustBe "$STATE_VISIT"
+         event.value mustBe "state3"
+         event.sessionId mustBe sid
+         event.createdOn.getTime mustBe (System.currentTimeMillis() - millisToSleep) +- 100   
+         event.eventExperiences.size() mustBe 5
+         // Test4 is not instrumented.
+         event.eventExperiences.exists {_.testName == "test4"} mustBe false
+
       }
 
-      "return 400 and error on POST with missing param name" in {
-
-         val eventBody = bodyNoParamName.expand("sid" -> sid)
-         assertResp(route(app, httpReq(POST, endpoint).withBody(eventBody)))
-            .isError(MissingParamName)
-      }
-
+      /*
       "flush custom event with explicit timestamp" in {
 
          val eventName = Random.nextString(5)
@@ -203,9 +273,10 @@ class TraceEventTest extends EmbeddedServerSpec {
                   
                case name => fail(s"Unexpected event [${name}]")
                   
-            }
-            
+            }  
          }
       }
+      * 
+      */
    }
 }
