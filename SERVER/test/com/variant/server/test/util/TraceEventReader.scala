@@ -21,14 +21,14 @@ import com.variant.server.jdbc.EventFlusherJdbc
  * @author Igor
  *
  */
-object EventReader {
-   def apply(eventWriter: EventWriter) = new EventReader(eventWriter)
+object TraceEventReader {
+   def apply(eventWriter: EventWriter) = new TraceEventReader(eventWriter)
 }
 
 /**
  * 
  */
-class EventReader (eventWriter: EventWriter) {
+class TraceEventReader (eventWriter: EventWriter) {
    
    val jdbcConnection = eventWriter.flusher.asInstanceOf[EventFlusherJdbc].getJdbcConnection
 
@@ -65,18 +65,16 @@ class EventReader (eventWriter: EventWriter) {
 						val id = eventsRresulSet.getLong(1);
 						var event = eventMap.get(id);
 						if (event == null) {
-							event = new TraceEventFromDatabase();
-							event.id = id;
-							event.sessionId = eventsRresulSet.getString(2).trim(); // Fixed width in DB.
-							event.createdOn = eventsRresulSet.getTimestamp(3);
-							event.name = eventsRresulSet.getString(4);
-							event.value = eventsRresulSet.getString(5);
-							event.eventExperiences = new HashSet[EventExperienceFromDatabase]();
-							event.params = new HashMap[String,String]();
+							event = new TraceEventFromDatabase(
+							   id, 
+							   eventsRresulSet.getString(2).trim(),  // Fixed width in DB.
+							   eventsRresulSet.getTimestamp(3),
+							   eventsRresulSet.getString(4),
+							   eventsRresulSet.getString(5))							
 							eventMap.put(id, event);
 						}
 						val key = eventsRresulSet.getString(6);
-						if (key != null) event.params.put(key, eventsRresulSet.getString(7));
+						if (key != null) event.attributes.put(key, eventsRresulSet.getString(7));
 					}
 					
 					// Read event_experiences
@@ -96,12 +94,12 @@ class EventReader (eventWriter: EventWriter) {
 						val eeId = eventExperiencesResultSet.getLong(1);
 						var ee = innerMap.get(eeId);
 						if (ee == null) {
-							ee = new EventExperienceFromDatabase();
-							ee.id = eeId;
-							ee.eventId = eventId;
-							ee.testName = eventExperiencesResultSet.getString(3);
-							ee.experienceName = eventExperiencesResultSet.getString(4);
-							ee.isControl = eventExperiencesResultSet.getBoolean(5);
+							ee = new EventExperienceFromDatabase(
+   						   eeId,
+							   eventId,
+							   eventExperiencesResultSet.getString(3),
+							   eventExperiencesResultSet.getString(4),
+							   eventExperiencesResultSet.getBoolean(5))
 							innerMap.put(eeId, ee);
 						}
 					}

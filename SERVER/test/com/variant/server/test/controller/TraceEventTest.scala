@@ -9,7 +9,7 @@ import scala.collection.JavaConversions._
 import com.variant.core.impl.ServerError._
 import com.variant.core.util.Constants._
 import com.variant.server.test.util.ParameterizedString
-import com.variant.server.test.util.EventReader
+import com.variant.server.test.util.TraceEventReader
 import com.variant.server.test.spec.EmbeddedServerSpec
 import javax.inject.Inject
 import com.variant.server.api.Session
@@ -175,31 +175,31 @@ class TraceEventTest extends EmbeddedServerSpec {
          eventWriter.maxDelayMillis  mustEqual 2000
          val millisToSleep = eventWriter.maxDelayMillis + 500
          Thread.sleep(millisToSleep)
-         val eventsFromDatabase = EventReader(eventWriter).read()
+         val eventsFromDatabase = TraceEventReader(eventWriter).read()
          eventsFromDatabase.size mustBe 2
          
          eventsFromDatabase.foreach { event =>
             
             //println("****\n" + event)
             
-            event.getName match {
+            event.name match {
                
                case `eventName` =>
                   
-                  event.getCreatedOn.getTime mustBe (System.currentTimeMillis() - millisToSleep) +- 100
-                  event.getValue mustBe eventValue
-                  event.getSessionId mustBe sid
-                  event.getEventExperiences.size() mustBe 5
+                  event.createdOn.getTime mustBe (System.currentTimeMillis() - millisToSleep) +- 100
+                  event.value mustBe eventValue
+                  event.sessionId mustBe sid
+                  event.eventExperiences.size() mustBe 5
                   // Test4 is not instrumented.
-                  event.getEventExperiences.exists {_.getTestName == "test4"} mustBe false
+                  event.eventExperiences.exists {_.testName == "test4"} mustBe false
                
                case "$STATE_VISIT" =>
-                  event.getValue mustBe "state3"
-                  event.getSessionId mustBe sid
-                  event.getCreatedOn.getTime mustBe (System.currentTimeMillis() - millisToSleep) +- 100   
-                  event.getEventExperiences.size() mustBe 5
+                  event.value mustBe "state3"
+                  event.sessionId mustBe sid
+                  event.createdOn.getTime mustBe (System.currentTimeMillis() - millisToSleep) +- 100   
+                  event.eventExperiences.size() mustBe 5
                   // Test4 is not instrumented.
-                  event.getEventExperiences.exists {_.getTestName == "test4"} mustBe false
+                  event.eventExperiences.exists {_.testName == "test4"} mustBe false
                   
                case name => fail(s"Unexpected event [${name}]")
                   

@@ -8,7 +8,7 @@ import scala.util.Random
 import com.variant.server.event.ServerTraceEvent
 import com.variant.server.impl.SessionImpl
 import com.variant.server.test.spec.EmbeddedServerSpec
-import com.variant.server.test.util.EventReader
+import com.variant.server.test.util.TraceEventReader
 import com.variant.server.test.util.ParameterizedString
 
 import play.api.libs.json.JsValue.jsValueToJsLookup
@@ -38,7 +38,7 @@ class EventWriterTest extends EmbeddedServerSpec {
 
       val schema = server.schemata.get("big_conjoint_schema").get.liveGen.get
       val eventWriter = schema.eventWriter
-      val eventReader = EventReader(eventWriter)
+      val eventReader = TraceEventReader(eventWriter)
 
       "have expected confuration" in {
          eventWriter.maxBufferSize mustEqual 200
@@ -51,7 +51,7 @@ class EventWriterTest extends EmbeddedServerSpec {
          
          // Save session.
          val sid = newSid
-         eventReader.read(e => e.getSessionId == sid).size mustBe 0 
+         eventReader.read(e => e.sessionId == sid).size mustBe 0 
          val body = sessionJson.expand("sid" -> sid)
          assertResp(route(app, httpReq(PUT, context + "/session/big_conjoint_schema").withBody(body)))
             .isOk
@@ -66,27 +66,27 @@ class EventWriterTest extends EmbeddedServerSpec {
          // Read events back from the db, but must wait for the asych flusher.
          val millisWaited = eventWriter.maxDelayMillis * 2
          Thread.sleep(millisWaited)
-         val eventsFromDatabase = eventReader.read(e => e.getSessionId == sid)
+         val eventsFromDatabase = eventReader.read(e => e.sessionId == sid)
          eventsFromDatabase.size mustBe 1
          val event = eventsFromDatabase.head
-         event.getCreatedOn.getTime mustBe (System.currentTimeMillis() - millisWaited) +- 100
-         event.getName mustBe name
-         event.getValue mustBe value
-         event.getSessionId mustBe sid
-         event.getEventExperiences.size() mustBe 3
-         event.getEventExperiences.foreach(ee => {
-            ee.getTestName match {
+         event.createdOn.getTime mustBe (System.currentTimeMillis() - millisWaited) +- 100
+         event.name mustBe name
+         event.value mustBe value
+         event.sessionId mustBe sid
+         event.eventExperiences.size mustBe 3
+         event.eventExperiences.foreach(ee => {
+            ee.testName match {
                case "test1" => {
-                  ee.getExperienceName mustBe "A"
-                  ee.isControl() mustBe true
+                  ee.experienceName mustBe "A"
+                  ee.isControl mustBe true
                }
                case "test2" => {
-                  ee.getExperienceName mustBe "B"
-                  ee.isControl() mustBe false
+                  ee.experienceName mustBe "B"
+                  ee.isControl mustBe false
                }
                case "test3" => {
-                  ee.getExperienceName mustBe "C"
-                  ee.isControl() mustBe false
+                  ee.experienceName mustBe "C"
+                  ee.isControl mustBe false
                }
                case t => throw new RuntimeException("Unexpected test %s".format(t))
             }
@@ -96,7 +96,7 @@ class EventWriterTest extends EmbeddedServerSpec {
       "not flush before EVENT_WRITER_MAX_DELAY if fewer than EVENT_WRITER_PERCENT_FULL" in {
          
          val sid = newSid
-         eventReader.read(e => e.getSessionId == sid).size mustBe 0 
+         eventReader.read(e => e.sessionId == sid).size mustBe 0 
          val body = sessionJson.expand("sid" -> sid)
          assertResp(route(app, httpReq(PUT, context + "/session/big_conjoint_schema").withBody(body)))
             .isOk
@@ -110,7 +110,7 @@ class EventWriterTest extends EmbeddedServerSpec {
          val startOfWrite = System.currentTimeMillis()
          
          for (i <- 1 to eventWriter.fullSize) { 
-            val (name, value, timestamp) = (Random.nextString(5), Random.nextString(5), Random.nextLong())
+            val (name, value) = (Random.nextString(5), Random.nextString(5))
             val se = new ServerTraceEvent(name, value);
             ssn.asInstanceOf[SessionImpl].triggerEvent(se);
          }
@@ -121,17 +121,17 @@ class EventWriterTest extends EmbeddedServerSpec {
          // Wait a bit, but less than max delay - must not have flushed
          // TODO Occasionally, this fails due to a race condition.
          Thread.sleep(200)          
-         eventReader.read(e => e.getSessionId == ssn.getId).size mustBe 0
+         eventReader.read(e => e.sessionId == ssn.getId).size mustBe 0
          
          // Read after delay - must be flushed
          Thread.sleep(2000)
-         eventReader.read(e => e.getSessionId == ssn.getId).size mustBe eventWriter.fullSize
+         eventReader.read(e => e.sessionId == ssn.getId).size mustBe eventWriter.fullSize
       }
 
       "flush before EVENT_WRITER_MAX_DELAY if EVENT_WRITER_PERCENT_FULL" in {
          
          val sid = newSid
-         eventReader.read(e => e.getSessionId == sid).size mustBe 0 
+         eventReader.read(e => e.sessionId == sid).size mustBe 0 
          val body = sessionJson.expand("sid" -> sid)
          assertResp(route(app,httpReq(PUT, context + "/session/big_conjoint_schema").withBody(body)))
             .isOk
@@ -152,7 +152,7 @@ class EventWriterTest extends EmbeddedServerSpec {
          
          // Wait a bit, but less than max delay - must be flushed
          Thread.sleep(eventWriter.maxDelayMillis - 1000)          
-         eventReader.read(e => e.getSessionId == ssn.getId).size mustBe (eventWriter.fullSize + 1)
+         eventReader.read(e => e.sessionId == ssn.getId).size mustBe (eventWriter.fullSize + 1)
       }
    }
 }

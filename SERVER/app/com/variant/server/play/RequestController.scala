@@ -76,7 +76,9 @@ class RequestController @Inject() (
          throw new ServerException.Remote(MissingProperty, "sid")         
       }
 
-      val sveStr = (bodyJson \ "sve").asOpt[String]      
+      val attrs = (bodyJson \ "attrList").asOpt[Map[String,String]].getOrElse {
+         Map[String,String]()
+      }
       
 
       val ssn = server.ssnStore.getOrBust(sid)
@@ -84,22 +86,12 @@ class RequestController @Inject() (
 
       // If already committed, Noop.
       if (!stateReq.isCommitted()) {
-         
+
+         // State request may be blank?
          if (!stateReq.isBlank) {
-            
-            if (sveStr.isDefined) {
-               val sve = StateVisitedEvent.fromJson(ssn.coreSession, sveStr.get)    
-      	      sve.setAttribute("$REQ_STATUS", ssn.getStateRequest.getStatus.name);
-   	   		// log all resolved state params as event params.
-            	for ((key, value) <- ssn.getStateRequest.getResolvedParameters()) {
-   		         sve.setAttribute(key, value);				
-   	         }
-         		// Trigger state visited event
-   	      	ssn.triggerEvent(new ServerTraceEvent(sve));
-            }
-            else {
-               throw new ServerException.Remote(MissingStateVisitedEvent)
-            }   
+            val sve = new StateVisitedEvent(ssn.coreSession, stateReq.getState, attrs)            
+            // Trigger state visited event
+   	     	ssn.triggerEvent(new ServerTraceEvent(sve));
          }
    
          // Actual commit.

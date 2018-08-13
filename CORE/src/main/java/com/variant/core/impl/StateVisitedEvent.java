@@ -1,12 +1,8 @@
 package com.variant.core.impl;
 
-import java.io.IOException;
 import java.io.Serializable;
 import java.util.Map;
 
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.variant.core.schema.State;
 import com.variant.core.session.CoreSession;
 import com.variant.core.util.immutable.ImmutableMap;
@@ -25,22 +21,33 @@ public class StateVisitedEvent extends TraceEventSupport implements Serializable
 	}
 
 	/**
+	 */
+	public StateVisitedEvent(CoreSession session, State state, Map<String,String> attributes) {
+		this(session, state);
+		this.attributes = attributes;
+	}
+
+	/**
 	 * Flushiers will need to get to the attribute map.
 	 * @return
 	 */
 	public Map<String,String> getAttributes() {
 		return new ImmutableMap<String,String>(attributes);
 	}
+	
+	
+	
 	/**
 	 * Private instantiation, for desearialization, when state is not yet known.
-	 */
+	 *
 	public StateVisitedEvent(CoreSession session) {
 		super(session, EVENT_NAME);
 	}
-	
+	*/
 	/**
 	 * Unmarschall from a JSON string.
-	 */
+	 * This now lives on the server. Client never unmarshals trace events.
+	 *
 	public static StateVisitedEvent fromJson(CoreSession session, String jsonStr) 
 			throws JsonParseException, JsonMappingException, IOException {
 		
@@ -56,4 +63,5 @@ public class StateVisitedEvent extends TraceEventSupport implements Serializable
 		return TraceEventSupport.fromJson(new StateVisitedEvent(session), mappedJson);
 
 	}
+	*/
 }

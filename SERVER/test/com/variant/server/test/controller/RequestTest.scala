@@ -10,7 +10,7 @@ import com.variant.core.impl.ServerError._
 import play.api.libs.json._
 import com.variant.server.impl.SessionImpl
 import com.variant.core.session.CoreSession
-import com.variant.server.test.util.EventReader
+import com.variant.server.test.util.TraceEventReader
 import com.variant.server.test.util.EventExperienceFromDatabase
 import com.variant.core.impl.StateVisitedEvent
 import com.variant.core.session.CoreStateRequest
@@ -28,7 +28,7 @@ class RequestTest extends EmbeddedServerSpec {
       val schema = server.schemata.get("big_conjoint_schema").get.liveGen.get
       val schemaId = schema.id
       val writer = schema.eventWriter
-      val reader = EventReader(writer)
+      val reader = TraceEventReader(writer)
       val sid = newSid
 
       
@@ -47,7 +47,7 @@ class RequestTest extends EmbeddedServerSpec {
             .withBodyJsonSession(sid, "big_conjoint_schema")
       }
       
-      "create and commit new non-blank state request" in {
+      "create and commit new state request without SVE attributes" in {
 
          // Get existing session.
          assertResp(route(app, httpReq(GET, context + "/session/big_conjoint_schema/" + sid)))
@@ -82,24 +82,13 @@ class RequestTest extends EmbeddedServerSpec {
 
          serverSsn.getStateRequest().isCommitted() mustBe false
 
-         // Bad commit body: no SVE.
+         // Commit without SVE attributes.
          val reqBody2 = Json.obj(
             "sid" -> sid
             ).toString
-
-         assertResp(route(app, httpReq(PUT, context + "/request").withTextBody(reqBody2)))
-            .isError(MissingStateVisitedEvent)
-
-         serverSsn.getStateRequest().isCommitted() mustBe false
-
-         // Good commit body with the SVE in it.
-         val reqBody3 = Json.obj(
-            "sid" -> sid,
-            "sve" -> s""" {"sid":"${sid}","ts":1533787754794,"name":"$$STATE_VISIT","value":"state2"} """
-            ).toString
            
          var stateReq: CoreStateRequest = null
-         assertResp(route(app, httpReq(PUT, context + "/request").withTextBody(reqBody3)))
+         assertResp(route(app, httpReq(PUT, context + "/request").withTextBody(reqBody2)))
             .isOk
             .withBodyJson { json => 
                val coreSsn = CoreSession.fromJson((json \ "session").as[String], schema)
@@ -116,18 +105,99 @@ class RequestTest extends EmbeddedServerSpec {
 
          // Try committing again... Should work because we don't actually check for this on the server.
          // and trust that the client will check before sending the request and check again after receiving.
-         assertResp(route(app, httpReq(PUT, context + "/request").withTextBody(reqBody3)))
+         assertResp(route(app, httpReq(PUT, context + "/request").withTextBody(reqBody2)))
             .isOk
 
          // Wait for event writer to flush and confirm we wrote 1 state visit event.
          Thread.sleep(2000)
-         reader.read(e => e.getSessionId == sid).size mustBe 1
-         for (e <- reader.read(e => e.getSessionId == sid)) {
-            e.getSessionId mustBe sid
-            e.getName mustBe StateVisitedEvent.EVENT_NAME
-            e.getValue mustBe "state2"
-            (e.getEventExperiences.toSet[EventExperienceFromDatabase].map {x => schema.getTest(x.getTestName).getExperience(x.getExperienceName)} 
-               mustBe stateReq.getLiveExperiences.toSet)
+         reader.read(e => e.sessionId == sid).size mustBe 1
+         for (e <- reader.read(e => e.sessionId == sid)) {
+            e.sessionId mustBe sid
+            e.name mustBe StateVisitedEvent.EVENT_NAME
+            e.value mustBe "state2"
+            e.attributes mustBe empty
+            e.eventExperiences.toSet[EventExperienceFromDatabase].map {x => 
+               schema.getTest(x.testName).getExperience(x.experienceName)
+               } mustBe stateReq.getLiveExperiences.toSet
+         }
+         
+      }
+      
+      "create and commit new state request with SVE attributes" in {
+
+         val sid = newSid
+         
+         // Recreate session because the old one expired while we waited for the event writer.
+         assertResp(route(app, httpReq(POST, context + "/session/big_conjoint_schema/" + sid)))
+            .isOk
+            .withBodyJson { json => 
+               val coreSsn = CoreSession.fromJson((json \ "session").as[String], schema)
+               coreSsn.getStateRequest mustBe (null)
+         }
+ 
+         // Target sesion for "state3"
+         val reqBody1 = Json.obj(
+            "sid" -> sid,
+            "state" -> "state3"
+            ).toString
+         
+         // Target and get the request.
+         assertResp(route(app, httpReq(POST, context + "/request").withTextBody(reqBody1)))
+            .isOk
+            .withBodyJson { json => 
+               val coreSsn = CoreSession.fromJson((json \ "session").as[String], schema)
+               val stateReq = coreSsn.getStateRequest
+               stateReq mustNot be (null)
+               stateReq.isCommitted() mustBe false
+               stateReq.getLiveExperiences.size mustBe 5
+               stateReq.getResolvedParameters.size mustBe 1
+               stateReq.getSession.getId mustBe sid
+               stateReq.getState mustBe schema.getState("state3")
+               stateReq.getStateVisitedEvent mustBe null  // We no longer create SVEs on the server.
+            }
+
+         val serverSsn = server.ssnStore.get(sid).get.asInstanceOf[SessionImpl]
+
+         serverSsn.getStateRequest().isCommitted() mustBe false
+
+         // Commit with SVE attributes.
+         val reqBody2 = Json.obj(
+            "sid" -> sid,
+            "attrList" -> Map("key1"->"val1", "key2"->"val2")
+            ).toString
+           
+         var stateReq: CoreStateRequest = null
+         assertResp(route(app, httpReq(PUT, context + "/request").withTextBody(reqBody2)))
+            .isOk
+            .withBodyJson { json => 
+               val coreSsn = CoreSession.fromJson((json \ "session").as[String], schema)
+               stateReq = coreSsn.getStateRequest
+               stateReq mustNot be (null)
+               stateReq.isCommitted() mustBe true
+               stateReq.getLiveExperiences.size mustBe 5
+               stateReq.getResolvedParameters.size mustBe 1
+               stateReq.getSession.getId mustBe sid
+               stateReq.getState mustBe schema.getState("state3")
+         }
+         
+         serverSsn.getStateRequest().isCommitted() mustBe true
+
+         // Try committing again... Should work because we don't actually check for this on the server.
+         // and trust that the client will check before sending the request and check again after receiving.
+         assertResp(route(app, httpReq(PUT, context + "/request").withTextBody(reqBody2)))
+            .isOk
+         
+         // Wait for event writer to flush and confirm we wrote 1 state visit event.
+         Thread.sleep(2000)
+         reader.read(e => e.sessionId == sid).size mustBe 1
+         for (e <- reader.read(e => e.sessionId == sid)) {
+            e.sessionId mustBe sid
+            e.name mustBe StateVisitedEvent.EVENT_NAME
+            e.value mustBe "state3"
+            e.attributes mustBe Map("key1"->"val1", "key2"->"val2")
+            e.eventExperiences.toSet[EventExperienceFromDatabase].map {x => 
+               schema.getTest(x.testName).getExperience(x.experienceName)
+               } mustBe stateReq.getLiveExperiences.toSet
          }
          
       }
@@ -216,7 +286,7 @@ class RequestTest extends EmbeddedServerSpec {
       val schema = server.schemata.get("petclinic_experiments").get.liveGen.get
       val schemaId = schema.id
       val writer = schema.eventWriter
-      val reader = EventReader(writer)
+      val reader = TraceEventReader(writer)
       val sid = newSid
 
       "create new session" in {
@@ -305,7 +375,7 @@ class RequestTest extends EmbeddedServerSpec {
 
          // Wait for event writer to flush and confirm all event were discarded.
          Thread.sleep(2000)
-         val flushedEvents = reader.read(e => e.getSessionId == sid)
+         val flushedEvents = reader.read(e => e.sessionId == sid)
          if (flushedEvents.size > 0) {
             println("*** These are not expected: ***")
             flushedEvents.foreach(println(_))
