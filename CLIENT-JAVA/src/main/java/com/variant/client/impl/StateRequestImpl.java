@@ -81,12 +81,6 @@ public class StateRequestImpl implements StateRequest {
 	}
 
 	@Override
-	public TraceEvent getStateVisitedEvent() {
-		checkState();
-		return session.getCoreSession().getStateRequest().getStateVisitedEvent();
-	}
-
-	@Override
 	public boolean commit(Object... userData) {
 		
 		checkState();
@@ -134,9 +128,4 @@ public class StateRequestImpl implements StateRequest {
 	public void rewrap(CoreStateRequest coreRequest) {
 		this.coreRequest = coreRequest;
 	}
-	
-	public void createStateVisitedEvent() {
-		coreRequest.createStateVisitedEvent();
-	}
-	
 }

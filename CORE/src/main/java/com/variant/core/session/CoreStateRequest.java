@@ -43,7 +43,6 @@ public class CoreStateRequest implements Serializable {
 	private final StateImpl state;
 	private StateVariant resolvedStateVariant;
 	private Map<String,String> resolvedParameterMap;
-	private StateVisitedEvent sve  = null;
 	
 	// For transitional server side use only.
 	// private String stateName = null;
@@ -68,10 +67,6 @@ public class CoreStateRequest implements Serializable {
 	//                                          PUBLIC                                             //
 	//---------------------------------------------------------------------------------------------//
 
-	public void createStateVisitedEvent() {
-		sve = isBlank() ? null : new StateVisitedEvent(session, state);
-	}
-
 	public CoreSession getSession() {
 		return session;
 	}
@@ -81,7 +76,6 @@ public class CoreStateRequest implements Serializable {
 	}
 
 	public void commit() {
-		sve = null;
 		committed = true;
 	}
 
@@ -109,10 +103,6 @@ public class CoreStateRequest implements Serializable {
 		return new CaseInsensitiveImmutableMap<String>(resolvedParameterMap);
 	}
 	
-	public StateVisitedEvent getStateVisitedEvent() {		
-		return sve;
-	}
-
 	/**
 	 * Is this state request blank, i.e. should we generate a state visited event
 	 * for this state request? 

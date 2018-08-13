@@ -13,7 +13,6 @@ import play.api.mvc.Result
 import play.api.mvc.AnyContent
 import play.api.libs.json.JsValue
 import play.api.http.HeaderNames
-import scala.collection.mutable.Map
 import com.variant.server.event.ServerTraceEvent
 import com.variant.server.boot.ServerErrorRemote
 import com.variant.server.boot.VariantServer
@@ -34,8 +33,7 @@ class EventController @Inject() (
  
    /**
     * POST
-    * Trigger an event.
-    * TODO: Move unmarshalling to the object itself.
+    * Trigger a custom event.
     */
    def post() = action { req =>
 
@@ -47,31 +45,29 @@ class EventController @Inject() (
          throw new ServerException.Remote(MissingProperty, "sid")            
       }
       
-      val name = (bodyJson \ "name").asOpt[String].getOrElse {
+      val eventJson = (bodyJson \ "event").getOrElse {
+         throw new ServerException.Remote(MissingProperty, "event")            
+      }
+
+      val name = (eventJson \ "name").asOpt[String].getOrElse {
          throw new ServerException.Remote(MissingProperty, "name")         
       }
       
-      val value = (bodyJson \ "value").asOpt[String].getOrElse {
+      val value = (eventJson \ "value").asOpt[String].getOrElse {
          throw new ServerException.Remote(MissingProperty, "value")         
       }
-            
-      val params = (bodyJson \ "attrs").asOpt[List[JsObject]].getOrElse(List[JsObject]())
+       
+      val attrs = (eventJson \ "attrList").asOpt[Map[String,String]].getOrElse {
+         Map[String,String]()
+      }
 
       val ssn = server.ssnStore.getOrBust(sid)
       
       if (ssn.getStateRequest == null)
          throw new ServerException.Remote(UNKNOWN_STATE)   
 
-      val event = new ServerTraceEvent(name, value);  
-      
-      params.foreach(p => {
-         val name = (p \ "name").asOpt[String].getOrElse {
-            throw new ServerException.Remote(MissingParamName)
-         }
-         val value = (p \ "value").asOpt[String].getOrElse("")
-         event.setParameter(name, value)
-      })
-      
+      val event = new ServerTraceEvent(name, value, attrs);  
+            
       ssn.asInstanceOf[SessionImpl].triggerEvent(event)            
             
       Ok

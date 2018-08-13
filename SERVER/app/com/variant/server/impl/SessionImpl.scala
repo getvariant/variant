@@ -97,7 +97,7 @@ class SessionImpl(val coreSession: CoreSession, val schemaGen: SchemaGen) extend
    def addDisqualifiedTest(test: TestImpl): Unit = coreSession.addDisqualifiedTest(test)
 
    def getTargetingStabile(): SessionScopedTargetingStabile = coreSession.getTargetingStabile()
-     
+
    def setStateRequest(state: StateImpl, variant: StateVariantImpl) {
    
       if (coreSession.getStateRequest != null && !coreSession.getStateRequest.isCommitted) {
@@ -108,12 +108,12 @@ class SessionImpl(val coreSession: CoreSession, val schemaGen: SchemaGen) extend
       coreReq.setResolvedStateVariant(variant)
       coreSession.setStateRequest(coreReq)
    }
-      
+   
    /*
     */
    def targetForState(state: State): StateRequest = {
       schemaGen.runtime.targetForState(this, state) 
-      this.getStateRequest()
+      getStateRequest
    }
 
    /**

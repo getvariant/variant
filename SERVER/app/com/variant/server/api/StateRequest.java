@@ -4,7 +4,6 @@ import java.util.Map;
 import java.util.Set;
 
 import com.variant.core.StateRequestStatus;
-import com.variant.core.TraceEvent;
 import com.variant.core.schema.State;
 import com.variant.core.schema.StateVariant;
 import com.variant.core.schema.Test;
@@ -44,14 +43,6 @@ public interface StateRequest {
 	 * @since 0.7
 	 */
 	boolean isCommitted();
-
-	/** Pending state visited event. 
-	 *  This is useful if the caller wants to add parameters to this event before it is triggered.
-	 *  
-	 * @return Object of type {@link TraceEvent}.
-	 * @since 0.7
-	 */
-	TraceEvent getStateVisitedEvent();
 
 	/**
 	 * Current status of this request.

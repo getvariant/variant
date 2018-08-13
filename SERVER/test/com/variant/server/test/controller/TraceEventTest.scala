@@ -25,16 +25,26 @@ import java.util.Date
 object TraceEventTest {
    
    val body = ParameterizedString("""
-      {"sid":"${sid:SID}",
-       "name":"${name:NAME}",
-       "value":"${value:VALUE}",
-       "attrs":[{"name":"Name One","value":"Value One"},{"name":"Name Two","value":"Value Two"}]
+      {
+         "sid":"${sid:SID}",
+            "event": {
+               "name":"${name:NAME}",
+               "value":"${value:VALUE}",
+               "attrs":[{"Name One":"Value One"},{"Name Two":"Value Two"}]
+            }
       }
    """.format(System.currentTimeMillis()))
    
    val bodyNoSid = """{"name":"NAME","value":"VALUE"}"""
 
-   val bodyNoName = """{"sid":"SID","value":"VALUE"}"""
+   val bodyNoName = """
+      {
+         "sid":"SID",
+         "event": {
+            "value":"VALUE"
+         }
+      }
+   """
    
 }
 
@@ -117,7 +127,6 @@ class TraceEventTest extends EmbeddedServerSpec {
                stateReq.getResolvedParameters.size mustBe 1
                stateReq.getSession.getId mustBe sid
                stateReq.getState mustBe schema.getState("state4")
-               stateReq.getStateVisitedEvent mustBe null 
             }
 
          val serverSsn = server.ssnStore.get(sid).get.asInstanceOf[SessionImpl]
@@ -186,7 +195,6 @@ class TraceEventTest extends EmbeddedServerSpec {
                stateReq.getResolvedParameters.size mustBe 1
                stateReq.getSession.getId mustBe sid
                stateReq.getState mustBe schema.getState("state3")
-               stateReq.getStateVisitedEvent mustBe null 
             }
 
          val serverSsn = server.ssnStore.get(sid).get.asInstanceOf[SessionImpl]
@@ -230,12 +238,19 @@ class TraceEventTest extends EmbeddedServerSpec {
 
       }
 
-      /*
-      "flush custom event with explicit timestamp" in {
+      "flush custom event without an active state request" in {
 
-         val eventName = Random.nextString(5)
-         val eventValue = Random.nextString(5)
+         // New session
+         val sid = newSid
+
+         assertResp(route(app, httpReq(POST, context + "/session/big_conjoint_schema/" + sid)))
+            .isOk         
+            .withBodyJsonSession(sid, "big_conjoint_schema")
+
+         val eventName = "Custom Name"
+         val eventValue = "Custom Value"
          val eventBody = body.expand("sid" -> sid, "name" -> eventName, "value" -> eventValue)
+         
          //status(resp)(akka.util.Timeout(5 minutes)) mustBe OK
          assertResp(route(app, httpReq(POST, endpoint).withBody(eventBody)))
             .isOk
@@ -245,9 +260,9 @@ class TraceEventTest extends EmbeddedServerSpec {
          eventWriter.maxDelayMillis  mustEqual 2000
          val millisToSleep = eventWriter.maxDelayMillis + 500
          Thread.sleep(millisToSleep)
-         val eventsFromDatabase = TraceEventReader(eventWriter).read()
-         eventsFromDatabase.size mustBe 2
-         
+         val eventsFromDatabase = TraceEventReader(eventWriter).read(_.sessionId == sid)
+         eventsFromDatabase.size mustBe 1
+         /*
          eventsFromDatabase.foreach { event =>
             
             //println("****\n" + event)
@@ -275,8 +290,8 @@ class TraceEventTest extends EmbeddedServerSpec {
                   
             }  
          }
+         * 
+         */
       }
-      * 
-      */
    }
 }

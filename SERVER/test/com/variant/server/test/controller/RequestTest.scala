@@ -75,7 +75,6 @@ class RequestTest extends EmbeddedServerSpec {
                stateReq.getResolvedParameters.size mustBe 1
                stateReq.getSession.getId mustBe sid
                stateReq.getState mustBe schema.getState("state2")
-               stateReq.getStateVisitedEvent mustBe null  // We no longer create SVEs on the server.
             }
 
          val serverSsn = server.ssnStore.get(sid).get.asInstanceOf[SessionImpl]
@@ -153,7 +152,6 @@ class RequestTest extends EmbeddedServerSpec {
                stateReq.getResolvedParameters.size mustBe 1
                stateReq.getSession.getId mustBe sid
                stateReq.getState mustBe schema.getState("state3")
-               stateReq.getStateVisitedEvent mustBe null  // We no longer create SVEs on the server.
             }
 
          val serverSsn = server.ssnStore.get(sid).get.asInstanceOf[SessionImpl]
@@ -229,7 +227,6 @@ class RequestTest extends EmbeddedServerSpec {
                stateReq.getResolvedParameters.size mustBe 1
                stateReq.getSession.getId mustBe sid
                stateReq.getState mustBe schema.getState("state2")
-               stateReq.getStateVisitedEvent mustBe null  // We no longer create SVEs on the server
             }
 
          // Target again and get the error.
@@ -275,7 +272,6 @@ class RequestTest extends EmbeddedServerSpec {
                stateReq.getResolvedParameters.size mustBe 1
                stateReq.getSession.getId mustBe sid
                stateReq.getState mustBe schema.getState("state3")
-               stateReq.getStateVisitedEvent mustBe null // We no longer create SVEs on the server
             }
 
       }
@@ -341,7 +337,6 @@ class RequestTest extends EmbeddedServerSpec {
                stateReq.getResolvedParameters.get("path") mustBe schema.getState("newOwner").getParameters().get("path")
                stateReq.getSession.getId mustBe sid
                stateReq.getState mustBe schema.getState("newOwner")
-               stateReq.getStateVisitedEvent mustBe null
          }
          
          // Commit the request.
@@ -363,7 +358,6 @@ class RequestTest extends EmbeddedServerSpec {
                stateReq.getResolvedParameters.get("path") mustBe schema.getState("newOwner").getParameters().get("path")
                stateReq.getSession.getId mustBe sid
                stateReq.getState mustBe schema.getState("newOwner")
-               stateReq.getStateVisitedEvent mustBe null
             }
          
          // Send custom event.

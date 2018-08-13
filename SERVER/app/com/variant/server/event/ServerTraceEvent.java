@@ -1,6 +1,5 @@
 package com.variant.server.event;
 
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -24,14 +23,20 @@ public class ServerTraceEvent  implements TraceEvent {
 		this.name = name;
 		this.value = value;
 	}
+
+	/**
+	 * Construct a trace event from scratch
+	 */
+	public ServerTraceEvent(String name, String value, Map<String,String> attributes) {
+		this(name, value);
+		this.attributes.putAll(attributes);		
+	}
 	
 	/**
 	 * Construct a trace event from an SVE.
 	 */
 	public ServerTraceEvent(StateVisitedEvent sve) {
-		this.name = sve.getName();
-		this.value = sve.getValue();
-		attributes.putAll(sve.getAttributes());
+		this(sve.getName(), sve.getValue(), sve.getAttributes());
 	}
 
 	//---------------------------------------------------------------------------------------------//
