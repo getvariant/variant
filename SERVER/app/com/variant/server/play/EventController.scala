@@ -1,8 +1,8 @@
 package com.variant.server.play
 
+import scala.collection.mutable
 import scala.collection.JavaConversions._
 import javax.inject.Inject
-import play.api.mvc.Controller
 import play.api.mvc.Request
 import com.variant.server.boot.SessionStore
 import play.api.Logger
@@ -56,17 +56,21 @@ class EventController @Inject() (
       val value = (eventJson \ "value").asOpt[String].getOrElse {
          throw new ServerException.Remote(MissingProperty, "value")         
       }
-       
-      val attrs = (eventJson \ "attrList").asOpt[Map[String,String]].getOrElse {
-         Map[String,String]()
+
+      val attrs = (eventJson \ "attrList").asOpt[Seq[Map[String,String]]].getOrElse {
+         Seq[Map[String,String]]()
       }
+
+      // Convert attrs from a list of single-element maps to one map
+      val attrMap = mutable.Map[String,String]()
+      attrs.foreach { _.foreach { case (k,v) => attrMap(k) = v }}
 
       val ssn = server.ssnStore.getOrBust(sid)
       
       if (ssn.getStateRequest == null)
          throw new ServerException.Remote(UNKNOWN_STATE)   
 
-      val event = new ServerTraceEvent(name, value, attrs);  
+      val event = new ServerTraceEvent(name, value, attrMap);  
             
       ssn.asInstanceOf[SessionImpl].triggerEvent(event)            
             

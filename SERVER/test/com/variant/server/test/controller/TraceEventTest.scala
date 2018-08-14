@@ -30,11 +30,21 @@ object TraceEventTest {
             "event": {
                "name":"${name:NAME}",
                "value":"${value:VALUE}",
-               "attrs":[{"Name One":"Value One"},{"Name Two":"Value Two"}]
+               "attrList":[{"Name One":"Value One"},{"Name Two":"Value Two"}]
             }
       }
    """.format(System.currentTimeMillis()))
    
+   val bodyNoAttrs = ParameterizedString("""
+      {
+         "sid":"${sid:SID}",
+            "event": {
+               "name":"${name:NAME}",
+               "value":"${value:VALUE}"
+            }
+      }
+   """.format(System.currentTimeMillis()))
+
    val bodyNoSid = """{"name":"NAME","value":"VALUE"}"""
 
    val bodyNoName = """
@@ -45,7 +55,7 @@ object TraceEventTest {
          }
       }
    """
-   
+
 }
 
 /**
@@ -235,6 +245,10 @@ class TraceEventTest extends EmbeddedServerSpec {
          event.eventExperiences.size() mustBe 5
          // Test4 is not instrumented.
          event.eventExperiences.exists {_.testName == "test4"} mustBe false
+         event.attributes.size mustBe 3
+         event.attributes("key1") mustBe "val1"
+         event.attributes("key1") mustBe "val1"
+         event.attributes("key1") mustBe "val1"
 
       }
 
@@ -256,7 +270,7 @@ class TraceEventTest extends EmbeddedServerSpec {
             .isError(UNKNOWN_STATE)
       }
       
-      "Trigger custom event with active state request" in {
+      "Trigger custom event with active state request and no attribubes" in {
 
          // New session
          val sid = newSid
@@ -287,6 +301,68 @@ class TraceEventTest extends EmbeddedServerSpec {
          // Custom event.
          val eventName = "Custom Name"
          val eventValue = "Custom Value"
+         val eventBody = bodyNoAttrs.expand("sid" -> sid, "name" -> eventName, "value" -> eventValue)
+         
+         //status(resp)(akka.util.Timeout(5 minutes)) mustBe OK
+         assertResp(route(app, httpReq(POST, endpoint).withBody(eventBody)))
+            .isOk
+            .withNoBody
+         
+         // Read events back from the db, but must wait for the asych flusher.
+         eventWriter.maxDelayMillis  mustEqual 2000
+         val millisToSleep = eventWriter.maxDelayMillis + 500
+         Thread.sleep(millisToSleep)
+         val eventsFromDatabase = TraceEventReader(eventWriter).read(_.sessionId == sid)
+         eventsFromDatabase.size mustBe 1
+         val event = eventsFromDatabase.head
+
+         event.sessionId mustBe sid
+         event.createdOn.getTime mustBe (System.currentTimeMillis() - millisToSleep) +- 100
+         event.name mustBe eventName
+         event.value mustBe eventValue
+         event.eventExperiences.size() mustBe 4
+         event.attributes mustBe empty
+         event.eventExperiences.exists(_.testName == "test1") mustBe true
+         event.eventExperiences.exists(_.testName == "test2") mustBe false
+         event.eventExperiences.exists(_.testName == "test3") mustBe false
+         event.eventExperiences.exists(_.testName == "test4") mustBe true
+         event.eventExperiences.exists(_.testName == "test5") mustBe true
+         event.eventExperiences.exists(_.testName == "test6") mustBe true
+         event.eventExperiences.foreach(_.eventId mustBe event.id)
+               
+      }
+
+      "Trigger custom event with committed state request and attribubes" in {
+
+         // New session
+         val sid = newSid
+
+         assertResp(route(app, httpReq(POST, context + "/session/big_conjoint_schema/" + sid)))
+            .isOk         
+            .withBodyJsonSession(sid, "big_conjoint_schema")
+
+         // Target and get the request.
+         val reqBody1 = Json.obj(
+            "sid" -> sid,
+            "state" -> "state4"
+            ).toString
+         
+         assertResp(route(app, httpReq(POST, context + "/request").withTextBody(reqBody1)))
+            .isOk
+            .withBodyJson { json => 
+               val coreSsn = CoreSession.fromJson((json \ "session").as[String], schema)
+               val stateReq = coreSsn.getStateRequest
+               stateReq mustNot be (null)
+               stateReq.isCommitted() mustBe false
+               stateReq.getLiveExperiences.size mustBe 5
+               stateReq.getResolvedParameters.size mustBe 1
+               stateReq.getSession.getId mustBe sid
+               stateReq.getState mustBe schema.getState("state4")
+            }
+
+         // Custom event.
+         val eventName = "Custom Name"
+         val eventValue = "Custom Value"
          val eventBody = body.expand("sid" -> sid, "name" -> eventName, "value" -> eventValue)
          
          //status(resp)(akka.util.Timeout(5 minutes)) mustBe OK
@@ -302,22 +378,20 @@ class TraceEventTest extends EmbeddedServerSpec {
          eventsFromDatabase.size mustBe 1
          val event = eventsFromDatabase.head
          
-         event.id mustBe 3
          event.sessionId mustBe sid
          event.createdOn.getTime mustBe (System.currentTimeMillis() - millisToSleep) +- 100
          event.name mustBe eventName
          event.value mustBe eventValue
-         event.eventExperiences.size() mustBe 4
-         event.attributes mustBe empty
+         event.eventExperiences.size() mustBe 5
+         event.attributes.size mustBe 2
          event.eventExperiences.exists(_.testName == "test1") mustBe true
-         event.eventExperiences.exists(_.testName == "test2") mustBe false
-         event.eventExperiences.exists(_.testName == "test3") mustBe false
+         event.eventExperiences.exists(_.testName == "test2") mustBe true
+         event.eventExperiences.exists(_.testName == "test3") mustBe true
          event.eventExperiences.exists(_.testName == "test4") mustBe true
          event.eventExperiences.exists(_.testName == "test5") mustBe true
-         event.eventExperiences.exists(_.testName == "test6") mustBe true
-         event.eventExperiences.foreach(_.eventId mustBe 3)
+         event.eventExperiences.exists(_.testName == "test6") mustBe false
+         event.eventExperiences.foreach(_.eventId mustBe event.id)
                
       }
-
    }
 }
