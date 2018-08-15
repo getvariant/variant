@@ -399,7 +399,7 @@ public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 				assertNotNull(ssn.getTraversedStates());
 				assertNotNull(ssn.getTraversedTests());
 				assertNotNull(ssn.getDisqualifiedTests());
-				ssn.triggerTraceEvent(new StateVisitedEvent(ssn.getCoreSession(), ssn.getSchema().getState("state1")));
+				//ssn.triggerTraceEvent(new StateVisitedEvent(ssn.getCoreSession(), ssn.getSchema().getState("state1")));
 				String key = "key" + _i;
 				String value = "value" + _i;
 				assertNull(ssn.getAttribute(key));
@@ -467,7 +467,7 @@ public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 				assertNotNull(ssn.getTraversedStates());
 				assertNotNull(ssn.getTraversedTests());
 				assertNotNull(ssn.getDisqualifiedTests());
-				ssn.triggerTraceEvent(new StateVisitedEvent(ssn.getCoreSession(), ssn.getSchema().getState("state1")));
+				//ssn.triggerTraceEvent(new StateVisitedEvent(ssn.getCoreSession(), ssn.getSchema().getState("state1")));
 				String key = "key" + _i;
 				String value = "value" + _i;
 				assertEquals(value, ssn.getAttribute(key));

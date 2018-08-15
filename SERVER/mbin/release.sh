@@ -8,7 +8,7 @@ export version=0.9.2
 export version2=""
 
 function usage() {
-    echo "$(basename $0) email"
+    echo "$(basename $0)"
 } 
 
 if [[ x != "x$1" ]]; then

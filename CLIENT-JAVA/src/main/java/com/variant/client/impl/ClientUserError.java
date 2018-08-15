@@ -24,10 +24,10 @@ public class ClientUserError extends CommonError {
 	public static final ClientUserError SESSION_ID_TRACKER_NO_INTERFACE =
 			new ClientUserError(272, "Session ID tracker class [%s] must implement interface [%s]");
 
-/*
-	public static final ClientUserError CONNECTION_CLOSED =
-			new ClientUserError(273, "This connection has been closed");
 
+	public static final ClientUserError CANNOT_TRIGGER_SVE =
+			new ClientUserError(273, "State visited event cannot be triggered");
+/*
 	public static final ClientUserError CONNECTION_DRAINING =
 			new ClientUserError(274, "No new sessions can be created over this connection because target schema has been undeployed");
 */

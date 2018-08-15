@@ -90,7 +90,6 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 		assertNotNull(event);
 		assertEquals(StateVisitedEvent.EVENT_NAME, event.getName());
 		assertEquals(req.getState().getName(), event.getValue());
-		assertEquals(ssn.getCreateDate().getTime(), event.getCreateDate().getTime(), 10);
 		assertTrue(event.getAttributes().isEmpty());
 				
 		assertTrue(req.commit());

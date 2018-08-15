@@ -13,7 +13,6 @@ import java.util.Set;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
-import com.variant.core.StateRequestStatus;
 import com.variant.core.impl.CoreException;
 import com.variant.core.impl.StateVisitedEvent;
 import com.variant.core.schema.Schema;
@@ -41,16 +40,13 @@ public class CoreStateRequest implements Serializable {
 	
 	private final CoreSession session;
 	private final StateImpl state;
+	private final StateVisitedEvent sve;
 	private StateVariant resolvedStateVariant;
 	private Map<String,String> resolvedParameterMap;
-	
-	// For transitional server side use only.
-	// private String stateName = null;
 	
 	// Active
 	private Set<Experience> liveExperiences; 
 	
-	private StateRequestStatus status = StateRequestStatus.OK;
 	private boolean committed = false;
 	
 	/**
@@ -60,6 +56,7 @@ public class CoreStateRequest implements Serializable {
 	public CoreStateRequest(CoreSession session, State state) {
 		this.session = session;
 		this.state = (StateImpl) state;
+		this.sve = new StateVisitedEvent(session, state);
 		session.setStateRequest(this);
 	}
 	
@@ -83,18 +80,14 @@ public class CoreStateRequest implements Serializable {
 		return committed;
 	}
 
-	public StateRequestStatus getStatus() {
-		return status;
-	}
-	
-	public void setStatus(StateRequestStatus status) {
-		this.status = status;
-	}
-
 	public StateVariant getResolvedStateVariant() {
 		return resolvedStateVariant;
 	}
 	
+	public StateVisitedEvent getStateVisitedEvent() {
+		return sve;
+	}
+
 	/**
 	 * Immutable parameter map, if need all.
 	 * @return
@@ -180,7 +173,6 @@ public class CoreStateRequest implements Serializable {
 	//---------------------------------------------------------------------------------------------//
 
 	private static final String FIELD_NAME_STATE = "state";
-	private static final String FIELD_NAME_STATUS = "status";
 	private static final String FILED_NAME_COMMITTED = "committed";
 	private static final String FIELD_NAME_PARAMS = "params";
 	private static final String FIELD_NAME_KEY = "name";
@@ -201,7 +193,6 @@ public class CoreStateRequest implements Serializable {
 		JsonGenerator jsonGen = new JsonFactory().createGenerator(result);
 		jsonGen.writeStartObject();
 		jsonGen.writeStringField(FIELD_NAME_STATE, state.getName());
-		jsonGen.writeStringField(FIELD_NAME_STATUS, status.toString());
 		jsonGen.writeBooleanField(FILED_NAME_COMMITTED, committed);
 		
 		if (!resolvedParameterMap.isEmpty()) {
@@ -263,15 +254,7 @@ public class CoreStateRequest implements Serializable {
 			throw new CoreException.Internal(String.format("State [%s] not in schema [%s]", stateName, schema.getMeta().getName()));
 
 		CoreStateRequest result = new CoreStateRequest(session, state);
-		
-		String statusStr = (String) fields.get(FIELD_NAME_STATUS);
-		if (statusStr == null) 
-			throw new CoreException.Internal("Unable to deserialzie request: no status");
-		if (!(statusStr instanceof String)) 
-			throw new CoreException.Internal("Unable to deserialzie request: status not string");
-
-		result.status = StateRequestStatus.valueOf(statusStr);
-		
+				
 		Object committed = fields.get(FILED_NAME_COMMITTED);
 		if (committed == null) 
 			throw new CoreException.Internal("Unable to deserialzie request: no committed");

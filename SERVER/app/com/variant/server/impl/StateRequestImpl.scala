@@ -4,7 +4,6 @@ import com.variant.core.schema.State
 import com.variant.server.api.StateRequest
 import com.variant.core.session.CoreStateRequest
 import java.util.Date
-import com.variant.core.StateRequestStatus
 import com.variant.core.schema.Test.Experience
 import com.variant.core.schema.Test
 import com.variant.core.schema.StateVariant
@@ -42,10 +41,6 @@ class StateRequestImpl(private val session: Session, private val coreReq:CoreSta
 	/**
 	 */
 	override def isCommitted(): Boolean = coreReq.isCommitted
-
-	/**
-	 */
-	override def getStatus(): StateRequestStatus = coreReq.getStatus
 
 	/**
 	 */

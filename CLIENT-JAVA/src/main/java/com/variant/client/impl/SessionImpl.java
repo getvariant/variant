@@ -169,7 +169,6 @@ public class SessionImpl implements Session {
 		server.requestCreate(this, state.getName());
 		
 		StateRequestImpl req = (StateRequestImpl) getStateRequest();
-		req.createStateVisitedEvent();
 
 		return req;
 	}
@@ -255,12 +254,10 @@ public class SessionImpl implements Session {
 	}
 	
 	/**
-	 * Mutating or mutable state.
+	 * State request is a local object.
 	 */
 	@Override
 	public StateRequest getStateRequest() {
-		preChecks();
-		refreshFromServer();
 		return stateRequest;
 	}
 

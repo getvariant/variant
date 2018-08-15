@@ -6,7 +6,6 @@ import java.util.Set;
 import com.variant.client.Session;
 import com.variant.client.StateNotInstrumentedException;
 import com.variant.client.StateRequest;
-import com.variant.core.StateRequestStatus;
 import com.variant.core.TraceEvent;
 import com.variant.core.impl.CoreException;
 import com.variant.core.impl.ServerError;
@@ -104,13 +103,8 @@ public class StateRequestImpl implements StateRequest {
 	}
 
 	@Override
-	public void setStatus(StateRequestStatus status) {
-		session.getCoreSession().getStateRequest().setStatus(status);
-	}
-
-	@Override
-	public StateRequestStatus getStatus() {
-		return session.getCoreSession().getStateRequest().getStatus();
+	public TraceEvent getStateVisitedEvent() {
+		return coreRequest.getStateVisitedEvent();
 	}
 	
 	/**
@@ -128,4 +122,5 @@ public class StateRequestImpl implements StateRequest {
 	public void rewrap(CoreStateRequest coreRequest) {
 		this.coreRequest = coreRequest;
 	}
+
 }

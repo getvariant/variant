@@ -3,7 +3,6 @@ package com.variant.client;
 import java.util.Map;
 import java.util.Set;
 
-import com.variant.core.StateRequestStatus;
 import com.variant.core.TraceEvent;
 import com.variant.core.schema.State;
 import com.variant.core.schema.StateVariant;
@@ -93,23 +92,7 @@ public interface StateRequest {
 	 * @since 0.6
 	 */
 	TraceEvent getStateVisitedEvent();
-	
-	/**
-	 * Set the status of this request.
-	 * 
-	 * @param status
-	 * @since 0.6
-	 */
-	void setStatus(StateRequestStatus status);
-	
-	/**
-	 * Current status of this request.
-	 * 
-	 * @return Status of this request.
-	 * @since 0.6
-	 */
-	StateRequestStatus getStatus();
-	
+		
 	/**
 	 * Commit this state request.
      * The associated state visited {@link TraceEvent} is triggered.

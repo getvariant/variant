@@ -22,7 +22,7 @@ object SessionTest {
    val sessionJsonBigCovarPrototype = """
      {"sid":"${sid:SID}",
       "ts": ${ts:%d}, 
-      "request": {"state": "state1","status": "OK","committed": true, 
+      "request": {"state": "state1","committed": true, 
             "params": [{"name": "PARAM ONE", "value": "Param One Value"},{"name": "PARAM TWO", "value": "Param Two Value"}], 
             "exps": ["test1.A.true","test2.B.false","test3.C.false"]},
        "states": [{"state": "state1","count": 23}, {"state": "state2","count": 32}],
@@ -33,7 +33,7 @@ object SessionTest {
    val sessionJsonPetclinicPrototype = """
       {"sid":"${sid:SID}",
        "ts": ${ts:%d}, 
-       "request": {"state": "newOwner","status": "OK","committed": false, 
+       "request": {"state": "newOwner","committed": false, 
                   "params": [{"name": "PARAM ONE", "value": "Param One Value"},{"name": "PARAM TWO", "value": "Param Two Value"}],
                   "exps": ["NewOwnerTest.tosCheckbox.false"]},
         "attrList": [{"name": "NAME1","val": "VALUE1"}, {"name": "NAME2","val": "VALUE2"}]
