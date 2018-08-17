@@ -14,7 +14,6 @@ import java.util.Set;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.variant.core.impl.CoreException;
-import com.variant.core.impl.StateVisitedEvent;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.State;
 import com.variant.core.schema.StateVariant;
@@ -40,7 +39,6 @@ public class CoreStateRequest implements Serializable {
 	
 	private final CoreSession session;
 	private final StateImpl state;
-	private final StateVisitedEvent sve;
 	private StateVariant resolvedStateVariant;
 	private Map<String,String> resolvedParameterMap;
 	
@@ -56,7 +54,6 @@ public class CoreStateRequest implements Serializable {
 	public CoreStateRequest(CoreSession session, State state) {
 		this.session = session;
 		this.state = (StateImpl) state;
-		this.sve = new StateVisitedEvent(session, state);
 		session.setStateRequest(this);
 	}
 	
@@ -84,10 +81,6 @@ public class CoreStateRequest implements Serializable {
 		return resolvedStateVariant;
 	}
 	
-	public StateVisitedEvent getStateVisitedEvent() {
-		return sve;
-	}
-
 	/**
 	 * Immutable parameter map, if need all.
 	 * @return

@@ -24,13 +24,6 @@ public interface FlushableTraceEvent {
 	public String getName();
 
 	/**
-	 * The value of the event.
-	 * 
-	 * @since 0.7
-	 */
-	public String getValue();	
-
-	/**
 	 * Event creation timestamp.
 	 * 
 	 * @since 0.7

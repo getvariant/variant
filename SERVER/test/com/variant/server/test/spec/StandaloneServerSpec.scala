@@ -61,7 +61,7 @@ class StandaloneServerSpec extends PlaySpec with BeforeAndAfterAll {
 	}
 	*/ 
    
-   "Server must come up with two schema" in {
+   "Server must come up with two schemata" in {
 
          server.start()
          

@@ -11,8 +11,7 @@ class TraceEventFromDatabase (
 		val id: Long,
 		val sessionId: String,
 		val createdOn: Date,
-		val name: String,
-		val value: String
+		val name: String
 	) {
 
 	val attributes = mutable.Map[String,String]()
@@ -39,7 +38,6 @@ class TraceEventFromDatabase (
    		  "sessionId" -> sessionId,
    		  "createdOn" -> createdOn.getTime,
    		  "name" -> name,
-   		  "value" -> value,
    		  "attrList" -> attributes,
    		  "expList" -> Json.arr(eventExperiences)
    		))

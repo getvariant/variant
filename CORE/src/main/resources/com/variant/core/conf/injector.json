@@ -1,7 +1,0 @@
-[
-   {
-      'type':'com.variant.core.session.SessionStore',
-      'impl':'com.variant.core.session.SessionStoreImplDefault',
-      'init':{}
-   }
-]

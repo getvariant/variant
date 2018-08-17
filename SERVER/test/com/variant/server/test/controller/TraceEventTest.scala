@@ -21,6 +21,7 @@ import play.api.Configuration
 import com.variant.core.session.CoreSession
 import com.variant.server.impl.SessionImpl
 import java.util.Date
+import com.variant.core.TraceEvent
 
 object TraceEventTest {
    
@@ -29,7 +30,6 @@ object TraceEventTest {
          "sid":"${sid:SID}",
             "event": {
                "name":"${name:NAME}",
-               "value":"${value:VALUE}",
                "attrList":[{"Name One":"Value One"},{"Name Two":"Value Two"}]
             }
       }
@@ -39,8 +39,7 @@ object TraceEventTest {
       {
          "sid":"${sid:SID}",
             "event": {
-               "name":"${name:NAME}",
-               "value":"${value:VALUE}"
+               "name":"${name:NAME}"
             }
       }
    """.format(System.currentTimeMillis()))
@@ -51,8 +50,8 @@ object TraceEventTest {
       {
          "sid":"SID",
          "event": {
-            "value":"VALUE"
-         }
+             "attrList":[{"k 1":"v 1"}]
+          }
       }
    """
 
@@ -169,8 +168,9 @@ class TraceEventTest extends EmbeddedServerSpec {
          eventsFromDatabase.size mustBe 1
          
          val event = eventsFromDatabase.head
-         event.name mustBe "$STATE_VISIT"
-         event.value mustBe "state4"
+         event.name mustBe TraceEvent.SVE_NAME
+         event.attributes.size mustBe 1
+         event.attributes("$STATE") mustBe "state4"
          event.sessionId mustBe sid
          event.createdOn.getTime mustBe (System.currentTimeMillis() - millisToSleep) +- 100   
          event.eventExperiences.size() mustBe 5
@@ -238,17 +238,17 @@ class TraceEventTest extends EmbeddedServerSpec {
          eventsFromDatabase.size mustBe 1
          
          val event = eventsFromDatabase.head
-         event.name mustBe "$STATE_VISIT"
-         event.value mustBe "state3"
+         event.name mustBe TraceEvent.SVE_NAME
+         event.attributes.size mustBe 4
+         event.attributes("$STATE") mustBe "state3"
+         event.attributes("key1") mustBe "val1"
+         event.attributes("key2") mustBe "val2"
+         event.attributes("key3") mustBe "val3"
          event.sessionId mustBe sid
          event.createdOn.getTime mustBe (System.currentTimeMillis() - millisToSleep) +- 100   
          event.eventExperiences.size() mustBe 5
          // Test4 is not instrumented.
          event.eventExperiences.exists {_.testName == "test4"} mustBe false
-         event.attributes.size mustBe 3
-         event.attributes("key1") mustBe "val1"
-         event.attributes("key1") mustBe "val1"
-         event.attributes("key1") mustBe "val1"
 
       }
 
@@ -262,8 +262,7 @@ class TraceEventTest extends EmbeddedServerSpec {
             .withBodyJsonSession(sid, "big_conjoint_schema")
 
          val eventName = "Custom Name"
-         val eventValue = "Custom Value"
-         val eventBody = body.expand("sid" -> sid, "name" -> eventName, "value" -> eventValue)
+         val eventBody = body.expand("sid" -> sid, "name" -> eventName)
          
          //status(resp)(akka.util.Timeout(5 minutes)) mustBe OK
          assertResp(route(app, httpReq(POST, endpoint).withBody(eventBody)))
@@ -300,8 +299,7 @@ class TraceEventTest extends EmbeddedServerSpec {
 
          // Custom event.
          val eventName = "Custom Name"
-         val eventValue = "Custom Value"
-         val eventBody = bodyNoAttrs.expand("sid" -> sid, "name" -> eventName, "value" -> eventValue)
+         val eventBody = bodyNoAttrs.expand("sid" -> sid, "name" -> eventName)
          
          //status(resp)(akka.util.Timeout(5 minutes)) mustBe OK
          assertResp(route(app, httpReq(POST, endpoint).withBody(eventBody)))
@@ -319,7 +317,6 @@ class TraceEventTest extends EmbeddedServerSpec {
          event.sessionId mustBe sid
          event.createdOn.getTime mustBe (System.currentTimeMillis() - millisToSleep) +- 100
          event.name mustBe eventName
-         event.value mustBe eventValue
          event.eventExperiences.size() mustBe 4
          event.attributes mustBe empty
          event.eventExperiences.exists(_.testName == "test1") mustBe true
@@ -362,8 +359,7 @@ class TraceEventTest extends EmbeddedServerSpec {
 
          // Custom event.
          val eventName = "Custom Name"
-         val eventValue = "Custom Value"
-         val eventBody = body.expand("sid" -> sid, "name" -> eventName, "value" -> eventValue)
+         val eventBody = body.expand("sid" -> sid, "name" -> eventName)
          
          //status(resp)(akka.util.Timeout(5 minutes)) mustBe OK
          assertResp(route(app, httpReq(POST, endpoint).withBody(eventBody)))
@@ -381,7 +377,6 @@ class TraceEventTest extends EmbeddedServerSpec {
          event.sessionId mustBe sid
          event.createdOn.getTime mustBe (System.currentTimeMillis() - millisToSleep) +- 100
          event.name mustBe eventName
-         event.value mustBe eventValue
          event.eventExperiences.size() mustBe 5
          event.attributes.size mustBe 2
          event.eventExperiences.exists(_.testName == "test1") mustBe true

@@ -1,16 +1,13 @@
 package com.variant.core.impl;
 
 import java.io.StringWriter;
-import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.variant.core.TraceEvent;
-import com.variant.core.session.CoreSession;
 
 /**
  * 
@@ -19,9 +16,7 @@ import com.variant.core.session.CoreSession;
 abstract public class TraceEventSupport implements TraceEvent {
 		
 	protected Map<String, String> attributes = new HashMap<String, String>();
-	protected final CoreSession session;
 	protected String name;
-	protected String value;
 	
 	//---------------------------------------------------------------------------------------------//
 	//                                          PUBLIC                                             //
@@ -29,19 +24,13 @@ abstract public class TraceEventSupport implements TraceEvent {
 			
 	/**
 	 */
-	public TraceEventSupport(CoreSession session, String name) {
-		this.session = session;
+	public TraceEventSupport(String name) {
 		this.name = name;
 	}
 	
 	@Override
 	public String getName() {
 		return name;
-	}
-
-	@Override
-	public String getValue() {
-		return value;
 	}
 	
 	@Override
@@ -63,11 +52,8 @@ abstract public class TraceEventSupport implements TraceEvent {
 	//                                       Serialization                                          //
 	//---------------------------------------------------------------------------------------------//
 	
-	protected static final String FIELD_NAME_SID = "sid";
-	private static final String FIELD_NAME_KEY = "key";
 	private static final String FIELD_NAME_NAME = "name";
 	private static final String FIELD_NAME_ATTRIBUTES = "attrs";
-	private static final String FIELD_NAME_VALUE = "value";
 
 	/**
 	 * Static Method for convenience.
@@ -88,16 +74,13 @@ abstract public class TraceEventSupport implements TraceEvent {
 			StringWriter result = new StringWriter(1024);
 			JsonGenerator jsonGen = new JsonFactory().createGenerator(result);
 			jsonGen.writeStartObject();
-			jsonGen.writeStringField(FIELD_NAME_SID, session.getId());
 			jsonGen.writeStringField(FIELD_NAME_NAME, getName());
-			jsonGen.writeStringField(FIELD_NAME_VALUE, getValue());
 			
 			if (!attributes.isEmpty()) {
 				jsonGen.writeArrayFieldStart(FIELD_NAME_ATTRIBUTES);
 				for (Map.Entry<String,String> e: attributes.entrySet()) {
 					jsonGen.writeStartObject();
-					jsonGen.writeStringField(FIELD_NAME_KEY, e.getKey());
-					jsonGen.writeStringField(FIELD_NAME_VALUE, e.getValue());
+					jsonGen.writeStringField(e.getKey(), e.getValue());
 					jsonGen.writeEndObject();
 				}
 				jsonGen.writeEndArray();
@@ -118,7 +101,7 @@ abstract public class TraceEventSupport implements TraceEvent {
 	 * concrete implemantion object and we'll breath life into it. The SID is already set.
 	 * @param json
 	 * @return
-	 */
+	 * Don't think we're deserializing events on the client any more. (Local object)
 	public static <T extends TraceEventSupport> T fromJson(T result, Map<String,?> mappedJson) {
 		
 		result.name = (String) mappedJson.get(FIELD_NAME_NAME);
@@ -133,7 +116,7 @@ abstract public class TraceEventSupport implements TraceEvent {
 		}
 		return result;
 	}
-	
+	*/ 
 	/**
 	 * 
 	 */

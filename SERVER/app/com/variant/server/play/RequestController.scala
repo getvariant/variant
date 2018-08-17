@@ -89,7 +89,7 @@ class RequestController @Inject() (
 
          // State request may be blank?
          if (!stateReq.isBlank) {
-            val sve = new StateVisitedEvent(ssn.coreSession, stateReq.getState, attrs)            
+            val sve = new StateVisitedEvent(stateReq.getState, attrs)            
             // Trigger state visited event
    	     	ssn.triggerEvent(new ServerTraceEvent(sve));
          }

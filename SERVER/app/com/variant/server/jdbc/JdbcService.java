@@ -1,9 +1,8 @@
 package com.variant.server.jdbc;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -31,16 +30,13 @@ public class JdbcService {
 	 * @return
 	 * @throws IOException
 	 */
-	private static List<String> statementsFromResourceFile(String name) throws IOException {
+	private static List<String> statementsFromFile(String path) throws IOException {
 		
-		InputStream schemaIS = JdbcService.class.getResourceAsStream(name);
-		BufferedReader reader = new BufferedReader(new InputStreamReader(schemaIS));
-		
-		// read line by line and extract individual statements, as they are separated by ';'
+		List<String> input = Files.readAllLines(Paths.get(path));
 		ArrayList<String> result = new ArrayList<String>();
 		StringBuilder currentStatement = new StringBuilder();
-		String line = reader.readLine();
-		while (line != null) {
+		for (String line: input) {
+			//System.out.println("*** " + line);
 			// skip comments.
 			String[] tokens = line.split("\\-\\-");
 			tokens = tokens[0].split(";", -1);  // include trailing empty string if ';' is last char.
@@ -51,7 +47,6 @@ public class JdbcService {
 				currentStatement.setLength(0);
 				currentStatement.append(' ').append(tokens[i]);
 			}
-			line = reader.readLine();
 		} 
 		if (currentStatement.length() > 0) {
 			String stmt = currentStatement.toString().trim();
@@ -145,7 +140,7 @@ public class JdbcService {
 	 */
 	public void dropSchema() throws Exception {
 				
-		List<String> statements = statementsFromResourceFile("/variant/drop-schema.sql");
+		List<String> statements = statementsFromFile("distr/db/h2/drop-schema.sql");
 		Statement jdbcStmt = getConnection().createStatement();
 
 		for (String stmt: statements) {
@@ -170,7 +165,7 @@ public class JdbcService {
 	 */
 	public void createSchema() throws Exception {
 		
-		List<String> statements = statementsFromResourceFile("/variant/create-schema.sql");
+		List<String> statements = statementsFromFile("distr/db/h2/create-schema.sql");
 		Statement jdbcStmt = getConnection().createStatement();
 		for (String stmt: statements) {
 			try {

@@ -15,6 +15,7 @@ import com.variant.server.test.util.EventExperienceFromDatabase
 import com.variant.core.impl.StateVisitedEvent
 import com.variant.core.session.CoreStateRequest
 import com.variant.server.schema.ServerSchemaParser
+import com.variant.core.TraceEvent
 
 
 /**
@@ -112,9 +113,9 @@ class RequestTest extends EmbeddedServerSpec {
          reader.read(e => e.sessionId == sid).size mustBe 1
          for (e <- reader.read(e => e.sessionId == sid)) {
             e.sessionId mustBe sid
-            e.name mustBe StateVisitedEvent.EVENT_NAME
-            e.value mustBe "state2"
-            e.attributes mustBe empty
+            e.name mustBe TraceEvent.SVE_NAME
+            e.attributes.size mustBe 1
+            e.attributes("$STATE") mustBe "state2"
             e.eventExperiences.toSet[EventExperienceFromDatabase].map {x => 
                schema.getTest(x.testName).getExperience(x.experienceName)
                } mustBe stateReq.getLiveExperiences.toSet
@@ -190,9 +191,9 @@ class RequestTest extends EmbeddedServerSpec {
          reader.read(e => e.sessionId == sid).size mustBe 1
          for (e <- reader.read(e => e.sessionId == sid)) {
             e.sessionId mustBe sid
-            e.name mustBe StateVisitedEvent.EVENT_NAME
-            e.value mustBe "state3"
-            e.attributes mustBe Map("key1"->"val1", "key2"->"val2")
+            e.name mustBe TraceEvent.SVE_NAME
+            e.attributes.size mustBe 3
+            e.attributes mustBe Map("$STATE"->"state3", "key1"->"val1", "key2"->"val2")
             e.eventExperiences.toSet[EventExperienceFromDatabase].map {x => 
                schema.getTest(x.testName).getExperience(x.experienceName)
                } mustBe stateReq.getLiveExperiences.toSet
@@ -361,7 +362,7 @@ class RequestTest extends EmbeddedServerSpec {
             }
          
          // Send custom event.
-         val eventBody = TraceEventTest.body.expand("sid" -> sid, "name" -> "eventName", "value" -> "eventValue")
+         val eventBody = TraceEventTest.body.expand("sid" -> sid, "name" -> "eventName")
          //status(resp)(akka.util.Timeout(5 minutes)) mustBe OK
          assertResp(route(app, httpReq(POST, context + "/event").withTextBody(eventBody)))
             .isOk

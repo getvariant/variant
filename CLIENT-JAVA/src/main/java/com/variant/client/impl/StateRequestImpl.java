@@ -9,6 +9,7 @@ import com.variant.client.StateRequest;
 import com.variant.core.TraceEvent;
 import com.variant.core.impl.CoreException;
 import com.variant.core.impl.ServerError;
+import com.variant.core.impl.StateVisitedEvent;
 import com.variant.core.schema.State;
 import com.variant.core.schema.StateVariant;
 import com.variant.core.schema.Test;
@@ -23,6 +24,7 @@ public class StateRequestImpl implements StateRequest {
 	private final SessionImpl session;
 	private final ConnectionImpl conn;
 	private CoreStateRequest coreRequest;
+	private StateVisitedEvent sve;
 	
 	/**
 	 * Ok to use this object?
@@ -36,6 +38,7 @@ public class StateRequestImpl implements StateRequest {
 		this.session = session;
 		this.conn = (ConnectionImpl) session.getConnection();
 		this.coreRequest = session.getCoreSession().getStateRequest();
+		this.sve = new StateVisitedEvent(session.getCoreSession(), this.coreRequest.getState());
 	}
 
 	//---------------------------------------------------------------------------------------------//
@@ -89,6 +92,7 @@ public class StateRequestImpl implements StateRequest {
 		
 		// Persist targeting and session ID trackers.  Note that we expect the userData to apply to both.
 		session.saveTrackers(userData);
+		sve = null;
 		
 		return conn.client.server.requestCommit(session);
 	}
@@ -104,7 +108,7 @@ public class StateRequestImpl implements StateRequest {
 
 	@Override
 	public TraceEvent getStateVisitedEvent() {
-		return coreRequest.getStateVisitedEvent();
+		return sve;
 	}
 	
 	/**

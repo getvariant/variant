@@ -3,28 +3,26 @@ package com.variant.core.impl;
 import java.io.Serializable;
 import java.util.Map;
 
+import com.variant.core.TraceEvent;
 import com.variant.core.schema.State;
-import com.variant.core.session.CoreSession;
 import com.variant.core.util.immutable.ImmutableMap;
 
 
 @SuppressWarnings("serial")
 public class StateVisitedEvent extends TraceEventSupport implements Serializable {
-
-	public static final String EVENT_NAME = "$STATE_VISIT";
 		
 	/**
 	 */
-	public StateVisitedEvent(CoreSession session, State state) {
-		super(session, EVENT_NAME);
-		value = state.getName();
+	public StateVisitedEvent(State state) {
+		super(TraceEvent.SVE_NAME);
+		attributes.put("$STATE", state.getName());
 	}
 
 	/**
 	 */
-	public StateVisitedEvent(CoreSession session, State state, Map<String,String> attributes) {
-		this(session, state);
-		this.attributes = attributes;
+	public StateVisitedEvent(State state, Map<String,String> attributes) {
+		this(state);
+		this.attributes.putAll(attributes);
 	}
 
 	/**

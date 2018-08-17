@@ -50,10 +50,9 @@ public class EventFlusherAppLogger implements EventFlusher {
 		for (FlushableTraceEvent event: events) {
 			StringBuilder msg = new StringBuilder();
 			msg.append("{")
-         .append("event_name:'").append(event.getName()).append("', ")
-			.append("created_on:'").append(event.getCreateDate().getTime()).append("', ")
-			.append("event_value:'").append(event.getValue()).append("', ")
-         .append("session_id:'").append(event.getSession().getId()).append("'");
+				.append("event_name:'").append(event.getName()).append("', ")
+				.append("created_on:'").append(event.getCreateDate().getTime()).append("', ")
+				.append("session_id:'").append(event.getSession().getId()).append("'");
 
 			if (!event.getLiveExperiences().isEmpty()) {
 			   msg.append(", event_experiences:[");
@@ -71,7 +70,7 @@ public class EventFlusherAppLogger implements EventFlusher {
 			}			
 			
 	      if (!event.getAttributes().isEmpty()) {
-            msg.append(", event_params:[");
+            msg.append(", event_attributes:[");
             boolean first = true;
 	         for (Map.Entry<String, String> param: event.getAttributes().entrySet()) {
 	            if (first) first = false;

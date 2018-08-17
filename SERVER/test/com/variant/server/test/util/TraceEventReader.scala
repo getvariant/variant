@@ -41,8 +41,8 @@ class TraceEventReader (eventWriter: EventWriter) {
 	def read(p: TraceEventFromDatabase => Boolean = (_ => true)) = {
 
 		val SELECT_EVENTS_SQL = 
-				"SELECT e.id, e.session_id, e.created_on, e.event_name, e.event_value, p.key, p.value " +
-				"FROM events e LEFT OUTER JOIN event_params p ON e.id = p.event_id";
+				"SELECT e.id, e.session_id, e.created_on, e.event_name, p.key, p.value " +
+				"FROM events e LEFT OUTER JOIN event_attributes p ON e.id = p.event_id";
 
 		val SELECT_EVENT_EXPERIENCES_SQL =
 				"SELECT id, event_id, test_name, experience_name, is_control " +
@@ -69,12 +69,11 @@ class TraceEventReader (eventWriter: EventWriter) {
 							   id, 
 							   eventsRresulSet.getString(2).trim(),  // Fixed width in DB.
 							   eventsRresulSet.getTimestamp(3),
-							   eventsRresulSet.getString(4),
-							   eventsRresulSet.getString(5))							
+							   eventsRresulSet.getString(4))
 							eventMap.put(id, event);
 						}
-						val key = eventsRresulSet.getString(6);
-						if (key != null) event.attributes.put(key, eventsRresulSet.getString(7));
+						val key = eventsRresulSet.getString(5);
+						if (key != null) event.attributes.put(key, eventsRresulSet.getString(6));
 					}
 					
 					// Read event_experiences

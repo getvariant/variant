@@ -49,11 +49,11 @@ abstract public class EventFlusherJdbc implements EventFlusher {
 				
 		final String INSERT_EVENTS_SQL = 
 				"INSERT INTO events " +
-			    "(id, session_id, created_on, event_name, event_value) " +
+			    "(id, session_id, created_on, event_name) " +
 				(getJdbcVendor() == Vendor.POSTGRES ?
-						"VALUES (NEXTVAL('events_id_seq'), ?, ?, ?, ?)" :
+						"VALUES (NEXTVAL('events_id_seq'), ?, ?, ?)" :
 				getJdbcVendor() == Vendor.H2 ?
-						"VALUES (events_id_seq.NEXTVAL, ?, ?, ?, ?)" : "");
+						"VALUES (events_id_seq.NEXTVAL, ?, ?, ?)" : "DUNNO");
 
 		final String INSERT_EVENT_EXPERIENCES_SQL = 
 				"INSERT INTO event_experiences " +
@@ -64,7 +64,7 @@ abstract public class EventFlusherJdbc implements EventFlusher {
 						"VALUES (event_experiences_id_seq.NEXTVAL, ?, ?, ?, ?)" : "");
 
 		final String INSERT_EVENT_PARAMETERS_SQL = 
-				"INSERT INTO event_params " +
+				"INSERT INTO event_attributes " +
 			    "(event_id, key, value) " +
 			    "VALUES (?, ?, ?)";
 
@@ -85,7 +85,6 @@ abstract public class EventFlusherJdbc implements EventFlusher {
 						stmt.setString(1, event.getSession().getId());
 						stmt.setTimestamp(2, new Timestamp(event.getCreateDate().getTime()));
 						stmt.setString(3, event.getName());
-						stmt.setString(4, event.getValue());
 
 						stmt.addBatch();
 					}

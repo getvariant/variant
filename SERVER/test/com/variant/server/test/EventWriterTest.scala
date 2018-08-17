@@ -59,8 +59,8 @@ class EventWriterTest extends EmbeddedServerSpec {
          
          val ssn = server.ssnStore.get(sid).get
          
-         val (name, value) = (Random.nextString(5), Random.nextString(5))
-         val se = new ServerTraceEvent(name, value);
+         val name = Random.nextString(5)
+         val se = new ServerTraceEvent(name);
          ssn.asInstanceOf[SessionImpl].triggerEvent(se);
          
          // Read events back from the db, but must wait for the asych flusher.
@@ -71,7 +71,6 @@ class EventWriterTest extends EmbeddedServerSpec {
          val event = eventsFromDatabase.head
          event.createdOn.getTime mustBe (System.currentTimeMillis() - millisWaited) +- 100
          event.name mustBe name
-         event.value mustBe value
          event.sessionId mustBe sid
          event.eventExperiences.size mustBe 3
          event.eventExperiences.foreach(ee => {
@@ -110,8 +109,8 @@ class EventWriterTest extends EmbeddedServerSpec {
          val startOfWrite = System.currentTimeMillis()
          
          for (i <- 1 to eventWriter.fullSize) { 
-            val (name, value) = (Random.nextString(5), Random.nextString(5))
-            val se = new ServerTraceEvent(name, value);
+            val name = Random.nextString(5)
+            val se = new ServerTraceEvent(name);
             ssn.asInstanceOf[SessionImpl].triggerEvent(se);
          }
          
@@ -143,7 +142,7 @@ class EventWriterTest extends EmbeddedServerSpec {
 
          for (i <- 1 to eventWriter.fullSize + 1) { 
             val (name, value, timestamp) = (Random.nextString(5), Random.nextString(5), Random.nextLong())
-            val se = new ServerTraceEvent(name, value);
+            val se = new ServerTraceEvent(name);
             ssn.asInstanceOf[SessionImpl].triggerEvent(se);
          }
          

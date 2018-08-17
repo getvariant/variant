@@ -53,10 +53,6 @@ class EventController @Inject() (
          throw new ServerException.Remote(MissingProperty, "name")         
       }
       
-      val value = (eventJson \ "value").asOpt[String].getOrElse {
-         throw new ServerException.Remote(MissingProperty, "value")         
-      }
-
       val attrs = (eventJson \ "attrList").asOpt[Seq[Map[String,String]]].getOrElse {
          Seq[Map[String,String]]()
       }
@@ -70,7 +66,7 @@ class EventController @Inject() (
       if (ssn.getStateRequest == null)
          throw new ServerException.Remote(UNKNOWN_STATE)   
 
-      val event = new ServerTraceEvent(name, value, attrMap);  
+      val event = new ServerTraceEvent(name, attrMap);  
             
       ssn.asInstanceOf[SessionImpl].triggerEvent(event)            
             

@@ -13,22 +13,20 @@ import com.variant.core.util.immutable.ImmutableMap;
 public class ServerTraceEvent  implements TraceEvent {
 
 	private String name;
-	private String value;
 	private Map<String,String> attributes = new HashMap<String,String>();
 	
 	/**
 	 * Construct a trace event from scratch
 	 */
-	public ServerTraceEvent(String name, String value) {
+	public ServerTraceEvent(String name) {
 		this.name = name;
-		this.value = value;
 	}
 
 	/**
 	 * Construct a trace event from scratch
 	 */
-	public ServerTraceEvent(String name, String value, Map<String,String> attributes) {
-		this(name, value);
+	public ServerTraceEvent(String name, Map<String,String> attributes) {
+		this(name);
 		this.attributes.putAll(attributes);		
 	}
 	
@@ -36,7 +34,7 @@ public class ServerTraceEvent  implements TraceEvent {
 	 * Construct a trace event from an SVE.
 	 */
 	public ServerTraceEvent(StateVisitedEvent sve) {
-		this(sve.getName(), sve.getValue(), sve.getAttributes());
+		this(sve.getName(), sve.getAttributes());
 	}
 
 	//---------------------------------------------------------------------------------------------//
@@ -46,11 +44,6 @@ public class ServerTraceEvent  implements TraceEvent {
 	@Override
 	public String getName() {
 		return name;
-	}
-
-	@Override
-	public String getValue() {
-		return value;
 	}
 
 	@Override
@@ -64,7 +57,7 @@ public class ServerTraceEvent  implements TraceEvent {
 	}
 
 	@Override
-	public String setAttribute(String key, String val) {
+	public String setAttribute(String key, String value) {
 		return attributes.put(key, value);
 	}
 

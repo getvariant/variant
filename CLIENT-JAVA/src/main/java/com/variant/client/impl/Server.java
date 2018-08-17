@@ -7,12 +7,10 @@ import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
-import com.variant.client.VariantException;
 import com.variant.client.ConfigKeys;
-import com.variant.client.Connection;
-import com.variant.client.Session;
 import com.variant.client.SessionExpiredException;
 import com.variant.client.UnknownSchemaException;
+import com.variant.client.VariantException;
 import com.variant.client.net.Payload;
 import com.variant.client.net.http.HttpAdapter;
 import com.variant.client.net.http.HttpResponse;
@@ -346,6 +344,16 @@ public class Server {
 
 		new CommonExceptionHandlerVoid() {
 			@Override void voidBlock() throws Exception {
+				StringWriter body = new StringWriter();
+				JsonGenerator jsonGen = new JsonFactory().createGenerator(body);
+				jsonGen.writeStartObject();
+				jsonGen.writeStringField("sid", ssn.getId());
+				jsonGen.writeFieldName("event");
+				jsonGen.writeRawValue(TraceEventSupport.toJson(event));
+				jsonGen.writeEndObject();
+				jsonGen.flush();
+				HttpResponse resp = adapter.put(serverUrl + "request", body.toString());
+
 				adapter.post(serverUrl + "event", TraceEventSupport.toJson(event));
 			}
 		}.run(ssn);

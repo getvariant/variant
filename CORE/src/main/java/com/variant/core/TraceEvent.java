@@ -1,6 +1,5 @@
 package com.variant.core;
 
-import java.util.Date;
 
 /**
  * A Variant trace event that can be triggered. Variant trace events are the elementary data points, 
@@ -22,18 +21,16 @@ import java.util.Date;
 public interface TraceEvent {
 
 	/**
+	 * The name of the implicitly triggered state visited event.
+	 */
+	public static String SVE_NAME = "$STATE_VISIT";
+
+	/**
 	 * The name of the event.
 	 *
 	 * @since 0.5
 	 */
 	public String getName();
-
-	/**
-	 * The value of the event.
-	 * 
-	 * @since 0.5
-	 */
-	public String getValue();	
 	
 	/**
 	 * Set a trace event attribute.
@@ -71,5 +68,5 @@ public interface TraceEvent {
 	 * @since 0.9
 	 */
 	public String clearAttribute(String name);
-
+	
 }

@@ -47,11 +47,6 @@ public class FlushableTraceEventImpl implements FlushableTraceEvent, Serializabl
 	}
 
 	@Override
-	public String getValue() {
-		return userEvent.getValue();
-	}
-
-	@Override
 	public Map<String,String> getAttributes() {
 		return userEvent.getAttributes();
 	}
@@ -102,7 +97,6 @@ public class FlushableTraceEventImpl implements FlushableTraceEvent, Serializabl
 		.append("sessionid:'").append(session.getId()).append("', ")
 		.append("createdOn:'").append(getCreateDate()).append("', ")
 		.append("eventName:").append(getName()).append("', ")
-		.append("eventValue:").append(getValue()).append("', ")
 		.append("params:{");
 		boolean first = true;
 		for (Map.Entry<String, String> e: getAttributes().entrySet()) {
