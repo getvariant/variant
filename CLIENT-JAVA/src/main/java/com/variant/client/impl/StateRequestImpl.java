@@ -38,7 +38,7 @@ public class StateRequestImpl implements StateRequest {
 		this.session = session;
 		this.conn = (ConnectionImpl) session.getConnection();
 		this.coreRequest = session.getCoreSession().getStateRequest();
-		this.sve = new StateVisitedEvent(session.getCoreSession(), this.coreRequest.getState());
+		this.sve = new StateVisitedEvent(this.coreRequest.getState());
 	}
 
 	//---------------------------------------------------------------------------------------------//

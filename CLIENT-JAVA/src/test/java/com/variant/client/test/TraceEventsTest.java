@@ -40,10 +40,10 @@ public class TraceEventsTest extends ClientBaseTestWithServer {
 	   	assertEquals(req1, ssn1.getStateRequest());
 		assertEquals(5, req1.getLiveExperiences().size());
 		
-		TraceEvent event1 = req1.getStateVisitedEvent();
-		assertEquals(StateVisitedEvent.EVENT_NAME, event1.getName());
-		assertEquals(StateVisitedEvent.EVENT_NAME, event1.getValue());
-		assertEquals(0, ((StateVisitedEvent)event1).getAttributes().size());
+		StateVisitedEvent event1 = (StateVisitedEvent) req1.getStateVisitedEvent();
+		assertEquals(TraceEvent.SVE_NAME, event1.getName());
+		assertEquals(1, event1.getAttributes().size());
+		assertEquals("state1", event1.getAttribute("$STATE"));
 		
 		event1.setAttribute("foo", "bar");
 		

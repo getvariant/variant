@@ -88,9 +88,9 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 		assertEquals(state1, req.getState());
 		StateVisitedEvent event = (StateVisitedEvent) req.getStateVisitedEvent();
 		assertNotNull(event);
-		assertEquals(StateVisitedEvent.EVENT_NAME, event.getName());
-		assertEquals(req.getState().getName(), event.getValue());
-		assertTrue(event.getAttributes().isEmpty());
+		assertEquals(TraceEvent.SVE_NAME, event.getName());
+		assertEquals(1, event.getAttributes().size());
+		assertEquals(state1.getName(), event.getAttribute("$STATE"));
 				
 		assertTrue(req.commit());
 		assertTrue(req.isCommitted());

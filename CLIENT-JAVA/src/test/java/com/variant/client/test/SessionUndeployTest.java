@@ -157,7 +157,7 @@ public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 						case 0: ssn.getTraversedStates(); break;
 						case 1: ssn.getTraversedTests(); break;
 						case 2: ssn.getDisqualifiedTests(); break;
-						case 3: ssn.triggerTraceEvent(new StateVisitedEvent(ssn.getCoreSession(), ssn.getSchema().getState("state1"))); break;
+						case 3: ssn.triggerTraceEvent(new StateVisitedEvent(ssn.getSchema().getState("state1"))); break;
 						case 4: ssn.getAttribute("foo"); break;
 						case 5: ssn.setAttribute("foo", "bar"); break;
 						case 6: ssn.clearAttribute("foo"); break;
@@ -196,7 +196,7 @@ public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 						case 0: ssn.getTraversedStates(); break;
 						case 1: ssn.getTraversedTests(); break;
 						case 2: ssn.getDisqualifiedTests(); break;
-						case 3: ssn.triggerTraceEvent(new StateVisitedEvent(ssn.getCoreSession(), ssn.getSchema().getState("state1"))); break;
+						case 3: ssn.triggerTraceEvent(new StateVisitedEvent(ssn.getSchema().getState("state1"))); break;
 						case 4: ssn.getAttribute("foo"); break;
 						case 5: ssn.setAttribute("foo", "bar"); break;
 						case 6: ssn.clearAttribute("foo"); break;
@@ -239,7 +239,7 @@ public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 						case 1: ssn.getTraversedStates(); break;
 						case 2: ssn.getTraversedTests(); break;
 						case 3: ssn.getDisqualifiedTests(); break;
-						case 4: ssn.triggerTraceEvent(new StateVisitedEvent(ssn.getCoreSession(), ssn.getSchema().getState("newOwner"))); break;
+						case 4: ssn.triggerTraceEvent(new StateVisitedEvent(ssn.getSchema().getState("newOwner"))); break;
 						case 5: ssn.getAttribute("foo"); break;
 						case 6: ssn.setAttribute("foo", "bar"); break;
 						case 7: ssn.clearAttribute("foo"); break;
