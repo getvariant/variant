@@ -134,7 +134,6 @@ public class SessionTest extends ClientBaseTestWithServer {
 		// read back in ssn1 and ssn2
 		assertEquals(attr, ssn1.getAttribute("foo"));
 		ssn2.getAttribute("foo");
-		System.out.println(((SessionImpl)ssn2).getCoreSession().toJson());		
 		assertEquals(attr, ssn2.getAttribute("foo"));
 		
 		// Clear in ssn2

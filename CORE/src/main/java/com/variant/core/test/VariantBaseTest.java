@@ -14,6 +14,7 @@ import java.util.Map;
 import java.util.Random;
 import java.util.regex.Pattern;
 
+import com.variant.core.TraceEvent;
 import com.variant.core.impl.CommonError;
 import com.variant.core.impl.CoreException;
 import com.variant.core.schema.ParserMessage;
@@ -140,7 +141,7 @@ abstract public class VariantBaseTest {
 		org.junit.Assert.assertEquals(expected.getSeverity(), actual.getSeverity());
 		org.junit.Assert.assertEquals(expected.getLocation(), actual.getLocation());
 	}
-	
+		
 	/**
 	 * Assert that two collections are set-equivalent, i.e.
 	 * for each element in one, there's an equal element in the other.

@@ -23,14 +23,14 @@ public interface TraceEvent {
 	/**
 	 * The name of the implicitly triggered state visited event.
 	 */
-	public static String SVE_NAME = "$STATE_VISIT";
+	static String SVE_NAME = "$STATE_VISIT";
 
 	/**
 	 * The name of the event.
 	 *
 	 * @since 0.5
 	 */
-	public String getName();
+	String getName();
 	
 	/**
 	 * Set a trace event attribute.
@@ -44,7 +44,7 @@ public interface TraceEvent {
 	 * 
 	 * @since 0.9
 	 */
-	public String setAttribute(String name, String value);
+	String setAttribute(String name, String value);
 	
 	/**
 	 * Retrieve the value of an event attribute.
@@ -54,7 +54,7 @@ public interface TraceEvent {
 	 * 
 	 * @since 0.9
 	 */
-	public String getAttribute(String name);
+	String getAttribute(String name);
 
 	/**
 	 * Remove a session attribute.
@@ -67,6 +67,6 @@ public interface TraceEvent {
 	 * 
 	 * @since 0.9
 	 */
-	public String clearAttribute(String name);
+	String clearAttribute(String name);
 	
 }

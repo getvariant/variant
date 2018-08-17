@@ -1,8 +1,6 @@
 package com.variant.client.test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import com.variant.client.Connection;
 import com.variant.client.Session;
@@ -30,7 +28,9 @@ public class TraceEventsTest extends ClientBaseTestWithServer {
 		// Via SID tracker, create.
 		String sid = newSid();
 		Session ssn1 = conn.getOrCreateSession(sid);
-
+		
+		// Crete a session attribute
+		ssn1.setAttribute("ssn1 attr key", "ssn1 attr value");
 	   	Schema schema = ssn1.getSchema();
 	   	State state1 = schema.getState("state1");
 	   	//State state2 = schema.getState("state2");
@@ -47,17 +47,30 @@ public class TraceEventsTest extends ClientBaseTestWithServer {
 		
 		event1.setAttribute("foo", "bar");
 		
-
-		// Reget the session. Should have the event params.		
-		assertTrue(req1.commit());
-
+		// Reget the session.  
 		Session ssn2 = conn.getSessionById(sid);
+		StateRequest req2 = ssn2.getStateRequest();		
+		assertFalse(req2.isCommitted());
+		assertEquals("ssn1 attr value", ssn2.getAttribute("ssn1 attr key"));
 
-		StateRequest req2 = ssn2.getStateRequest();
-		assertTrue(req2.isCommitted());
-		TraceEvent event2 = req2.getStateVisitedEvent();
-		//assertEquals(event1, event2);  // Fails. Bug #158
+		StateVisitedEvent event2 = (StateVisitedEvent) req2.getStateVisitedEvent();
+		assertEquals(event1.getName(), event2.getName());
+		// The SVE is recreated in a local copy, but their attributes are lost, except the $STATE attribute.
+		assertEquals(1, event2.getAttributes().size());
+		assertEquals("state1", event1.getAttribute("$STATE"));
+		
+		event2.setAttribute("sve2 atr key", "sve2 attr value");
+		assertTrue(req2.commit());
+		assertTrue(req1.isCommitted());
+		assertFalse(req1.commit());
 
+		/*
+		// 
+		StateVisitedEvent event2 = (StateVisitedEvent) req2.getStateVisitedEvent();
+		assertEquals(event1.getName(), event2.getName());
+		// The SVE is recreated in a local copy, but 
+		assertEqualAsSets(event1.getAttributes(), event2.getAttributes());
+*/
 	}
 
 }
