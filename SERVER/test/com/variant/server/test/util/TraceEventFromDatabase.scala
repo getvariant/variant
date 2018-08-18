@@ -38,7 +38,7 @@ class TraceEventFromDatabase (
    		  "sessionId" -> sessionId,
    		  "createdOn" -> createdOn.getTime,
    		  "name" -> name,
-   		  "attrList" -> attributes,
+   		  "attrs" -> attributes,
    		  "expList" -> Json.arr(eventExperiences)
    		))
 	}

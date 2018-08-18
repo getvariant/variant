@@ -288,7 +288,7 @@ public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 
 		// restart the server with the longger session timeout
 		int ssnTimeout = dirWatcherLatencyMillis/1000 + 5;
-		stopServer();
+
 		restartServer(CollectionsUtils.pairsToMap(new Tuples.Pair<String,String>("variant.session.timeout", String.valueOf(ssnTimeout))));
 		
 		// Connection to a schema
@@ -429,7 +429,7 @@ public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 				assertNotEquals(ssn.getStateRequest(), ssnByIdFromOtherConnection.getStateRequest());
 				assertEquals(value, ssnByIdFromOtherConnection.getAttribute(key));
 
-				assertTrue(req.commit());
+				req.commit();
 				
 				// Committing in the via other session is OK.
 				ssnByIdFromOtherConnection.getStateRequest().commit();
@@ -473,7 +473,7 @@ public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 				assertEquals(value, ssn.getAttribute(key));
 				assertEquals(value, sessions1[_i].clearAttribute(key));
 				assertNotNull(ssn.targetForState(ssn.getSchema().getState("state" + ((_i % 5) + 1))));
-				assertTrue(req.commit());
+				req.commit();
 		
 			});
 		}
@@ -502,7 +502,7 @@ public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 				State state = ssn.getSchema().getState("newOwner");
 				// The user-agent attribute should still be set
 				assertEquals("does not matter", ssn.clearAttribute("user-agent"));
-				assertTrue(req.commit());
+				req.commit();
 
 			});
 		}

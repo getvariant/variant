@@ -141,11 +141,7 @@ class SessionAttributeTest extends EmbeddedServerSpec {
     */
    def extractAttr(json: JsValue, name: String): Option[String] = {
       val ssnJson = Json.parse((json \ "session").as[String])
-      val attrList = (ssnJson \ "attrList").as[List[Map[String, String]]]
-      var result: Option[String] = None
-      attrList.foreach { map => 
-         if (map.get("name").get == name) result = map.get("val") 
-         }
-      result
+      val attrs = (ssnJson \ "attrs").as[Map[String, String]]
+      attrs.get(name) 
    }
 }

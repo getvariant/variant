@@ -146,14 +146,10 @@ public class CoreSession implements Serializable {
 		
 		Object attributesObj = parsedJson.get(FIELD_NAME_ATTRIBUTES);
 		if (attributesObj != null) {
-
 			try {
-				List<?> attributesRaw = (List<?>) attributesObj; 
-				for (Object obj: attributesRaw) {
-					Map<?,?> objMap = (Map<?,?>) obj;
-					String name = (String) objMap.get(FIELD_NAME_NAME);
-					String value =  (String) objMap.get(FIELD_NAME_VALUE);
-					result.attributes.put(name, value);
+				Map<String,String> attributesMap = (Map<String,String>) attributesObj; 
+				for (Map.Entry<String, String> attribute: attributesMap.entrySet()) {
+					result.attributes.put(attribute.getKey(), attribute.getValue());
 				}
 			}
 			catch (Exception e) {
@@ -306,10 +302,9 @@ public class CoreSession implements Serializable {
 	//                                       Serialization                                          //
 	//---------------------------------------------------------------------------------------------//
 
-	private static final String FIELD_NAME_ATTRIBUTES = "attrList";
+	private static final String FIELD_NAME_ATTRIBUTES = "attrs";
 	private static final String FIELD_NAME_COUNT = "count";
 	private static final String FIELD_NAME_DISQUAL_TESTS = "disqualTests";
-	private static final String FIELD_NAME_NAME = "name";
 	private static final String FIELD_NAME_CURRENT_REQUEST = "request";
 	private static final String FIELD_NAME_ID = "sid";
 	private static final String FIELD_NAME_TARGETING_STABIL = "stabil";
@@ -317,7 +312,6 @@ public class CoreSession implements Serializable {
 	private static final String FIELD_NAME_TRAVERSED_STATES = "states";
 	private static final String FIELD_NAME_TRAVERSED_TESTS = "tests";
 	private static final String FIELD_NAME_TIMESTAMP = "ts";
-	private static final String FIELD_NAME_VALUE = "val";
 	
 	/**
 	 * Serialize as JSON.
@@ -349,14 +343,11 @@ public class CoreSession implements Serializable {
 			}
 			
 			if (attributes.size() > 0) {
-				jsonGen.writeArrayFieldStart(FIELD_NAME_ATTRIBUTES);
+				jsonGen.writeObjectFieldStart(FIELD_NAME_ATTRIBUTES);
 				for (Map.Entry<String, String> e: attributes.entrySet()) {
-					jsonGen.writeStartObject();
-					jsonGen.writeStringField(FIELD_NAME_NAME, e.getKey());
-					jsonGen.writeStringField(FIELD_NAME_VALUE, e.getValue());
-					jsonGen.writeEndObject();
+					jsonGen.writeStringField(e.getKey(), e.getValue());
 				}
-				jsonGen.writeEndArray();
+				jsonGen.writeEndObject();
 			}
 
 			if (traversedTests.size() > 0) {

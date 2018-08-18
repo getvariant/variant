@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.function.Predicate;
@@ -44,7 +45,7 @@ public class TraceEventReader {
 	 * @throws ClassNotFoundException
 	 * @throws SQLException
 	 */
-	public Collection<TraceEventFromDatabase> read(Predicate<? super TraceEventFromDatabase> p) throws SQLException {
+	public List<TraceEventFromDatabase> read(Predicate<? super TraceEventFromDatabase> p) throws SQLException {
 
 		Collection<TraceEventFromDatabase> result = JdbcAdapter.executeQuery (
 				

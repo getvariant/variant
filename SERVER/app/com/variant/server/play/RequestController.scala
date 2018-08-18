@@ -76,7 +76,7 @@ class RequestController @Inject() (
          throw new ServerException.Remote(MissingProperty, "sid")         
       }
 
-      val attrs = (bodyJson \ "attrList").asOpt[Map[String,String]].getOrElse {
+      val attrs = (bodyJson \ "attrs").asOpt[Map[String,String]].getOrElse {
          Map[String,String]()
       }
       
@@ -101,7 +101,7 @@ class RequestController @Inject() (
       val response = JsObject(Seq(
          "session" -> JsString(ssn.coreSession.toJson)
       )).toString()
-   
+  
       Ok(response)
    }
 

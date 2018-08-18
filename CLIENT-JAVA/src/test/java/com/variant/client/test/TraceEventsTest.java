@@ -2,6 +2,8 @@ package com.variant.client.test;
 
 import static org.junit.Assert.*;
 
+import java.util.List;
+
 import com.variant.client.Connection;
 import com.variant.client.Session;
 import com.variant.client.StateRequest;
@@ -13,6 +15,8 @@ import com.variant.core.TraceEvent;
 import com.variant.core.impl.StateVisitedEvent;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.State;
+import com.variant.core.util.CollectionsUtils;
+import com.variant.core.util.Tuples.Pair;
 
 public class TraceEventsTest extends ClientBaseTestWithServer {
 
@@ -23,8 +27,10 @@ public class TraceEventsTest extends ClientBaseTestWithServer {
 	@org.junit.Test
 	public void implicitEvents() throws Exception {
 		
-		restartServer();
-		
+		// We need sessions to survive the wait for events.
+		long ssnTimeoutSec = EVENT_WRITER_MAX_DELAY / 1000 + 3;
+		restartServer(CollectionsUtils.pairsToMap(new Pair<String,String>("variant.session.timeout", String.valueOf(ssnTimeoutSec))));
+
 		Connection conn = client.connectTo("big_conjoint_schema");		
 
 		// Via SID tracker, create.
@@ -62,23 +68,23 @@ public class TraceEventsTest extends ClientBaseTestWithServer {
 		assertEquals("state1", event1.getAttribute("$STATE"));
 		
 		event2.setAttribute("sve2 atr key", "sve2 attr value");
-		assertTrue(req2.commit());
-		assertTrue(req1.isCommitted());
-		assertFalse(req1.commit());
-
-		Thread.sleep(5000);
-		TraceEventReader eventReader = new TraceEventReader();
-		for (TraceEventFromDatabase e: eventReader.read(e -> e.sessionId.equals(sid))) {
-			System.out.println("*** " + e.toString());
-		}
+		req2.commit();
 		
-		/*
-		// 
-		StateVisitedEvent event2 = (StateVisitedEvent) req2.getStateVisitedEvent();
-		assertEquals(event1.getName(), event2.getName());
-		// The SVE is recreated in a local copy, but 
-		assertEqualAsSets(event1.getAttributes(), event2.getAttributes());
-*/
+		Thread.sleep(EVENT_WRITER_MAX_DELAY);
+		List<TraceEventFromDatabase> events = new TraceEventReader().read(e -> e.sessionId.equals(sid));
+		assertEquals(1, events.size());
+		TraceEventFromDatabase event = events.get(0);
+		//System.out.println(event);
+		assertEquals(TraceEvent.SVE_NAME, event.name);
+		assertEqualAsSets(CollectionsUtils.pairsToMap(new Pair("$STATE", "state1"), new Pair("sve2 atr key", "sve2 attr value")), event.attributes);
+		
+		// Commit back in ssn1. No extra sve event should be written.
+		assertTrue(req2.isCommitted());
+		assertFalse(req1.isCommitted());
+		req1.commit();
+		Thread.sleep(EVENT_WRITER_MAX_DELAY);
+		assertEquals(1, new TraceEventReader().read(e -> e.sessionId.equals(sid)).size());
+
 	}
 
 }

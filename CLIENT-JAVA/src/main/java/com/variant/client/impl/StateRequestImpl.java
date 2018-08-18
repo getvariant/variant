@@ -83,26 +83,28 @@ public class StateRequestImpl implements StateRequest {
 	}
 
 	@Override
-	public boolean commit(Object... userData) {
+	public void commit(Object... userData) {
 		
 		checkState();
 		
-		// If locally commited, don't bother.
-		if (session.getCoreSession().getStateRequest().isCommitted()) return false;
+		// If locally committed, don't bother.
+		if ( ! session.getCoreSession().getStateRequest().isCommitted()) {
 		
-		// Persist targeting and session ID trackers.  Note that we expect the userData to apply to both.
-		session.saveTrackers(userData);
-		sve = null;
-		
-		return conn.client.server.requestCommit(session);
+			// Persist targeting and session ID trackers.  Note that we expect the userData to apply to both.
+			session.saveTrackers(userData);
+			
+			// Commit in shared state TODO: make this async
+			conn.client.server.requestCommit(this);
+			
+			sve = null;
+		}
 	}
 
 	/**
-	 * May be committed in a parallel session, so must refresh.
+	 * No point in checking with the shares state, as that would be a race condition anyway.
 	 */
 	@Override
 	public boolean isCommitted() {
-		session.refreshFromServer();
 		return session.getCoreSession().getStateRequest().isCommitted();
 	}
 

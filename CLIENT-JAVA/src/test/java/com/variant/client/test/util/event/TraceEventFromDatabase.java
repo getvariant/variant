@@ -26,20 +26,6 @@ public class TraceEventFromDatabase {
 		this.name = name;
 	}
 
-    	
-	/** ********************
-	 * Predicate base selection.
-	 * @param p
-	 * @return
-	 * Breaks compilation because we no longer have apache commons Predicate.
-	 * If this is actually needed, replace with Scala class make this method take a function param.
-	public Collection<EventExperienceFromDatabase> getEventExperiences(Predicate<EventExperienceFromDatabase> p) { 
-		HashSet<EventExperienceFromDatabase> result = new HashSet<EventExperienceFromDatabase>();
-		for (EventExperienceFromDatabase ee: eventExperiences) if (p.evaluate(ee)) result.add(ee);
-		return result; 	
-	}
-    ***********************/
-	
 	@Override
 	public String toString() {
 

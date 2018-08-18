@@ -30,7 +30,7 @@ object TraceEventTest {
          "sid":"${sid:SID}",
             "event": {
                "name":"${name:NAME}",
-               "attrList":[{"Name One":"Value One"},{"Name Two":"Value Two"}]
+               "attrs":[{"Name One":"Value One"},{"Name Two":"Value Two"}]
             }
       }
    """.format(System.currentTimeMillis()))
@@ -50,7 +50,7 @@ object TraceEventTest {
       {
          "sid":"SID",
          "event": {
-             "attrList":[{"k 1":"v 1"}]
+             "attrs":[{"k 1":"v 1"}]
           }
       }
    """
@@ -214,7 +214,7 @@ class TraceEventTest extends EmbeddedServerSpec {
          // Commit request body with attributes
          val reqBody2 = Json.obj(
             "sid" -> sid,
-            "attrList" -> Map("key1"->"val1", "key2"->"val2", "key3"->"val3")
+            "attrs" -> Map("key1"->"val1", "key2"->"val2", "key3"->"val3")
             ).toString
 
          assertResp(route(app, httpReq(PUT, context + "/request").withTextBody(reqBody2)))

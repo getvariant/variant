@@ -91,13 +91,14 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 		assertEquals(TraceEvent.SVE_NAME, event.getName());
 		assertEquals(1, event.getAttributes().size());
 		assertEquals(state1.getName(), event.getAttribute("$STATE"));
-				
-		assertTrue(req.commit());
+			
+		assertFalse(req.isCommitted());
+		req.commit();
 		assertTrue(req.isCommitted());
 		assertNull(req.getStateVisitedEvent());		
 		
 		// No-op.
-		assertFalse(req.commit());
+		req.commit();
 		
 		// Reget the session -- should not change anything.
 		Session ssn2 = conn.getSession(sid);
@@ -148,11 +149,12 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 		assertEquals("/path/to/state2/test4.C+test5.C", req.getResolvedParameters().get("path"));
 		assertNotNull(req.getResolvedStateVariant());
 		
-		assertTrue(req.commit());
+		assertFalse(req.isCommitted());
+		req.commit();
 		assertTrue(req.isCommitted());
 		assertNull(req.getStateVisitedEvent());		
 		// No-op.
-		assertFalse(req.commit());
+		req.commit();
 		
 	}
 
@@ -180,7 +182,8 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 	   	
 	   	final StateRequest req1 = ssn1.targetForState(state2);
 		
-		assertTrue(req1.commit());
+		assertFalse(req1.isCommitted());
+		req1.commit();
 		assertTrue(req1.isCommitted());
 
 		// Reget the session and try targeting again -- should not work.
@@ -190,10 +193,10 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 		assertEquals(ssn1.getId(), ssn2.getId());
 		final StateRequest req2 = ssn2.getStateRequest();
 		assertNotEquals(req1, req2);
-		assertFalse(req1.commit());
+		
 		assertTrue(req1.isCommitted());
-		assertFalse(req2.commit());
 		assertTrue(req2.isCommitted());
+		req2.commit();
 		
 		assertNotNull(ssn1.targetForState(state3));
 		
@@ -272,7 +275,8 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 		ssn.setAttribute("user-agent", "Any string");
 		StateRequest req = ssn.targetForState(schema.getState("newOwner"));
 		assertEquals(req, ssn.getStateRequest());
-		assertTrue(req.commit());
+		assertFalse(req.isCommitted());
+		req.commit();
 		assertTrue(req.isCommitted());
 	}
 	
@@ -308,11 +312,16 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 	   	assertEquals(req2.getResolvedStateVariant().toString(), req1.getResolvedStateVariant().toString());
 	   	assertEquals(req2.getStateVisitedEvent().toString(), req1.getStateVisitedEvent().toString());
 	   	
-	   	// Commit in conn2
-	   	assertTrue(req2.commit());
+	   	// Commit in req2
+	   	assertFalse(req2.isCommitted());
+	   	req2.commit();
+	   	assertTrue(req2.isCommitted());
 	   	
-	   	// Must be reflected in conn1
+	   	// req1 doesn't know about it
+	   	assertFalse(req1.isCommitted());
+	   	req1.commit();
 	   	assertTrue(req1.isCommitted());
+
 	}
 
 }

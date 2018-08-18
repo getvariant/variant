@@ -26,7 +26,7 @@ object SessionTest {
             "params": [{"name": "PARAM ONE", "value": "Param One Value"},{"name": "PARAM TWO", "value": "Param Two Value"}], 
             "exps": ["test1.A.true","test2.B.false","test3.C.false"]},
        "states": [{"state": "state1","count": 23}, {"state": "state2","count": 32}],
-       "attrList": [{"name": "NAME1","val": "${attrValue:VALUE1}"}, {"name": "NAME2","val": "VALUE2"}],
+       "attrs": {"NAME1":"${attrValue:VALUE1}", "NAME2": "VALUE2"},
        "tests": ["test1","test2"]
       }
    """
@@ -36,7 +36,7 @@ object SessionTest {
        "request": {"state": "newOwner","committed": false, 
                   "params": [{"name": "PARAM ONE", "value": "Param One Value"},{"name": "PARAM TWO", "value": "Param Two Value"}],
                   "exps": ["NewOwnerTest.tosCheckbox.false"]},
-        "attrList": [{"name": "NAME1","val": "VALUE1"}, {"name": "NAME2","val": "VALUE2"}]
+        "attrs": {"NAME1": "VALUE1", "NAME2": "VALUE2"}
       }
    """
 }

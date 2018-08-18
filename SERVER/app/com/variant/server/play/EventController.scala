@@ -53,7 +53,7 @@ class EventController @Inject() (
          throw new ServerException.Remote(MissingProperty, "name")         
       }
       
-      val attrs = (eventJson \ "attrList").asOpt[Seq[Map[String,String]]].getOrElse {
+      val attrs = (eventJson \ "attrs").asOpt[Seq[Map[String,String]]].getOrElse {
          Seq[Map[String,String]]()
       }
 

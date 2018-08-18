@@ -22,6 +22,10 @@ abstract public class ClientBaseTestWithServer extends ClientBaseTest {
 	// Schema files location in the local project
 	public final static String SCHEMATA_DIR_SRC = "src/test/resources/schemata-remote/";
 
+	// Event writer max delay hardcoded here. Must match what's in 
+	// standalone-server/conf/variant.conf
+	public final static long EVENT_WRITER_MAX_DELAY = 2000;
+	
 	// Filesystem watcher takes this long to react.
 	public final static int dirWatcherLatencyMillis = 12000;
 	

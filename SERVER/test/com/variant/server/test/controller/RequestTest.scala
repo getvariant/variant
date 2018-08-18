@@ -162,7 +162,7 @@ class RequestTest extends EmbeddedServerSpec {
          // Commit with SVE attributes.
          val reqBody2 = Json.obj(
             "sid" -> sid,
-            "attrList" -> Map("key1"->"val1", "key2"->"val2")
+            "attrs" -> Map("key1"->"val1", "key2"->"val2")
             ).toString
            
          var stateReq: CoreStateRequest = null
