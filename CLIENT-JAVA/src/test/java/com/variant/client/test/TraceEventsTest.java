@@ -64,6 +64,7 @@ public class TraceEventsTest extends ClientBaseTestWithServer {
 		assertTrue(req1.isCommitted());
 		assertFalse(req1.commit());
 
+		
 		/*
 		// 
 		StateVisitedEvent event2 = (StateVisitedEvent) req2.getStateVisitedEvent();
