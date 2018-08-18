@@ -54,9 +54,17 @@
 			<artifactId>junit</artifactId>
 			<version>4.12</version>
 		</dependency>
-	    	                
+	    	              
+	    <!-- Postgres driver in test -->
+        <dependency>
+            <groupId>postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <version>9.1-901-1.jdbc4</version>
+            <scope>test</scope>
+        </dependency>
+	      
 	</dependencies>
-	
+		
     <build>
         <plugins>
 

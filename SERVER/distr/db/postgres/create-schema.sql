@@ -40,5 +40,4 @@ CREATE VIEW events_v AS
   SELECT e.id event_id, e.session_id, e.created_on, e.event_name, ev.test_name, ev.experience_name, ev.is_control,
          (SELECT string_agg('''' || key || '''=''' || value || '''', ',') FROM event_attributes where event_id = e.id) event_attributes
   FROM events e left outer join event_experiences ev ON e.id = ev.event_id
-  ORDER BY event_id
-;
+  ORDER BY event_id;

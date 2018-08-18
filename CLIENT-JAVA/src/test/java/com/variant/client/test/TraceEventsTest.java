@@ -7,6 +7,8 @@ import com.variant.client.Session;
 import com.variant.client.StateRequest;
 import com.variant.client.VariantClient;
 import com.variant.client.test.util.ClientBaseTestWithServer;
+import com.variant.client.test.util.event.TraceEventFromDatabase;
+import com.variant.client.test.util.event.TraceEventReader;
 import com.variant.core.TraceEvent;
 import com.variant.core.impl.StateVisitedEvent;
 import com.variant.core.schema.Schema;
@@ -64,6 +66,11 @@ public class TraceEventsTest extends ClientBaseTestWithServer {
 		assertTrue(req1.isCommitted());
 		assertFalse(req1.commit());
 
+		Thread.sleep(5000);
+		TraceEventReader eventReader = new TraceEventReader();
+		for (TraceEventFromDatabase e: eventReader.read(e -> e.sessionId.equals(sid))) {
+			System.out.println("*** " + e.toString());
+		}
 		
 		/*
 		// 

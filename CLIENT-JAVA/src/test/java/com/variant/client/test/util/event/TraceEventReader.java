@@ -1,12 +1,14 @@
 package com.variant.client.test.util.event;
 
 import java.sql.Connection;
+import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -24,8 +26,18 @@ public class TraceEventReader {
 			"SELECT id, event_id, test_name, experience_name, is_control " +
 			"FROM event_experiences";
 
-	Connection conn; //  = eventWriter.flusher.asInstanceOf[EventFlusherJdbc].getJdbcConnection
+	private final Connection conn; //  = eventWriter.flusher.asInstanceOf[EventFlusherJdbc].getJdbcConnection
 
+	/**
+	 * 
+	 */
+	public TraceEventReader() throws SQLException {
+		Properties props = new Properties();
+		props.setProperty("user", "variant");
+		props.setProperty("password", "variant");
+		conn = DriverManager.getConnection("jdbc:postgresql://localhost/variant", props);		
+	}
+	
    /**
 	 * Read events as a collection
 	 * @return

@@ -52,11 +52,11 @@ public class TraceEventFromDatabase {
 			jsonGen.writeNumberField("createdOn", createdOn.getTime());
 			jsonGen.writeStringField("name", name);
 			if (attributes.size() > 0) {
-				jsonGen.writeArrayFieldStart("attrList");
+				jsonGen.writeObjectFieldStart("attrs");
 				for (Map.Entry<String, String> attr: attributes.entrySet()) {
 					jsonGen.writeStringField(attr.getKey(), attr.getValue());
 				}
-				jsonGen.writeEndArray();
+				jsonGen.writeEndObject();
 			}
 			if (eventExperiences.size() > 0) {
 				jsonGen.writeArrayFieldStart("expList");
