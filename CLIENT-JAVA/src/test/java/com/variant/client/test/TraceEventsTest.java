@@ -1,6 +1,9 @@
 package com.variant.client.test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 
@@ -8,6 +11,8 @@ import com.variant.client.Connection;
 import com.variant.client.Session;
 import com.variant.client.StateRequest;
 import com.variant.client.VariantClient;
+import com.variant.client.VariantException;
+import com.variant.client.impl.ClientUserError;
 import com.variant.client.test.util.ClientBaseTestWithServer;
 import com.variant.client.test.util.event.TraceEventFromDatabase;
 import com.variant.client.test.util.event.TraceEventReader;
@@ -21,22 +26,28 @@ import com.variant.core.util.Tuples.Pair;
 public class TraceEventsTest extends ClientBaseTestWithServer {
 
 	private final VariantClient client = VariantClient.Factory.getInstance();
-		
+
 	/**
+	 * Start the server with long enough session expiration
 	 */
-	@org.junit.Test
-	public void implicitEvents() throws Exception {
-		
+	public TraceEventsTest() {
 		// We need sessions to survive the wait for events.
 		long ssnTimeoutSec = EVENT_WRITER_MAX_DELAY / 1000 + 3;
 		restartServer(CollectionsUtils.pairsToMap(new Pair<String,String>("variant.session.timeout", String.valueOf(ssnTimeoutSec))));
-
+	}
+	
+	/**
+	 * State visited event.
+	 */
+	@org.junit.Test
+	public void svoTest() throws Exception {
+		
 		Connection conn = client.connectTo("big_conjoint_schema");		
 
-		// Via SID tracker, create.
+		// New session.
 		String sid = newSid();
 		Session ssn1 = conn.getOrCreateSession(sid);
-		
+
 		// Crete a session attribute
 		ssn1.setAttribute("ssn1 attr key", "ssn1 attr value");
 	   	Schema schema = ssn1.getSchema();
@@ -84,6 +95,33 @@ public class TraceEventsTest extends ClientBaseTestWithServer {
 		req1.commit();
 		Thread.sleep(EVENT_WRITER_MAX_DELAY);
 		assertEquals(1, new TraceEventReader().read(e -> e.sessionId.equals(sid)).size());
+
+	}
+
+	/**
+	 * State visited event cannot be explicitly triggered
+	 */
+	@org.junit.Test
+	public void svoTriggerTest() throws Exception {
+		
+		Connection conn = client.connectTo("big_conjoint_schema");		
+
+		// New session.
+		String sid = newSid();
+		Session ssn = conn.getOrCreateSession(sid);
+	   	Schema schema = ssn.getSchema();
+	   	State state1 = schema.getState("state1");
+	   	StateRequest req = ssn.targetForState(state1);
+	   	
+	   	// Cannot explicitly trigger an SVE
+		new ClientExceptionInterceptor() {
+			@Override public void toRun() {
+				ssn.triggerTraceEvent(req.getStateVisitedEvent());
+			}
+			@Override public void onThrown(VariantException e) {
+				assertEquals(ClientUserError.CANNOT_TRIGGER_SVE, e.getError());
+			}
+		}.assertThrown(VariantException.class);
 
 	}
 

@@ -13,7 +13,6 @@ import com.variant.client.StateNotInstrumentedException;
 import com.variant.client.StateRequest;
 import com.variant.client.VariantClient;
 import com.variant.client.VariantException;
-import com.variant.client.impl.ClientUserError;
 import com.variant.client.impl.SchemaImpl;
 import com.variant.client.test.util.ClientBaseTestWithServer;
 import com.variant.core.TraceEvent;
