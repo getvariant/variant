@@ -98,8 +98,8 @@ public class ServerError extends CommonError {
 	public static final ServerError SESSION_EXPIRED = 
 			new ServerError(704, "Session ID [%s] does not exist");
 
-	public static final ServerError UNKNOWN_STATE = 
-			new ServerError(705, "No state request in session. Target this session for a state first");
+//	public static final ServerError UNKNOWN_STATE = 
+//			new ServerError(705, "No state request in session. Target this session for a state first");
 
 	public final static ServerError STATE_UNDEFINED_IN_EXPERIENCE =
 			new ServerError(706, "Currently active experience [%s] is undefined on state [%s]");

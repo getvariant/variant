@@ -1,15 +1,19 @@
 package com.variant.server.event;
 
 import java.io.Serializable;
+import java.io.StringWriter;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.JsonGenerator;
 import com.variant.core.TraceEvent;
 import com.variant.core.schema.Test.Experience;
 import com.variant.server.api.FlushableTraceEvent;
 import com.variant.server.api.Session;
+import com.variant.server.api.StateRequest;
 
 /**
  * Flushable event implementation suitable for the server.
@@ -60,10 +64,9 @@ public class FlushableTraceEventImpl implements FlushableTraceEvent, Serializabl
 	public Set<Experience> getLiveExperiences() {
 		
 		Set<Experience> result = new HashSet<Experience>();
-		for (Experience e: session.getStateRequest().getLiveExperiences()) {
-		//	if (session.isQualified(e.getTest())) result.add(e);
-			result.add(e);
-		}
+		StateRequest req = session.getStateRequest();
+		if (req != null) 
+			for (Experience e: req.getLiveExperiences()) result.add(e);
 		return result;
 	}
 
@@ -91,21 +94,33 @@ public class FlushableTraceEventImpl implements FlushableTraceEvent, Serializabl
 	 */
 	@Override
 	public String toString() {
-		
-		StringBuilder result = new StringBuilder()
-		.append('{')
-		.append("sessionid:'").append(session.getId()).append("', ")
-		.append("createdOn:'").append(getCreateDate()).append("', ")
-		.append("eventName:").append(getName()).append("', ")
-		.append("params:{");
-		boolean first = true;
-		for (Map.Entry<String, String> e: getAttributes().entrySet()) {
-			if (first) first = false;
-			else result.append(",");
-			result.append("'").append(e.getKey()).append("':");
-			result.append("'").append(e.getValue()).append("'");
+
+		final StringWriter result = new StringWriter(1024);
+
+		try {
+			JsonGenerator jsonGen = new JsonFactory().createGenerator(result);
+			jsonGen.writeStartObject();
+			jsonGen.writeStringField("sid", session.getId());
+			jsonGen.writeNumberField("createdOn", getCreateDate().getTime());
+			jsonGen.writeStringField("name", getName());
+			jsonGen.writeObjectFieldStart("attrs");
+			for (Map.Entry<String, String> attr: getAttributes().entrySet()) {
+				jsonGen.writeStringField(attr.getKey(), attr.getValue());
+			}
+			jsonGen.writeEndObject();
+			
+			jsonGen.writeArrayFieldStart("expList");
+			for (Experience e: getLiveExperiences()) {
+				jsonGen.writeObject(e.toString());
+			}
+			jsonGen.writeEndArray();
+				
+			jsonGen.writeEndObject();
+			jsonGen.flush();
 		}
-		result.append("}");
+		catch (Exception e) {
+			throw new RuntimeException("Yikes", e);
+		}
 		return result.toString();
 
 	}

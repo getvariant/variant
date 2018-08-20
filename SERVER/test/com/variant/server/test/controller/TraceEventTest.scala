@@ -1,27 +1,29 @@
 package com.variant.server.test.controller
 
-import scala.util.Random
-import org.scalatestplus.play._
-import play.api.test._
-import play.api.test.Helpers._
-import play.api.libs.json._
-import scala.collection.JavaConversions._
-import com.variant.core.impl.ServerError._
-import com.variant.core.util.Constants._
-import com.variant.server.test.util.ParameterizedString
-import com.variant.server.test.util.TraceEventReader
-import com.variant.server.test.spec.EmbeddedServerSpec
-import javax.inject.Inject
-import com.variant.server.api.Session
-import org.scalatest.TestData
-import play.api.Application
-import play.api.inject.guice.GuiceApplicationBuilder
-import com.variant.server.play.VariantApplicationLoader
-import play.api.Configuration
+import scala.collection.JavaConversions.mutableSetAsJavaSet
+
+import com.variant.core.TraceEvent
+import com.variant.core.impl.ServerError.EmptyBody
+import com.variant.core.impl.ServerError.JsonParseError
+import com.variant.core.impl.ServerError.MissingProperty
+import com.variant.core.impl.ServerError.SESSION_EXPIRED
 import com.variant.core.session.CoreSession
 import com.variant.server.impl.SessionImpl
-import java.util.Date
-import com.variant.core.TraceEvent
+import com.variant.server.test.spec.EmbeddedServerSpec
+import com.variant.server.test.util.ParameterizedString
+import com.variant.server.test.util.TraceEventReader
+
+import play.api.libs.json.JsValue.jsValueToJsLookup
+import play.api.libs.json.Json
+import play.api.libs.json.Json.toJsFieldJsValueWrapper
+import play.api.test.FakeRequest
+import play.api.test.Helpers.GET
+import play.api.test.Helpers.NOT_FOUND
+import play.api.test.Helpers.POST
+import play.api.test.Helpers.PUT
+import play.api.test.Helpers.route
+import play.api.test.Helpers.writeableOf_AnyContentAsEmpty
+import play.api.test.Helpers.writeableOf_AnyContentAsText
 
 object TraceEventTest {
    
@@ -30,7 +32,7 @@ object TraceEventTest {
          "sid":"${sid:SID}",
             "event": {
                "name":"${name:NAME}",
-               "attrs":[{"Name One":"Value One"},{"Name Two":"Value Two"}]
+               "attrs":{"Name One":"Value One", "Name Two":"Value Two"}
             }
       }
    """.format(System.currentTimeMillis()))
@@ -50,7 +52,7 @@ object TraceEventTest {
       {
          "sid":"SID",
          "event": {
-             "attrs":[{"k 1":"v 1"}]
+             "attrs":{"k 1":"v 1", "k 2":"v 2"}
           }
       }
    """
@@ -70,6 +72,8 @@ class TraceEventTest extends EmbeddedServerSpec {
 
       val schema = server.schemata.get("big_conjoint_schema").get.liveGen.get
       val eventWriter = schema.eventWriter
+      eventWriter.maxDelayMillis  mustEqual 2000
+      val millisToSleep = eventWriter.maxDelayMillis + 500
 
       "return 404 on GET" in {
          assertResp(route(app, FakeRequest(GET, endpoint)))
@@ -161,8 +165,6 @@ class TraceEventTest extends EmbeddedServerSpec {
          }
          
          // Read the event back from the db.
-         eventWriter.maxDelayMillis  mustEqual 2000
-         val millisToSleep = eventWriter.maxDelayMillis + 500
          Thread.sleep(millisToSleep)
          val eventsFromDatabase = TraceEventReader(eventWriter).read(_.sessionId == sid)
          eventsFromDatabase.size mustBe 1
@@ -231,8 +233,6 @@ class TraceEventTest extends EmbeddedServerSpec {
          }
          
          // Read the event back from the db.
-         eventWriter.maxDelayMillis  mustEqual 2000
-         val millisToSleep = eventWriter.maxDelayMillis + 500
          Thread.sleep(millisToSleep)
          val eventsFromDatabase = TraceEventReader(eventWriter).read(_.sessionId == sid)
          eventsFromDatabase.size mustBe 1
@@ -252,7 +252,7 @@ class TraceEventTest extends EmbeddedServerSpec {
 
       }
 
-      "Refuse to trigger custom event without a state request" in {
+      "Trigger custom event without a state request" in {
 
          // New session
          val sid = newSid
@@ -266,7 +266,20 @@ class TraceEventTest extends EmbeddedServerSpec {
          
          //status(resp)(akka.util.Timeout(5 minutes)) mustBe OK
          assertResp(route(app, httpReq(POST, endpoint).withBody(eventBody)))
-            .isError(UNKNOWN_STATE)
+            .isOk
+            
+         // Read the event back from the db.
+         Thread.sleep(millisToSleep)
+         val eventsFromDatabase = TraceEventReader(eventWriter).read(_.sessionId == sid)
+         eventsFromDatabase.size mustBe 1
+         val event = eventsFromDatabase.head
+
+         event.sessionId mustBe sid
+         event.createdOn.getTime mustBe (System.currentTimeMillis() - millisToSleep) +- 100
+         event.name mustBe eventName
+         event.eventExperiences mustBe empty
+         event.attributes.size mustBe 2
+
       }
       
       "Trigger custom event with active state request and no attribubes" in {
@@ -307,8 +320,6 @@ class TraceEventTest extends EmbeddedServerSpec {
             .withNoBody
          
          // Read events back from the db, but must wait for the asych flusher.
-         eventWriter.maxDelayMillis  mustEqual 2000
-         val millisToSleep = eventWriter.maxDelayMillis + 500
          Thread.sleep(millisToSleep)
          val eventsFromDatabase = TraceEventReader(eventWriter).read(_.sessionId == sid)
          eventsFromDatabase.size mustBe 1
@@ -367,8 +378,6 @@ class TraceEventTest extends EmbeddedServerSpec {
             .withNoBody
          
          // Read events back from the db, but must wait for the asych flusher.
-         eventWriter.maxDelayMillis  mustEqual 2000
-         val millisToSleep = eventWriter.maxDelayMillis + 500
          Thread.sleep(millisToSleep)
          val eventsFromDatabase = TraceEventReader(eventWriter).read(_.sessionId == sid)
          eventsFromDatabase.size mustBe 1

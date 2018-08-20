@@ -53,22 +53,15 @@ class EventController @Inject() (
          throw new ServerException.Remote(MissingProperty, "name")         
       }
       
-      val attrs = (eventJson \ "attrs").asOpt[Seq[Map[String,String]]].getOrElse {
-         Seq[Map[String,String]]()
+      val attrs = (eventJson \ "attrs").asOpt[Map[String,String]].getOrElse {
+         Map[String,String]()
       }
 
-      // Convert attrs from a list of single-element maps to one map
-      val attrMap = mutable.Map[String,String]()
-      attrs.foreach { _.foreach { case (k,v) => attrMap(k) = v }}
-
+      // Get session. Doesn't have to have a request.
       val ssn = server.ssnStore.getOrBust(sid)
-      
-      if (ssn.getStateRequest == null)
-         throw new ServerException.Remote(UNKNOWN_STATE)   
-
-      val event = new ServerTraceEvent(name, attrMap);  
-            
-      ssn.asInstanceOf[SessionImpl].triggerEvent(event)            
+                  
+      // Trigger the event. 
+      ssn.asInstanceOf[SessionImpl].triggerEvent(new ServerTraceEvent(name, attrs))            
             
       Ok
  
