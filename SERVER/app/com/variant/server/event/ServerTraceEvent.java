@@ -10,7 +10,7 @@ import com.variant.core.util.immutable.ImmutableMap;
 /**
  * Event received over HTTP and suitable to pass to the Core API.
  */
-public class ServerTraceEvent  implements TraceEvent {
+public class ServerTraceEvent implements TraceEvent {
 
 	private String name;
 	private Map<String,String> attributes = new HashMap<String,String>();

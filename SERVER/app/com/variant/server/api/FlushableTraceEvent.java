@@ -4,7 +4,6 @@ import java.util.Date;
 import java.util.Map;
 import java.util.Set;
 
-import com.variant.core.TraceEvent;
 import com.variant.core.schema.Test.Experience;
 
 /**

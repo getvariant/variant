@@ -369,9 +369,8 @@ public class Server {
 				jsonGen.writeRawValue(TraceEventSupport.toJson(event));
 				jsonGen.writeEndObject();
 				jsonGen.flush();
-				HttpResponse resp = adapter.put(serverUrl + "request", body.toString());
 
-				adapter.post(serverUrl + "event", TraceEventSupport.toJson(event));
+				adapter.post(serverUrl + "event", body.toString());
 			}
 		}.run(ssn);
 	}

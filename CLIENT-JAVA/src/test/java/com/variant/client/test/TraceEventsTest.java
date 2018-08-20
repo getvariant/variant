@@ -85,7 +85,7 @@ public class TraceEventsTest extends ClientBaseTestWithServer {
 		List<TraceEventFromDatabase> events = new TraceEventReader().read(e -> e.sessionId.equals(sid));
 		assertEquals(1, events.size());
 		TraceEventFromDatabase event = events.get(0);
-		System.out.println(event);
+		//System.out.println(event);
 		assertEquals(TraceEvent.SVE_NAME, event.name);
 		assertEqualAsSets(CollectionsUtils.pairsToMap(new Pair("$STATE", "state1"), new Pair("sve2 atr key", "sve2 attr value")), event.attributes);
 		assertEquals(5, event.eventExperiences.size());
@@ -130,6 +130,28 @@ public class TraceEventsTest extends ClientBaseTestWithServer {
 			}
 		}.assertThrown(VariantException.class);
 
+	}
+
+	/**
+	 * Custom events
+	 */
+	@org.junit.Test
+	public void cutomEventTest() throws Exception {
+		
+		Connection conn = client.connectTo("big_conjoint_schema");		
+
+		// New session.
+		String sid = newSid();
+		Session ssn = conn.getOrCreateSession(sid);
+	   	Schema schema = ssn.getSchema();
+	   	
+	   	// Trigger on untargeted session: will have no live experiences
+	   	TraceEvent event = TraceEvent.mkTraceEvent("custom");
+	   	ssn.triggerTraceEvent(event);
+	   	
+	   	State state3 = schema.getState("state3");
+	   	StateRequest req = ssn.targetForState(state3);
+	   	
 	}
 
 }

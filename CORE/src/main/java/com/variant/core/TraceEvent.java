@@ -1,5 +1,9 @@
 package com.variant.core;
 
+import java.util.Map;
+
+import com.variant.core.impl.TraceEventSupport;
+
 
 /**
  * A Variant trace event that can be triggered. Variant trace events are the elementary data points, 
@@ -69,4 +73,32 @@ public interface TraceEvent {
 	 */
 	String clearAttribute(String name);
 	
+	/**
+	 * Factory method returns a blank custom trace event with a given name. This event can be triggered by passing
+	 * it to <code>Session.triggerTraceEvent()</code>.
+	 * @param name Name of the trace event to be created
+	 * @return an implementation of this interface.
+	 * 
+	 *  @since 0.9
+	 */
+	static public TraceEvent mkTraceEvent(String name) {
+		return new TraceEventSupport(name) {};
+	}
+
+	/**
+	 * Factory method returns a custom trace event with a given name and event attributes. This event can be triggered by passing
+	 * it to <code>Session.triggerTraceEvent()</code>.
+	 * @param name Name of the trace event to be created
+	 * @return an implementation of this interface.
+	 * 
+	 *  @since 0.9
+	 */
+	static public TraceEvent mkTraceEvent(String name, Map<String,String> attributes) {
+		
+		TraceEvent result = mkTraceEvent(name);
+		for (Map.Entry<String,String> e: attributes.entrySet())
+			result.setAttribute(e.getKey(), e.getValue());
+		return result;
+	}
+
 }
