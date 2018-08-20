@@ -85,9 +85,16 @@ public class TraceEventsTest extends ClientBaseTestWithServer {
 		List<TraceEventFromDatabase> events = new TraceEventReader().read(e -> e.sessionId.equals(sid));
 		assertEquals(1, events.size());
 		TraceEventFromDatabase event = events.get(0);
-		//System.out.println(event);
+		System.out.println(event);
 		assertEquals(TraceEvent.SVE_NAME, event.name);
 		assertEqualAsSets(CollectionsUtils.pairsToMap(new Pair("$STATE", "state1"), new Pair("sve2 atr key", "sve2 attr value")), event.attributes);
+		assertEquals(5, event.eventExperiences.size());
+		assertFalse(event.eventExperiences.stream().anyMatch(ee -> ee.testName.equals("test1")));
+		assertTrue(event.eventExperiences.stream().anyMatch(ee -> ee.testName.equals("test2")));
+		assertTrue(event.eventExperiences.stream().anyMatch(ee -> ee.testName.equals("test3")));
+		assertTrue(event.eventExperiences.stream().anyMatch(ee -> ee.testName.equals("test4")));
+		assertTrue(event.eventExperiences.stream().anyMatch(ee -> ee.testName.equals("test5")));
+		assertTrue(event.eventExperiences.stream().anyMatch(ee -> ee.testName.equals("test6")));
 		
 		// Commit back in ssn1. No extra sve event should be written.
 		assertTrue(req2.isCommitted());
@@ -102,7 +109,7 @@ public class TraceEventsTest extends ClientBaseTestWithServer {
 	 * State visited event cannot be explicitly triggered
 	 */
 	@org.junit.Test
-	public void svoTriggerTest() throws Exception {
+	public void svеTriggerTest() throws Exception {
 		
 		Connection conn = client.connectTo("big_conjoint_schema");		
 

@@ -1,7 +1,7 @@
 package com.variant.client.impl;
 
+import static com.variant.client.impl.ClientUserError.CANNOT_TRIGGER_SVE;
 import static com.variant.client.impl.ClientUserError.PARAM_CANNOT_BE_NULL;
-import static com.variant.client.impl.ClientUserError.SESSION_ID_TRACKER_NO_INTERFACE;
 
 import java.util.Date;
 import java.util.HashSet;
@@ -20,7 +20,6 @@ import com.variant.client.StateRequest;
 import com.variant.client.TargetingTracker;
 import com.variant.client.VariantException;
 import com.variant.client.session.TargetingTrackerEntryImpl;
-import static com.variant.client.impl.ClientUserError.CANNOT_TRIGGER_SVE;
 import com.variant.core.TraceEvent;
 import com.variant.core.impl.StateVisitedEvent;
 import com.variant.core.schema.Schema;
