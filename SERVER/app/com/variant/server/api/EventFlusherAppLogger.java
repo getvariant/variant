@@ -8,7 +8,6 @@ import org.slf4j.LoggerFactory;
 
 import com.typesafe.config.Config;
 import com.variant.core.schema.Test.Experience;
-import com.variant.server.event.FlushableTraceEventImpl;
 
 /**
  * An implementation of {@link EventFlusher}, which appends trace events
@@ -52,7 +51,7 @@ public class EventFlusherAppLogger implements EventFlusher {
 			msg.append("{")
 				.append("event_name:'").append(event.getName()).append("', ")
 				.append("created_on:'").append(event.getCreateDate().getTime()).append("', ")
-				.append("session_id:'").append(event.getSession().getId()).append("'");
+				.append("session_id:'").append(event.getSessionId()).append("'");
 
 			if (!event.getLiveExperiences().isEmpty()) {
 			   msg.append(", event_experiences:[");

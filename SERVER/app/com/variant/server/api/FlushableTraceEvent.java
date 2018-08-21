@@ -9,7 +9,6 @@ import com.variant.core.schema.Test.Experience;
 /**
  * A enriched Variant trace event that can be flushed by an event flusher. 
  * Instantiated by Variant server and passed to an externally configured implementation of {@link EventFlusher}.
- * Extends {@link TraceEvent} with methods exposing runtime details about the triggering session.
  * 
  * @since 0.7
  */
@@ -36,13 +35,17 @@ public interface FlushableTraceEvent {
 	public Map<String, String> getAttributes();
 	
 	/**
-	 * The Variant session which triggered this trace event.
+	 * The Variant session ID, which triggered this trace event.
+     * The entire triggering session object is not available from this object, 
+     * because of the potential latency: between the time a trace event is triggered
+     * and the time when user code gets access to this object, the triggering session 
+     * may have completely changed or even expired.
 	 * 
-	 * @return An object of type {@link Session}.
+	 * @return Session ID.
 	 * 
 	 * @since 0.7
 	 */
-	public Session getSession();
+	public String getSessionId();
 	
 	/**
 	 * Live experiences in effect at the time this event was triggered.

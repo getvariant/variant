@@ -159,6 +159,7 @@ public class TraceEventsTest extends ClientBaseTestWithServer {
 		Thread.sleep(EVENT_WRITER_MAX_DELAY);
 		List<TraceEventFromDatabase> events = new TraceEventReader().read(e -> e.sessionId.equals(sid));
 		assertEquals(3, events.size());
+		events.forEach(e -> System.out.println("***\n" + e));
 		assertEquals(0, events.stream().filter(e -> e.eventExperiences.size() != 0).count());
 
 	}

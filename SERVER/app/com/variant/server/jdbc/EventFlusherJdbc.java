@@ -82,7 +82,7 @@ abstract public class EventFlusherJdbc implements EventFlusher {
 					PreparedStatement stmt = conn.prepareStatement(INSERT_EVENTS_SQL, Statement.RETURN_GENERATED_KEYS);
 
 					for (FlushableTraceEvent event: events) {
-						stmt.setString(1, event.getSession().getId());
+						stmt.setString(1, event.getSessionId());
 						stmt.setTimestamp(2, new Timestamp(event.getCreateDate().getTime()));
 						stmt.setString(3, event.getName());
 

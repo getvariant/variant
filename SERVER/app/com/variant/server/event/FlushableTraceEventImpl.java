@@ -27,17 +27,23 @@ public class FlushableTraceEventImpl implements FlushableTraceEvent, Serializabl
 	 */
 	private static final long serialVersionUID = 1L;
 
-	private Session session;
-	private ServerTraceEvent userEvent;
-	private Date timestamp = new Date();
-	
+	private final String sessionId;
+	private final ServerTraceEvent userEvent;
+	private final Date timestamp = new Date();
+	// Live experiences in effect at the time the event was triggered.
+	private final Set<Experience> liveExperiences = new HashSet<Experience>();
+
 	/**
 	 * Constructor
 	 * @return
 	 */
 	public FlushableTraceEventImpl(ServerTraceEvent event, Session session) {
-		this.userEvent = event;		
-		this.session = session;
+		this.userEvent = event;
+		this.sessionId = session.getId();
+		StateRequest req = session.getStateRequest();
+		if (req != null) 
+			for (Experience e: req.getLiveExperiences()) liveExperiences.add(e);
+	
 	}
 
 	
@@ -51,23 +57,18 @@ public class FlushableTraceEventImpl implements FlushableTraceEvent, Serializabl
 	}
 
 	@Override
+	public String getSessionId() {
+		return sessionId;
+	}
+
+	@Override
 	public Map<String,String> getAttributes() {
 		return userEvent.getAttributes();
 	}
 	
 	@Override
-	public Session getSession() {
-		return session;
-	}
-
-	@Override
 	public Set<Experience> getLiveExperiences() {
-		
-		Set<Experience> result = new HashSet<Experience>();
-		StateRequest req = session.getStateRequest();
-		if (req != null) 
-			for (Experience e: req.getLiveExperiences()) result.add(e);
-		return result;
+		return liveExperiences;
 	}
 
 	/**
@@ -100,7 +101,6 @@ public class FlushableTraceEventImpl implements FlushableTraceEvent, Serializabl
 		try {
 			JsonGenerator jsonGen = new JsonFactory().createGenerator(result);
 			jsonGen.writeStartObject();
-			jsonGen.writeStringField("sid", session.getId());
 			jsonGen.writeNumberField("createdOn", getCreateDate().getTime());
 			jsonGen.writeStringField("name", getName());
 			jsonGen.writeObjectFieldStart("attrs");
