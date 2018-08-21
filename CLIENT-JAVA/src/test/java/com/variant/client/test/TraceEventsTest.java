@@ -41,7 +41,7 @@ public class TraceEventsTest extends ClientBaseTestWithServer {
 	 */
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@org.junit.Test
-	public void svoTest() throws Exception {
+	public void sveTest() throws Exception {
 		
 		Connection conn = client.connectTo("big_conjoint_schema");		
 
@@ -159,9 +159,25 @@ public class TraceEventsTest extends ClientBaseTestWithServer {
 		Thread.sleep(EVENT_WRITER_MAX_DELAY);
 		List<TraceEventFromDatabase> events = new TraceEventReader().read(e -> e.sessionId.equals(sid));
 		assertEquals(3, events.size());
-		events.forEach(e -> System.out.println("***\n" + e));
-		assertEquals(0, events.stream().filter(e -> e.eventExperiences.size() != 0).count());
+		//events.forEach(e -> System.out.println("***\n" + e));
 
+		TraceEventFromDatabase custom1 = events.get(0);
+		assertEquals("custom1", custom1.name);
+		assertEquals(0, custom1.attributes.size());
+		assertEquals(0, custom1.eventExperiences.size());
+		
+		TraceEventFromDatabase custom2 = events.get(1);
+		assertEquals("custom2", custom2.name);
+		assertEquals(1, custom2.attributes.size());
+		assertEquals("bar", custom2.attributes.get("foo"));
+		assertEquals(0, custom2.eventExperiences.size());
+
+		TraceEventFromDatabase custom3 = events.get(2);
+		assertEquals(TraceEvent.SVE_NAME, custom3.name);
+		assertEquals(2, custom3.attributes.size());
+		assertEquals("state3", custom3.attributes.get("$STATE"));
+		assertEquals("yang", custom3.attributes.get("yin"));
+		assertEquals(5, custom3.eventExperiences.size());
 	}
 
 }

@@ -40,7 +40,7 @@ public class TraceEventReader {
 	}
 	
    /**
-	 * Read events as a collection
+	 * Read events as a list. The result list is sorted by event ID, i.e. in chronological order.
 	 * @return
 	 * @throws ClassNotFoundException
 	 * @throws SQLException
@@ -118,6 +118,10 @@ public class TraceEventReader {
 			}
 		);
 		
-		return result.stream().filter(p).collect(Collectors.<TraceEventFromDatabase>toList());
+		return result
+				.stream()
+				.filter(p)
+				.sorted((e1,e2) -> e1.id.compareTo(e2.id))
+				.collect(Collectors.<TraceEventFromDatabase>toList());
 	}
 }

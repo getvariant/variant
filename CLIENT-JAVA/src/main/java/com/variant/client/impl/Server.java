@@ -357,7 +357,7 @@ public class Server {
 	public void eventSave(final SessionImpl ssn, final TraceEvent event) {
 		
 		if (LOG.isTraceEnabled()) LOG.trace(
-				String.format("eventSave(%s,%s)", ssn.getId(), event.getName()));
+				String.format("eventSave(%s, %s)", ssn.getId(), event.getName()));
 
 		new CommonExceptionHandlerVoid() {
 			@Override void voidBlock() throws Exception {

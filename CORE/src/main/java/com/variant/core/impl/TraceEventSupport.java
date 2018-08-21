@@ -77,13 +77,11 @@ abstract public class TraceEventSupport implements TraceEvent {
 			jsonGen.writeStringField(FIELD_NAME_NAME, getName());
 			
 			if (!attributes.isEmpty()) {
-				jsonGen.writeArrayFieldStart(FIELD_NAME_ATTRIBUTES);
+				jsonGen.writeObjectFieldStart(FIELD_NAME_ATTRIBUTES);
 				for (Map.Entry<String,String> e: attributes.entrySet()) {
-					jsonGen.writeStartObject();
 					jsonGen.writeStringField(e.getKey(), e.getValue());
-					jsonGen.writeEndObject();
 				}
-				jsonGen.writeEndArray();
+				jsonGen.writeEndObject();
 			}
 			
 			jsonGen.writeEndObject();
