@@ -16,6 +16,7 @@ public class Tuples {
      * @since 0.5
 	 */
 	public static class Pair<T1,T2>  {
+				
 		private T1 _1;
 		private T2 _2;
 		

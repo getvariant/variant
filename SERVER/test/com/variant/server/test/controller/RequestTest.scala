@@ -16,6 +16,7 @@ import com.variant.core.impl.StateVisitedEvent
 import com.variant.core.session.CoreStateRequest
 import com.variant.server.schema.ServerSchemaParser
 import com.variant.core.TraceEvent
+import com.variant.server.event.ServerTraceEvent
 
 
 /**
@@ -316,7 +317,7 @@ class RequestTest extends EmbeddedServerSpec {
                coreSsn.getStateRequest mustBe (null)
              } 
          
-         // Create state request object.
+         // State request object.
          val reqBody1 = Json.obj(
             "sid" -> sid,
             "state" -> "newOwner"
@@ -340,10 +341,14 @@ class RequestTest extends EmbeddedServerSpec {
                stateReq.getState mustBe schema.getState("newOwner")
          }
          
+         val serverSsn = server.ssnStore.get(sid).get.asInstanceOf[SessionImpl]
+         serverSsn.triggerEvent(new ServerTraceEvent("Custom Event", Map("foo"->"bar")));
+         
          // Commit the request.
          val reqBody2 = Json.obj(
             "sid" -> sid
             ).toString
+        
          assertResp(route(app, httpReq(PUT, context + "/request").withTextBody(reqBody2)))
             .isOk
             .withBodyJson { json => 
@@ -368,14 +373,11 @@ class RequestTest extends EmbeddedServerSpec {
             .isOk
             .withNoBody
 
-         // Wait for event writer to flush and confirm all event were discarded.
+         // Confirm that the SVE and the custom events are both orphans.
          Thread.sleep(2000)
          val flushedEvents = reader.read(e => e.sessionId == sid)
-         if (flushedEvents.size > 0) {
-            println("*** These are not expected: ***")
-            flushedEvents.foreach(println(_))
-         }
-         flushedEvents.size mustBe 0
+         flushedEvents.size mustBe 2
+         flushedEvents.exists { _.eventExperiences.size > 0 } mustBe false
       }
    }
 }

@@ -39,6 +39,7 @@ public class TraceEventsTest extends ClientBaseTestWithServer {
 	/**
 	 * State visited event.
 	 */
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@org.junit.Test
 	public void svoTest() throws Exception {
 		
@@ -135,6 +136,7 @@ public class TraceEventsTest extends ClientBaseTestWithServer {
 	/**
 	 * Custom events
 	 */
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@org.junit.Test
 	public void cutomEventTest() throws Exception {
 		
@@ -145,13 +147,20 @@ public class TraceEventsTest extends ClientBaseTestWithServer {
 		Session ssn = conn.getOrCreateSession(sid);
 	   	Schema schema = ssn.getSchema();
 	   	
-	   	// Trigger on untargeted session: will have no live experiences
-	   	TraceEvent event = TraceEvent.mkTraceEvent("custom");
-	   	ssn.triggerTraceEvent(event);
+	   	// Trigger on untargeted session: produces an orphan (no live experiences) event.
+	   	ssn.triggerTraceEvent(TraceEvent.mkTraceEvent("custom1"));
+	   	ssn.triggerTraceEvent(TraceEvent.mkTraceEvent("custom2", CollectionsUtils.pairsToMap(new Pair("foo", "bar"))));
 	   	
 	   	State state3 = schema.getState("state3");
 	   	StateRequest req = ssn.targetForState(state3);
+	   	req.getStateVisitedEvent().setAttribute("yin", "yang");
+	   	req.commit();
 	   	
+		Thread.sleep(EVENT_WRITER_MAX_DELAY);
+		List<TraceEventFromDatabase> events = new TraceEventReader().read(e -> e.sessionId.equals(sid));
+		assertEquals(3, events.size());
+		assertEquals(0, events.stream().filter(e -> e.eventExperiences.size() != 0).count());
+
 	}
 
 }
