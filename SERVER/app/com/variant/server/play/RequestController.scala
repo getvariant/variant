@@ -11,6 +11,8 @@ import play.api.mvc.Result
 import com.variant.server.boot.ServerErrorRemote
 import com.variant.server.api.ServerException
 import com.variant.core.schema.State
+import com.variant.core.StateRequestStatus
+import com.variant.core.StateRequestStatus._
 import com.variant.server.api.Session
 import com.variant.core.session.CoreStateRequest
 import play.api.mvc.AnyContent
@@ -20,6 +22,7 @@ import play.api.mvc.ControllerComponents
 import com.variant.server.boot.VariantServer
 import com.variant.core.impl.StateVisitedEvent
 import com.variant.server.event.ServerTraceEvent
+import com.variant.core.impl.ServerError
 
 //@Singleton -- Is this for non-shared state controllers?
 class RequestController @Inject() (
@@ -48,6 +51,10 @@ class RequestController @Inject() (
       }
 
       val ssn = server.ssnStore.getOrBust(sid)
+      
+      if (ssn.getStateRequest != null && ssn.getStateRequest.getStatus == InProgress) {
+         throw new ServerException.Remote(ACTIVE_REQUEST)                
+      }
       val state = ssn.schemaGen.getState(stateName)
 
       if (state == null)
@@ -64,7 +71,7 @@ class RequestController @Inject() (
 
    /**
     * PUT
-    * Commit a state request.
+    * Commit or fail a state request. Trigger the implicit state visited event.
     */
    def commit() = action { req =>
 
@@ -76,6 +83,13 @@ class RequestController @Inject() (
          throw new ServerException.Remote(MissingProperty, "sid")         
       }
 
+      val status = {
+         val ordinal = (bodyJson \ "status").asOpt[Int].getOrElse {
+            throw new ServerException.Remote(MissingProperty, "status")
+         }
+         StateRequestStatus.values()(ordinal)
+      }
+      
       val attrs = (bodyJson \ "attrs").asOpt[Map[String,String]].getOrElse {
          Map[String,String]()
       }
@@ -83,21 +97,26 @@ class RequestController @Inject() (
 
       val ssn = server.ssnStore.getOrBust(sid)
       val stateReq = ssn.getStateRequest.asInstanceOf[StateRequestImpl]
-
-      // If already committed, Noop.
-      if (!stateReq.isCommitted()) {
-
-         // State request may be blank?
-         if (!stateReq.isBlank) {
-            val sve = new StateVisitedEvent(stateReq.getState, attrs)            
-            // Trigger state visited event
-   	     	ssn.triggerEvent(new ServerTraceEvent(sve));
-         }
-   
-         // Actual commit.
-         stateReq.asInstanceOf[StateRequestImpl].commit(); 
-      }
       
+      if (stateReq.getStatus == Committed && status == Failed)
+			throw new ServerException.Remote(ServerError.CANNOT_FAIL);
+      
+		else if (stateReq.getStatus == Failed && status == Committed)
+			throw new ServerException.Remote(ServerError.CANNOT_COMMIT);
+		
+		else if (stateReq.getStatus == InProgress) {
+
+         stateReq.asInstanceOf[StateRequestImpl].setStatus(status); 
+
+         // Trigger state visited even, but only if we have live experiences
+         // at this state. As opposed to custom events, state visited events
+         // cannot be orphan.
+         if (!stateReq.getLiveExperiences().isEmpty()) {
+            val sve = new StateVisitedEvent(stateReq.getState, status, attrs)                  
+      	   ssn.triggerEvent(new ServerTraceEvent(sve));
+         }
+         
+      }
       val response = JsObject(Seq(
          "session" -> JsString(ssn.coreSession.toJson)
       )).toString()

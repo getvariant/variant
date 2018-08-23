@@ -98,14 +98,17 @@ public class ServerError extends CommonError {
 	public static final ServerError SESSION_EXPIRED = 
 			new ServerError(704, "Session ID [%s] does not exist");
 
-//	public static final ServerError UNKNOWN_STATE = 
-//			new ServerError(705, "No state request in session. Target this session for a state first");
+	public static final ServerError CANNOT_COMMIT = 
+			new ServerError(705, "Cannot commit a failed state request.");
+
+	public static final ServerError CANNOT_FAIL = 
+			new ServerError(706, "Cannot fail a committed state request.");
 
 	public final static ServerError STATE_UNDEFINED_IN_EXPERIENCE =
-			new ServerError(706, "Currently active experience [%s] is undefined on state [%s]");
+			new ServerError(707, "Currently active experience [%s] is undefined on state [%s]");
 
 	public static final ServerError EXPERIENCE_WEIGHT_MISSING = 
-			new ServerError(707, "No weight specified for Test [%s], Experience [%s] and no custom targeter found");
+			new ServerError(708, "No weight specified for Test [%s], Experience [%s] and no custom targeter found");
 
 
 	/**

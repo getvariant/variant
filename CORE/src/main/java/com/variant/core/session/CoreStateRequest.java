@@ -1,6 +1,8 @@
 package com.variant.core.session;
 
-import static com.variant.core.impl.ServerError.STATE_NOT_INSTRUMENTED_BY_TEST;
+import static com.variant.core.StateRequestStatus.Committed;
+import static com.variant.core.StateRequestStatus.Failed;
+import static com.variant.core.StateRequestStatus.InProgress;
 
 import java.io.Serializable;
 import java.io.StringWriter;
@@ -13,7 +15,9 @@ import java.util.Set;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
+import com.variant.core.StateRequestStatus;
 import com.variant.core.impl.CoreException;
+import com.variant.core.impl.ServerError;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.State;
 import com.variant.core.schema.StateVariant;
@@ -45,7 +49,7 @@ public class CoreStateRequest implements Serializable {
 	// Active
 	private Set<Experience> liveExperiences; 
 	
-	private boolean committed = false;
+	private StateRequestStatus status = InProgress;
 	
 	/**
 	 * Regular constructor
@@ -60,21 +64,36 @@ public class CoreStateRequest implements Serializable {
 	//---------------------------------------------------------------------------------------------//
 	//                                          PUBLIC                                             //
 	//---------------------------------------------------------------------------------------------//
-
+	/**
+	 */
 	public CoreSession getSession() {
 		return session;
 	}
 
+	/**
+	 */
 	public State getState() {
 		return state;
 	}
 
-	public void commit() {
-		committed = true;
+	/**
+	 */
+	public void setStatus(StateRequestStatus targetStatus) {
+		
+		if (status == Committed && targetStatus == Failed)
+			throw new CoreException.User(ServerError.CANNOT_FAIL);
+		else if (status == Failed && targetStatus == Committed)
+			throw new CoreException.User(ServerError.CANNOT_COMMIT);
+		else
+			status = targetStatus;
 	}
 
-	public boolean isCommitted() {
-		return committed;
+	/**
+	 * 
+	 * @return
+	 */
+	public StateRequestStatus getStatus() {
+		return status;
 	}
 
 	public StateVariant getResolvedStateVariant() {
@@ -90,22 +109,7 @@ public class CoreStateRequest implements Serializable {
 	}
 	
 	/**
-	 * Is this state request blank, i.e. should we generate a state visited event
-	 * for this state request? 
-	 * 
-	 * @return
-	 */
-	public boolean isBlank() {
-		
-		for (Experience exp: getLiveExperiences()) { 
-			if (state.getInstrumentedTests().contains(exp.getTest()))
-				return false;
-		}
-		return true;
-	}
-	
-	/**
-	 * Live experiences don't change during the session, ok to cache as this is a session scoped object.
+	 * Live experiences instrumented on this state.
 	 * @return
 	 */
 	public synchronized Set<Experience> getLiveExperiences() {
@@ -128,22 +132,8 @@ public class CoreStateRequest implements Serializable {
 
 	public Experience getLiveExperience(Test test) {
 		
-		boolean found = false;
-		
-		for (Test t: state.getInstrumentedTests()) {
-
-			if (!t.equals(test)) continue;
-			found = true;
-
-			if (!t.isOn() || session.getDisqualifiedTests().contains(test)) return null;
-			
-			SessionScopedTargetingStabile.Entry entry = session.getTargetingStabile().get(test.getName());
-			if (entry == null) throw new CoreException.Internal("Targeted experience for test [" + test.getName() + "] expected but not found in sessioin.");
-			return test.getExperience(entry.getExperienceName());
-		}
-		
-		if (!found) throw new CoreException.User(STATE_NOT_INSTRUMENTED_BY_TEST, state.getName(), test.getName());
-
+		for (Experience e: getLiveExperiences())
+			if  (e.getTest().getName().equals(test.getName())) return e;
 		return null;
 	}
 	
@@ -166,7 +156,7 @@ public class CoreStateRequest implements Serializable {
 	//---------------------------------------------------------------------------------------------//
 
 	private static final String FIELD_NAME_STATE = "state";
-	private static final String FILED_NAME_COMMITTED = "committed";
+	private static final String FILED_NAME_STATUS = "status";
 	private static final String FIELD_NAME_PARAMS = "params";
 	private static final String FIELD_NAME_KEY = "name";
 	private static final String FIELD_NAME_VALUE = "value";
@@ -186,7 +176,7 @@ public class CoreStateRequest implements Serializable {
 		JsonGenerator jsonGen = new JsonFactory().createGenerator(result);
 		jsonGen.writeStartObject();
 		jsonGen.writeStringField(FIELD_NAME_STATE, state.getName());
-		jsonGen.writeBooleanField(FILED_NAME_COMMITTED, committed);
+		jsonGen.writeNumberField(FILED_NAME_STATUS, status.ordinal());
 		
 		if (!resolvedParameterMap.isEmpty()) {
 			jsonGen.writeArrayFieldStart(FIELD_NAME_PARAMS);
@@ -231,7 +221,6 @@ public class CoreStateRequest implements Serializable {
 	 * @param fields
 	 * @return
 	 */
-	@SuppressWarnings("unchecked")
 	public static CoreStateRequest fromJson(Schema schema, CoreSession session, Map<String,?> fields) {
 		
 		String stateName = (String) fields.get(FIELD_NAME_STATE);
@@ -248,13 +237,7 @@ public class CoreStateRequest implements Serializable {
 
 		CoreStateRequest result = new CoreStateRequest(session, state);
 				
-		Object committed = fields.get(FILED_NAME_COMMITTED);
-		if (committed == null) 
-			throw new CoreException.Internal("Unable to deserialzie request: no committed");
-		if (!(committed instanceof Boolean)) 
-			throw new CoreException.Internal("Unable to deserialzie request: committed not boolean");
-
-		result.committed = (Boolean) committed;
+		result.status = StateRequestStatus.values()[(Integer)fields.get(FILED_NAME_STATUS)];
 
 		Object paramListObj = fields.get(FIELD_NAME_PARAMS);
 		if (paramListObj != null) {

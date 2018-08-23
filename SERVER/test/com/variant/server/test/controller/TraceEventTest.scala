@@ -3,6 +3,7 @@ package com.variant.server.test.controller
 import scala.collection.JavaConversions.mutableSetAsJavaSet
 
 import com.variant.core.TraceEvent
+import com.variant.core.StateRequestStatus._
 import com.variant.core.impl.ServerError.EmptyBody
 import com.variant.core.impl.ServerError.JsonParseError
 import com.variant.core.impl.ServerError.MissingProperty
@@ -135,7 +136,7 @@ class TraceEventTest extends EmbeddedServerSpec {
                val coreSsn = CoreSession.fromJson((json \ "session").as[String], schema)
                val stateReq = coreSsn.getStateRequest
                stateReq mustNot be (null)
-               stateReq.isCommitted() mustBe false
+               stateReq.getStatus mustBe InProgress
                stateReq.getLiveExperiences.size mustBe 5
                stateReq.getResolvedParameters.size mustBe 1
                stateReq.getSession.getId mustBe sid
@@ -144,11 +145,12 @@ class TraceEventTest extends EmbeddedServerSpec {
 
          val serverSsn = server.ssnStore.get(sid).get.asInstanceOf[SessionImpl]
 
-         serverSsn.getStateRequest().isCommitted() mustBe false
+         serverSsn.getStateRequest().getStatus mustBe InProgress
 
          // Commit request body with attributes
          val reqBody2 = Json.obj(
-            "sid" -> sid
+            "sid" -> sid,
+            "status" -> Committed.ordinal
             ).toString
 
          assertResp(route(app, httpReq(PUT, context + "/request").withTextBody(reqBody2)))
@@ -157,7 +159,7 @@ class TraceEventTest extends EmbeddedServerSpec {
                val coreSsn = CoreSession.fromJson((json \ "session").as[String], schema)
                val stateReq = coreSsn.getStateRequest
                stateReq mustNot be (null)
-               stateReq.isCommitted() mustBe true
+               stateReq.getStatus mustBe Committed
                stateReq.getLiveExperiences.size mustBe 5
                stateReq.getResolvedParameters.size mustBe 1
                stateReq.getSession.getId mustBe sid
@@ -202,7 +204,7 @@ class TraceEventTest extends EmbeddedServerSpec {
                val coreSsn = CoreSession.fromJson((json \ "session").as[String], schema)
                val stateReq = coreSsn.getStateRequest
                stateReq mustNot be (null)
-               stateReq.isCommitted() mustBe false
+               stateReq.getStatus mustBe InProgress
                stateReq.getLiveExperiences.size mustBe 5
                stateReq.getResolvedParameters.size mustBe 1
                stateReq.getSession.getId mustBe sid
@@ -211,11 +213,12 @@ class TraceEventTest extends EmbeddedServerSpec {
 
          val serverSsn = server.ssnStore.get(sid).get.asInstanceOf[SessionImpl]
 
-         serverSsn.getStateRequest().isCommitted() mustBe false
+         serverSsn.getStateRequest().getStatus mustBe InProgress
 
          // Commit request body with attributes
          val reqBody2 = Json.obj(
             "sid" -> sid,
+            "status" -> Committed.ordinal,
             "attrs" -> Map("key1"->"val1", "key2"->"val2", "key3"->"val3")
             ).toString
 
@@ -225,7 +228,7 @@ class TraceEventTest extends EmbeddedServerSpec {
                val coreSsn = CoreSession.fromJson((json \ "session").as[String], schema)
                val stateReq = coreSsn.getStateRequest
                stateReq mustNot be (null)
-               stateReq.isCommitted() mustBe true
+               stateReq.getStatus mustBe Committed
                stateReq.getLiveExperiences.size mustBe 5
                stateReq.getResolvedParameters.size mustBe 1
                stateReq.getSession.getId mustBe sid
@@ -303,7 +306,7 @@ class TraceEventTest extends EmbeddedServerSpec {
                val coreSsn = CoreSession.fromJson((json \ "session").as[String], schema)
                val stateReq = coreSsn.getStateRequest
                stateReq mustNot be (null)
-               stateReq.isCommitted() mustBe false
+               stateReq.getStatus mustBe InProgress
                stateReq.getLiveExperiences.size mustBe 4
                stateReq.getResolvedParameters.size mustBe 1
                stateReq.getSession.getId mustBe sid
@@ -361,7 +364,7 @@ class TraceEventTest extends EmbeddedServerSpec {
                val coreSsn = CoreSession.fromJson((json \ "session").as[String], schema)
                val stateReq = coreSsn.getStateRequest
                stateReq mustNot be (null)
-               stateReq.isCommitted() mustBe false
+               stateReq.getStatus mustBe InProgress
                stateReq.getLiveExperiences.size mustBe 5
                stateReq.getResolvedParameters.size mustBe 1
                stateReq.getSession.getId mustBe sid

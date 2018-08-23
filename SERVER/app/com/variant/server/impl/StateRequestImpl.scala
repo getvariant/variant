@@ -8,6 +8,7 @@ import com.variant.core.schema.Test.Experience
 import com.variant.core.schema.Test
 import com.variant.core.schema.StateVariant
 import com.variant.core.TraceEvent
+import com.variant.core.StateRequestStatus
 import com.variant.core.schema.impl.StateVariantImpl
 import com.variant.server.api.Session
 import com.variant.server.event.ServerTraceEvent
@@ -32,19 +33,19 @@ class StateRequestImpl(private val session: Session, private val coreReq:CoreSta
 
    /**
 	 */
-	override def getSession(): Session = session
+	override def getSession: Session = session
 
 	/**
 	 */
-	override def getState(): State = coreReq.getState
+	override def getState: State = coreReq.getState
 
 	/**
 	 */
-	override def isCommitted(): Boolean = coreReq.isCommitted
+	override def getStatus: StateRequestStatus = coreReq.getStatus
 
 	/**
 	 */
-	override def getLiveExperiences(): java.util.Set[Experience] = coreReq.getLiveExperiences
+	override def getLiveExperiences: java.util.Set[Experience] = coreReq.getLiveExperiences
 
 	/**
 	 */
@@ -52,20 +53,18 @@ class StateRequestImpl(private val session: Session, private val coreReq:CoreSta
 
 	/**
     */
-	override def getResolvedStateVariant(): StateVariant = coreReq.getResolvedStateVariant
+	override def getResolvedStateVariant: StateVariant = coreReq.getResolvedStateVariant
 	
 	/**
 	 */	
-	override def getResolvedParameters(): java.util.Map[java.lang.String, java.lang.String] = coreReq.getResolvedParameters
+	override def getResolvedParameters: java.util.Map[java.lang.String, java.lang.String] = coreReq.getResolvedParameters
    
    /*----------------------------------------------------------------------------------------*/
    /*                                     PUBLIC EXT                                         */
    /*----------------------------------------------------------------------------------------*/
-
-	def isBlank = coreReq.isBlank
 	
    def setResolvedStateVariant(variant: StateVariantImpl): Unit = coreReq.setResolvedStateVariant(variant)
-      
-   def commit(): Unit = coreReq.commit()
+         
+   def setStatus(status: StateRequestStatus): Unit = coreReq.setStatus(status)
 
 }

@@ -26,7 +26,7 @@ class EventWriterTest extends EmbeddedServerSpec {
    val sessionJson = ParameterizedString("""
       {"sid":"${sid:}",
        "ts": ${ts:%d}, 
-       "request": {"state": "state1","status": "OK","committed": true, 
+       "request": {"state": "state1", "status": 1, 
                   "params": [{"name": "PARAM ONE", "value": "Param One Value"},{"name": "PARAM TWO", "value": "Param Two Value"}], 
                   "exps": ["test1.A.true","test2.B.false","test3.C.false"]},
         "states": [{"state": "state1","count": 23}, {"state": "state2","count": 32}],

@@ -3,6 +3,7 @@ package com.variant.server.api;
 import java.util.Map;
 import java.util.Set;
 
+import com.variant.core.StateRequestStatus;
 import com.variant.core.schema.State;
 import com.variant.core.schema.StateVariant;
 import com.variant.core.schema.Test;
@@ -36,12 +37,12 @@ public interface StateRequest {
 	State getState();
 
 	/**
-	 * Has this state request been committed?
+	 * The current status of this state request.
      * 
-     *@return true if this request has ben committed, or false otherwise.
-	 * @since 0.7
+     *@return An object of type {@link Status}.
+	 * @since 0.9
 	 */
-	boolean isCommitted();
+	StateRequestStatus getStatus();
 
 	/**
 	 * <p>Targeted test experiences in tests instrumented on this state.

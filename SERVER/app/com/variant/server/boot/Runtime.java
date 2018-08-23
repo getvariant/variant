@@ -483,10 +483,10 @@ public class Runtime {
 			LOG.trace(sb.toString());
 		}   
 			
-		// Create the state visited event if there are any tests instrumented on this state.
-		if (!((StateRequestImpl)ssnImpl.getStateRequest()).isBlank()) {			
-			ssnImpl.addTraversedState(stateImpl);
-		}		
+		// Create the state visited event. Note that we will trigger one even for states
+		// that don't have any live experiences in the state, but it will be an "orphan"
+		// event without any experiences.
+		ssnImpl.addTraversedState(stateImpl);
 	}
 	
 }

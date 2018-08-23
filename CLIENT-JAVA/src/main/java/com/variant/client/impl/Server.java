@@ -20,6 +20,7 @@ import com.variant.core.impl.ServerError;
 import com.variant.core.impl.StateVisitedEvent;
 import com.variant.core.impl.TraceEventSupport;
 import com.variant.core.session.CoreSession;
+import com.variant.core.session.CoreStateRequest;
 
 /**
  * The abstraction of the remote server.  
@@ -309,12 +310,12 @@ public class Server {
 
 	/**
 	 * PUT /request.
-	 * Commit a state request and trigger the SVE.
+	 * Commit (or fail) a state request and trigger the SVE.
 	 * Note, theat the SVE is a local object and we don't marshal it entirely,
 	 * only the attributes and only at commit time.
 	 * 
 	 */
-	public boolean requestCommit(final StateRequestImpl req) {
+	public boolean requestCommit(final StateRequestImpl req, CoreStateRequest.ReqState reqState) {
 		
 		SessionImpl ssn = (SessionImpl) req.getSession();
 		StateVisitedEvent sve = (StateVisitedEvent) req.getStateVisitedEvent();
@@ -329,7 +330,7 @@ public class Server {
 				JsonGenerator jsonGen = new JsonFactory().createGenerator(body);
 				jsonGen.writeStartObject();
 				jsonGen.writeStringField("sid", ssn.getId());
-
+				jsonGen.writeNumberField("state", reqState.ordinal());
 				if (sve.getAttributes().size() > 0) {
 					jsonGen.writeObjectFieldStart("attrs");
 					for (Map.Entry<String, String> e: sve.getAttributes().entrySet()) {

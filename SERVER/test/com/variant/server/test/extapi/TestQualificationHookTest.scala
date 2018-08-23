@@ -2,6 +2,7 @@ package com.variant.server.test.extapi
 
 import scala.io.Source
 import scala.collection.JavaConversions._
+import com.variant.core.StateRequestStatus._
 import com.variant.server.impl.SessionImpl
 import com.variant.server.test.util.ParameterizedString
 import com.variant.server.test.hooks.TestQualificationHookNil
@@ -123,7 +124,7 @@ class TestQualificationHookTest extends EmbeddedServerSpec {
 		   stabile.get("test5") mustNot be (null)
 		   stabile.get("test6") mustNot be (null)
 		   ssn.getAttribute(TestQualificationHookNil.ATTR_KEY) mustBe "test3"
-		   req.asInstanceOf[StateRequestImpl].commit()
+		   req.asInstanceOf[StateRequestImpl].setStatus(Committed)
 
 	   }
 	   
@@ -299,7 +300,7 @@ class TestQualificationHookTest extends EmbeddedServerSpec {
 		   stabile.get("test5").toString() must startWith ("test5")
 		   stabile.get("test6").toString() must startWith ("test6.B")
 		   req.getResolvedParameters().get("path") must startWith ("/path/to/state2")
-		   req.asInstanceOf[StateRequestImpl].commit();
+		   req.asInstanceOf[StateRequestImpl].setStatus(Committed);
 	   }
 
 	   "honor session-current targeting settings when targeting for state3" in {

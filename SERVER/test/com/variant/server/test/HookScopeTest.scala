@@ -5,6 +5,7 @@ import scala.collection.mutable.ListBuffer
 import scala.collection.JavaConversions._
 import com.variant.core.UserError.Severity._
 import com.variant.core.schema.Test
+import com.variant.core.StateRequestStatus._
 import org.scalatest.Assertions._
 import com.variant.server.boot.ServerErrorLocal._
 import com.variant.core.impl.ServerError._
@@ -180,7 +181,7 @@ class HookScopeTest extends EmbeddedServerSpec {
      		ssn.getAttribute(TestQualificationHookNil.ATTR_KEY) mustBe "test1"
    		ssn.getAttribute(TestTargetingHookNil.ATTR_KEY) mustBe "test1"
    		// commit before targeting again.
-   		req.asInstanceOf[StateRequestImpl].commit();	
+   		req.asInstanceOf[StateRequestImpl].setStatus(Committed);	
 
    		// Test3 is instrumented on state2
    		ssn.targetForState(state2)

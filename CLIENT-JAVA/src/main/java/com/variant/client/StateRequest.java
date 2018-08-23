@@ -100,6 +100,8 @@ public interface StateRequest {
 	 * 
 	 * @param userData   An array of zero or more opaque objects which will be passed to {@link SessionIdTracker#save(Object...)}
 	 * and {@link TargetingTracker#save(Object...)} methods without interpretation.
+	 * 
+	 * @since 0.6
 	 */
 	void commit(Object...userData);
 	
@@ -107,9 +109,30 @@ public interface StateRequest {
 	 * Has this state request been committed?  A local operation, i.e. may not reflect the current state of this request
 	 * if already committed in a parallel session.
      * 
-     *@return true if this request has ben committed, or false otherwise.
+     *@return true if this request has been committed, or false otherwise.
 	 * @since 0.6
 	 */
 	boolean isCommitted();
+
+	/**
+	 * Fail this state request.
+     * The associated state visited {@link TraceEvent} is triggered.
+     * No-op if this request has already been failed in this or a parallel session.
+	 * 
+	 * @param userData   An array of zero or more opaque objects which will be passed to {@link SessionIdTracker#save(Object...)}
+	 * and {@link TargetingTracker#save(Object...)} methods without interpretation.
+	 * 
+	 * @since 0.9
+	 */
+	void fail(Object...userData);
 	
+	/**
+	 * Has this state request been failed?  A local operation, i.e. may not reflect the current state of this request
+	 * if already failed or committed in a parallel session.
+     * 
+     *@return true if this request has been failed, or false otherwise.
+	 * @since 0.9
+	 */
+	boolean isFailed();
+
 }

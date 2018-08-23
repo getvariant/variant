@@ -100,10 +100,6 @@ class SessionImpl(val coreSession: CoreSession, val schemaGen: SchemaGen) extend
 
    def setStateRequest(state: StateImpl, variant: StateVariantImpl) {
    
-      if (coreSession.getStateRequest != null && !coreSession.getStateRequest.isCommitted) {
-         throw new ServerException.Remote(ServerError.ACTIVE_REQUEST)                  
-      }
-
       val coreReq = new CoreStateRequest(coreSession, state);
       coreReq.setResolvedStateVariant(variant)
       coreSession.setStateRequest(coreReq)

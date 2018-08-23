@@ -82,8 +82,12 @@ public class StateRequestImpl implements StateRequest {
 		}
 	}
 
-	@Override
-	public void commit(Object... userData) {
+	/**
+	 * Both commit() and fail() call here.
+	 * @param state
+	 * @param userData
+	 */
+	public void _commit(CoreStateRequest.ReqState state, Object... userData) {
 		
 		checkState();
 		
@@ -94,14 +98,19 @@ public class StateRequestImpl implements StateRequest {
 			session.saveTrackers(userData);
 			
 			// Commit in shared state TODO: make this async
-			conn.client.server.requestCommit(this);
+			conn.client.server.requestCommit(this, state);
 			
 			sve = null;
 		}
 	}
 
+	@Override
+	public void commit(Object... userData) {
+		_commit(CoreStateRequest.ReqState.Committed);
+	}
+	
 	/**
-	 * No point in checking with the shares state, as that would be a race condition anyway.
+	 * Local op.
 	 */
 	@Override
 	public boolean isCommitted() {
@@ -109,10 +118,23 @@ public class StateRequestImpl implements StateRequest {
 	}
 
 	@Override
+	public void fail(Object... userData) {
+		_commit(CoreStateRequest.ReqState.Failed);
+	}
+	
+	/**
+	 * Local op.
+	 */
+	@Override
+	public boolean isFailed() {
+		return session.getCoreSession().getStateRequest().isFailed();
+	}
+
+	@Override
 	public TraceEvent getStateVisitedEvent() {
 		return sve;
 	}
-	
+
 	/**
 	 * Override with a narrower return type to return the client session, instead of core.
 	 */
