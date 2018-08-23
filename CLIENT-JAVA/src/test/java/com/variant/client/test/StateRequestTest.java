@@ -98,7 +98,14 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 		assertEquals(Committed, req2.getStatus());
 
 		// Can't fail
-		req.fail();
+		new ClientExceptionInterceptor() {
+			@Override public void toRun() {
+				req.fail();
+			}
+			@Override public void onThrown(VariantException e) {
+				assertEquals(ServerError.CANNOT_FAIL, e.getError());
+			}
+		}.assertThrown(VariantException.class);
 	}
 	
 	/**
@@ -194,7 +201,7 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 		assertEquals(Committed, req2.getStatus());
 		
 		assertNotNull(ssn1.targetForState(state3));
-		
+
 		new ClientExceptionInterceptor() {
 			@Override public void toRun() {
 			   	ssn2.targetForState(state3);
@@ -203,6 +210,19 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 				assertEquals(ServerError.ACTIVE_REQUEST, e.getError());
 			}
 		}.assertThrown();
+
+		ssn1.getStateRequest().commit();
+		
+		// Fail in parallel session should not go through
+		new ClientExceptionInterceptor() {
+			@Override public void toRun() {
+				ssn2.getStateRequest().fail();
+			}
+			@Override public void onThrown(VariantException e) {
+				assertEquals(ServerError.CANNOT_FAIL, e.getError());
+			}
+		}.assertThrown(VariantException.class);
+		
 	}
 
 	/**

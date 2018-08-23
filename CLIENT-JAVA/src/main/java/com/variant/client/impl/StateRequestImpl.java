@@ -6,6 +6,7 @@ import java.util.Set;
 import com.variant.client.Session;
 import com.variant.client.StateNotInstrumentedException;
 import com.variant.client.StateRequest;
+import com.variant.client.VariantException;
 import com.variant.core.StateRequestStatus;
 import com.variant.core.TraceEvent;
 import com.variant.core.impl.CoreException;
@@ -85,7 +86,7 @@ public class StateRequestImpl implements StateRequest {
 		
 		checkState();
 		
-		// If local state already reflets target state -- noop.
+		// If local state already reflects target state -- noop.
 		if (status != session.getCoreSession().getStateRequest().getStatus()) {
 		
 			// Persist targeting and session ID trackers.  Note that we expect the userData to apply to both.
@@ -100,11 +101,18 @@ public class StateRequestImpl implements StateRequest {
 
 	@Override
 	public void commit(Object... userData) {
-		_commit(StateRequestStatus.Committed);
+		
+		if (getStatus() == StateRequestStatus.Failed)
+			throw new VariantException(ServerError.CANNOT_COMMIT);
+		else if (getStatus() == StateRequestStatus.InProgress)
+			_commit(StateRequestStatus.Committed);
 	}
 	
 	@Override
 	public void fail(Object... userData) {
+		if (getStatus() == StateRequestStatus.Committed)
+			throw new VariantException(ServerError.CANNOT_FAIL);
+		else if (getStatus() == StateRequestStatus.InProgress)
 		_commit(StateRequestStatus.Failed);
 	}
 	

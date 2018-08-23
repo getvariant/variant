@@ -331,7 +331,7 @@ public class Server {
 				jsonGen.writeStartObject();
 				jsonGen.writeStringField("sid", ssn.getId());
 				jsonGen.writeNumberField("status", status.ordinal());
-				if (sve.getAttributes().size() > 0) {
+				if (sve != null && sve.getAttributes().size() > 0) {
 					jsonGen.writeObjectFieldStart("attrs");
 					for (Map.Entry<String, String> e: sve.getAttributes().entrySet()) {
 						jsonGen.writeStringField(e.getKey(), e.getValue());
