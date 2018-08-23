@@ -19,6 +19,14 @@ public class StateVisitedEvent extends TraceEventSupport implements Serializable
 	
 	/**
 	 */
+	public StateVisitedEvent(State state) {
+		super(TraceEvent.SVE_NAME);
+		attributes.put("$STATE", state.getName());
+		this.status = StateRequestStatus.InProgress;
+	}
+
+	/**
+	 */
 	public StateVisitedEvent(State state, StateRequestStatus status) {
 		super(TraceEvent.SVE_NAME);
 		attributes.put("$STATE", state.getName());

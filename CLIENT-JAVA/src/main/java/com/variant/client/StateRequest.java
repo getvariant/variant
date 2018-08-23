@@ -3,6 +3,7 @@ package com.variant.client;
 import java.util.Map;
 import java.util.Set;
 
+import com.variant.core.StateRequestStatus;
 import com.variant.core.TraceEvent;
 import com.variant.core.schema.State;
 import com.variant.core.schema.StateVariant;
@@ -37,6 +38,15 @@ public interface StateRequest {
 	State getState();
 	
 	/**
+	 * The current status of this state request.
+     * 
+     * @return An object of type {@link StateRequestStatus}.
+	 * 
+	 * @since 0.9
+	 */
+	StateRequestStatus getStatus();
+
+	/**
 	 * The state variant to which this state request resolved at run time. A state request can 
 	 * have either trivial resolution, or resolve to a {@link StateVariant}. Trivial resolution means that all live
 	 * experiences are control experiences, and the user session will be targeted for the base state. If at least one
@@ -64,22 +74,22 @@ public interface StateRequest {
 	/**
 	 * <p>Targeted test experiences in tests instrumented on this state.
 	 * An experience is live iff this session has been targeted for it and its containing test
-	 * is instrumented on this state and is neither off nor disqualified in this session.
+	 * is instrumented on this state and is neither off nor disqualified for in this session.
 	 * Both, variant and non-variant instrumentations are included.
 	 * 
-	 * @return Collection of {@link Test.Experience}s.
+	 * @return Collection of {@link Test.Experience}s. The collection will be of size 0 if no live experiences
+	 *         are instrumented on this state.
 	 * @since 0.6
 	 */
 	Set<Experience> getLiveExperiences();
 
 	/**
 	 * The live experience in a given test, if any. See {@link #getLiveExperiences()} for
-	 * definition of live experience. Throws the {@link StateNotInstrumentedException} if the
-	 * target state of this request, i.e. given by {@link #getState()}, is not instrumented 
-	 * by the given test. 
+	 * definition of live experience. 
 	 * 
 	 * @param test {@link Test}
-	 * @return An object of type {@link Experience}.
+	 * @return An object of type {@link Experience} if test is instrumented on this state,
+	 *         or <code>null</code> otherwise.
 	 * 
 	 * @since 0.6
 	 */
@@ -106,15 +116,6 @@ public interface StateRequest {
 	void commit(Object...userData);
 	
 	/**
-	 * Has this state request been committed?  A local operation, i.e. may not reflect the current state of this request
-	 * if already committed in a parallel session.
-     * 
-     *@return true if this request has been committed, or false otherwise.
-	 * @since 0.6
-	 */
-	boolean isCommitted();
-
-	/**
 	 * Fail this state request.
      * The associated state visited {@link TraceEvent} is triggered.
      * No-op if this request has already been failed in this or a parallel session.
@@ -126,13 +127,4 @@ public interface StateRequest {
 	 */
 	void fail(Object...userData);
 	
-	/**
-	 * Has this state request been failed?  A local operation, i.e. may not reflect the current state of this request
-	 * if already failed or committed in a parallel session.
-     * 
-     *@return true if this request has been failed, or false otherwise.
-	 * @since 0.9
-	 */
-	boolean isFailed();
-
 }

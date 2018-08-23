@@ -1,7 +1,8 @@
 package com.variant.client.test;
 
+import static com.variant.core.StateRequestStatus.Committed;
+import static com.variant.core.StateRequestStatus.InProgress;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -9,7 +10,6 @@ import static org.junit.Assert.assertTrue;
 import com.variant.client.Connection;
 import com.variant.client.Session;
 import com.variant.client.SessionExpiredException;
-import com.variant.client.StateNotInstrumentedException;
 import com.variant.client.StateRequest;
 import com.variant.client.VariantClient;
 import com.variant.client.VariantException;
@@ -57,14 +57,7 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 	   	assertEquals(req, ssn.getStateRequest());
 		assertEquals(5, req.getLiveExperiences().size());
 
-		new ClientExceptionInterceptor() {
-			@Override public void toRun() {
-				req.getLiveExperience(test1);
-			}
-			@Override public void onThrown(VariantException e) {
-				assertEquals(ServerError.STATE_NOT_INSTRUMENTED_BY_TEST, e.getError());
-			}
-		}.assertThrown(StateNotInstrumentedException.class);
+		assertNull(req.getLiveExperience(test1));
 		
 		Experience e2 = req.getLiveExperience(test2);
 		assertNotNull(e2);
@@ -76,9 +69,7 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 		assertNotNull(e5);
 		Experience e6 = req.getLiveExperience(test6);
 		assertNotNull(e6);
-	   	
-		assertFalse(req.isCommitted());
-		
+	   			
 		// On occasion, we may get a trivial resolution and these will fail ????
 		assertNotNull(req.getResolvedParameters().get("path"));
 		// assertNotNull(req.getResolvedStateVariant());     See #119. Should never return null.        
@@ -91,19 +82,23 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 		assertEquals(1, event.getAttributes().size());
 		assertEquals(state1.getName(), event.getAttribute("$STATE"));
 			
-		assertFalse(req.isCommitted());
+		assertTrue(req.getStatus() == InProgress);
 		req.commit();
-		assertTrue(req.isCommitted());
+		assertEquals(Committed, req.getStatus());
 		assertNull(req.getStateVisitedEvent());		
 		
 		// No-op.
 		req.commit();
-		
+
+		assertEquals(Committed, req.getStatus());
+
 		// Reget the session -- should not change anything.
 		Session ssn2 = conn.getSession(sid);
 		StateRequest req2 = ssn2.getStateRequest();
-		assertTrue(req2.isCommitted());
+		assertEquals(Committed, req2.getStatus());
 
+		// Can't fail
+		req.fail();
 	}
 	
 	/**
@@ -148,9 +143,9 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 		assertEquals("/path/to/state2/test4.C+test5.C", req.getResolvedParameters().get("path"));
 		assertNotNull(req.getResolvedStateVariant());
 		
-		assertFalse(req.isCommitted());
+		assertEquals(InProgress, req.getStatus());
 		req.commit();
-		assertTrue(req.isCommitted());
+		assertEquals(Committed, req.getStatus());
 		assertNull(req.getStateVisitedEvent());		
 		// No-op.
 		req.commit();
@@ -181,9 +176,9 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 	   	
 	   	final StateRequest req1 = ssn1.targetForState(state2);
 		
-		assertFalse(req1.isCommitted());
+		assertEquals(InProgress, req1.getStatus());
 		req1.commit();
-		assertTrue(req1.isCommitted());
+		assertEquals(Committed, req1.getStatus());
 
 		// Reget the session and try targeting again -- should not work.
 		final Session ssn2 = conn.getOrCreateSession(userData);
@@ -193,9 +188,10 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 		final StateRequest req2 = ssn2.getStateRequest();
 		assertNotEquals(req1, req2);
 		
-		assertTrue(req1.isCommitted());
-		assertTrue(req2.isCommitted());
+		assertEquals(Committed, req1.getStatus());
+		assertEquals(Committed, req2.getStatus());
 		req2.commit();
+		assertEquals(Committed, req2.getStatus());
 		
 		assertNotNull(ssn1.targetForState(state3));
 		
@@ -274,9 +270,9 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 		ssn.setAttribute("user-agent", "Any string");
 		StateRequest req = ssn.targetForState(schema.getState("newOwner"));
 		assertEquals(req, ssn.getStateRequest());
-		assertFalse(req.isCommitted());
+		assertEquals(InProgress, req.getStatus());
 		req.commit();
-		assertTrue(req.isCommitted());
+		assertEquals(Committed, req.getStatus());
 	}
 	
 	@org.junit.Test
@@ -304,22 +300,22 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 	   	assertNotEquals(req2, req1);
 	   	assertEquals(ssn2, req2.getSession());
 
-	   	assertFalse(req1.isCommitted());
-	   	assertFalse(req2.isCommitted());
+		assertEquals(InProgress, req1.getStatus());
+		assertEquals(InProgress, req2.getStatus());
 	   	assertEqualAsSets(req2.getLiveExperiences(), req1.getLiveExperiences());
 	   	assertEqualAsSets(req2.getResolvedParameters(), req1.getResolvedParameters());
 	   	assertEquals(req2.getResolvedStateVariant().toString(), req1.getResolvedStateVariant().toString());
 	   	assertEquals(req2.getStateVisitedEvent().toString(), req1.getStateVisitedEvent().toString());
 	   	
 	   	// Commit in req2
-	   	assertFalse(req2.isCommitted());
+		assertEquals(InProgress, req2.getStatus());
 	   	req2.commit();
-	   	assertTrue(req2.isCommitted());
+		assertEquals(Committed, req2.getStatus());
 	   	
 	   	// req1 doesn't know about it
-	   	assertFalse(req1.isCommitted());
+		assertEquals(InProgress, req1.getStatus());
 	   	req1.commit();
-	   	assertTrue(req1.isCommitted());
+		assertEquals(Committed, req1.getStatus());
 
 	}
 

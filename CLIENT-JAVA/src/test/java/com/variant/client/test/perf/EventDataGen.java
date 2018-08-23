@@ -1,18 +1,10 @@
 package com.variant.client.test.perf;
 
 
-import static org.junit.Assert.assertNotNull;
-
 import java.util.Random;
 
-import com.variant.client.Connection;
-import com.variant.client.Session;
-import com.variant.client.StateRequest;
 import com.variant.client.VariantClient;
 import com.variant.client.test.util.ClientBaseTestWithServer;
-import com.variant.core.schema.Schema;
-import com.variant.core.schema.State;
-import com.variant.core.schema.Test;
 
 public class EventDataGen extends ClientBaseTestWithServer {
       

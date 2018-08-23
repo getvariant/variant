@@ -7,8 +7,6 @@ import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.entity.ByteArrayEntity;
 
-import com.variant.client.Connection;
-
 public class HttpAdapter {
 		
 	private final HttpRemoter remoter;

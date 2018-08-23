@@ -6,6 +6,7 @@ import java.util.Set;
 import com.variant.client.Session;
 import com.variant.client.StateNotInstrumentedException;
 import com.variant.client.StateRequest;
+import com.variant.core.StateRequestStatus;
 import com.variant.core.TraceEvent;
 import com.variant.core.impl.CoreException;
 import com.variant.core.impl.ServerError;
@@ -72,14 +73,7 @@ public class StateRequestImpl implements StateRequest {
 	@Override
 	public Experience getLiveExperience(Test test) {
 		checkState();
-		try {
-			return session.getCoreSession().getStateRequest().getLiveExperience(test);
-		}
-		catch (CoreException.User e) {
-			if (e.error.getCode() == ServerError.STATE_NOT_INSTRUMENTED_BY_TEST.getCode())
-				throw new StateNotInstrumentedException(e);
-			else throw e;
-		}
+		return session.getCoreSession().getStateRequest().getLiveExperience(test);
 	}
 
 	/**
@@ -87,18 +81,18 @@ public class StateRequestImpl implements StateRequest {
 	 * @param state
 	 * @param userData
 	 */
-	public void _commit(CoreStateRequest.ReqState state, Object... userData) {
+	public void _commit(StateRequestStatus status, Object... userData) {
 		
 		checkState();
 		
-		// If locally committed, don't bother.
-		if ( ! session.getCoreSession().getStateRequest().isCommitted()) {
+		// If local state already reflets target state -- noop.
+		if (status != session.getCoreSession().getStateRequest().getStatus()) {
 		
 			// Persist targeting and session ID trackers.  Note that we expect the userData to apply to both.
 			session.saveTrackers(userData);
 			
 			// Commit in shared state TODO: make this async
-			conn.client.server.requestCommit(this, state);
+			conn.client.server.requestCommit(this, status);
 			
 			sve = null;
 		}
@@ -106,28 +100,17 @@ public class StateRequestImpl implements StateRequest {
 
 	@Override
 	public void commit(Object... userData) {
-		_commit(CoreStateRequest.ReqState.Committed);
+		_commit(StateRequestStatus.Committed);
 	}
 	
-	/**
-	 * Local op.
-	 */
-	@Override
-	public boolean isCommitted() {
-		return session.getCoreSession().getStateRequest().isCommitted();
-	}
-
 	@Override
 	public void fail(Object... userData) {
-		_commit(CoreStateRequest.ReqState.Failed);
+		_commit(StateRequestStatus.Failed);
 	}
 	
-	/**
-	 * Local op.
-	 */
 	@Override
-	public boolean isFailed() {
-		return session.getCoreSession().getStateRequest().isFailed();
+	public StateRequestStatus getStatus() {
+		return session.getCoreSession().getStateRequest().getStatus();
 	}
 
 	@Override

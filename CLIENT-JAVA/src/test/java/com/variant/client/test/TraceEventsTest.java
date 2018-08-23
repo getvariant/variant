@@ -1,5 +1,7 @@
 package com.variant.client.test;
 
+import static com.variant.core.StateRequestStatus.Committed;
+import static com.variant.core.StateRequestStatus.InProgress;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -70,7 +72,7 @@ public class TraceEventsTest extends ClientBaseTestWithServer {
 		// Reget the session.  
 		Session ssn2 = conn.getSessionById(sid);
 		StateRequest req2 = ssn2.getStateRequest();		
-		assertFalse(req2.isCommitted());
+		assertEquals(InProgress, req2.getStatus());
 		assertEquals("ssn1 attr value", ssn2.getAttribute("ssn1 attr key"));
 
 		StateVisitedEvent event2 = (StateVisitedEvent) req2.getStateVisitedEvent();
@@ -98,9 +100,10 @@ public class TraceEventsTest extends ClientBaseTestWithServer {
 		assertTrue(event.eventExperiences.stream().anyMatch(ee -> ee.testName.equals("test6")));
 		
 		// Commit back in ssn1. No extra sve event should be written.
-		assertTrue(req2.isCommitted());
-		assertFalse(req1.isCommitted());
+		assertEquals(Committed, req2.getStatus());
+		assertEquals(InProgress, req1.getStatus());
 		req1.commit();
+		assertEquals(Committed, req1.getStatus());
 		Thread.sleep(EVENT_WRITER_MAX_DELAY);
 		assertEquals(1, new TraceEventReader().read(e -> e.sessionId.equals(sid)).size());
 

@@ -1,6 +1,7 @@
 package com.variant.client.test.util.event;
 
 import java.io.StringWriter;
+
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
 

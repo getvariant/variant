@@ -1,8 +1,5 @@
 package com.variant.client.impl;
 
-import com.variant.client.VariantException;
-import com.variant.client.net.Payload;
-import com.variant.core.impl.ServerError;
 
 
 

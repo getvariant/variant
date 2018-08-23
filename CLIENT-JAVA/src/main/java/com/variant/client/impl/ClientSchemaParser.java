@@ -1,8 +1,8 @@
 package com.variant.client.impl;
 
 import com.variant.core.schema.parser.FlusherService;
-import com.variant.core.schema.parser.SchemaParser;
 import com.variant.core.schema.parser.HooksService;
+import com.variant.core.schema.parser.SchemaParser;
 
 /**
  * Client side schema parser is the same as core, but uses a null hooks service

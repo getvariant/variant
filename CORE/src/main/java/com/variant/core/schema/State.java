@@ -60,7 +60,7 @@ public interface State {
 	 * @param test The test of interest.
 	 * 
 	 * @return <code>true</code> if this state is non-variant in the given test, <code>false</code> if this test.
-	 * @throws VariantRuntimeException if this state is not instrumented by the given test.
+	 * @throws StateNotInstrumentedException if this state is not instrumented by the given test.
 	 * @since 0.5
 	 */
 	public boolean isNonvariantIn(Test test);

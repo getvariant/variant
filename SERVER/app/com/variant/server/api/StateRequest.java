@@ -39,7 +39,8 @@ public interface StateRequest {
 	/**
 	 * The current status of this state request.
      * 
-     *@return An object of type {@link Status}.
+     * @return An object of type {@link StateRequestStatus}.
+	 * 
 	 * @since 0.9
 	 */
 	StateRequestStatus getStatus();
