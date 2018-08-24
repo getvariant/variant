@@ -1,11 +1,12 @@
 package com.variant.client.test;
 
-import static com.variant.core.StateRequestStatus.Committed;
-import static com.variant.core.StateRequestStatus.InProgress;
+import static com.variant.core.StateRequestStatus.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+
+import java.util.List;
 
 import com.variant.client.Connection;
 import com.variant.client.Session;
@@ -15,6 +16,8 @@ import com.variant.client.VariantClient;
 import com.variant.client.VariantException;
 import com.variant.client.impl.SchemaImpl;
 import com.variant.client.test.util.ClientBaseTestWithServer;
+import com.variant.client.test.util.event.TraceEventFromDatabase;
+import com.variant.client.test.util.event.TraceEventReader;
 import com.variant.core.TraceEvent;
 import com.variant.core.impl.ServerError;
 import com.variant.core.impl.StateVisitedEvent;
@@ -27,13 +30,15 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 
 	private final VariantClient client = VariantClient.Factory.getInstance();
 		
+	public StateRequestTest() {
+		
+	}
+	
 	/**
 	 */
 	@org.junit.Test
 	public void noStabilTest() throws Exception {
 		
-		restartServer();
-
 		Connection conn = client.connectTo("big_conjoint_schema");		
 
 		// Via SID tracker, create.
@@ -113,8 +118,6 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 	//@org.junit.Test
 	public void deterministicTest() throws Exception {
 		
-		restartServer();
-
 		Connection conn = client.connectTo("big_conjoint_schema");
 		
 		// Some session, just to get the schema.
@@ -164,8 +167,6 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 	@org.junit.Test
 	public void commitTest() throws Exception {
 		
-		restartServer();
-
 		Connection conn = client.connectTo("big_conjoint_schema");
 
 		// Some session, just to get the schema.
@@ -225,13 +226,41 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 		
 	}
 
+	@org.junit.Test
+	public void failTest() throws Exception {
+		
+		Connection conn = client.connectTo("big_conjoint_schema");
+
+		String sid = newSid();
+		Schema schema = conn.getOrCreateSession("foo").getSchema();
+
+		Session ssn1 = conn.getOrCreateSession(sid);
+		assertNotNull(ssn1);
+		assertEquals(sid, ssn1.getId());
+
+	   	final State state2 = schema.getState("state2");
+	   	final State state3 = schema.getState("state3");
+	   	
+	   	final StateRequest req1 = ssn1.targetForState(state2);
+	   	req1.getStateVisitedEvent().setAttribute("foo", "bar");
+	   	
+	   	assertEquals(InProgress, req1.getStatus());
+	   	req1.fail();
+	   	assertEquals(Failed, req1.getStatus());
+	   	
+		Thread.sleep(EVENT_WRITER_MAX_DELAY);
+		List<TraceEventFromDatabase> events = new TraceEventReader().read(e -> e.sessionId.equals(sid));
+		assertEquals(1, events.size());
+		TraceEventFromDatabase event = events.get(0);
+		System.out.println("***\n" + event);
+		
+	}
+	
 	/**
 	 */
 	@org.junit.Test
 	public void sessionExpiredTest() throws Exception {
 		
-		restartServer();
-
 		Connection conn = client.connectTo("big_conjoint_schema");		
 
 		String sid = newSid();
@@ -262,8 +291,6 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 	@org.junit.Test
 	public void targetingHookExceptionTest() throws Exception {
 		
-		restartServer();
-
 		Connection conn = client.connectTo("petclinic");		
 
 		String sid = newSid();

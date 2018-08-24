@@ -108,9 +108,9 @@ class RequestController @Inject() (
 
          stateReq.asInstanceOf[StateRequestImpl].setStatus(status); 
 
-         // Trigger state visited even, but only if we have live experiences
+         // Trigger state visited, but only if we have live experiences
          // at this state. As opposed to custom events, state visited events
-         // cannot be orphan.
+         // cannot be orphan because we didn't really visit that state.
          if (!stateReq.getLiveExperiences().isEmpty()) {
             val sve = new StateVisitedEvent(stateReq.getState, status, attrs)                  
       	   ssn.triggerEvent(new ServerTraceEvent(sve));

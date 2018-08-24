@@ -173,8 +173,9 @@ class TraceEventTest extends EmbeddedServerSpec {
          
          val event = eventsFromDatabase.head
          event.name mustBe TraceEvent.SVE_NAME
-         event.attributes.size mustBe 1
+         event.attributes.size mustBe 2
          event.attributes("$STATE") mustBe "state4"
+         event.attributes("$STATUS") mustBe "Committed"
          event.sessionId mustBe sid
          event.createdOn.getTime mustBe (System.currentTimeMillis() - millisToSleep) +- 100   
          event.eventExperiences.size() mustBe 5
@@ -242,8 +243,9 @@ class TraceEventTest extends EmbeddedServerSpec {
          
          val event = eventsFromDatabase.head
          event.name mustBe TraceEvent.SVE_NAME
-         event.attributes.size mustBe 4
+         event.attributes.size mustBe 5
          event.attributes("$STATE") mustBe "state3"
+         event.attributes("$STATUS") mustBe "Committed"
          event.attributes("key1") mustBe "val1"
          event.attributes("key2") mustBe "val2"
          event.attributes("key3") mustBe "val3"

@@ -118,8 +118,9 @@ class RequestTest extends EmbeddedServerSpec {
          for (e <- reader.read(e => e.sessionId == sid)) {
             e.sessionId mustBe sid
             e.name mustBe TraceEvent.SVE_NAME
-            e.attributes.size mustBe 1
+            e.attributes.size mustBe 2
             e.attributes("$STATE") mustBe "state2"
+            e.attributes("$STATUS") mustBe "Committed"
             e.eventExperiences.toSet[EventExperienceFromDatabase].map {x => 
                schema.getTest(x.testName).getExperience(x.experienceName)
                } mustBe stateReq.getLiveExperiences.toSet
@@ -197,8 +198,8 @@ class RequestTest extends EmbeddedServerSpec {
          for (e <- reader.read(e => e.sessionId == sid)) {
             e.sessionId mustBe sid
             e.name mustBe TraceEvent.SVE_NAME
-            e.attributes.size mustBe 3
-            e.attributes mustBe Map("$STATE"->"state3", "key1"->"val1", "key2"->"val2")
+            e.attributes.size mustBe 4
+            e.attributes mustBe Map("$STATE"->"state3", "$STATUS" -> "Committed", "key1"->"val1", "key2"->"val2")
             e.eventExperiences.toSet[EventExperienceFromDatabase].map {x => 
                schema.getTest(x.testName).getExperience(x.experienceName)
                } mustBe stateReq.getLiveExperiences.toSet

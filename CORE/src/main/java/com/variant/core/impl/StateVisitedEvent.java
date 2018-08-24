@@ -56,31 +56,4 @@ public class StateVisitedEvent extends TraceEventSupport implements Serializable
 		return status;
 	}
 	
-	/**
-	 * Private instantiation, for desearialization, when state is not yet known.
-	 *
-	public StateVisitedEvent(CoreSession session) {
-		super(session, EVENT_NAME);
-	}
-	*/
-	/**
-	 * Unmarschall from a JSON string.
-	 * This now lives on the server. Client never unmarshals trace events.
-	 *
-	public static StateVisitedEvent fromJson(CoreSession session, String jsonStr) 
-			throws JsonParseException, JsonMappingException, IOException {
-		
-		ObjectMapper mapper = new ObjectMapper();		
-		@SuppressWarnings("unchecked")
-		Map<String,?> mappedJson = mapper.readValue(jsonStr, Map.class);
-
-		String sid = (String) mappedJson.get(FIELD_NAME_SID);
-		if (!sid.equals(session.getId()))
-			throw new CoreException.Internal(
-					String.format("Session id [%s] does not match payload SID [%s]", session.getId(), sid));
-
-		return TraceEventSupport.fromJson(new StateVisitedEvent(session), mappedJson);
-
-	}
-	*/
 }

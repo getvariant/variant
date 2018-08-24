@@ -35,6 +35,7 @@ public class ServerTraceEvent implements TraceEvent {
 	 */
 	public ServerTraceEvent(StateVisitedEvent sve) {
 		this(sve.getName(), sve.getAttributes());
+		attributes.put("$STATUS", sve.getStatus().toString());
 	}
 
 	//---------------------------------------------------------------------------------------------//
