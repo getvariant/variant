@@ -105,7 +105,7 @@ public class StateRequestImpl implements StateRequest {
 		if (getStatus() == StateRequestStatus.Failed)
 			throw new VariantException(ServerError.CANNOT_COMMIT);
 		else if (getStatus() == StateRequestStatus.InProgress)
-			_commit(StateRequestStatus.Committed);
+			_commit(StateRequestStatus.Committed, userData);
 	}
 	
 	@Override
@@ -113,7 +113,7 @@ public class StateRequestImpl implements StateRequest {
 		if (getStatus() == StateRequestStatus.Committed)
 			throw new VariantException(ServerError.CANNOT_FAIL);
 		else if (getStatus() == StateRequestStatus.InProgress)
-		_commit(StateRequestStatus.Failed);
+		_commit(StateRequestStatus.Failed, userData);
 	}
 	
 	@Override
