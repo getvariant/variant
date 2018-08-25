@@ -31,7 +31,7 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 	private final VariantClient client = VariantClient.Factory.getInstance();
 		
 	public StateRequestTest() {
-		
+		restartServer();
 	}
 	
 	/**
@@ -232,28 +232,53 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 		Connection conn = client.connectTo("big_conjoint_schema");
 
 		String sid = newSid();
-		Schema schema = conn.getOrCreateSession("foo").getSchema();
-
 		Session ssn1 = conn.getOrCreateSession(sid);
+		Schema schema = ssn1.getSchema();
+
 		assertNotNull(ssn1);
 		assertEquals(sid, ssn1.getId());
 
-	   	final State state2 = schema.getState("state2");
-	   	final State state3 = schema.getState("state3");
+		State state2 = schema.getState("state2");
 	   	
-	   	final StateRequest req1 = ssn1.targetForState(state2);
+	   	StateRequest req1 = ssn1.targetForState(state2);
 	   	req1.getStateVisitedEvent().setAttribute("foo", "bar");
 	   	
 	   	assertEquals(InProgress, req1.getStatus());
+	   	
+	   	StateRequest req2 = conn.getSessionById(sid).getStateRequest();
+	   	
 	   	req1.fail();
 	   	assertEquals(Failed, req1.getStatus());
 	   	
+		// Try committing in same session.
+		new ClientExceptionInterceptor() {
+			@Override public void toRun() {
+				req1.commit();
+			}
+			@Override public void onThrown(VariantException e) {
+				assertEquals(ServerError.CANNOT_COMMIT, e.getError());
+			}
+		}.assertThrown(VariantException.class);
+
+		// Try committing in a parallel session.
+		new ClientExceptionInterceptor() {
+			@Override public void toRun() {
+				req2.commit();
+			}
+			@Override public void onThrown(VariantException e) {
+				assertEquals(ServerError.CANNOT_COMMIT, e.getError());
+			}
+		}.assertThrown(VariantException.class);
+
 		Thread.sleep(EVENT_WRITER_MAX_DELAY);
 		List<TraceEventFromDatabase> events = new TraceEventReader().read(e -> e.sessionId.equals(sid));
 		assertEquals(1, events.size());
 		TraceEventFromDatabase event = events.get(0);
-		System.out.println("***\n" + event);
-		
+		assertEquals("$STATE_VISIT", event.name);
+		assertEquals(3, event.attributes.size());
+		assertEquals("state2", event.attributes.get("$STATE"));
+		assertEquals("Failed", event.attributes.get("$STATUS"));
+		assertEquals("bar", event.attributes.get("foo"));		
 	}
 	
 	/**
@@ -325,8 +350,6 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 	@org.junit.Test
 	public void targetFromParallelConnectionsTest() throws Exception {
 		
-		restartServer();
-
 		Connection conn1 = client.connectTo("big_conjoint_schema");		
 
 		String sid = newSid();

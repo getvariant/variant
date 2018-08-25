@@ -372,7 +372,7 @@ class RequestTest extends EmbeddedServerSpec {
                coreSsn.getStateRequest mustBe (null)
          }
  
-         // Target sesion for "state4"
+         // Target sesion for "state5"
          val reqBody1 = Json.obj(
             "sid" -> sid,
             "state" -> "state5"

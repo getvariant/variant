@@ -90,7 +90,9 @@ public class TraceEventsTest extends ClientBaseTestWithServer {
 		TraceEventFromDatabase event = events.get(0);
 		//System.out.println(event);
 		assertEquals(TraceEvent.SVE_NAME, event.name);
-		assertEqualAsSets(CollectionsUtils.pairsToMap(new Pair("$STATE", "state1"), new Pair("sve2 atr key", "sve2 attr value")), event.attributes);
+		assertEqualAsSets(
+				CollectionsUtils.pairsToMap(new Pair("$STATE", "state1"), new Pair("$STATUS", "Committed"), new Pair("sve2 atr key", "sve2 attr value")), 
+				event.attributes);
 		assertEquals(5, event.eventExperiences.size());
 		assertFalse(event.eventExperiences.stream().anyMatch(ee -> ee.testName.equals("test1")));
 		assertTrue(event.eventExperiences.stream().anyMatch(ee -> ee.testName.equals("test2")));
@@ -177,8 +179,9 @@ public class TraceEventsTest extends ClientBaseTestWithServer {
 
 		TraceEventFromDatabase custom3 = events.get(2);
 		assertEquals(TraceEvent.SVE_NAME, custom3.name);
-		assertEquals(2, custom3.attributes.size());
+		assertEquals(3, custom3.attributes.size());
 		assertEquals("state3", custom3.attributes.get("$STATE"));
+		assertEquals("Committed", custom3.attributes.get("$STATUS"));
 		assertEquals("yang", custom3.attributes.get("yin"));
 		assertEquals(5, custom3.eventExperiences.size());
 	}
