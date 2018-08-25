@@ -207,6 +207,236 @@ class RequestTest extends EmbeddedServerSpec {
          
       }
       
+      "refuse to fail after commit" in {
+
+         val sid = newSid
+         
+         assertResp(route(app, httpReq(POST, context + "/session/big_conjoint_schema/" + sid)))
+            .isOk
+            .withBodyJson { json => 
+               val coreSsn = CoreSession.fromJson((json \ "session").as[String], schema)
+               coreSsn.getStateRequest mustBe (null)
+         }
+ 
+         // Target sesion for "state4"
+         val reqBody1 = Json.obj(
+            "sid" -> sid,
+            "state" -> "state4"
+            ).toString
+         
+         assertResp(route(app, httpReq(POST, context + "/request").withTextBody(reqBody1)))
+            .isOk
+            .withBodyJson { json => 
+               val coreSsn = CoreSession.fromJson((json \ "session").as[String], schema)
+               val stateReq = coreSsn.getStateRequest
+               stateReq mustNot be (null)
+               stateReq.getStatus mustBe InProgress
+               stateReq.getLiveExperiences.size mustBe 5
+               stateReq.getResolvedParameters.size mustBe 1
+               stateReq.getSession.getId mustBe sid
+               stateReq.getState mustBe schema.getState("state4")
+            }
+
+         val serverSsn = server.ssnStore.get(sid).get.asInstanceOf[SessionImpl]
+
+         serverSsn.getStateRequest().getStatus mustBe InProgress
+
+         // Commit with SVE attributes.
+         val reqBody2 = Json.obj(
+            "sid" -> sid,
+            "status" -> Committed.ordinal,
+            "attrs" -> Map("key1"->"val1", "key2"->"val2")
+         ).toString
+           
+         assertResp(route(app, httpReq(PUT, context + "/request").withTextBody(reqBody2)))
+            .isOk
+            .withBodyJson { json => 
+               val coreSsn = CoreSession.fromJson((json \ "session").as[String], schema)
+               val stateReq = coreSsn.getStateRequest
+               stateReq mustNot be (null)
+               stateReq.getStatus mustBe Committed
+               stateReq.getLiveExperiences.size mustBe 5
+               stateReq.getResolvedParameters.size mustBe 1
+               stateReq.getSession.getId mustBe sid
+               stateReq.getState mustBe schema.getState("state4")
+         }
+         
+         serverSsn.getStateRequest().getStatus mustBe Committed
+
+         // Try failing...
+         val reqBody3 = Json.obj(
+            "sid" -> sid,
+            "status" -> Failed.ordinal,
+            "attrs" -> Map("key1"->"val1", "key2"->"val2")
+         ).toString
+
+         assertResp(route(app, httpReq(PUT, context + "/request").withTextBody(reqBody3)))
+            .isError(CANNOT_FAIL)
+            
+         // Only commit sve in written
+         Thread.sleep(2000)
+         val events = reader.read(e => e.sessionId == sid)
+         events.size mustBe 1
+         val sve = events.head
+         sve.sessionId mustBe sid
+         sve.name mustBe TraceEvent.SVE_NAME
+         sve.attributes.size mustBe 4
+         sve.attributes mustBe Map("$STATE"->"state4", "$STATUS"->"Committed", "key1"->"val1", "key2"->"val2")
+
+      }
+
+      "refulse to commit a failed request" in {
+
+         val sid = newSid
+         
+         assertResp(route(app, httpReq(POST, context + "/session/big_conjoint_schema/" + sid)))
+            .isOk
+            .withBodyJson { json => 
+               val coreSsn = CoreSession.fromJson((json \ "session").as[String], schema)
+               coreSsn.getStateRequest mustBe (null)
+         }
+ 
+         // Target sesion for "state4"
+         val reqBody1 = Json.obj(
+            "sid" -> sid,
+            "state" -> "state5"
+            ).toString
+         
+         assertResp(route(app, httpReq(POST, context + "/request").withTextBody(reqBody1)))
+            .isOk
+            .withBodyJson { json => 
+               val coreSsn = CoreSession.fromJson((json \ "session").as[String], schema)
+               val stateReq = coreSsn.getStateRequest
+               stateReq mustNot be (null)
+               stateReq.getStatus mustBe InProgress
+               stateReq.getLiveExperiences.size mustBe 4
+               stateReq.getResolvedParameters.size mustBe 1
+               stateReq.getSession.getId mustBe sid
+               stateReq.getState mustBe schema.getState("state5")
+            }
+
+         val serverSsn = server.ssnStore.get(sid).get.asInstanceOf[SessionImpl]
+         serverSsn.getStateRequest().getStatus mustBe InProgress
+
+         // Fail with SVE attributes.
+         val reqBody2 = Json.obj(
+            "sid" -> sid,
+            "status" -> Failed.ordinal,
+            "attrs" -> Map("key1"->"val1", "key2"->"val2")
+         ).toString
+           
+         assertResp(route(app, httpReq(PUT, context + "/request").withTextBody(reqBody2)))
+            .isOk
+            .withBodyJson { json => 
+               val coreSsn = CoreSession.fromJson((json \ "session").as[String], schema)
+               val stateReq = coreSsn.getStateRequest
+               stateReq mustNot be (null)
+               stateReq.getStatus mustBe Failed
+               stateReq.getLiveExperiences.size mustBe 4
+               stateReq.getResolvedParameters.size mustBe 1
+               stateReq.getSession.getId mustBe sid
+               stateReq.getState mustBe schema.getState("state5")
+         }
+         
+         serverSsn.getStateRequest().getStatus mustBe Failed
+
+         // Attempt to commit.
+         val reqBody3 = Json.obj(
+            "sid" -> sid,
+            "status" -> Committed.ordinal
+         ).toString
+           
+         assertResp(route(app, httpReq(PUT, context + "/request").withTextBody(reqBody3)))
+            .isError(CANNOT_COMMIT)
+
+         // Only failure sve in written
+         Thread.sleep(2000)
+         val events = reader.read(e => e.sessionId == sid)
+         events.size mustBe 1
+         val sve = events.head
+         sve.sessionId mustBe sid
+         sve.name mustBe TraceEvent.SVE_NAME
+         sve.attributes.size mustBe 4
+         sve.attributes mustBe Map("$STATE"->"state5", "$STATUS"->"Failed", "key1"->"val1", "key2"->"val2")
+
+      }
+      
+      "refulse to undo failed status" in {
+
+         val sid = newSid
+         
+         assertResp(route(app, httpReq(POST, context + "/session/big_conjoint_schema/" + sid)))
+            .isOk
+            .withBodyJson { json => 
+               val coreSsn = CoreSession.fromJson((json \ "session").as[String], schema)
+               coreSsn.getStateRequest mustBe (null)
+         }
+ 
+         // Target sesion for "state4"
+         val reqBody1 = Json.obj(
+            "sid" -> sid,
+            "state" -> "state5"
+            ).toString
+         
+         assertResp(route(app, httpReq(POST, context + "/request").withTextBody(reqBody1)))
+            .isOk
+            .withBodyJson { json => 
+               val coreSsn = CoreSession.fromJson((json \ "session").as[String], schema)
+               val stateReq = coreSsn.getStateRequest
+               stateReq mustNot be (null)
+               stateReq.getStatus mustBe InProgress
+               stateReq.getLiveExperiences.size mustBe 4
+               stateReq.getResolvedParameters.size mustBe 1
+               stateReq.getSession.getId mustBe sid
+               stateReq.getState mustBe schema.getState("state5")
+            }
+
+         val serverSsn = server.ssnStore.get(sid).get.asInstanceOf[SessionImpl]
+         serverSsn.getStateRequest().getStatus mustBe InProgress
+
+         // Fail with SVE attributes.
+         val reqBody2 = Json.obj(
+            "sid" -> sid,
+            "status" -> Failed.ordinal,
+            "attrs" -> Map("key1"->"val1", "key2"->"val2")
+         ).toString
+           
+         assertResp(route(app, httpReq(PUT, context + "/request").withTextBody(reqBody2)))
+            .isOk
+            .withBodyJson { json => 
+               val coreSsn = CoreSession.fromJson((json \ "session").as[String], schema)
+               val stateReq = coreSsn.getStateRequest
+               stateReq mustNot be (null)
+               stateReq.getStatus mustBe Failed
+               stateReq.getLiveExperiences.size mustBe 4
+               stateReq.getResolvedParameters.size mustBe 1
+               stateReq.getSession.getId mustBe sid
+               stateReq.getState mustBe schema.getState("state5")
+         }
+         
+         serverSsn.getStateRequest().getStatus mustBe Failed
+
+         // Attempt to send invalid status 
+         val reqBody3 = Json.obj(
+            "sid" -> sid,
+            "status" -> InProgress.ordinal
+         ).toString
+           
+         assertResp(route(app, httpReq(PUT, context + "/request").withTextBody(reqBody3)))
+            .isError(InvalidRequestStatus, "InProgress")
+
+         // Only failure sve in written
+         Thread.sleep(2000)
+         val events = reader.read(e => e.sessionId == sid)
+         events.size mustBe 1
+         val sve = events.head
+         sve.sessionId mustBe sid
+         sve.name mustBe TraceEvent.SVE_NAME
+         sve.attributes.size mustBe 4
+         sve.attributes mustBe Map("$STATE"->"state5", "$STATUS"->"Failed", "key1"->"val1", "key2"->"val2")
+
+      }
+
       "refuse to create a new state request on top of an existing one" in {
 
          val sid = newSid

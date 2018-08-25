@@ -90,6 +90,9 @@ class RequestController @Inject() (
          StateRequestStatus.values()(ordinal)
       }
       
+      if (!status.isIn(Committed, Failed)) 
+         throw new ServerException.Remote(InvalidRequestStatus, status.toString())
+      
       val attrs = (bodyJson \ "attrs").asOpt[Map[String,String]].getOrElse {
          Map[String,String]()
       }

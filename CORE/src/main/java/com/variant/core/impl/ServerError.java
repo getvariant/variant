@@ -44,6 +44,9 @@ public class ServerError extends CommonError {
 	public static final ServerError MissingParamName = 
 			new ServerError(626, "Parameter name is missing");
 
+	public static final ServerError InvalidRequestStatus = 
+			new ServerError(627, "Invalid request status '%s'");
+
 	//
 	// 641-660 Internal, other.
 	//
