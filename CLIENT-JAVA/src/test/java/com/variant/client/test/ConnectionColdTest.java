@@ -74,12 +74,12 @@ public class ConnectionColdTest extends ClientBaseTestWithServer {
 		assertEquals("petclinic", conn3.getSchemaName());
 
 		// Retrieve good session over wrong connection
-		conn2.getOrCreateSession("foo");
-
+		Session ssn = conn2.getOrCreateSession("foo");
+		assertNotEquals("foo", ssn.getId());
 		new ClientExceptionInterceptor() {
 			
 			@Override public void toRun() {
-				conn3.getSession("foo");
+				conn3.getSession(ssn.getId());
 			}
 			
 			@Override public void onThrown(VariantException e) {
@@ -152,9 +152,10 @@ public class ConnectionColdTest extends ClientBaseTestWithServer {
 		// Should be back in business after server restarts.
 		restartServer();
 		assertNull(conn.getSession("foo"));
-		assertNotNull(conn.getOrCreateSession("foo"));
-		assertNotNull(conn.getSession("foo"));
-		assertNotNull(conn.getSessionById("foo"));
+		Session ssn2 = conn.getOrCreateSession("foo");
+		assertNotNull(ssn2);
+		assertNotNull(conn.getSession(ssn2.getId()));
+		assertNotNull(conn.getSessionById(ssn2.getId()));
 	}	
 
 }

@@ -48,8 +48,7 @@ public class TraceEventsTest extends ClientBaseTestWithServer {
 		Connection conn = client.connectTo("big_conjoint_schema");		
 
 		// New session.
-		String sid = newSid();
-		Session ssn1 = conn.getOrCreateSession(sid);
+		Session ssn1 = conn.getOrCreateSession(newSid());
 
 		// Crete a session attribute
 		ssn1.setAttribute("ssn1 attr key", "ssn1 attr value");
@@ -70,7 +69,8 @@ public class TraceEventsTest extends ClientBaseTestWithServer {
 		event1.setAttribute("foo", "bar");
 		
 		// Reget the session.  
-		Session ssn2 = conn.getSessionById(sid);
+		Session ssn2 = conn.getSessionById(ssn1.getId());
+		assertEquals(ssn1.getId(), ssn2.getId());
 		StateRequest req2 = ssn2.getStateRequest();		
 		assertEquals(InProgress, req2.getStatus());
 		assertEquals("ssn1 attr value", ssn2.getAttribute("ssn1 attr key"));
@@ -85,7 +85,7 @@ public class TraceEventsTest extends ClientBaseTestWithServer {
 		req2.commit();
 		
 		Thread.sleep(EVENT_WRITER_MAX_DELAY);
-		List<TraceEventFromDatabase> events = new TraceEventReader().read(e -> e.sessionId.equals(sid));
+		List<TraceEventFromDatabase> events = new TraceEventReader().read(e -> e.sessionId.equals(ssn1.getId()));
 		assertEquals(1, events.size());
 		TraceEventFromDatabase event = events.get(0);
 		//System.out.println(event);
@@ -107,7 +107,7 @@ public class TraceEventsTest extends ClientBaseTestWithServer {
 		req1.commit();
 		assertEquals(Committed, req1.getStatus());
 		Thread.sleep(EVENT_WRITER_MAX_DELAY);
-		assertEquals(1, new TraceEventReader().read(e -> e.sessionId.equals(sid)).size());
+		assertEquals(1, new TraceEventReader().read(e -> e.sessionId.equals(ssn1.getId())).size());
 
 	}
 
@@ -148,8 +148,7 @@ public class TraceEventsTest extends ClientBaseTestWithServer {
 		Connection conn = client.connectTo("big_conjoint_schema");		
 
 		// New session.
-		String sid = newSid();
-		Session ssn = conn.getOrCreateSession(sid);
+		Session ssn = conn.getOrCreateSession(newSid());
 	   	Schema schema = ssn.getSchema();
 	   	
 	   	// Trigger on untargeted session: produces an orphan (no live experiences) event.
@@ -162,7 +161,7 @@ public class TraceEventsTest extends ClientBaseTestWithServer {
 	   	req.commit();
 	   	
 		Thread.sleep(EVENT_WRITER_MAX_DELAY);
-		List<TraceEventFromDatabase> events = new TraceEventReader().read(e -> e.sessionId.equals(sid));
+		List<TraceEventFromDatabase> events = new TraceEventReader().read(e -> e.sessionId.equals(ssn.getId()));
 		assertEquals(3, events.size());
 		//events.forEach(e -> System.out.println("***\n" + e));
 

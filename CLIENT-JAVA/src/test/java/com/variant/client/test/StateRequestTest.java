@@ -42,10 +42,8 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 		Connection conn = client.connectTo("big_conjoint_schema");		
 
 		// Via SID tracker, create.
-		String sid = newSid();
-		Session ssn = conn.getOrCreateSession(sid);
+		Session ssn = conn.getOrCreateSession(newSid());
 		assertNotNull(ssn);
-		assertEquals(sid, ssn.getId());
 
 	   	Schema schema = ssn.getSchema();
 	   	State state1 = schema.getState("state1");
@@ -98,7 +96,7 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 		assertEquals(Committed, req.getStatus());
 
 		// Reget the session -- should not change anything.
-		Session ssn2 = conn.getSession(sid);
+		Session ssn2 = conn.getSession(ssn.getId());
 		StateRequest req2 = ssn2.getStateRequest();
 		assertEquals(Committed, req2.getStatus());
 
@@ -128,7 +126,7 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 		Object[] userData = userDataForSimpleIn(sid, schema, "test4.C", "test5.C");
 		Session ssn = conn.getOrCreateSession(userData);
 		assertNotNull(ssn);
-		assertEquals(sid, ssn.getId());
+		assertNotEquals(sid, ssn.getId());
 		assertEquals(0, ssn.getTraversedTests().size());
 
 	   	State state2 = schema.getState("state2");
@@ -177,7 +175,7 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 		Object[] userData = userDataForSimpleIn(sid, schema, "test4.C", "test5.C");
 		Session ssn1 = conn.getOrCreateSession(userData);
 		assertNotNull(ssn1);
-		assertEquals(sid, ssn1.getId());
+		assertNotEquals(sid, ssn1.getId());
 
 	   	final State state2 = schema.getState("state2");
 	   	final State state3 = schema.getState("state3");
@@ -189,7 +187,7 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 		assertEquals(Committed, req1.getStatus());
 
 		// Reget the session and try targeting again -- should not work.
-		final Session ssn2 = conn.getOrCreateSession(userData);
+		final Session ssn2 = conn.getOrCreateSession(ssn1.getId());
 		assertNotNull(ssn2);
 		assertNotEquals(ssn1, ssn2); 
 		assertEquals(ssn1.getId(), ssn2.getId());
@@ -231,12 +229,10 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 		
 		Connection conn = client.connectTo("big_conjoint_schema");
 
-		String sid = newSid();
-		Session ssn1 = conn.getOrCreateSession(sid);
+		Session ssn1 = conn.getOrCreateSession(newSid());
 		Schema schema = ssn1.getSchema();
 
 		assertNotNull(ssn1);
-		assertEquals(sid, ssn1.getId());
 
 		State state2 = schema.getState("state2");
 	   	
@@ -245,7 +241,7 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 	   	
 	   	assertEquals(InProgress, req1.getStatus());
 	   	
-	   	StateRequest req2 = conn.getSessionById(sid).getStateRequest();
+	   	StateRequest req2 = conn.getSessionById(ssn1.getId()).getStateRequest();
 	   	
 	   	req1.fail();
 	   	assertEquals(Failed, req1.getStatus());
@@ -271,7 +267,7 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 		}.assertThrown(VariantException.class);
 
 		Thread.sleep(EVENT_WRITER_MAX_DELAY);
-		List<TraceEventFromDatabase> events = new TraceEventReader().read(e -> e.sessionId.equals(sid));
+		List<TraceEventFromDatabase> events = new TraceEventReader().read(e -> e.sessionId.equals(ssn1.getId()));
 		assertEquals(1, events.size());
 		TraceEventFromDatabase event = events.get(0);
 		assertEquals("$STATE_VISIT", event.name);
@@ -333,6 +329,9 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 			}
 		}.assertThrown();
 
+		
+		
+		
 		assertNull(ssn.getStateRequest());
 		assertTrue(ssn.getTraversedStates().isEmpty());
 		assertTrue(ssn.getTraversedTests().isEmpty());
@@ -352,13 +351,12 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 		
 		Connection conn1 = client.connectTo("big_conjoint_schema");		
 
-		String sid = newSid();
-		Session ssn1 = conn1.getOrCreateSession(sid);	
+		Session ssn1 = conn1.getOrCreateSession(newSid());	
 		Schema schema1 = ssn1.getSchema();
 		StateRequest req1 = ssn1.targetForState(schema1.getState("state3"));
 
 		Connection conn2 = client.connectTo("big_conjoint_schema");		
-	   	Session ssn2 = conn2.getSessionById(sid);
+	   	Session ssn2 = conn2.getSessionById(ssn1.getId());
 	   	assertNotNull(ssn2);
 		Schema schema2 = ssn2.getSchema();
 	   	

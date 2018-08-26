@@ -66,9 +66,7 @@ public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 		for (int i = 0; i < SESSIONS; i++) {
 			final int _i = i;  // Zhava. 
 			async (() -> {
-				String sid = newSid();
-				Session ssn = conn1.getOrCreateSession(sid);
-				assertEquals(sid, ssn.getId());
+				Session ssn = conn1.getOrCreateSession(newSid());
 				State state = ssn.getSchema().getState("state" + ((_i % 5) + 1));
 				StateRequest req = ssn.targetForState(state);
 				assertNotNull(req);
@@ -111,9 +109,7 @@ public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 		for (int i = 0; i < SESSIONS; i++) {
 			final int _i = i;  // Zhava. 
 			async (() -> {
-				String sid = newSid();
-				Session ssn = conn3.getOrCreateSession(sid);
-				assertEquals(sid, ssn.getId());
+				Session ssn = conn3.getOrCreateSession(newSid());
 				State state = ssn.getSchema().getState("newOwner");
 				// The qualifying and targeting hooks will throw an NPE
 				// if user-agent attribute is not set.
@@ -315,9 +311,7 @@ public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 		for (int i = 0; i < SESSIONS; i++) {
 			final int _i = i;  // Zhava. 
 			async (() -> {
-				String sid = newSid();
-				Session ssn = conn1.getOrCreateSession(sid);
-				assertEquals(sid, ssn.getId());
+				Session ssn = conn1.getOrCreateSession(newSid());
 				State state = ssn.getSchema().getState("state" + ((_i % 5) + 1));
 				StateRequest req = ssn.targetForState(state);
 				assertNotNull(req);
@@ -360,9 +354,7 @@ public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 		for (int i = 0; i < SESSIONS; i++) {
 			final int _i = i;  // Zhava. 
 			async (() -> {
-				String sid = newSid();
-				Session ssn = conn3.getOrCreateSession(sid);
-				assertEquals(sid, ssn.getId());
+				Session ssn = conn3.getOrCreateSession(newSid());
 				State state = ssn.getSchema().getState("newOwner");
 				// The qualifying and targeting hooks will throw an NPE
 				// if user-agent attribute is not set.

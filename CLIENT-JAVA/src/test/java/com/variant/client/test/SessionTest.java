@@ -41,7 +41,7 @@ public class SessionTest extends ClientBaseTestWithServer {
 		// Via SID tracker, create.
 		ssn1 = conn.getOrCreateSession(sid);
 		assertNotNull(ssn1);
-		assertEquals(sid, ssn1.getId());
+		assertNotEquals(sid, ssn1.getId());
 		assertEquals(System.currentTimeMillis(), ssn1.getCreateDate().getTime(), 2);
 		assertEquals(conn, ssn1.getConnection());
 		assertTrue(ssn1.getDisqualifiedTests().isEmpty());
@@ -50,13 +50,13 @@ public class SessionTest extends ClientBaseTestWithServer {
 		assertEquals("big_conjoint_schema", ssn1.getSchema().getMeta().getName());
 		
 		// Get same session by SID
-		Session ssn2 = conn.getSessionById(sid);
+		Session ssn2 = conn.getSessionById(ssn1.getId());
 		assertEquals(
 				((SessionImpl)ssn1).getCoreSession().toJson(), 
 				((SessionImpl)ssn2).getCoreSession().toJson());
 		
 		// Get same session via SID tracker
-		ssn2 = conn.getSession(sid);
+		ssn2 = conn.getSession(ssn1.getId());
 		assertEquals(
 				((SessionImpl)ssn1).getCoreSession().toJson(), 
 				((SessionImpl)ssn2).getCoreSession().toJson());
@@ -127,10 +127,10 @@ public class SessionTest extends ClientBaseTestWithServer {
 		assertNull(conn1.getSessionById(sid));
 		Session ssn1 = conn1.getOrCreateSession(sid);
 		assertNotNull(ssn1);
-		assertEquals(sid, ssn1.getId());
-		Session ssn2 = conn2.getSessionById(sid);
+		assertNotEquals(sid, ssn1.getId());
+		Session ssn2 = conn2.getSessionById(ssn1.getId());
 		assertNotNull(ssn2);
-		assertEquals(sid, ssn2.getId());
+		assertEquals(ssn1.getId(), ssn2.getId());
 		assertEquals(
 				((SessionImpl)ssn1).getCoreSession().toJson(), 
 				((SessionImpl)ssn2).getCoreSession().toJson());
