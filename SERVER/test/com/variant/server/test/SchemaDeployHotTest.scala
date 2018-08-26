@@ -141,7 +141,10 @@ class SchemaDeployHotTest extends EmbeddedServerSpec with TempSchemataDir {
 	      val sid = newSid
          assertResp(route(app, httpReq(POST, context + "/session/big_conjoint_schema/" + sid)))
             .isOk
-            .withBodyJsonSession (sid, "big_conjoint_schema")
+            .withBodySession { ssn =>
+               ssn.getId mustNot be (sid)
+               ssn.getSchema().getMeta().getName mustBe "big_conjoint_schema"
+         }
 
 	      IoUtils.delete(s"${schemataDir}/another-big-test-schema.json");
          Thread.sleep(dirWatcherLatencyMsecs)
@@ -211,13 +214,17 @@ class SchemaDeployHotTest extends EmbeddedServerSpec with TempSchemataDir {
 	   }
 	   	   
 	   //val sessionJson = ParameterizedString(SessionTest.sessionJsonBigCovarPrototype.format(System.currentTimeMillis()))
-	   val sid = newSid()
+	   var sid = newSid()
 	   
 	   "create session in the third schema" in {
 	   
 	      assertResp(route(app, httpReq(POST, context + "/session/ParserConjointOkayBigTestNoHooks/" + sid)))
             .isOk
-            .withBodyJsonSession (sid, "ParserConjointOkayBigTestNoHooks")
+            .withBodySession { ssn =>
+               ssn.getId mustNot be (sid)
+               sid = ssn.getId
+               ssn.getSchema().getMeta().getName mustBe "ParserConjointOkayBigTestNoHooks"
+         }
 
 	   }
 

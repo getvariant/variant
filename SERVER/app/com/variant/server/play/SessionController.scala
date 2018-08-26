@@ -15,6 +15,12 @@ import com.variant.server.boot.VariantServer
 import com.variant.server.api.Session
 import com.variant.server.boot.ServerErrorRemote
 import com.variant.server.schema.SchemaGen
+import com.variant.core.util.StringUtils
+
+object SessionController {
+   
+   val rand = new java.util.Random();
+}
 
 class SessionController @Inject() (
       val action: VariantAction,
@@ -63,7 +69,8 @@ class SessionController @Inject() (
             ssn
          }
          
-         // Dont have the session. Try to create.
+         // Dont have the session. Try to create, but change the SID:
+         // we don't want the client think that we found the session.
          case None => {
 
             val liveGen = server.schemata.getLiveGen(schemaName).getOrElse {
@@ -71,7 +78,7 @@ class SessionController @Inject() (
                throw new ServerException.Remote(UNKNOWN_SCHEMA, schemaName)
             }
             
-            val newSsn = SessionImpl.empty(sid, liveGen)
+            val newSsn = SessionImpl.empty(StringUtils.random64BitString(SessionController.rand), liveGen)
             server.ssnStore.put(newSsn)
             newSsn
          }

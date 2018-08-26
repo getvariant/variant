@@ -88,6 +88,7 @@ public class SessionTest extends ClientBaseTestWithServer {
 		final State state2 = sessions[0].getSchema().getState("state2");
 		for (int i = 0; i < sessions.length; i++) {
 			final Session ssn = sessions[i];
+			
 			new ClientExceptionInterceptor() {
 				@Override public void toRun() {
 					ssn.targetForState(state2);
@@ -96,6 +97,15 @@ public class SessionTest extends ClientBaseTestWithServer {
 					assertEquals(ServerError.SESSION_EXPIRED, e.getError());
 				}
 			}.assertThrown(SessionExpiredException.class);
+			
+		}
+		
+		// Ensure we change session id on create with an expired ID.
+		for (int i = 0; i < sessions.length; i++) {
+			Session ssn1 = sessions[i];
+			assertNull(conn.getSessionById(ssn1.getId()));  // expired.
+			Session ssn2 = conn.getOrCreateSession(ssn1.getId());
+			assertNotEquals(ssn2.getId(), ssn1.getId());
 		}
 	}
    

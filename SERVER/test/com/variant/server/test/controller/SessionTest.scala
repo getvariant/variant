@@ -115,13 +115,22 @@ class SessionTest extends EmbeddedServerSpec {
       "return OK and create session on POST" in {
        
          val sid = "bar"
+         var actualSid: String = null
+         
          assertResp(route(app, httpReq(POST, endpoint + "/big_conjoint_schema/" + sid)))
             .isOk
-            .withBodyJsonSession (sid, "big_conjoint_schema")
+            .withBodySession { ssn =>
+               ssn.getId mustNot be (sid)
+               actualSid = ssn.getId
+               ssn.getSchema().getMeta().getName mustBe "big_conjoint_schema"
+         }
          
-         assertResp(route(app, httpReq(GET, endpoint + "/big_conjoint_schema/" + sid)))
+         assertResp(route(app, httpReq(GET, endpoint + "/big_conjoint_schema/" + actualSid)))
             .isOk
-            .withBodyJsonSession (sid, "big_conjoint_schema")
+            .withBodySession { ssn =>
+               ssn.getId mustBe actualSid
+               ssn.getSchema().getMeta().getName mustBe "big_conjoint_schema"
+         }
       }
 
      "not lose existing session with different key" in {

@@ -118,12 +118,16 @@ class TraceEventTest extends EmbeddedServerSpec {
       "flush a state visited event on request commit without attributes" in {
 
          // New session
-         val sid = newSid
-
+         var sid = newSid
+         
          assertResp(route(app, httpReq(POST, context + "/session/big_conjoint_schema/" + sid)))
-            .isOk         
-            .withBodyJsonSession(sid, "big_conjoint_schema")
-
+            .isOk
+            .withBodySession { ssn =>
+               ssn.getId mustNot be (sid)
+               sid = ssn.getId
+               ssn.getSchema().getMeta().getName mustBe "big_conjoint_schema"
+         }
+         
          // Target and get the request.
          val reqBody1 = Json.obj(
             "sid" -> sid,
@@ -132,9 +136,9 @@ class TraceEventTest extends EmbeddedServerSpec {
          
          assertResp(route(app, httpReq(POST, context + "/request").withTextBody(reqBody1)))
             .isOk
-            .withBodyJson { json => 
-               val coreSsn = CoreSession.fromJson((json \ "session").as[String], schema)
-               val stateReq = coreSsn.getStateRequest
+            .withBodySession { ssn => 
+               ssn.getId mustBe sid
+               val stateReq = ssn.getStateRequest
                stateReq mustNot be (null)
                stateReq.getStatus mustBe InProgress
                stateReq.getLiveExperiences.size mustBe 5
@@ -144,7 +148,6 @@ class TraceEventTest extends EmbeddedServerSpec {
             }
 
          val serverSsn = server.ssnStore.get(sid).get.asInstanceOf[SessionImpl]
-
          serverSsn.getStateRequest().getStatus mustBe InProgress
 
          // Commit request body with attributes
@@ -155,9 +158,8 @@ class TraceEventTest extends EmbeddedServerSpec {
 
          assertResp(route(app, httpReq(PUT, context + "/request").withTextBody(reqBody2)))
             .isOk
-            .withBodyJson { json => 
-               val coreSsn = CoreSession.fromJson((json \ "session").as[String], schema)
-               val stateReq = coreSsn.getStateRequest
+            .withBodySession { ssn => 
+               val stateReq = ssn.getStateRequest
                stateReq mustNot be (null)
                stateReq.getStatus mustBe Committed
                stateReq.getLiveExperiences.size mustBe 5
@@ -187,12 +189,16 @@ class TraceEventTest extends EmbeddedServerSpec {
       "flush a state visited event on request commit with attributes" in {
 
          // New session
-         val sid = newSid
-
+         var sid = newSid
+         
          assertResp(route(app, httpReq(POST, context + "/session/big_conjoint_schema/" + sid)))
-            .isOk         
-            .withBodyJsonSession(sid, "big_conjoint_schema")
-
+            .isOk
+            .withBodySession { ssn =>
+               ssn.getId mustNot be (sid)
+               sid = ssn.getId
+               ssn.getSchema().getMeta().getName mustBe "big_conjoint_schema"
+         }
+         
          // Target and get the request.
          val reqBody1 = Json.obj(
             "sid" -> sid,
@@ -201,15 +207,14 @@ class TraceEventTest extends EmbeddedServerSpec {
          
          assertResp(route(app, httpReq(POST, context + "/request").withTextBody(reqBody1)))
             .isOk
-            .withBodyJson { json => 
-               val coreSsn = CoreSession.fromJson((json \ "session").as[String], schema)
-               val stateReq = coreSsn.getStateRequest
+            .withBodySession { ssn => 
+               val stateReq = ssn.getStateRequest
                stateReq mustNot be (null)
                stateReq.getStatus mustBe InProgress
                stateReq.getLiveExperiences.size mustBe 5
                stateReq.getResolvedParameters.size mustBe 1
                stateReq.getSession.getId mustBe sid
-               stateReq.getState mustBe schema.getState("state3")
+               stateReq.getState mustBe ssn.getSchema.getState("state3")
             }
 
          val serverSsn = server.ssnStore.get(sid).get.asInstanceOf[SessionImpl]
@@ -225,9 +230,8 @@ class TraceEventTest extends EmbeddedServerSpec {
 
          assertResp(route(app, httpReq(PUT, context + "/request").withTextBody(reqBody2)))
             .isOk
-            .withBodyJson { json => 
-               val coreSsn = CoreSession.fromJson((json \ "session").as[String], schema)
-               val stateReq = coreSsn.getStateRequest
+            .withBodySession { ssn => 
+               val stateReq = ssn.getStateRequest
                stateReq mustNot be (null)
                stateReq.getStatus mustBe Committed
                stateReq.getLiveExperiences.size mustBe 5
@@ -260,11 +264,15 @@ class TraceEventTest extends EmbeddedServerSpec {
       "Trigger custom event without a state request" in {
 
          // New session
-         val sid = newSid
-
+         var sid = newSid
+         
          assertResp(route(app, httpReq(POST, context + "/session/big_conjoint_schema/" + sid)))
             .isOk         
-            .withBodyJsonSession(sid, "big_conjoint_schema")
+            .withBodySession { ssn =>
+               ssn.getId mustNot be (sid)
+               sid = ssn.getId
+               ssn.getSchema().getMeta().getName mustBe "big_conjoint_schema"
+         }
 
          val eventName = "Custom Name"
          val eventBody = body.expand("sid" -> sid, "name" -> eventName)
@@ -290,11 +298,14 @@ class TraceEventTest extends EmbeddedServerSpec {
       "Trigger custom event with active state request and no attribubes" in {
 
          // New session
-         val sid = newSid
-
+         var sid = newSid
          assertResp(route(app, httpReq(POST, context + "/session/big_conjoint_schema/" + sid)))
-            .isOk         
-            .withBodyJsonSession(sid, "big_conjoint_schema")
+            .isOk
+            .withBodySession { ssn =>
+               ssn.getId mustNot be (sid)
+               sid = ssn.getId
+               ssn.getSchema().getMeta().getName mustBe "big_conjoint_schema"
+         }
 
          // Target and get the request.
          val reqBody1 = Json.obj(
@@ -304,9 +315,8 @@ class TraceEventTest extends EmbeddedServerSpec {
          
          assertResp(route(app, httpReq(POST, context + "/request").withTextBody(reqBody1)))
             .isOk
-            .withBodyJson { json => 
-               val coreSsn = CoreSession.fromJson((json \ "session").as[String], schema)
-               val stateReq = coreSsn.getStateRequest
+            .withBodySession { ssn => 
+               val stateReq = ssn.getStateRequest
                stateReq mustNot be (null)
                stateReq.getStatus mustBe InProgress
                stateReq.getLiveExperiences.size mustBe 4
@@ -348,11 +358,15 @@ class TraceEventTest extends EmbeddedServerSpec {
       "Trigger custom event with committed state request and attribubes" in {
 
          // New session
-         val sid = newSid
-
+         var sid = newSid
+         
          assertResp(route(app, httpReq(POST, context + "/session/big_conjoint_schema/" + sid)))
             .isOk         
-            .withBodyJsonSession(sid, "big_conjoint_schema")
+            .withBodySession { ssn =>
+               ssn.getId mustNot be (sid)
+               sid = ssn.getId
+               ssn.getSchema().getMeta().getName mustBe "big_conjoint_schema"
+         }
 
          // Target and get the request.
          val reqBody1 = Json.obj(
@@ -362,9 +376,8 @@ class TraceEventTest extends EmbeddedServerSpec {
          
          assertResp(route(app, httpReq(POST, context + "/request").withTextBody(reqBody1)))
             .isOk
-            .withBodyJson { json => 
-               val coreSsn = CoreSession.fromJson((json \ "session").as[String], schema)
-               val stateReq = coreSsn.getStateRequest
+            .withBodySession { ssn => 
+               val stateReq = ssn.getStateRequest
                stateReq mustNot be (null)
                stateReq.getStatus mustBe InProgress
                stateReq.getLiveExperiences.size mustBe 5

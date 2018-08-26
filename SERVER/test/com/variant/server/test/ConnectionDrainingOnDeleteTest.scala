@@ -55,24 +55,30 @@ class ConnectionDrainingOnDeleteTest extends BaseSpecWithServerAsync with TempSc
 	   val ssnId2Big = new Array[String](SESSIONS)
 	   val ssnId2Pet = new Array[String](SESSIONS)
 
-	   "open SESSIONS sessionns to each schema" in {
+	   "create SESSIONS sessionns to each schema" in {
          
          for (j <- 0 until SESSIONS) async {
 
             val sid = newSid
-	         ssnId2Big(j) = sid
             assertResp(route(app, httpReq(POST, context + "/session/ParserConjointOkayBigTestNoHooks/" + sid)))
                .is(OK)
-               .withBodyJsonSession(sid, "ParserConjointOkayBigTestNoHooks")
+            .withBodySession { ssn =>
+               ssn.getId mustNot be (sid)
+               ssnId2Big(j) = ssn.getId
+               ssn.getSchema().getMeta().getName mustBe "ParserConjointOkayBigTestNoHooks"
+            }
          }
 	      
          for (j <- 0 until SESSIONS) async {
 
             val sid = newSid
-	         ssnId2Pet(j) = sid
             assertResp(route(app, httpReq(POST, context + "/session/petclinic_experiments/" + sid)))
                .is(OK)
-               .withBodyJsonSession(sid, "petclinic_experiments")
+            .withBodySession { ssn =>
+               ssn.getId mustNot be (sid)
+               ssnId2Pet(j) = ssn.getId
+               ssn.getSchema().getMeta().getName mustBe "petclinic_experiments"
+            }
          }
 	      
 	      joinAll // blocks until all sessions are created by async blocks above
@@ -84,14 +90,20 @@ class ConnectionDrainingOnDeleteTest extends BaseSpecWithServerAsync with TempSc
             val sid = ssnId2Big(i)
             assertResp(route(app, httpReq(GET, context + "/session/ParserConjointOkayBigTestNoHooks/" + sid)))
                .is(OK)
-               .withBodyJsonSession(sid, "ParserConjointOkayBigTestNoHooks")
+               .withBodySession { ssn =>
+                  ssn.getId must be (sid)
+                  ssn.getSchema().getMeta().getName mustBe "ParserConjointOkayBigTestNoHooks"
+               }
          }
          
          for (i <- 0 until SESSIONS) async {
             val sid = ssnId2Pet(i)
             assertResp(route(app, httpReq(GET, context + "/session/petclinic_experiments/" + sid)))
                .is(OK)
-               .withBodyJsonSession(sid, "petclinic_experiments")
+               .withBodySession { ssn =>
+                  ssn.getId must be (sid)
+                  ssn.getSchema().getMeta().getName mustBe "petclinic_experiments"
+               }
          }
 	      
 	      joinAll
@@ -132,7 +144,10 @@ class ConnectionDrainingOnDeleteTest extends BaseSpecWithServerAsync with TempSc
             val sid = ssnId2Pet(i)
             assertResp(route(app, httpReq(GET, context + "/session/petclinic_experiments/" + sid)))
                .is(OK)
-               .withBodyJsonSession(sid, "petclinic_experiments")
+               .withBodySession { ssn =>
+                  ssn.getId must be (sid)
+                  ssn.getSchema().getMeta().getName mustBe "petclinic_experiments"
+               }
          }
          
          joinAll
@@ -170,14 +185,22 @@ class ConnectionDrainingOnDeleteTest extends BaseSpecWithServerAsync with TempSc
          
          // Create
          val sid = newSid
+         var actualSid: String = null
          assertResp(route(app, httpReq(POST, context + "/session/petclinic_experiments/" + sid)))
             .is(OK)
-            .withBodyJsonSession(sid, "petclinic_experiments")
+            .withBodySession { ssn =>
+               ssn.getId mustNot be (sid)
+               actualSid = ssn.getId
+               ssn.getSchema().getMeta().getName mustBe "petclinic_experiments"
+            }
 
          // And read, just in case
-         assertResp(route(app, httpReq(GET, context + "/session/petclinic_experiments/" + sid)))
+         assertResp(route(app, httpReq(GET, context + "/session/petclinic_experiments/" + actualSid)))
             .is(OK)
-            .withBodyJsonSession(sid, "petclinic_experiments")
+            .withBodySession { ssn =>
+               ssn.getId must be (actualSid)
+               ssn.getSchema().getMeta().getName mustBe "petclinic_experiments"
+            }
       }
       
       "refuse session create in dead generation" in {

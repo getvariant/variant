@@ -127,7 +127,6 @@ public class ConnectionImpl implements Connection {
 		if (sessionId == null) {
 			if (create) {
 				sessionId = StringUtils.random64BitString(RAND);
-				sidTracker.set(sessionId);
 			}
 			else {
 				// No ID in the tracker and create wasn't given.
@@ -138,6 +137,12 @@ public class ConnectionImpl implements Connection {
 		try {
 			Pair<CoreSession, Schema> fromServer = fetchSession(sessionId, create);
 			SessionImpl result = new SessionImpl(this, fromServer._2(), fromServer._1());
+			// If the server returned a different SID, re-set the SID tracker.
+			// This can only happen if we were called with create=true.
+			if (!create && !result.getId().equals(sessionId)) {
+				throw new VariantException.Internal("New SID not expected");
+			}
+			sidTracker.set(sessionId);			
 			result.sessionIdTracker = sidTracker;
 			result.targetingTracker = initTargetingTracker(result, userData);
 			return result;
@@ -167,7 +172,7 @@ public class ConnectionImpl implements Connection {
 		// This may throw session expired exception.	
 		Payload.Session payload = create ? 
 				client.server.sessionGetOrCreate(sid, this) : client.server.sessionGet(sid, this);
-			
+		
 	    // Parse the schema.
 		// TODO: cache parsed schema indexed by gen IDs, so as not to reparse on each session refresh.
 		ParserResponse resp = new ClientSchemaParser().parse(payload.schemaSrc);

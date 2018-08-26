@@ -66,7 +66,11 @@ class ConnectionDrainingOnReplaceTest extends BaseSpecWithServerAsync with TempS
 	         ssnId2Big(i) = sid
             assertResp(route(app, httpReq(POST, context + "/session/ParserConjointOkayBigTestNoHooks/" + sid)))
                .is(OK)
-               .withBodyJsonSession(sid, "ParserConjointOkayBigTestNoHooks")
+               .withBodySession { ssn =>
+                  ssn.getId mustNot be (sid)
+                  ssnId2Big(i) = ssn.getId
+                  ssn.getSchema().getMeta().getName mustBe "ParserConjointOkayBigTestNoHooks"
+               }
          }
          
          for (i <- 0 until SESSIONS) async {
@@ -75,7 +79,11 @@ class ConnectionDrainingOnReplaceTest extends BaseSpecWithServerAsync with TempS
 	         ssnId2Pet(i) = sid
             assertResp(route(app, httpReq(POST, context + "/session/petclinic_experiments/" + sid)))
                .is(OK)
-               .withBodyJsonSession(sid, "petclinic_experiments")
+               .withBodySession { ssn =>
+                  ssn.getId mustNot be (sid)
+                  ssnId2Pet(i) = ssn.getId
+                  ssn.getSchema().getMeta().getName mustBe "petclinic_experiments"
+               }
          }
 	      
 	      joinAll // blocks until all sessions are created
@@ -88,14 +96,20 @@ class ConnectionDrainingOnReplaceTest extends BaseSpecWithServerAsync with TempS
             val sid = ssnId2Big(i)
             assertResp(route(app, httpReq(GET, context + "/session/ParserConjointOkayBigTestNoHooks/" + sid)))
                .is(OK)
-               .withBodyJsonSession(sid, "ParserConjointOkayBigTestNoHooks")
+               .withBodySession { ssn =>
+                  ssn.getId must be (sid)
+                  ssn.getSchema().getMeta().getName mustBe "ParserConjointOkayBigTestNoHooks"
+               }
          }
          
          for (i <- 0 until SESSIONS) async {
             val sid = ssnId2Pet(i)
             assertResp(route(app, httpReq(GET, context + "/session/petclinic_experiments/" + sid)))
                .is(OK)
-               .withBodyJsonSession(sid, "petclinic_experiments")
+               .withBodySession { ssn =>
+                  ssn.getId must be (sid)
+                  ssn.getSchema().getMeta().getName mustBe "petclinic_experiments"
+            }
          }
 	      
 	      joinAll
@@ -128,14 +142,20 @@ class ConnectionDrainingOnReplaceTest extends BaseSpecWithServerAsync with TempS
             val sid = ssnId2Big(i)
             assertResp(route(app, httpReq(GET, context + "/session/ParserConjointOkayBigTestNoHooks/" + sid)))
                .is(OK)
-               .withBodyJsonSession(sid, "ParserConjointOkayBigTestNoHooks")
+               .withBodySession { ssn =>
+                  ssn.getId must be (sid)
+                  ssn.getSchema().getMeta().getName mustBe "ParserConjointOkayBigTestNoHooks"
+            }
          }
 
          for (i <- 0 until SESSIONS) async {
             val sid = ssnId2Pet(i)
             assertResp(route(app, httpReq(GET, context + "/session/petclinic_experiments/" + sid)))
                .is(OK)
-               .withBodyJsonSession(sid, "petclinic_experiments")
+               .withBodySession { ssn =>
+                  ssn.getId must be (sid)
+                  ssn.getSchema().getMeta().getName mustBe "petclinic_experiments"
+            }
          }
          
          joinAll
@@ -164,15 +184,22 @@ class ConnectionDrainingOnReplaceTest extends BaseSpecWithServerAsync with TempS
       "allow session create over live connection" in {
          
          val sid = newSid
-
+         var actualSid: String = null
          assertResp(route(app, httpReq(POST, context + "/session/ParserConjointOkayBigTestNoHooks/" + sid)))
             .is(OK)
-            .withBodyJsonSession(sid, "ParserConjointOkayBigTestNoHooks")
+            .withBodySession { ssn =>
+               ssn.getId mustNot be (sid)
+               actualSid = ssn.getId
+               ssn.getSchema().getMeta().getName mustBe "ParserConjointOkayBigTestNoHooks"
+         }
 
          // And read, just in case
-         assertResp(route(app, httpReq(GET, context + "/session/ParserConjointOkayBigTestNoHooks/" + sid)))
+         assertResp(route(app, httpReq(GET, context + "/session/ParserConjointOkayBigTestNoHooks/" + actualSid)))
             .is(OK)
-            .withBodyJsonSession(sid, "ParserConjointOkayBigTestNoHooks")
+            .withBodySession { ssn =>
+               ssn.getId must be (actualSid)
+               ssn.getSchema().getMeta().getName mustBe "ParserConjointOkayBigTestNoHooks"
+         }
 
       }
       
