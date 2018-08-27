@@ -142,7 +142,10 @@ public class ConnectionImpl implements Connection {
 			if (!create && !result.getId().equals(sessionId)) {
 				throw new VariantException.Internal("New SID not expected");
 			}
-			sidTracker.set(sessionId);			
+			// Use the SID that came from the server, not the one we sent, because
+			// if what we sent wasn't found on the server and we asked to create,
+			// the server will generate a new SID.
+			sidTracker.set(result.getId());			
 			result.sessionIdTracker = sidTracker;
 			result.targetingTracker = initTargetingTracker(result, userData);
 			return result;
