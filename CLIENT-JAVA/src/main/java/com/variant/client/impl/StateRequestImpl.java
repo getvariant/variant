@@ -4,12 +4,10 @@ import java.util.Map;
 import java.util.Set;
 
 import com.variant.client.Session;
-import com.variant.client.StateNotInstrumentedException;
 import com.variant.client.StateRequest;
 import com.variant.client.VariantException;
 import com.variant.core.StateRequestStatus;
 import com.variant.core.TraceEvent;
-import com.variant.core.impl.CoreException;
 import com.variant.core.impl.ServerError;
 import com.variant.core.impl.StateVisitedEvent;
 import com.variant.core.schema.State;

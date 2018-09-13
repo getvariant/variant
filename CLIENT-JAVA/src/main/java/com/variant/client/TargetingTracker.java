@@ -2,8 +2,6 @@ package com.variant.client;
 
 import java.util.Set;
 
-import com.variant.core.schema.Test.Experience;
-
 /**
  * Interface to be implemented by an environment-bound targeting tracker. The implementation will 
  * use an external mechanism to provide durable targeting, i.e. to store the current user's
@@ -26,24 +24,17 @@ import com.variant.core.schema.Test.Experience;
 public interface TargetingTracker {
 	
 	/**
-	 * <p>Called by Variant to initialize a newly instantiated concrete implementation, 
+	 * Initialize this tracker to reflect the state contained in external persistence mechanism.
+	 * Called by Variant to initialize a newly instantiated concrete implementation, 
 	 * within the scope of {@link Connection#getSession(Object...)}
 	 * or {@link Connection#getOrCreateSession(Session, Object...)} methods.
 	 * 
-	 * @param session   The Variant session initializing this object.
 	 * @param userData  An array of zero or more opaque objects, which the enclosing call to {@link Connection#getSession(Object...) }
 	 *                  or {@link Connection#getOrCreateSession(Object...)} will pass here without interpretation. 
 	 * 
 	 * @since 0.6
 	 */
-	public void init(Session session, Object...userData);
-
-	
-	/**
-	 * Variant session which initialized and is using this tracker.
-	 * @return
-	 */
-	public Session getSession();
+	public void init(Object...userData);
 
 	/**
 	 * All currently tracked experiences. The implementation must guarantee 
@@ -69,7 +60,7 @@ public interface TargetingTracker {
 	public void set(Set<Entry> entries);
 
 	/**
-	 * Saves the state of this object to the underlying persistence mechanism, making it durable between
+	 * Saves the state of this object to the external persistence mechanism, making it durable between
 	 * Variant sessions. Called by Variant within the scope of the {@link StateRequest#commit(Object...)} method. 
 	 * 
 	 * @param userData An array of zero or more opaque objects which {@link StateRequest#commit(Object...)}
@@ -88,17 +79,26 @@ public interface TargetingTracker {
 	public static interface Entry {
 				
 		/**
-		 * Get test experience tracked by this entry.
+		 * Name of the test.
 		 * 
-		 * @return An object of type {@link Experience}.
+		 * @return Test name.
 		 *         
     	 * @since 0.6
 		 */
-		public Experience getExperience();
+		public String getTestName();
 		
 		/**
+		 * Name of the experience.
+		 * 
+		 * @return Experience name.
+		 *         
+    	 * @since 0.6
+		 */
+		public String getExperienceName();
+
+		/**
 		 * Get the timestamp when this experience was last seen by a user.
-		 * @return
+		 * @return 
     	 * @since 0.6
 		 */
 		public long getTimestamp();

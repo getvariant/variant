@@ -92,11 +92,19 @@ class SessionImpl(val coreSession: CoreSession, val schemaGen: SchemaGen) extend
    
    def toJson = coreSession.toJson()
 
-   def addTraversedState(state: StateImpl): Unit = coreSession.addTraversedState(state)
+   def addTraversedState(state: StateImpl) { 
+      coreSession.addTraversedState(state)
+   }
   
-   def addDisqualifiedTest(test: TestImpl): Unit = coreSession.addDisqualifiedTest(test)
+   def addDisqualifiedTest(test: TestImpl) {
+      coreSession.addDisqualifiedTest(test)
+   }
 
-   def getTargetingStabile(): SessionScopedTargetingStabile = coreSession.getTargetingStabile()
+   def setTargetingStabile(stabile: SessionScopedTargetingStabile) {
+      coreSession.setTargetingStabile(stabile)
+   }
+   
+   def getTargetingStabile() = coreSession.getTargetingStabile()
 
    def setStateRequest(state: StateImpl, variant: StateVariantImpl) {
    

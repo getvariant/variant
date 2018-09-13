@@ -3,20 +3,18 @@ package com.variant.server.boot
 import scala.collection.JavaConversions.asScalaSet
 import scala.collection.mutable
 import scala.concurrent.Future
-
 import org.apache.commons.lang3.time.DurationFormatUtils
-
 import com.typesafe.config.Config
 import com.variant.core.UserError.Severity
 import com.variant.server.api.ServerException
 import com.variant.server.schema.SchemaDeployer
 import com.variant.server.schema.Schemata
-
 import javax.inject.Inject
 import javax.inject.Singleton
 import play.api.Configuration
 import play.api.Logger
 import play.api.inject.ApplicationLifecycle
+import java.lang.management.ManagementFactory
 
 
 /**
@@ -28,7 +26,6 @@ trait VariantServer {
    val config: Config // Do not expose Play's Configuration
    //val classloader: VariantClassLoader
    val startupErrorLog = mutable.ArrayBuffer[ServerException]()
-   val startTs = System.currentTimeMillis
    // Read-only snapshot
    def schemata: Schemata
    val ssnStore: SessionStore
@@ -132,7 +129,7 @@ class VariantServerImpl @Inject() (
                productName,
                config.getString("http.port"),
                config.getString("play.http.context"),
-      			DurationFormatUtils.formatDuration(System.currentTimeMillis() - startTs, "mm:ss.SSS")))   	
+      			DurationFormatUtils.formatDuration(ManagementFactory.getRuntimeMXBean().getUptime(), "mm:ss.SSS")))   	
 
          _isUp = true
    	}      
@@ -161,7 +158,7 @@ class VariantServerImpl @Inject() (
             productName,
             config.getString("http.port"),
             config.getString("play.http.context"),
-   			DurationFormatUtils.formatDuration(System.currentTimeMillis() - startTs, "HH:mm:ss")))
+   			DurationFormatUtils.formatDuration(ManagementFactory.getRuntimeMXBean().getUptime(), "HH:mm:ss")))
    }
    
   /** When the application starts, register a stop hook with the

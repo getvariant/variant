@@ -91,7 +91,7 @@ public class ConnectionImpl implements Connection {
 	 * @param userData
 	 * @return
 	 */
-	private TargetingTracker initTargetingTracker(Session ssn, Object...userData) {
+	private TargetingTracker initTargetingTracker(Object...userData) {
 		
 		// Instantiate targeting tracker.
 		String className = client.getConfig().getString(TARGETING_TRACKER_CLASS_NAME);
@@ -100,7 +100,9 @@ public class ConnectionImpl implements Connection {
 			Object object = Class.forName(className).newInstance();
 			if (object instanceof TargetingTracker) {
 				TargetingTracker result = (TargetingTracker) object;
-				result.init(ssn, userData);
+				result.init(userData);
+				//System.out.println("***************************");
+				//result.get().forEach((e)->System.out.println(e));
 				return result;
 			}
 			else {
@@ -114,15 +116,19 @@ public class ConnectionImpl implements Connection {
 
 			
 	/**
+	 * Get or create a foreground session from the server. Foreground sessions
+	 * are backed by SID and targeting tracker implementations.  Does not throw
+	 * SessionExpiredException
 	 * 
 	 * @param create
 	 * @param userData
 	 * @return null if session has expired and create is false; session object otherwise.
 	 */
-	private Session _getSession(boolean create, Object... userData) {
-		
+	private Session getForegroundSession(boolean create, Object... userData) {
+				
 		// Get session ID from the session ID tracker.
 		SessionIdTracker sidTracker = initSessionIdTracker(userData);
+		TargetingTracker targetingTracker = initTargetingTracker(userData);
 		String sessionId = sidTracker.get();
 		if (sessionId == null) {
 			if (create) {
@@ -144,10 +150,11 @@ public class ConnectionImpl implements Connection {
 			}
 			// Use the SID that came from the server, not the one we sent, because
 			// if what we sent wasn't found on the server and we asked to create,
-			// the server will generate a new SID.
-			sidTracker.set(result.getId());			
+			// the server will generate a new SID — that's how we know it wasn't found --
+			// see previous comment.
+			sidTracker.set(result.getId());
 			result.sessionIdTracker = sidTracker;
-			result.targetingTracker = initTargetingTracker(result, userData);
+			result.targetingTracker = targetingTracker;
 			return result;
 		}
 		catch (SessionExpiredException sex) { 
@@ -156,17 +163,28 @@ public class ConnectionImpl implements Connection {
 	}
 	
 	/**
-	 * Refresh an existing session from the server.
-	 * Pass through any exceptions.
-	 * @param session
+	 * Get a headless session from the server. Not backed by SID or targeting trackers.
+	 * Does not throw SessionExpiredException.
+	 * 
+	 * @param sid
+	 * @return The session or null if did not exist.
 	 */
-	void refreshSession(SessionImpl session) {
-		Pair<CoreSession, Schema> fromServer = fetchSession(session.getId(), false);
-		session.rewrap(fromServer._1());
+	private Session getHeadlessSession(String sid) {
+		try {
+			Pair<CoreSession, Schema> fromServer = fetchSession(sid, false);
+			return new SessionImpl(this, fromServer._2(), fromServer._1());
+		}
+		catch (SessionExpiredException sex) { 
+			return null;
+		}	
 	}
-	
+		
 	/**
-	 * Get or create session by ID from the server.
+	 * Fetch an existing session from the server. Optionally, create a new one
+	 * if session with the given SID didn't exist. If created, new session will
+	 * have a different SID, created by the server.
+	 * 
+	 * Called by both implicit session refresh and explicit session get.
 	 *   
 	 * @return
 	 */
@@ -193,6 +211,17 @@ public class ConnectionImpl implements Connection {
 
 	}
 
+	/**
+	 * Implicit refresh of an existing session from the server.
+	 * Pass through any exceptions. 
+	 * Package visibility.
+	 * @param session
+	 */
+	void refreshSession(SessionImpl session) {
+		Pair<CoreSession, Schema> fromServer = fetchSession(session.getId(), false);
+		session.rewrap(fromServer._1());
+	}
+
 	// ---------------------------------------------------------------------------------------------//
 	//                                             PUBLIC                                           //
 	// ---------------------------------------------------------------------------------------------//
@@ -211,7 +240,7 @@ public class ConnectionImpl implements Connection {
 	@Override
 	public Session getOrCreateSession(Object... userData) {
 		preChecks(); 
-		return _getSession(true, userData);
+		return getForegroundSession(true, userData);
 	}
 			
 	/**
@@ -219,20 +248,13 @@ public class ConnectionImpl implements Connection {
 	@Override
 	public Session getSession(Object... userData) {
 		preChecks();
-		return _getSession(false, userData);
+		return getForegroundSession(false, userData);
 	}
 
 	@Override
-	public Session getSessionById(String sessionId) {
+	public Session getSessionById(String sid) {
 		preChecks();
-		// Intercept session expired exception.
-		try {
-			Pair<CoreSession, Schema> fromServer = fetchSession(sessionId, false);
-			return new SessionImpl(this, fromServer._2(), fromServer._1());
-		}
-		catch (SessionExpiredException sex) { 
-			return null;
-		}	
+		return getHeadlessSession(sid);
 	}
 
 	@Override

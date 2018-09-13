@@ -10,8 +10,10 @@
       'name':'petclinic_experiments',
       'comment':'Variation schema for experiments on the Pet Clinic demo application'
       // The default flusher appends to the server log file log/variant.log
-      // To have trace events written off to a PostgreSQL database, uncomment below
-      // and specify the appropriate JDBC credentials.
+      // To have trace events written off to a PostgreSQL database: 
+      //  1. Uncomment below and specify the appropriate JDBC credentials. 
+      //  2. Place the Postres JDVC driver JAR file (release 9.1-901-1 or hither) 
+      //     in the server's ext/ directory.
       // ,'flusher': {
       //  'class':'com.variant.server.api.EventFlusherPostgres',
       //  'init': {
@@ -55,7 +57,7 @@
                'isControl':true                              
             },                                               
             {                                                
-               'name':'tosCheckbox',                                   
+               'name':'tosCheckbox',
                'weight':1                                   
             },                                               
             {                                                

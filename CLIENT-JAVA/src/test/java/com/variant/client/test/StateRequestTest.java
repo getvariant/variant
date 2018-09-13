@@ -15,6 +15,7 @@ import com.variant.client.StateRequest;
 import com.variant.client.VariantClient;
 import com.variant.client.VariantException;
 import com.variant.client.impl.SchemaImpl;
+import com.variant.client.impl.SessionImpl;
 import com.variant.client.test.util.ClientBaseTestWithServer;
 import com.variant.client.test.util.event.TraceEventFromDatabase;
 import com.variant.client.test.util.event.TraceEventReader;
@@ -36,7 +37,7 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 	
 	/**
 	 */
-	@org.junit.Test
+	//@org.junit.Test
 	public void noStabilTest() throws Exception {
 		
 		Connection conn = client.connectTo("big_conjoint_schema");		
@@ -113,22 +114,21 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 	
 	/**
 	 */
-	//@org.junit.Test
+	@org.junit.Test
 	public void deterministicTest() throws Exception {
 		
 		Connection conn = client.connectTo("big_conjoint_schema");
 		
-		// Some session, just to get the schema.
-		Schema schema = conn.getOrCreateSession("foo").getSchema();
-		
 		// Via SID tracker, create.
 		String sid = newSid();
-		Object[] userData = userDataForSimpleIn(sid, schema, "test4.C", "test5.C");
+		Object[] userData = new Object[] {sid, "test4.C", "test5.C"};
 		Session ssn = conn.getOrCreateSession(userData);
 		assertNotNull(ssn);
 		assertNotEquals(sid, ssn.getId());
+		System.out.println("********************1 " + ((SessionImpl)ssn).targetingTracker.get().size());
 		assertEquals(0, ssn.getTraversedTests().size());
-
+		System.out.println("********************2 " + ((SessionImpl)ssn).targetingTracker.get().size());
+		Schema schema = ssn.getSchema();
 	   	State state2 = schema.getState("state2");
 	   	Test test1 = schema.getTest("test1");
 	   	Test test2 = schema.getTest("test2");
@@ -141,12 +141,18 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 	   	assertNotNull(req);
 		assertEquals(6, req.getLiveExperiences().size());
 
+		// test1 is disjoint with test5 => has to target to control.
 		assertEquals(experience(schema, "test1.A"), req.getLiveExperience(test1));
+		// test2 is disjoint with test4 => has to target to control. 
 		assertEquals(experience(schema, "test2.A"), req.getLiveExperience(test2));
+		// test3 is disjoint with both => has to target to control.
 		assertEquals(experience(schema, "test3.A"), req.getLiveExperience(test3));
+		// must honor tracker
 		assertEquals(experience(schema, "test4.C"), req.getLiveExperience(test4));
+		// must honor tracker.
 		assertEquals(experience(schema, "test5.C"), req.getLiveExperience(test5));
-		assertNotNull(req.getLiveExperience(test6));  // Can be anything.
+		// test6 is conjoint with both => can target to anything.
+		assertNotNull(req.getLiveExperience(test6));
 
 		assertEquals("/path/to/state2/test4.C+test5.C", req.getResolvedParameters().get("path"));
 		assertNotNull(req.getResolvedStateVariant());
@@ -162,7 +168,7 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 
 	/**
 	 */
-	@org.junit.Test
+	//@org.junit.Test
 	public void commitTest() throws Exception {
 		
 		Connection conn = client.connectTo("big_conjoint_schema");
@@ -172,7 +178,7 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 
 		// Via SID tracker, create.
 		String sid = newSid();
-		Object[] userData = userDataForSimpleIn(sid, schema, "test4.C", "test5.C");
+		Object[] userData = new Object[] {sid, "test4.C", "test5.C"};
 		Session ssn1 = conn.getOrCreateSession(userData);
 		assertNotNull(ssn1);
 		assertNotEquals(sid, ssn1.getId());
@@ -224,7 +230,11 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 		
 	}
 
-	@org.junit.Test
+	/**
+	 * 
+	 * @throws Exception
+	 */
+	//@org.junit.Test
 	public void failTest() throws Exception {
 		
 		Connection conn = client.connectTo("big_conjoint_schema");
@@ -279,7 +289,7 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 	
 	/**
 	 */
-	@org.junit.Test
+	//@org.junit.Test
 	public void sessionExpiredTest() throws Exception {
 		
 		Connection conn = client.connectTo("big_conjoint_schema");		
@@ -309,7 +319,7 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 	 * Petclinic schema defines a qual and a targeting hook which will fail,
 	 * unless we create "user-agent" session attributes.
 	 */
-	@org.junit.Test
+	//@org.junit.Test
 	public void targetingHookExceptionTest() throws Exception {
 		
 		Connection conn = client.connectTo("petclinic");		
@@ -346,7 +356,7 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 		assertEquals(Committed, req.getStatus());
 	}
 	
-	@org.junit.Test
+	//@org.junit.Test
 	public void targetFromParallelConnectionsTest() throws Exception {
 		
 		Connection conn1 = client.connectTo("big_conjoint_schema");		

@@ -69,7 +69,7 @@ class SessionController @Inject() (
             ssn
          }
          
-         // Dont have the session. Try to create, but change the SID:
+         // Don't have the session. Try to create, but change the SID:
          // we don't want the client think that we found the session.
          case None => {
 

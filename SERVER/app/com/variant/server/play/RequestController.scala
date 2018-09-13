@@ -23,6 +23,7 @@ import com.variant.server.boot.VariantServer
 import com.variant.core.impl.StateVisitedEvent
 import com.variant.server.event.ServerTraceEvent
 import com.variant.core.impl.ServerError
+import com.variant.core.session.SessionScopedTargetingStabile
 
 //@Singleton -- Is this for non-shared state controllers?
 class RequestController @Inject() (
@@ -50,6 +51,8 @@ class RequestController @Inject() (
          throw new ServerException.Remote(MissingProperty, "state")         
       }
 
+      val stabile = (bodyJson \ "stab").asOpt[List[String]]
+
       val ssn = server.ssnStore.getOrBust(sid)
       
       if (ssn.getStateRequest != null && ssn.getStateRequest.getStatus == InProgress) {
@@ -59,6 +62,22 @@ class RequestController @Inject() (
 
       if (state == null)
          throw new ServerException.Internal("State [%s] not in schema [%s]".format(stateName, ssn.schemaGen.getMeta.getName))
+      
+      // If stabile was sent, process it, discarding elements not in the schema,
+      // and add to the session's stabile. This should have been the first state request in the life
+      // of a session and here we were sent the content of the foreground targeting tracker.
+      if (stabile.isDefined) {
+         val ssts = new SessionScopedTargetingStabile()
+         stabile.get.foreach { e =>
+            val tokens = e.split("\\.");
+            val test = ssn.schemaGen.getTest(tokens(0))
+            if (test != null) {
+               val exp = test.getExperience(tokens(1))
+               if (exp != null) ssts.add(exp)
+            }
+         }
+         if (ssts.size > 0) ssn.setTargetingStabile(ssts)
+      }
       
       ssn.schemaGen.runtime.targetForState(ssn, state)
 

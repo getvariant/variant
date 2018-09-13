@@ -21,7 +21,7 @@
     <appender-ref ref="STDOUT" />
   </appender>
 
-  <logger name="com.variant" level="info" />
+  <logger name="com.variant" level="trace" />
 
 
   <root level="WARN">

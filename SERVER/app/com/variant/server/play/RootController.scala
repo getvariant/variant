@@ -16,6 +16,7 @@ import com.variant.core.schema.State
 import com.variant.core.session.CoreStateRequest
 import play.api.mvc.AnyContent
 import play.api.mvc.ControllerComponents
+import java.lang.management.ManagementFactory
 
 //@Singleton -- Is this for non-shared state controllers?
 class RootController @Inject() (
@@ -33,7 +34,7 @@ class RootController @Inject() (
     * Print server status message
     */
    def status() = action { req =>
-      Ok(VariantServer.productName + ". Uptime %s.\n".format(DurationFormatUtils.formatDuration(System.currentTimeMillis() - server.startTs, "HH:mm:ss")))
+      Ok(VariantServer.productName + ". Uptime %s.\n".format(ManagementFactory.getRuntimeMXBean().getUptime(), "HH:mm:ss"))
    }
 
 }

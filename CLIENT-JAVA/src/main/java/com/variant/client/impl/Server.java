@@ -10,6 +10,7 @@ import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.variant.client.ConfigKeys;
 import com.variant.client.SessionExpiredException;
+import com.variant.client.TargetingTracker;
 import com.variant.client.UnknownSchemaException;
 import com.variant.client.VariantException;
 import com.variant.client.net.Payload;
@@ -221,8 +222,8 @@ public class Server {
 		if (LOG.isTraceEnabled()) LOG.trace(
 				String.format("sessionAttrSet(%s, %s)", name, value));
 
-		// Make body
-		final StringWriter body = new StringWriter(2048);
+		// Body
+		StringWriter body = new StringWriter(2048);
 		try {
 			JsonGenerator jsonGen = new JsonFactory().createGenerator(body);
 			jsonGen.writeStartObject();
@@ -232,8 +233,8 @@ public class Server {
 			jsonGen.writeEndObject();
 			jsonGen.flush();
 		}
-		catch (Exception t) {
-			throw new VariantException.Internal(t);
+		catch (Exception e) {
+			throw new VariantException.Internal("Unable to serialize payload", e);
 		}
 
 		Payload.Session response = new CommonExceptionHandler<Payload.Session>() {
@@ -257,8 +258,8 @@ public class Server {
 		if (LOG.isTraceEnabled()) LOG.trace(
 				String.format("sessionAttrClear(%s)", name));
 
-		// Make body
-		final StringWriter body = new StringWriter(2048);
+		// Body
+		StringWriter body = new StringWriter(2048);
 		try {
 			JsonGenerator jsonGen = new JsonFactory().createGenerator(body);
 			jsonGen.writeStartObject();
@@ -267,8 +268,8 @@ public class Server {
 			jsonGen.writeEndObject();
 			jsonGen.flush();
 		}
-		catch (Exception t) {
-			throw new VariantException.Internal(t);
+		catch (Exception e) {
+			throw new VariantException.Internal("Unable to serialize payload", e);
 		}
 
 		Payload.Session response = new CommonExceptionHandler<Payload.Session>() {
@@ -293,13 +294,36 @@ public class Server {
 
 		if (LOG.isTraceEnabled()) LOG.trace(
 				String.format("requestCreate(%s,%s)", ssn.getId(), state));
-
-		final String body = String.format("{\"sid\":\"%s\",\"state\":\"%s\"}", ssn.getId(), state);
 		
+		// Body
+		StringWriter body = new StringWriter();
+		try {
+			JsonGenerator jsonGen = new JsonFactory().createGenerator(body);
+			jsonGen.writeStartObject();
+			jsonGen.writeStringField("sid", ssn.getId());
+			jsonGen.writeStringField("state", state);
+			// If this is the first target request, we need to send the content
+			// of the targeting tracker, because it's not yet reflected in the
+			// shared state on the server. When server created thsi session,
+			// it didn't have this information.
+			if (ssn.getStateRequest() == null) {
+				jsonGen.writeArrayFieldStart("stab");
+				for (TargetingTracker.Entry e: ssn.targetingTracker.get()) {
+					jsonGen.writeString(e.toString());
+				}
+				jsonGen.writeEndArray();
+			}
+			jsonGen.writeEndObject();
+			jsonGen.flush();
+		}
+		catch (Exception e) {
+			throw new VariantException.Internal("Unable to serialize payload", e);
+		}
+
 		Payload.Session response = new CommonExceptionHandler<Payload.Session>() {
 			
 			@Override Payload.Session block() throws Exception {
-				HttpResponse resp = adapter.post(serverUrl + "request", body); 
+				HttpResponse resp = adapter.post(serverUrl + "request", body.toString()); 
 				return Payload.Session.parse(ssn.getConnection(), resp);
 			}
 		}.run(ssn);
@@ -323,24 +347,31 @@ public class Server {
 		if (LOG.isTraceEnabled()) LOG.trace(
 				String.format("requestCommit(%s)", ssn.getId()));
 
+		// Body
+		StringWriter body = new StringWriter();
+		try {
+			JsonGenerator jsonGen = new JsonFactory().createGenerator(body);
+			jsonGen.writeStartObject();
+			jsonGen.writeStringField("sid", ssn.getId());
+			jsonGen.writeNumberField("status", status.ordinal());
+			if (sve != null && sve.getAttributes().size() > 0) {
+				jsonGen.writeObjectFieldStart("attrs");
+				for (Map.Entry<String, String> e: sve.getAttributes().entrySet()) {
+					jsonGen.writeStringField(e.getKey(), e.getValue());
+				}
+				jsonGen.writeEndObject();
+			}
+	
+			jsonGen.writeEndObject();
+			jsonGen.flush();
+		}
+		catch (Exception e) {
+			throw new VariantException.Internal("Unable to serialize payload", e);
+		}
+		
 		Payload.Session response =  new CommonExceptionHandler<Payload.Session>() {
 			
 			@Override Payload.Session block() throws Exception {
-				StringWriter body = new StringWriter();
-				JsonGenerator jsonGen = new JsonFactory().createGenerator(body);
-				jsonGen.writeStartObject();
-				jsonGen.writeStringField("sid", ssn.getId());
-				jsonGen.writeNumberField("status", status.ordinal());
-				if (sve != null && sve.getAttributes().size() > 0) {
-					jsonGen.writeObjectFieldStart("attrs");
-					for (Map.Entry<String, String> e: sve.getAttributes().entrySet()) {
-						jsonGen.writeStringField(e.getKey(), e.getValue());
-					}
-					jsonGen.writeEndObject();
-				}
-
-				jsonGen.writeEndObject();
-				jsonGen.flush();
 				HttpResponse resp = adapter.put(serverUrl + "request", body.toString());
 				return Payload.Session.parse(ssn.getConnection(), resp);
 			}
@@ -360,17 +391,23 @@ public class Server {
 		if (LOG.isTraceEnabled()) LOG.trace(
 				String.format("eventSave(%s, %s)", ssn.getId(), event.getName()));
 
+		// Body
+		StringWriter body = new StringWriter();
+		try {
+			JsonGenerator jsonGen = new JsonFactory().createGenerator(body);
+			jsonGen.writeStartObject();
+			jsonGen.writeStringField("sid", ssn.getId());
+			jsonGen.writeFieldName("event");
+			jsonGen.writeRawValue(TraceEventSupport.toJson(event));
+			jsonGen.writeEndObject();
+			jsonGen.flush();
+		}
+		catch (Exception e) {
+			throw new VariantException.Internal("Unable to serialize payload", e);
+		}
+
 		new CommonExceptionHandlerVoid() {
 			@Override void voidBlock() throws Exception {
-				StringWriter body = new StringWriter();
-				JsonGenerator jsonGen = new JsonFactory().createGenerator(body);
-				jsonGen.writeStartObject();
-				jsonGen.writeStringField("sid", ssn.getId());
-				jsonGen.writeFieldName("event");
-				jsonGen.writeRawValue(TraceEventSupport.toJson(event));
-				jsonGen.writeEndObject();
-				jsonGen.flush();
-
 				adapter.post(serverUrl + "event", body.toString());
 			}
 		}.run(ssn);

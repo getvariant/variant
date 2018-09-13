@@ -57,7 +57,7 @@
                'isControl':true                              
             },                                               
             {                                                
-               'name':'tosCheckbox',                                   
+               'name':'tosCheckbox',
                'weight':1                                   
             },                                               
             {                                                

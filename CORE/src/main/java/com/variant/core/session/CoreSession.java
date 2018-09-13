@@ -105,7 +105,7 @@ public class CoreSession implements Serializable {
 		}
 		
 		SessionScopedTargetingStabile targetingStabile = new SessionScopedTargetingStabile();
-		Object stabileObj = parsedJson.get(FIELD_NAME_TARGETING_STABIL);
+		Object stabileObj = parsedJson.get(FIELD_NAME_TARGETING_STABILE);
 		if (stabileObj != null) {
 			try {
 				List<?> listRaw = (List<?>) stabileObj; 
@@ -307,7 +307,7 @@ public class CoreSession implements Serializable {
 	private static final String FIELD_NAME_DISQUAL_TESTS = "disqualTests";
 	private static final String FIELD_NAME_CURRENT_REQUEST = "request";
 	private static final String FIELD_NAME_ID = "sid";
-	private static final String FIELD_NAME_TARGETING_STABIL = "stabil";
+	private static final String FIELD_NAME_TARGETING_STABILE = "stab";
 	private static final String FIELD_NAME_STATE = "state";
 	private static final String FIELD_NAME_TRAVERSED_STATES = "states";
 	private static final String FIELD_NAME_TRAVERSED_TESTS = "tests";
@@ -367,7 +367,7 @@ public class CoreSession implements Serializable {
 			}
 
 			if (targetingStabile.size() > 0) {
-				jsonGen.writeArrayFieldStart(FIELD_NAME_TARGETING_STABIL);
+				jsonGen.writeArrayFieldStart(FIELD_NAME_TARGETING_STABILE);
 				for (SessionScopedTargetingStabile.Entry entry: targetingStabile.getAll()) {
 					jsonGen.writeString(entry.toString());
 				}

@@ -43,11 +43,12 @@ public class SessionImpl implements Session {
 	private final Schema schema;
 	private CoreSession coreSession;
 	private StateRequestImpl stateRequest;
-	public boolean isExpired = false;
 
-	// These are set by ConnectionImpl
+	// package scope -- set in ConnectionImpl
 	SessionIdTracker sessionIdTracker = null;
-	TargetingTracker targetingTracker = null;
+	public TargetingTracker targetingTracker = null;
+
+	public boolean isExpired = false;
 
 	/**
 	 * 
@@ -72,37 +73,10 @@ public class SessionImpl implements Session {
 	private Set<TargetingTracker.Entry> fromTargetingStabile(SessionScopedTargetingStabile stabile) {
 		HashSet<TargetingTracker.Entry> result = new HashSet<TargetingTracker.Entry>(stabile.size());
 		for (SessionScopedTargetingStabile.Entry stabileEntry: stabile.getAll()) 
-			result.add(new TargetingTrackerEntryImpl(stabileEntry, this));
+			result.add(new TargetingTrackerEntryImpl(stabileEntry));
 		return result;
 	}
 	
-	/**
-	 * Instantiate targeting tracker.
-	 * 
-	 * @param userData
-	 * @return
-	 *
-	private TargetingTracker initTargetingTracker(Object...userData) {
-		
-		// Instantiate targeting tracker.
-		String className = getConfig().getString(TARGETING_TRACKER_CLASS_NAME);
-		
-		try {
-			Object object = Class.forName(className).newInstance();
-			if (object instanceof TargetingTracker) {
-				TargetingTracker result = (TargetingTracker) object;
-				result.init(this, userData);
-				return result;
-			}
-			else {
-				throw new VariantException(TARGETING_TRACKER_NO_INTERFACE, className, TargetingTracker.class.getName());
-			}
-		}
-		catch (Exception e) {
-			throw new VariantException.Internal("Unable to instantiate targeting tracker class [" + className +"]", e);
-		}
-	}
-*/	
 	/**
 	 * Sill ok to use this object?
 	 * Package visibility because state request abject needs access.
@@ -114,25 +88,6 @@ public class SessionImpl implements Session {
 	// ---------------------------------------------------------------------------------------------//
 	//                                            PUBLIC                                            //
 	// ---------------------------------------------------------------------------------------------//
-	/**
-	 * Create a brand new foreground session with a session ID and a targeting trackers.
-	 *
-	public SessionImpl(
-			Connection conn,
-			CoreSession coreSession,
-			Schema schema,
-			SessionIdTracker sessionIdTracker,
-			Object...userData) {
-		
-		this.conn = (ConnectionImpl) conn;
-		this.schema = schema;
-		this.server = this.conn.client.server;
-		this.coreSession = coreSession;
-		this.sessionIdTracker = sessionIdTracker;
-		this.targetingTracker = initTargetingTracker(userData);
-		this.coreSession.setTargetingStabile(toTargetingStabile(targetingTracker));
-	}
-*/
 	/**
 	 * Create a headless session without the session ID and the targeting trackers.
 	 * May contain state request object.
@@ -302,8 +257,8 @@ public class SessionImpl implements Session {
 
 	// ---------------------------------------------------------------------------------------------//
 	//                                           PUBLIC EXT                                         //
-	// ---------------------------------------------------------------------------------------------//
-
+	// ---------------------------------------------------------------------------------------------//	
+	
 	/**
 	 */
 	public void  expire() {

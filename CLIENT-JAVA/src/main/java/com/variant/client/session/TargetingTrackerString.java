@@ -7,11 +7,8 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.variant.client.ConfigKeys;
 import com.variant.client.TargetingTracker;
-import com.variant.core.schema.Test;
-import com.variant.core.schema.Test.Experience;
-import com.variant.core.util.TimeUtils;
+import com.variant.core.util.Tuples.Tripple;
 
 /**
  * Targeting tracker trait that knows how to marshal a collection of experience entries
@@ -48,6 +45,10 @@ public abstract class TargetingTrackerString implements TargetingTracker {
 				
 				String[] tokens = entry.split("\\.");
 				if (tokens.length == 3) {
+					
+					result.add(new TargetingTrackerEntryImpl(Long.parseLong(tokens[0]), tokens[1], tokens[2]));
+
+					/**** !!! ALL THIS MUST GO ELSEWHERE !!! *****
 					try {
 						Test test = getSession().getSchema().getTest(tokens[1]);
 						if (test == null) {
@@ -83,6 +84,7 @@ public abstract class TargetingTrackerString implements TargetingTracker {
 							LOG.debug("Unable to parse entry [" + entry + "]", e);
 						}
 					}
+					*******/
 				}
 				else {
 					if (LOG.isInfoEnabled()) {
@@ -96,7 +98,7 @@ public abstract class TargetingTrackerString implements TargetingTracker {
 	}
 	
 	/**
-	 * 
+	 * From entires.
 	 */
 	public static String toString(Collection<Entry> entries) {
 		StringBuilder sb = new StringBuilder();
@@ -105,6 +107,21 @@ public abstract class TargetingTrackerString implements TargetingTracker {
 			if (first) first = false;
 			else sb.append("|");
 			sb.append(e);
+		}
+		return sb.toString();
+	}
+
+	/**
+	 * From tripples.
+	 */
+	@SafeVarargs
+	public static String toString(Tripple<Long,String,String>...entries) {
+		StringBuilder sb = new StringBuilder();
+		boolean first = true;
+		for (Tripple<Long,String,String> entry: entries) {
+			if (first) first = false;
+			else sb.append("|");
+			sb.append(entry.arg1()).append('.').append(entry.arg2()).append('.').append(entry.arg3());
 		}
 		return sb.toString();
 	}
