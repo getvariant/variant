@@ -39,6 +39,8 @@ class ConnectionDrainingOnReplaceTest extends BaseSpecWithServerAsync with TempS
       dirWatcherLatencyMsecs mustBe 10000   
    }
    
+   val emptyTargetingTrackerBody = "{\"tt\":[]}"
+   
    /**
     * 
     */
@@ -64,7 +66,7 @@ class ConnectionDrainingOnReplaceTest extends BaseSpecWithServerAsync with TempS
 
             val sid = newSid
 	         ssnId2Big(i) = sid
-            assertResp(route(app, httpReq(POST, context + "/session/ParserConjointOkayBigTestNoHooks/" + sid)))
+            assertResp(route(app, httpReq(POST, context + "/session/ParserConjointOkayBigTestNoHooks/" + sid).withBody(emptyTargetingTrackerBody)))
                .is(OK)
                .withBodySession { ssn =>
                   ssn.getId mustNot be (sid)
@@ -77,7 +79,7 @@ class ConnectionDrainingOnReplaceTest extends BaseSpecWithServerAsync with TempS
 
             val sid = newSid
 	         ssnId2Pet(i) = sid
-            assertResp(route(app, httpReq(POST, context + "/session/petclinic_experiments/" + sid)))
+            assertResp(route(app, httpReq(POST, context + "/session/petclinic_experiments/" + sid).withBody(emptyTargetingTrackerBody)))
                .is(OK)
                .withBodySession { ssn =>
                   ssn.getId mustNot be (sid)
@@ -185,7 +187,7 @@ class ConnectionDrainingOnReplaceTest extends BaseSpecWithServerAsync with TempS
          
          val sid = newSid
          var actualSid: String = null
-         assertResp(route(app, httpReq(POST, context + "/session/ParserConjointOkayBigTestNoHooks/" + sid)))
+         assertResp(route(app, httpReq(POST, context + "/session/ParserConjointOkayBigTestNoHooks/" + sid).withBody(emptyTargetingTrackerBody)))
             .is(OK)
             .withBodySession { ssn =>
                ssn.getId mustNot be (sid)

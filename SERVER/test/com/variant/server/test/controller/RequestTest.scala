@@ -27,6 +27,8 @@ import com.variant.server.api.StateRequest
  */
 class RequestTest extends EmbeddedServerSpec {
       
+   val emptyTargetingTrackerBody = "{\"tt\":[]}"
+
    
    "Schema big_conjoint_schema" should {
 
@@ -35,7 +37,6 @@ class RequestTest extends EmbeddedServerSpec {
       val writer = schema.eventWriter
       val reader = TraceEventReader(writer)
       var sid = newSid
-
       
       "have expected event writer confuration" in {
          writer.maxBufferSize mustEqual 200
@@ -47,7 +48,7 @@ class RequestTest extends EmbeddedServerSpec {
       "create new session" in {
          
          // create a new session.
-         assertResp(route(app, httpReq(POST, context + "/session/big_conjoint_schema/" + sid)))
+         assertResp(route(app, httpReq(POST, context + "/session/big_conjoint_schema/" + sid).withBody(emptyTargetingTrackerBody)))
             .isOk         
             .withBodySession { ssn =>
                ssn.getId mustNot be (sid)
@@ -138,7 +139,7 @@ class RequestTest extends EmbeddedServerSpec {
          var sid = newSid
          
          // Recreate session because the old one expired while we waited for the event writer.
-         assertResp(route(app, httpReq(POST, context + "/session/big_conjoint_schema/" + sid)))
+         assertResp(route(app, httpReq(POST, context + "/session/big_conjoint_schema/" + sid).withBody(emptyTargetingTrackerBody)))
             .isOk
             .withBodySession { ssn =>
                ssn.getId mustNot be (sid)
@@ -217,7 +218,7 @@ class RequestTest extends EmbeddedServerSpec {
 
          var sid = newSid
          
-         assertResp(route(app, httpReq(POST, context + "/session/big_conjoint_schema/" + sid)))
+         assertResp(route(app, httpReq(POST, context + "/session/big_conjoint_schema/" + sid).withBody(emptyTargetingTrackerBody)))
             .isOk
             .withBodySession { ssn =>
                ssn.getId mustNot be (sid)
@@ -296,7 +297,7 @@ class RequestTest extends EmbeddedServerSpec {
 
          var sid = newSid
          
-         assertResp(route(app, httpReq(POST, context + "/session/big_conjoint_schema/" + sid)))
+         assertResp(route(app, httpReq(POST, context + "/session/big_conjoint_schema/" + sid).withBody(emptyTargetingTrackerBody)))
             .isOk
             .withBodySession { ssn =>
                ssn.getId mustNot be (sid)
@@ -373,7 +374,7 @@ class RequestTest extends EmbeddedServerSpec {
 
          var sid = newSid
          
-         assertResp(route(app, httpReq(POST, context + "/session/big_conjoint_schema/" + sid)))
+         assertResp(route(app, httpReq(POST, context + "/session/big_conjoint_schema/" + sid).withBody(emptyTargetingTrackerBody)))
             .isOk
             .withBodySession { ssn =>
                ssn.getId mustNot be (sid)
@@ -451,7 +452,7 @@ class RequestTest extends EmbeddedServerSpec {
          var sid = newSid
          
          // create a new session.
-         assertResp(route(app, httpReq(POST, context + "/session/big_conjoint_schema/" + sid)))
+         assertResp(route(app, httpReq(POST, context + "/session/big_conjoint_schema/" + sid).withBody(emptyTargetingTrackerBody)))
             .isOk
             .withBodySession { ssn =>
                ssn.getId mustNot be (sid)
@@ -537,7 +538,7 @@ class RequestTest extends EmbeddedServerSpec {
          
          // ssn.setAttribute("user-agent", "Safari")
 
-         assertResp(route(app, httpReq(POST, context + "/session/petclinic_experiments/" + sid)))
+         assertResp(route(app, httpReq(POST, context + "/session/petclinic_experiments/" + sid).withBody(emptyTargetingTrackerBody)))
             .isOk
             .withBodySession { ssn =>
                ssn.getId mustNot be (sid)
@@ -559,7 +560,7 @@ class RequestTest extends EmbeddedServerSpec {
 
       "disqualify session from test" in {
 
-         assertResp(route(app, httpReq(POST, context + "/session/petclinic_experiments/" + sid)))
+         assertResp(route(app, httpReq(POST, context + "/session/petclinic_experiments/" + sid).withBody(emptyTargetingTrackerBody)))
             .isOk
             .withBodyJson { json => 
                val coreSsn = CoreSession.fromJson((json \ "session").as[String], schema)

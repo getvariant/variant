@@ -1,5 +1,6 @@
 package com.variant.client;
 
+import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -34,7 +35,7 @@ public interface TargetingTracker {
 	 * 
 	 * @since 0.6
 	 */
-	public void init(Object...userData);
+	void init(Object...userData);
 
 	/**
 	 * All currently tracked experiences. The implementation must guarantee 
@@ -45,7 +46,7 @@ public interface TargetingTracker {
 	 *         a test experience currently tracked by this object.
 	 * @since 0.6
 	 */
-	public Set<Entry> get();
+	Set<Entry> get();
 		
 	/**
 	 * Sets the test experiences tracked by this object. Call {@link #save(Object...)} to persist between
@@ -57,7 +58,7 @@ public interface TargetingTracker {
 	 * 
 	 * @since 0.6
 	 */
-	public void set(Set<Entry> entries);
+	void set(Set<Entry> entries);
 
 	/**
 	 * Saves the state of this object to the external persistence mechanism, making it durable between
@@ -68,7 +69,7 @@ public interface TargetingTracker {
 	 *                 
 	 * @since 0.6
 	 */
-	public void save(Object...userData);
+	void save(Object...userData);
 		
 	/**
 	 * A targeting tracker entry.
@@ -104,4 +105,30 @@ public interface TargetingTracker {
 		public long getTimestamp();
 	}
 
+	/**
+	 * An empty targeting tracker.
+	 * 
+	 * @since 0.9
+	 * @return
+	 */
+	public static TargetingTracker empty() {
+		
+		return new TargetingTracker() {
+
+			@Override
+			public void init(Object... userData) {}
+
+			@Override
+			public Set<Entry> get() {
+				return new HashSet<Entry>();
+			}
+
+			@Override
+			public void set(Set<Entry> entries) {}
+
+			@Override
+			public void save(Object... userData) {}
+			
+		};
+	}
 }

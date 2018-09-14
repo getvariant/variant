@@ -37,7 +37,7 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 	
 	/**
 	 */
-	//@org.junit.Test
+	@org.junit.Test
 	public void noStabilTest() throws Exception {
 		
 		Connection conn = client.connectTo("big_conjoint_schema");		
@@ -168,7 +168,7 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 
 	/**
 	 */
-	//@org.junit.Test
+	@org.junit.Test
 	public void commitTest() throws Exception {
 		
 		Connection conn = client.connectTo("big_conjoint_schema");
@@ -234,7 +234,7 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 	 * 
 	 * @throws Exception
 	 */
-	//@org.junit.Test
+	@org.junit.Test
 	public void failTest() throws Exception {
 		
 		Connection conn = client.connectTo("big_conjoint_schema");
@@ -289,7 +289,7 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 	
 	/**
 	 */
-	//@org.junit.Test
+	@org.junit.Test
 	public void sessionExpiredTest() throws Exception {
 		
 		Connection conn = client.connectTo("big_conjoint_schema");		
@@ -319,7 +319,7 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 	 * Petclinic schema defines a qual and a targeting hook which will fail,
 	 * unless we create "user-agent" session attributes.
 	 */
-	//@org.junit.Test
+	@org.junit.Test
 	public void targetingHookExceptionTest() throws Exception {
 		
 		Connection conn = client.connectTo("petclinic");		
@@ -356,7 +356,7 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 		assertEquals(Committed, req.getStatus());
 	}
 	
-	//@org.junit.Test
+	@org.junit.Test
 	public void targetFromParallelConnectionsTest() throws Exception {
 		
 		Connection conn1 = client.connectTo("big_conjoint_schema");		

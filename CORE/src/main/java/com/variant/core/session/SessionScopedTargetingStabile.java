@@ -34,6 +34,19 @@ public class SessionScopedTargetingStabile {
 		private String experienceName;
 		private long timestamp;
 		
+		/**
+		 * Parse from the string prouce by the toString() method.
+		 * @param string
+		 * @return
+		 */
+		public static Entry parse(String string) {
+			String[] tokens = string.split("\\.");
+			return new Entry(tokens[0], tokens[1], Long.parseLong(tokens[2]));
+		}
+		
+		/**
+		 * 
+		 */
 		private Entry(String testName, String experienceName, long timestamp) {
 			this.testName = testName;
 			this.experienceName = experienceName;
@@ -138,6 +151,15 @@ public class SessionScopedTargetingStabile {
 	 */
 	public Entry remove(String testName) {
 		return entryMap.remove(testName);
+	}
+
+	/**
+	 * 
+	 * @param experience
+	 * @return
+	 */
+	public Entry add(Entry entry) {
+		return entryMap.put(entry.testName, entry);
 	}
 
 	/**

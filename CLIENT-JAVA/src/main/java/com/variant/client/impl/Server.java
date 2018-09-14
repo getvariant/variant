@@ -173,18 +173,35 @@ public class Server {
 
 	/**
 	 * POST /session/:schema/:sid
-	 * Get or create an existing session by ID or null if does not exist on the server.
-	 * Same URL as GET, no body.
+	 * Get or create an existing session by ID.
+	 * Same URL as GET. Body contains the initial targeting.
 	 */
-	public Payload.Session sessionGetOrCreate(final String sid, final ConnectionImpl conn) {
+	public Payload.Session sessionGetOrCreate(String sid, ConnectionImpl conn, TargetingTracker tt) {
 
 		if (LOG.isTraceEnabled()) LOG.trace(
 				String.format("sessionGet(%s)", sid));
 		
+		// Body
+		StringWriter body = new StringWriter(2048);
+		try {
+			JsonGenerator jsonGen = new JsonFactory().createGenerator(body);
+			jsonGen.writeStartObject();
+			jsonGen.writeArrayFieldStart("tt");
+			for (TargetingTracker.Entry e: tt.get()) {
+				jsonGen.writeString(e.getTestName() + '.' + e.getExperienceName() + '.' + e.getTimestamp());
+			}
+			jsonGen.writeEndArray();
+			jsonGen.writeEndObject();
+			jsonGen.flush();
+		}
+		catch (Exception e) {
+			throw new VariantException.Internal("Unable to serialize payload", e);
+		}
+		
 		return new CommonExceptionHandler<Payload.Session>() {
 			
 			@Override Payload.Session block() throws Exception {
-				HttpResponse resp = adapter.post(serverUrl + "session/" + conn.getSchemaName() + "/" + sid);
+				HttpResponse resp = adapter.post(serverUrl + "session/" + conn.getSchemaName() + "/" + sid, body.toString());
 				return Payload.Session.parse(conn, resp);
 			}
 		}.run(sid);

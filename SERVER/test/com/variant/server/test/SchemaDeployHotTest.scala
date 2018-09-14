@@ -35,6 +35,8 @@ class SchemaDeployHotTest extends EmbeddedServerSpec with TempSchemataDir {
     */
    "File System Schema Deployer" should {
  
+      val emptyTargetingTrackerBody = "{\"tt\":[]}"
+
 	   "startup with two schemata" in {
 	      
 	      server.schemata.size mustBe 2
@@ -139,7 +141,7 @@ class SchemaDeployHotTest extends EmbeddedServerSpec with TempSchemataDir {
 
 	      // Create a session to keep the schema from being vacuumed after undeployment.
 	      val sid = newSid
-         assertResp(route(app, httpReq(POST, context + "/session/big_conjoint_schema/" + sid)))
+         assertResp(route(app, httpReq(POST, context + "/session/big_conjoint_schema/" + sid).withBody(emptyTargetingTrackerBody)))
             .isOk
             .withBodySession { ssn =>
                ssn.getId mustNot be (sid)
@@ -218,7 +220,7 @@ class SchemaDeployHotTest extends EmbeddedServerSpec with TempSchemataDir {
 	   
 	   "create session in the third schema" in {
 	   
-	      assertResp(route(app, httpReq(POST, context + "/session/ParserConjointOkayBigTestNoHooks/" + sid)))
+	      assertResp(route(app, httpReq(POST, context + "/session/ParserConjointOkayBigTestNoHooks/" + sid).withBody(emptyTargetingTrackerBody)))
             .isOk
             .withBodySession { ssn =>
                ssn.getId mustNot be (sid)
@@ -336,13 +338,13 @@ class SchemaDeployHotTest extends EmbeddedServerSpec with TempSchemataDir {
 	   
 	   "create new session in the unaffected schema petclinic_experiments" in {
          
-         assertResp(route(app, httpReq(POST, context + "/session/petclinic_experiments/" + newSid)))
+         assertResp(route(app, httpReq(POST, context + "/session/petclinic_experiments/" + newSid).withBody(emptyTargetingTrackerBody)))
             .isOk
       }
 	   
 	   "create new session in the new schema" in {
          
-         assertResp(route(app, httpReq(POST, context + "/session/big_conjoint_schema/" + newSid)))
+         assertResp(route(app, httpReq(POST, context + "/session/big_conjoint_schema/" + newSid).withBody(emptyTargetingTrackerBody)))
             .isOk
       }
    }

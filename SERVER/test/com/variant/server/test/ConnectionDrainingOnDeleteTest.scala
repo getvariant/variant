@@ -42,7 +42,9 @@ class ConnectionDrainingOnDeleteTest extends BaseSpecWithServerAsync with TempSc
     */
    "File System Schema Deployer on schema DELETE" should {
  
-	   "startup with two schemata" in {
+      val emptyTargetingTrackerBody = "{\"tt\":[]}"
+ 
+      "startup with two schemata" in {
 	      
          server.schemata.size mustBe 2
          server.schemata.get("ParserConjointOkayBigTestNoHooks").get.liveGen.isDefined mustBe true 
@@ -60,7 +62,7 @@ class ConnectionDrainingOnDeleteTest extends BaseSpecWithServerAsync with TempSc
          for (j <- 0 until SESSIONS) async {
 
             val sid = newSid
-            assertResp(route(app, httpReq(POST, context + "/session/ParserConjointOkayBigTestNoHooks/" + sid)))
+            assertResp(route(app, httpReq(POST, context + "/session/ParserConjointOkayBigTestNoHooks/" + sid).withBody(emptyTargetingTrackerBody)))
                .is(OK)
             .withBodySession { ssn =>
                ssn.getId mustNot be (sid)
@@ -72,7 +74,7 @@ class ConnectionDrainingOnDeleteTest extends BaseSpecWithServerAsync with TempSc
          for (j <- 0 until SESSIONS) async {
 
             val sid = newSid
-            assertResp(route(app, httpReq(POST, context + "/session/petclinic_experiments/" + sid)))
+            assertResp(route(app, httpReq(POST, context + "/session/petclinic_experiments/" + sid).withBody(emptyTargetingTrackerBody)))
                .is(OK)
             .withBodySession { ssn =>
                ssn.getId mustNot be (sid)
@@ -186,7 +188,7 @@ class ConnectionDrainingOnDeleteTest extends BaseSpecWithServerAsync with TempSc
          // Create
          val sid = newSid
          var actualSid: String = null
-         assertResp(route(app, httpReq(POST, context + "/session/petclinic_experiments/" + sid)))
+         assertResp(route(app, httpReq(POST, context + "/session/petclinic_experiments/" + sid).withBody(emptyTargetingTrackerBody)))
             .is(OK)
             .withBodySession { ssn =>
                ssn.getId mustNot be (sid)
@@ -205,7 +207,7 @@ class ConnectionDrainingOnDeleteTest extends BaseSpecWithServerAsync with TempSc
       
       "refuse session create in dead generation" in {
 
-         assertResp(route(app, httpReq(POST, context + "/session/ParserConjointOkayBigTestNoHooks/" + newSid)))
+         assertResp(route(app, httpReq(POST, context + "/session/ParserConjointOkayBigTestNoHooks/" + newSid).withBody(emptyTargetingTrackerBody)))
             .isError(UNKNOWN_SCHEMA, "ParserConjointOkayBigTestNoHooks")
       }
 

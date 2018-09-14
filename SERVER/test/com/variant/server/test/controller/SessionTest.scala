@@ -59,7 +59,8 @@ class SessionTest extends EmbeddedServerSpec {
    val vacuumIntervalMillis = server.config.getLong(ConfigKeys.SESSION_VACUUM_INTERVAL) * 1000
    vacuumIntervalMillis  mustEqual 1000
 
-
+   val emptyTargetingTrackerBody = "{\"tt\":[]}"
+   
    "SessionController" should {
 
       var genId: String = null
@@ -99,8 +100,8 @@ class SessionTest extends EmbeddedServerSpec {
 
       "return OK and replace existing session on PUT" in {
        
-         val putBody = sessionJsonBigCovar.expand("sid" -> "foo")
-         assertResp(route(app, httpReq(PUT, endpoint + "/big_conjoint_schema").withBody(putBody)))
+         val reqBody = sessionJsonBigCovar.expand("sid" -> "foo")
+         assertResp(route(app, httpReq(PUT, endpoint + "/big_conjoint_schema").withBody(reqBody)))
             .isOk
             .withNoBody
          
@@ -117,7 +118,7 @@ class SessionTest extends EmbeddedServerSpec {
          val sid = "bar"
          var actualSid: String = null
          
-         assertResp(route(app, httpReq(POST, endpoint + "/big_conjoint_schema/" + sid)))
+         assertResp(route(app, httpReq(POST, endpoint + "/big_conjoint_schema/" + sid).withBody(emptyTargetingTrackerBody)))
             .isOk
             .withBodySession { ssn =>
                ssn.getId mustNot be (sid)

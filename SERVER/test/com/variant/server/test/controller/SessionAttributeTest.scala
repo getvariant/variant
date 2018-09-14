@@ -28,6 +28,8 @@ class SessionAttributeTest extends EmbeddedServerSpec {
    val sessionJsonPetclinic = ParameterizedString(
          sessionJsonPetclinicPrototype.format(System.currentTimeMillis()))
 
+   val emptyTargetingTrackerBody = "{\"tt\":[]}"
+
    "SessionController" should {
 
       val sid1 = newSid
@@ -79,7 +81,7 @@ class SessionAttributeTest extends EmbeddedServerSpec {
 
       "read the attribute " in {
                   
-         assertResp(route(app, httpReq(POST, endpointSession + "/big_conjoint_schema/" + sid1)))
+         assertResp(route(app, httpReq(POST, endpointSession + "/big_conjoint_schema/" + sid1).withBody(emptyTargetingTrackerBody)))
             .isOk
             .withBodyJson  { json =>
                extractAttr(json, "ATTRIBUTE NAME") mustBe Some("ATTRIBUTE VALUE")
@@ -126,7 +128,7 @@ class SessionAttributeTest extends EmbeddedServerSpec {
 
       "Confirm that the attribute is gone" in {
                   
-         assertResp(route(app, httpReq(POST, endpointSession + "/big_conjoint_schema/" + sid1)))
+         assertResp(route(app, httpReq(POST, endpointSession + "/big_conjoint_schema/" + sid1).withBody(emptyTargetingTrackerBody)))
             .isOk
             .withBodyJson  { json =>
                extractAttr(json, "ATTRIBUTE NAME") mustBe None

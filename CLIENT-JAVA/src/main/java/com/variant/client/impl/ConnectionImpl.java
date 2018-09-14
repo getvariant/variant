@@ -179,8 +179,12 @@ public class ConnectionImpl implements Connection {
 		}	
 	}
 		
+	private Pair<CoreSession, Schema> fetchSession(String sid, boolean create) {
+		return fetchSession(sid, create, TargetingTracker.empty());
+	}
+
 	/**
-	 * Fetch an existing session from the server. Optionally, create a new one
+	 * Fetch a session from the server by its SID. Optionally, create a new one
 	 * if session with the given SID didn't exist. If created, new session will
 	 * have a different SID, created by the server.
 	 * 
@@ -188,11 +192,11 @@ public class ConnectionImpl implements Connection {
 	 *   
 	 * @return
 	 */
-	private Pair<CoreSession, Schema> fetchSession(String sid, boolean create) {
+	private Pair<CoreSession, Schema> fetchSession(String sid, boolean create, TargetingTracker tt) {
 
 		// This may throw session expired exception.	
 		Payload.Session payload = create ? 
-				client.server.sessionGetOrCreate(sid, this) : client.server.sessionGet(sid, this);
+				client.server.sessionGetOrCreate(sid, this, tt) : client.server.sessionGet(sid, this);
 		
 	    // Parse the schema.
 		// TODO: cache parsed schema indexed by gen IDs, so as not to reparse on each session refresh.

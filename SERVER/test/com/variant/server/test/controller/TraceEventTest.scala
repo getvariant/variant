@@ -69,6 +69,8 @@ class TraceEventTest extends EmbeddedServerSpec {
    
    val endpoint = context + "/event"
       
+   val emptyTargetingTrackerBody = "{\"tt\":[]}"
+
    "EventController" should {
 
       val schema = server.schemata.get("big_conjoint_schema").get.liveGen.get
@@ -120,7 +122,7 @@ class TraceEventTest extends EmbeddedServerSpec {
          // New session
          var sid = newSid
          
-         assertResp(route(app, httpReq(POST, context + "/session/big_conjoint_schema/" + sid)))
+         assertResp(route(app, httpReq(POST, context + "/session/big_conjoint_schema/" + sid).withBody(emptyTargetingTrackerBody)))
             .isOk
             .withBodySession { ssn =>
                ssn.getId mustNot be (sid)
@@ -191,7 +193,7 @@ class TraceEventTest extends EmbeddedServerSpec {
          // New session
          var sid = newSid
          
-         assertResp(route(app, httpReq(POST, context + "/session/big_conjoint_schema/" + sid)))
+         assertResp(route(app, httpReq(POST, context + "/session/big_conjoint_schema/" + sid).withBody(emptyTargetingTrackerBody)))
             .isOk
             .withBodySession { ssn =>
                ssn.getId mustNot be (sid)
@@ -266,7 +268,7 @@ class TraceEventTest extends EmbeddedServerSpec {
          // New session
          var sid = newSid
          
-         assertResp(route(app, httpReq(POST, context + "/session/big_conjoint_schema/" + sid)))
+         assertResp(route(app, httpReq(POST, context + "/session/big_conjoint_schema/" + sid).withBody(emptyTargetingTrackerBody)))
             .isOk         
             .withBodySession { ssn =>
                ssn.getId mustNot be (sid)
@@ -299,7 +301,7 @@ class TraceEventTest extends EmbeddedServerSpec {
 
          // New session
          var sid = newSid
-         assertResp(route(app, httpReq(POST, context + "/session/big_conjoint_schema/" + sid)))
+         assertResp(route(app, httpReq(POST, context + "/session/big_conjoint_schema/" + sid).withBody(emptyTargetingTrackerBody)))
             .isOk
             .withBodySession { ssn =>
                ssn.getId mustNot be (sid)
@@ -360,7 +362,7 @@ class TraceEventTest extends EmbeddedServerSpec {
          // New session
          var sid = newSid
          
-         assertResp(route(app, httpReq(POST, context + "/session/big_conjoint_schema/" + sid)))
+         assertResp(route(app, httpReq(POST, context + "/session/big_conjoint_schema/" + sid).withBody(emptyTargetingTrackerBody)))
             .isOk         
             .withBodySession { ssn =>
                ssn.getId mustNot be (sid)

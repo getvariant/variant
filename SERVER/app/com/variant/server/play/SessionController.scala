@@ -3,6 +3,8 @@ package com.variant.server.play
 import com.variant.core.impl.ServerError.EmptyBody
 import com.variant.core.session.CoreSession
 import com.variant.core.impl.ServerError._
+import com.variant.core.util.StringUtils
+import com.variant.core.session.SessionScopedTargetingStabile
 import com.variant.server.api.ServerException
 import com.variant.server.boot.SessionStore
 import com.variant.server.impl.SessionImpl
@@ -10,12 +12,11 @@ import javax.inject.Inject
 import play.api.Logger
 import play.api.libs.json._
 import play.api.mvc.ControllerComponents
-import com.variant.core.impl.ServerError
 import com.variant.server.boot.VariantServer
 import com.variant.server.api.Session
 import com.variant.server.boot.ServerErrorRemote
 import com.variant.server.schema.SchemaGen
-import com.variant.core.util.StringUtils
+import java.util.Map.Entry
 
 object SessionController {
    
@@ -54,10 +55,19 @@ class SessionController @Inject() (
 
    /**
     * Get a session by ID, if exists in any of the given schema's generations
-    * or create in the live gen.
+    * or create in the live gen. This request should always come with the
+    * targeting tracker content, but we only use it if we're creating the session.
     */
    def getOrCreateSession(schemaName:String, sid:String) = action { req =>
      
+      val bodyJson = req.body.asText.getOrElse {
+         throw new ServerException.Remote(EmptyBody)
+      }
+      
+      val trackedExperiences = (Json.parse(bodyJson) \ "tt").asOpt[List[String]].getOrElse {
+         throw new ServerException.Remote(MissingProperty, "tt")
+      }
+      
       val result: SessionImpl = server.ssnStore.get(sid) match {
          
          // Have the session. Must match the schema name.
@@ -79,7 +89,12 @@ class SessionController @Inject() (
             }
             
             val newSsn = SessionImpl.empty(StringUtils.random64BitString(SessionController.rand), liveGen)
+            val stabile = new SessionScopedTargetingStabile()
+            trackedExperiences.foreach { s => stabile.add(SessionScopedTargetingStabile.Entry.parse(s)) }
+            newSsn.setTargetingStabile(stabile)
             server.ssnStore.put(newSsn)
+            
+            
             newSsn
          }
       }
