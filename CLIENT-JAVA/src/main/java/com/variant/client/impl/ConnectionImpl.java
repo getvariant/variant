@@ -141,7 +141,7 @@ public class ConnectionImpl implements Connection {
 		}
 			
 		try {
-			Pair<CoreSession, Schema> fromServer = fetchSession(sessionId, create);
+			Pair<CoreSession, Schema> fromServer = fetchSession(sessionId, create, targetingTracker);
 			SessionImpl result = new SessionImpl(this, fromServer._2(), fromServer._1());
 			// If the server returned a different SID, re-set the SID tracker.
 			// This can only happen if we were called with create=true.

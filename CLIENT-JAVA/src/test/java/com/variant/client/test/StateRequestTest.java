@@ -125,9 +125,7 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 		Session ssn = conn.getOrCreateSession(userData);
 		assertNotNull(ssn);
 		assertNotEquals(sid, ssn.getId());
-		System.out.println("********************1 " + ((SessionImpl)ssn).targetingTracker.get().size());
 		assertEquals(0, ssn.getTraversedTests().size());
-		System.out.println("********************2 " + ((SessionImpl)ssn).targetingTracker.get().size());
 		Schema schema = ssn.getSchema();
 	   	State state2 = schema.getState("state2");
 	   	Test test1 = schema.getTest("test1");
@@ -163,7 +161,7 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 		assertNull(req.getStateVisitedEvent());		
 		// No-op.
 		req.commit();
-		
+
 	}
 
 	/**
