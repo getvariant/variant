@@ -179,16 +179,18 @@ public class Server {
 	public Payload.Session sessionGetOrCreate(String sid, ConnectionImpl conn, TargetingTracker tt) {
 
 		if (LOG.isTraceEnabled()) LOG.trace(
-				String.format("sessionGet(%s)", sid));
-		
+				String.format("sessionGetOrCreate(%s)", sid));
+
 		// Body
 		StringWriter body = new StringWriter(2048);
 		try {
 			JsonGenerator jsonGen = new JsonFactory().createGenerator(body);
 			jsonGen.writeStartObject();
 			jsonGen.writeArrayFieldStart("tt");
-			for (TargetingTracker.Entry e: tt.get()) {
-				jsonGen.writeString(e.getTestName() + '.' + e.getExperienceName() + '.' + e.getTimestamp());
+			if (tt.get() != null) {
+				for (TargetingTracker.Entry e: tt.get()) {
+					jsonGen.writeString(e.getTestName() + '.' + e.getExperienceName() + '.' + e.getTimestamp());
+				}
 			}
 			jsonGen.writeEndArray();
 			jsonGen.writeEndObject();
@@ -325,8 +327,10 @@ public class Server {
 			// it didn't have this information.
 			if (ssn.getStateRequest() == null) {
 				jsonGen.writeArrayFieldStart("stab");
-				for (TargetingTracker.Entry e: ssn.targetingTracker.get()) {
-					jsonGen.writeString(e.toString());
+				if (ssn.targetingTracker.get() != null) {
+					for (TargetingTracker.Entry e: ssn.targetingTracker.get()) {
+						jsonGen.writeString(e.toString());
+					}
 				}
 				jsonGen.writeEndArray();
 			}

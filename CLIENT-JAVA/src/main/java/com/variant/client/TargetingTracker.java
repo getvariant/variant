@@ -43,7 +43,7 @@ public interface TargetingTracker {
 	 * both referring to the same test.
 	 * 
 	 * @return Set of zero or more of objects of type {@link Entry} each corresponding to
-	 *         a test experience currently tracked by this object.
+	 *         a test experience currently tracked by this object. Must never return null.
 	 * @since 0.6
 	 */
 	Set<Entry> get();

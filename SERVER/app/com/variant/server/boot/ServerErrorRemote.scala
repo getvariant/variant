@@ -28,15 +28,7 @@ class ServerErrorRemote(error: ServerError) extends Results {
     * deserialize it as an error.
     */
    def asResult(args:String*): Result = {
-     
-      // Internal errors are also logged, along with the call stack.
-      if (error.isInternal) {
-         val msg = new StringBuilder("Internal API error: %s".format(error.asMessage(args:_*)))
-         // drop the first frame as it will be currentThread().
-         Thread.currentThread().getStackTrace.drop(1).foreach(se => msg.append("\n  at ").append(se))
-         logger.error(msg.toString())
-      }
-      
+       
       val bodyJson : JsObject = Json.obj(
          "isInternal" -> JsBoolean(error.isInternal),
          "code" -> error.getCode,

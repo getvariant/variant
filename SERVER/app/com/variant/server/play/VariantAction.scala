@@ -45,6 +45,11 @@ class VariantAction @Inject()
          }
          catch {
             case e: ServerException.Remote  =>
+      
+               val msg = "Internal API error: %s".format(e.error.asMessage(e.args:_*))
+               if (e.error.isInternal) logger.error(msg.toString(), e)
+               else logger.debug(msg,e)
+               
                val result = ServerErrorRemote(e.error).asResult(e.args:_*)
                Future.successful(result)
             case t: Throwable => 
