@@ -14,12 +14,10 @@ public class VariantException extends com.variant.core.impl.VariantException {
 	private Object[] args = null;
 	
 	/**
-	 * If client code wishes to extend this exception without bothering with also
-	 * extending UserError.  Not used in JavaClient itself.
-	 * 
+	 * Exposed for the use by client code.
 	 * @param msg
 	 */
-	protected VariantException(String msg) {
+	public VariantException(String msg) {
 		super(msg);
 	}
 
