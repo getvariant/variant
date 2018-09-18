@@ -132,7 +132,7 @@
                 'isControl':true                              
              },                                               
              {                                                
-                'name':'fix',
+                'name':'rateColumn',
                 'weight':1                                   
              }              
           ],                                                  
@@ -141,7 +141,7 @@
                 'stateRef':'vets',                    
                 'variants':[                                  
                    {                                          
-                      'experienceRef': 'fix'
+                      'experienceRef': 'rateColumn'
                    }                      
                 ]                                             
              }
