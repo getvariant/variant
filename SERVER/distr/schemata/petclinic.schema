@@ -23,41 +23,72 @@
       //  }
       // }
    },
-   'states':[                                                
-     { 
-       // The New Owner page used to add owner at /petclinic/owners/new 
-       'name':'newOwner',
-       'parameters': [
-            {
-               'name':'path',
-               'value':'/petclinic/owners/new'
-            }
-        ]
-     },                                                    
-     {  
-       // The Owner Detail page. Note that owner ID is in the path,
-        // so we have to use regular expression to match.
-       'name':'ownerDetail',
-       'parameters': [
-            {
-               'name':'path',
-               'value':'/petclinic/owners/~\\d+/'
-            }
-        ]
-     },
-     { 
-       // The vets page
-       'name':'vets',
-       'parameters': [
+
+   'states':[
+      { 
+         // The vets page
+         'name':'vets',
+         'parameters': [
             {
                'name':'path',
                'value':'/petclinic/vets.html'
             }
-        ]
-     }
-                                                       
+         ]
+      },
+      { 
+         // The New Owner page used to add owner at /petclinic/owners/new 
+         'name':'newOwner',
+         'parameters': [
+            {
+               'name':'path',
+               'value':'/petclinic/owners/new'
+            }
+          ]
+      },                                                    
+      {  
+         // The Owner Detail page. Note that owner ID is in the path,
+          // so we have to use regular expression to match.
+         'name':'ownerDetail',
+         'parameters': [
+            {
+               'name':'path',
+               'value':'/petclinic/owners/~\\d+/'
+            }
+         ]
+      }                                                       
    ],                                                        
+
    'tests':[
+     //
+     // Vet's hourly rate feature toggle.
+     //
+     {                                                      
+         'name':'VetsHourlyRateFeature',
+         'experiences':[                                     
+            {                                                
+               'name':'existing',                                   
+               'weight':1,                                  
+               'isControl':true                              
+            },                                               
+            {                                                
+               'name':'rateColumn',
+               'weight':1                                   
+            }              
+         ],                                                  
+         'onStates':[
+            {                                                
+               'stateRef':'vets',
+               'isNonvariant':true
+            }
+         ],
+         'hooks':[
+               {
+                  // Assigns all Chrome traffic to the control experience
+                  'name':'ChromeTargeter',
+                  'class':'com.variant.server.ext.demo.ChromeTargetingHook'
+               }
+          ]
+      },
       //
       // The New Owner test on 2 pages.
       //
@@ -119,33 +150,6 @@
                'class':'com.variant.server.ext.demo.ChromeTargetingHook'
             }
          ]
-      },
-      //
-      // Vet's hourly rate feature toggle.
-      //
-      {                                                      
-          'name':'VetsHourlyRateFeature',
-          'experiences':[                                     
-             {                                                
-                'name':'existing',                                   
-                'weight':1,                                  
-                'isControl':true                              
-             },                                               
-             {                                                
-                'name':'rateColumn',
-                'weight':1                                   
-             }              
-          ],                                                  
-          'onStates':[
-             {                                                
-                'stateRef':'vets',                    
-                'variants':[                                  
-                   {                                          
-                      'experienceRef': 'rateColumn'
-                   }                      
-                ]                                             
-             }
-          ]
-       }
+      }
    ]
 }
