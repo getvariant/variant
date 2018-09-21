@@ -42,8 +42,8 @@ class SchemaDeployHotTest extends EmbeddedServerSpec with TempSchemataDir {
 	      server.schemata.size mustBe 2
 	      val bigGen = server.schemata.get("ParserConjointOkayBigTestNoHooks").get.liveGen.get
          bigGen.getMeta.getName mustEqual "ParserConjointOkayBigTestNoHooks"
-         val petGen = server.schemata.get("petclinic_experiments").get.liveGen.get
-         petGen.getMeta.getName mustEqual "petclinic_experiments" 
+         val petGen = server.schemata.get("petclinic").get.liveGen.get
+         petGen.getMeta.getName mustEqual "petclinic" 
                   
          // Let the directory watcher thread start before copying any files.
 	      Thread.sleep(100)
@@ -59,20 +59,20 @@ class SchemaDeployHotTest extends EmbeddedServerSpec with TempSchemataDir {
 	      server.schemata.size mustBe 3
 	      val bigGen = server.schemata.get("ParserConjointOkayBigTestNoHooks").get.liveGen.get
          bigGen.getMeta.getName mustEqual "ParserConjointOkayBigTestNoHooks"
-         val petGen = server.schemata.get("petclinic_experiments").get.liveGen.get
-         petGen.getMeta.getName mustEqual "petclinic_experiments" 
+         val petGen = server.schemata.get("petclinic").get.liveGen.get
+         petGen.getMeta.getName mustEqual "petclinic" 
          val bgsGen = server.schemata.get("big_conjoint_schema").get.liveGen.get
-         petGen.getMeta.getName mustEqual "petclinic_experiments" 
+         petGen.getMeta.getName mustEqual "petclinic" 
 	   }
 	   
-	   "replace petclinic_experiments from same origin" in {
+	   "replace petclinic from same origin" in {
 	      
-	      val currentGen = server.schemata.get("petclinic_experiments").get.liveGen.get
+	      val currentGen = server.schemata.get("petclinic").get.liveGen.get
 	      
-         IoUtils.fileCopy("distr/schemata/petclinic-experiments.json", s"${schemataDir}/petclinic-experiments.json");
+         IoUtils.fileCopy("distr/schemata/petclinic.schema", s"${schemataDir}/petclinic.schema");
          Thread.sleep(dirWatcherLatencyMsecs)
     
-         val newGen =  server.schemata.get("petclinic_experiments").get.liveGen.get
+         val newGen =  server.schemata.get("petclinic").get.liveGen.get
          newGen.id mustNot be (currentGen.id)
          currentGen.state mustBe Dead
          newGen.state mustBe Live
@@ -80,31 +80,31 @@ class SchemaDeployHotTest extends EmbeddedServerSpec with TempSchemataDir {
 	      server.schemata.size mustBe 3
 	      val bigGen = server.schemata.get("ParserConjointOkayBigTestNoHooks").get.liveGen.get
          bigGen.getMeta.getName mustEqual "ParserConjointOkayBigTestNoHooks"
-         val petGen = server.schemata.get("petclinic_experiments").get.liveGen.get
-         petGen.getMeta.getName mustEqual "petclinic_experiments" 
+         val petGen = server.schemata.get("petclinic").get.liveGen.get
+         petGen.getMeta.getName mustEqual "petclinic" 
          val bgsGen = server.schemata.get("big_conjoint_schema").get.liveGen.get
-         petGen.getMeta.getName mustEqual "petclinic_experiments" 
+         petGen.getMeta.getName mustEqual "petclinic" 
 
 	   }
 
-	   "refuse to re-deploy petclinic_experiments from different origin" in {
+	   "refuse to re-deploy petclinic from different origin" in {
 	      
-	      val currentGen = server.schemata.get("petclinic_experiments").get.liveGen.get
+	      val currentGen = server.schemata.get("petclinic").get.liveGen.get
 	      
-         IoUtils.fileCopy("distr/schemata/petclinic-experiments.json", s"${schemataDir}/petclinic-schema2.json")
+         IoUtils.fileCopy("distr/schemata/petclinic.schema", s"${schemataDir}/petclinic2.schema")
          Thread.sleep(dirWatcherLatencyMsecs)
     
-         val newGen =  server.schemata.get("petclinic_experiments").get.liveGen.get
+         val newGen =  server.schemata.get("petclinic").get.liveGen.get
          newGen.id must be (currentGen.id)
          newGen.state mustBe Live
          
 	      server.schemata.size mustBe 3
 	      val bigGen = server.schemata.get("ParserConjointOkayBigTestNoHooks").get.liveGen.get
          bigGen.getMeta.getName mustEqual "ParserConjointOkayBigTestNoHooks"
-         val petGen = server.schemata.get("petclinic_experiments").get.liveGen.get
-         petGen.getMeta.getName mustEqual "petclinic_experiments" 
+         val petGen = server.schemata.get("petclinic").get.liveGen.get
+         petGen.getMeta.getName mustEqual "petclinic" 
          val bgsGen = server.schemata.get("big_conjoint_schema").get.liveGen.get
-         petGen.getMeta.getName mustEqual "petclinic_experiments" 
+         petGen.getMeta.getName mustEqual "petclinic" 
 
          val logLines = ServerLogTailer.last(2)
          logLines(0).severity mustBe Severity.ERROR
@@ -129,8 +129,8 @@ class SchemaDeployHotTest extends EmbeddedServerSpec with TempSchemataDir {
 	      server.schemata.size mustBe 3
 	      val bigGen = server.schemata.get("ParserConjointOkayBigTestNoHooks").get.liveGen.get
          bigGen.getMeta.getName mustEqual "ParserConjointOkayBigTestNoHooks"
-         val petGen = server.schemata.get("petclinic_experiments").get.liveGen.get
-         petGen.getMeta.getName mustEqual "petclinic_experiments" 
+         val petGen = server.schemata.get("petclinic").get.liveGen.get
+         petGen.getMeta.getName mustEqual "petclinic" 
          val bgsGen = server.schemata.get("big_conjoint_schema").get.liveGen.get
          bgsGen.getMeta.getName mustEqual "big_conjoint_schema" 
 	   }
@@ -156,8 +156,8 @@ class SchemaDeployHotTest extends EmbeddedServerSpec with TempSchemataDir {
 	      server.schemata.size mustBe 2
 	      val bigGen = server.schemata.get("ParserConjointOkayBigTestNoHooks").get.liveGen.get
          bigGen.getMeta.getName mustEqual "ParserConjointOkayBigTestNoHooks"
-         val petGen = server.schemata.get("petclinic_experiments").get.liveGen.get
-         petGen.getMeta.getName mustEqual "petclinic_experiments" 
+         val petGen = server.schemata.get("petclinic").get.liveGen.get
+         petGen.getMeta.getName mustEqual "petclinic" 
 	   }
 
 	   "refuse to deploy a schema with syntax errors" in {
@@ -174,14 +174,14 @@ class SchemaDeployHotTest extends EmbeddedServerSpec with TempSchemataDir {
 	      server.schemata.size mustBe 2
 	      val bigGen = server.schemata.get("ParserConjointOkayBigTestNoHooks").get.liveGen.get
          bigGen.getMeta.getName mustEqual "ParserConjointOkayBigTestNoHooks"
-         val petGen = server.schemata.get("petclinic_experiments").get.liveGen.get
-         petGen.getMeta.getName mustEqual "petclinic_experiments" 
+         val petGen = server.schemata.get("petclinic").get.liveGen.get
+         petGen.getMeta.getName mustEqual "petclinic" 
 
 	   }
 
 	   "refuse to re-deploy a schema with semantic errors" in {
 	      
-	      IoUtils.fileCopy("schemata-test-with-errors/petclinic-experiments.json", s"${schemataDir}/petclinic-schema2.json")
+	      IoUtils.fileCopy("schemata-test-with-errors/petclinic.schema", s"${schemataDir}/petclinic2.schema")
          Thread.sleep(dirWatcherLatencyMsecs)
              
          val logLines = ServerLogTailer.last(2)
@@ -193,8 +193,8 @@ class SchemaDeployHotTest extends EmbeddedServerSpec with TempSchemataDir {
 	      server.schemata.size mustBe 2
 	      val bigGen = server.schemata.get("ParserConjointOkayBigTestNoHooks").get.liveGen.get
          bigGen.getMeta.getName mustEqual "ParserConjointOkayBigTestNoHooks"
-         val petGen = server.schemata.get("petclinic_experiments").get.liveGen.get
-         petGen.getMeta.getName mustEqual "petclinic_experiments" 
+         val petGen = server.schemata.get("petclinic").get.liveGen.get
+         petGen.getMeta.getName mustEqual "petclinic" 
 
 	   }
       
@@ -208,8 +208,8 @@ class SchemaDeployHotTest extends EmbeddedServerSpec with TempSchemataDir {
 	      server.schemata.size mustBe 3
 	      val bigGen = server.schemata.get("ParserConjointOkayBigTestNoHooks").get.liveGen.get
          bigGen.getMeta.getName mustEqual "ParserConjointOkayBigTestNoHooks"
-         val petGen = server.schemata.get("petclinic_experiments").get.liveGen.get
-         petGen.getMeta.getName mustEqual "petclinic_experiments" 
+         val petGen = server.schemata.get("petclinic").get.liveGen.get
+         petGen.getMeta.getName mustEqual "petclinic" 
          val bgsGen = server.schemata.get("big_conjoint_schema").get.liveGen.get
          bgsGen.getMeta.getName mustEqual "big_conjoint_schema" 
 
@@ -273,18 +273,18 @@ class SchemaDeployHotTest extends EmbeddedServerSpec with TempSchemataDir {
 
 	   }
      	   
-	   "confirm the 3 schemata" in {
+	   "confirm the 2 schemata" in {
 	      
          IoUtils.fileCopy("conf-test/ParserConjointOkayBigTestNoHooks.json", s"${schemataDir}/ParserConjointOkayBigTestNoHooks.json");
-         IoUtils.fileCopy("distr/schemata/petclinic-experiments.json", s"${schemataDir}/petclinic-experiments.json");
+         IoUtils.fileCopy("distr/schemata/petclinic.schema", s"${schemataDir}/petclinic.schema");
 
          Thread.sleep(dirWatcherLatencyMsecs)
          
 	      server.schemata.size mustBe 3
 	      val bigGen = server.schemata.get("ParserConjointOkayBigTestNoHooks").get.liveGen.get
          bigGen.getMeta.getName mustEqual "ParserConjointOkayBigTestNoHooks"
-         val petGen = server.schemata.get("petclinic_experiments").get.liveGen.get
-         petGen.getMeta.getName mustEqual "petclinic_experiments" 
+         val petGen = server.schemata.get("petclinic").get.liveGen.get
+         petGen.getMeta.getName mustEqual "petclinic" 
          val bgsGen = server.schemata.get("big_conjoint_schema").get.liveGen.get
          bgsGen.getMeta.getName mustEqual "big_conjoint_schema" 
          
@@ -329,16 +329,16 @@ class SchemaDeployHotTest extends EmbeddedServerSpec with TempSchemataDir {
 	      server.schemata.size mustBe 3
 	      val bigGen = server.schemata.get("ParserConjointOkayBigTestNoHooks").get.liveGen.get
          bigGen.getMeta.getName mustEqual "ParserConjointOkayBigTestNoHooks"
-         val petGen = server.schemata.get("petclinic_experiments").get.liveGen.get
-         petGen.getMeta.getName mustEqual "petclinic_experiments" 
+         val petGen = server.schemata.get("petclinic").get.liveGen.get
+         petGen.getMeta.getName mustEqual "petclinic" 
          val bgsGen = server.schemata.get("big_conjoint_schema").get.liveGen.get
          bgsGen.getMeta.getName mustEqual "big_conjoint_schema" 
 
 	   }
 	   
-	   "create new session in the unaffected schema petclinic_experiments" in {
+	   "create new session in the unaffected schema petclinic" in {
          
-         assertResp(route(app, httpReq(POST, context + "/session/petclinic_experiments/" + newSid).withBody(emptyTargetingTrackerBody)))
+         assertResp(route(app, httpReq(POST, context + "/session/petclinic/" + newSid).withBody(emptyTargetingTrackerBody)))
             .isOk
       }
 	   

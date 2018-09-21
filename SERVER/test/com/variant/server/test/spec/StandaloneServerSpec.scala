@@ -61,14 +61,11 @@ class StandaloneServerSpec extends PlaySpec with BeforeAndAfterAll {
 	}
 	*/ 
    
-   "Server must come up with two schemata" in {
+   "Server must come up with the petclinic schemata" in {
 
          server.start()
          
-         HttpOperation.get("http://localhost:5377/variant/connection/petclinic_experiments")
-            .exec().getResponseCode mustBe 200
-            
-         HttpOperation.get("http://localhost:5377/variant/connection/petclinic_toggles")
+         HttpOperation.get("http://localhost:5377/variant/connection/petclinic")
             .exec().getResponseCode mustBe 200
    }
    

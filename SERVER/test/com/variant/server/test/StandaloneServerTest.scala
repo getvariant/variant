@@ -45,12 +45,12 @@ class StandaloneServerTest extends StandaloneServerSpec {
          server.stop()
          s"rm ${serverDir}/ext/postgresql.postgresql-9.1-901-1.jdbc4.jar" ! ;
          server.start()
-         val resp = HttpOperation.get("http://localhost:5377/variant/connection/petclinic_experiments").exec()
+         val resp = HttpOperation.get("http://localhost:5377/variant/connection/petclinic").exec()
          resp.getResponseCode mustBe 400
-         resp.getErrorContent mustBe ServerError.UNKNOWN_SCHEMA.asMessage("petclinic_experiments")
+         resp.getErrorContent mustBe ServerError.UNKNOWN_SCHEMA.asMessage("petclinic")
          
-         val lines = ServerLogTailer.last(7, serverDir + "/log/variant.log")
-         
+         val lines = ServerLogTailer.last(4, serverDir + "/log/variant.log")
+
          lines(0).severity mustBe ERROR
          lines(0).message mustBe ServerErrorLocal.OBJECT_INSTANTIATION_ERROR.asMessage("com.variant.server.api.EventFlusherPostgres", "java.lang.reflect.InvocationTargetException")
 
@@ -59,7 +59,7 @@ class StandaloneServerTest extends StandaloneServerSpec {
          lines(1).message mustBe ServerErrorLocal.OBJECT_INSTANTIATION_ERROR.asMessage("com.variant.server.api.EventFlusherPostgres", "java.lang.reflect.InvocationTargetException")
 
          lines(2).severity mustBe WARN
-         lines(2).message mustBe ServerErrorLocal.SCHEMA_FAILED.asMessage("petclinic_experiments", s"${serverDir}/schemata/petclinic-experiments.json")
+         lines(2).message mustBe ServerErrorLocal.SCHEMA_FAILED.asMessage("petclinic", s"${serverDir}/schemata/petclinic.schema")
 
       }
 
@@ -73,7 +73,7 @@ class StandaloneServerTest extends StandaloneServerSpec {
 
          server.start()
          
-         HttpOperation.get("http://localhost:5377/variant/connection/petclinic_experiments")
+         HttpOperation.get("http://localhost:5377/variant/connection/petclinic")
             .exec().getResponseCode mustBe 200
          
       }
@@ -83,7 +83,7 @@ class StandaloneServerTest extends StandaloneServerSpec {
          server.stop()
          server.start(Map("http.port" -> "1234"))
          
-         HttpOperation.get("http://localhost:1234/variant/connection/petclinic_experiments")
+         HttpOperation.get("http://localhost:1234/variant/connection/petclinic")
             .exec().getResponseCode mustBe 200
          
       }
@@ -100,14 +100,14 @@ class StandaloneServerTest extends StandaloneServerSpec {
          
          server.start(Map("variant.config.file"->fileName))
          
-         val resp = HttpOperation.get("http://localhost:5377/variant/connection/petclinic_experiments").exec()
+         val resp = HttpOperation.get("http://localhost:5377/variant/connection/petclinic").exec()
          resp.getResponseCode mustBe 400
-         resp.getErrorContent mustBe ServerError.UNKNOWN_SCHEMA.asMessage("petclinic_experiments")
-         val lines = ServerLogTailer.last(7, serverDir + "/log/variant.log")
+         resp.getErrorContent mustBe ServerError.UNKNOWN_SCHEMA.asMessage("petclinic")
+         val lines = ServerLogTailer.last(4, serverDir + "/log/variant.log")
          lines(0).severity mustBe ERROR
          lines(0).message mustBe ServerErrorLocal.OBJECT_INSTANTIATION_ERROR.asMessage("junk", "java.lang.ClassNotFoundException")
          lines(2).severity mustBe WARN
-         lines(2).message mustBe ServerErrorLocal.SCHEMA_FAILED.asMessage("petclinic_experiments", s"${serverDir}/schemata/petclinic-experiments.json")
+         lines(2).message mustBe ServerErrorLocal.SCHEMA_FAILED.asMessage("petclinic", s"${serverDir}/schemata/petclinic.schema")
 
       }
 
@@ -123,14 +123,15 @@ class StandaloneServerTest extends StandaloneServerSpec {
          
          server.start(Map("variant.config.resource" -> ("/" + resourceName)))
          
-         val resp = HttpOperation.get("http://localhost:5377/variant/connection/petclinic_experiments").exec()
+         val resp = HttpOperation.get("http://localhost:5377/variant/connection/petclinic").exec()
          resp.getResponseCode mustBe 400
-         resp.getErrorContent mustBe ServerError.UNKNOWN_SCHEMA.asMessage("petclinic_experiments")
-         val lines = ServerLogTailer.last(7, serverDir + "/log/variant.log")
+         resp.getErrorContent mustBe ServerError.UNKNOWN_SCHEMA.asMessage("petclinic")
+         val lines = ServerLogTailer.last(4, serverDir + "/log/variant.log")
+
          lines(0).severity mustBe ERROR
          lines(0).message mustBe ServerErrorLocal.OBJECT_INSTANTIATION_ERROR.asMessage("junk", "java.lang.ClassNotFoundException")
          lines(2).severity mustBe WARN
-         lines(2).message mustBe ServerErrorLocal.SCHEMA_FAILED.asMessage("petclinic_experiments", s"${serverDir}/schemata/petclinic-experiments.json")
+         lines(2).message mustBe ServerErrorLocal.SCHEMA_FAILED.asMessage("petclinic", s"${serverDir}/schemata/petclinic.schema")
 
       }
 
@@ -178,7 +179,5 @@ class StandaloneServerTest extends StandaloneServerSpec {
                }
          )         
       }
-
    }
-   
 }

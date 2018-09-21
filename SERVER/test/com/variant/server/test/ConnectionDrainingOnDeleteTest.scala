@@ -48,7 +48,7 @@ class ConnectionDrainingOnDeleteTest extends BaseSpecWithServerAsync with TempSc
 	      
          server.schemata.size mustBe 2
          server.schemata.get("ParserConjointOkayBigTestNoHooks").get.liveGen.isDefined mustBe true 
-         server.schemata.get("petclinic_experiments").get.liveGen.isDefined mustBe true
+         server.schemata.get("petclinic").get.liveGen.isDefined mustBe true
                   
          // Let the directory watcher thread start before copying any files.
    	   Thread.sleep(100)
@@ -74,12 +74,12 @@ class ConnectionDrainingOnDeleteTest extends BaseSpecWithServerAsync with TempSc
          for (j <- 0 until SESSIONS) async {
 
             val sid = newSid
-            assertResp(route(app, httpReq(POST, context + "/session/petclinic_experiments/" + sid).withBody(emptyTargetingTrackerBody)))
+            assertResp(route(app, httpReq(POST, context + "/session/petclinic/" + sid).withBody(emptyTargetingTrackerBody)))
                .is(OK)
             .withBodySession { ssn =>
                ssn.getId mustNot be (sid)
                ssnId2Pet(j) = ssn.getId
-               ssn.getSchema().getMeta().getName mustBe "petclinic_experiments"
+               ssn.getSchema().getMeta().getName mustBe "petclinic"
             }
          }
 	      
@@ -100,11 +100,11 @@ class ConnectionDrainingOnDeleteTest extends BaseSpecWithServerAsync with TempSc
          
          for (i <- 0 until SESSIONS) async {
             val sid = ssnId2Pet(i)
-            assertResp(route(app, httpReq(GET, context + "/session/petclinic_experiments/" + sid)))
+            assertResp(route(app, httpReq(GET, context + "/session/petclinic/" + sid)))
                .is(OK)
                .withBodySession { ssn =>
                   ssn.getId must be (sid)
-                  ssn.getSchema().getMeta().getName mustBe "petclinic_experiments"
+                  ssn.getSchema().getMeta().getName mustBe "petclinic"
                }
          }
 	      
@@ -144,11 +144,11 @@ class ConnectionDrainingOnDeleteTest extends BaseSpecWithServerAsync with TempSc
 
          for (i <- 0 until SESSIONS) async {
             val sid = ssnId2Pet(i)
-            assertResp(route(app, httpReq(GET, context + "/session/petclinic_experiments/" + sid)))
+            assertResp(route(app, httpReq(GET, context + "/session/petclinic/" + sid)))
                .is(OK)
                .withBodySession { ssn =>
                   ssn.getId must be (sid)
-                  ssn.getSchema().getMeta().getName mustBe "petclinic_experiments"
+                  ssn.getSchema().getMeta().getName mustBe "petclinic"
                }
          }
          
@@ -157,7 +157,7 @@ class ConnectionDrainingOnDeleteTest extends BaseSpecWithServerAsync with TempSc
          // Confirm the schema is gone.
          server.schemata.size mustBe 1
          server.schemata.getLiveGen("ParserConjointOkayBigTestNoHooks") mustBe None
-         server.schemata.getLiveGen("petclinic_experiments").isDefined mustBe true
+         server.schemata.getLiveGen("petclinic").isDefined mustBe true
 
    	}
 
@@ -175,7 +175,7 @@ class ConnectionDrainingOnDeleteTest extends BaseSpecWithServerAsync with TempSc
 
          for (i <- 0 until SESSIONS) {
 	         val body = sessionJsonPet.expand("sid" -> ssnId2Pet(i))
-            assertResp(route(app, httpReq(PUT, context + "/session/petclinic_experiments").withBody(body)))
+            assertResp(route(app, httpReq(PUT, context + "/session/petclinic").withBody(body)))
                .is(OK)
                .withNoBody
          }
@@ -188,20 +188,20 @@ class ConnectionDrainingOnDeleteTest extends BaseSpecWithServerAsync with TempSc
          // Create
          val sid = newSid
          var actualSid: String = null
-         assertResp(route(app, httpReq(POST, context + "/session/petclinic_experiments/" + sid).withBody(emptyTargetingTrackerBody)))
+         assertResp(route(app, httpReq(POST, context + "/session/petclinic/" + sid).withBody(emptyTargetingTrackerBody)))
             .is(OK)
             .withBodySession { ssn =>
                ssn.getId mustNot be (sid)
                actualSid = ssn.getId
-               ssn.getSchema().getMeta().getName mustBe "petclinic_experiments"
+               ssn.getSchema().getMeta().getName mustBe "petclinic"
             }
 
          // And read, just in case
-         assertResp(route(app, httpReq(GET, context + "/session/petclinic_experiments/" + actualSid)))
+         assertResp(route(app, httpReq(GET, context + "/session/petclinic/" + actualSid)))
             .is(OK)
             .withBodySession { ssn =>
                ssn.getId must be (actualSid)
-               ssn.getSchema().getMeta().getName mustBe "petclinic_experiments"
+               ssn.getSchema().getMeta().getName mustBe "petclinic"
             }
       }
       
@@ -223,7 +223,7 @@ class ConnectionDrainingOnDeleteTest extends BaseSpecWithServerAsync with TempSc
 
          for (i <- 0 until SESSIONS) {
             val sid = ssnId2Pet(i)
-            assertResp(route(app, httpReq(GET, context + "/session/petclinic_experiments/" + sid)))
+            assertResp(route(app, httpReq(GET, context + "/session/petclinic/" + sid)))
                .isError(SESSION_EXPIRED, sid)
          }
          

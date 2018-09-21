@@ -34,7 +34,7 @@ class SchemaDeployColdTest extends PlaySpec with OneAppPerTest {
       else if (testData.name.startsWith("2.")) {
          // Override with system property.
          sys.props.contains("variant.schemata.dir") must be (false)
-         sys.props +=("variant.schemata.dir" -> "distr/schemata")  // only has petclinic_experiments schema.
+         sys.props +=("variant.schemata.dir" -> "distr/schemata")  // only has petclinic.schema.
          new GuiceApplicationBuilder()
             .configure(new Configuration(VariantApplicationLoader.config))
             .build()
@@ -61,11 +61,9 @@ class SchemaDeployColdTest extends PlaySpec with OneAppPerTest {
       
       val server = app.injector.instanceOf[VariantServer]
       server.startupErrorLog.size mustEqual 0
-      server.schemata.size mustBe 2
-      server.schemata.get("petclinic_experiments").isDefined mustBe true
-      server.schemata.get("petclinic_experiments").get.liveGen.get.getMeta.getName mustEqual "petclinic_experiments"
-      server.schemata.get("petclinic_toggles").isDefined mustBe true
-      server.schemata.get("petclinic_toggles").get.liveGen.get.getMeta.getName mustEqual "petclinic_toggles"
+      server.schemata.size mustBe 1
+      server.schemata.get("petclinic").isDefined mustBe true
+      server.schemata.get("petclinic").get.liveGen.get.getMeta.getName mustEqual "petclinic"
    }
 
 }
