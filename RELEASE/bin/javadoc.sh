@@ -5,6 +5,7 @@
 
 
 version=0.9
+dot_version=0.9.2
 workspace_root_dir=$(cd $(dirname $0)/../..; pwd)
 core_src_dir=${workspace_root_dir}/CORE/src/main/java
 server_src_dir=${workspace_root_dir}/SERVER/app
@@ -28,7 +29,7 @@ javadoc -d ${javadoc_dir}  \
     ga('create', 'UA-40337670-3', 'auto');                                             \
     ga('send', 'pageview');                                                            \
   </script>" \
-   -bottom "Variant Experience Server release $version. Updated $(date +"%d %b %Y").<br/> Copyright &copy; 2018 <a onclick=\"window.top.location.href='http://getvariant.com';\" href=\"#\">Variant Inc.</a>" \
+   -bottom "Variant Experience Server release $dot_version. Updated $(date +"%d %b %Y").<br/> Copyright &copy; 2018 <a onclick=\"window.top.location.href='http://getvariant.com';\" href=\"#\">Variant Inc.</a>" \
    com.variant.core                   \
    com.variant.core.lifecycle         \
    com.variant.core.schema            \
