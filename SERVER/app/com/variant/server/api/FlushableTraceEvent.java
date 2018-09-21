@@ -36,7 +36,7 @@ public interface FlushableTraceEvent {
 	
 	/**
 	 * The Variant session ID, which triggered this trace event.
-     * The entire triggering session object is not available from this object, 
+     * The entire session object is not available 
      * because of the potential latency: between the time a trace event is triggered
      * and the time when user code gets access to this object, the triggering session 
      * may have completely changed or even expired.

@@ -6,6 +6,6 @@
 workspace_root_dir=$(cd $(dirname $0)/../..; pwd)
 
 cd ${workspace_root_dir}/CORE
-mvn clean package -DskipTests
+mvn clean install -DskipTests
 
 
