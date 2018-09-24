@@ -61,35 +61,42 @@ public abstract class SchemaParser implements Keywords {
 	/**
 	 * Schema pre-parser.
 	 * 
-	 * 1. Remove comments: // to EOL.
+	 * 1. Remove single line comments: // to EOL.
 	 *    Pay attention to when we're inside or outside of quotation marks (both single or double):
 	 *    '//' inside quotation mark is just part of a JSON string.
 	 *    
-	 * 2. (TODO) variable expansion?
+	 * 2. Remove multi-line non-nesting comments.
+	 *    Pay attention to when we're inside or outside of quotation marks (both single or double).
+	 * 
+	 * 3. (TODO) variable expansion?
 	 * 
 	 * @param annotatedJsonString
 	 * @return
 	 */
 	private String preParse(String annotatedJsonString) {
 		
-		// Pass 1. Remove comments.
-		StringBuilder result = new StringBuilder();
-		
+		// Pass 1. Remove single line comments.
+		StringBuilder pass1 = new StringBuilder();
+
 		boolean quoted = false;
 		boolean comment = false;
 		boolean first = true;
 		char prev = 0;  // Just for compiler's sake.
+		int line = 1, pos = 1;
 
 		for (char c: annotatedJsonString.toCharArray()) {
-						
+			System.out.println(
+					"(" + line + "," + pos + ") " + (c == '\n' ? "\\n" : c) + " " + comment + " '" + 
+					pass1.toString().substring(0, Math.min(pass1.length(), 200)).replaceAll("\n", "\\n") + "'");
 			if (first) {
 				first = false;
-				if (c != '/') result.append(c);
+				if (c != '/') pass1.append(c);
 			}
 			else {
-				// If prev unquoted char was / and this one isn't, print the prev char as
-				// we hold the first / in case it's followed by another /.
-				if (!quoted && !comment && c != '/' && prev == '/') result.append('/');
+				// We hold unquoted characters / and *,
+				// in case it is followed by * or / respectively. 
+				if (!quoted && !comment && prev == '*' && c != '/') 
+						pass1.append(prev);
 				
 				switch (c) {
 
@@ -97,30 +104,97 @@ public abstract class SchemaParser implements Keywords {
 				case '\'':
 					if (!comment) {
 						quoted = ! quoted;
-						result.append(c);
+						pass1.append(c);
 					}
 					break;
 
 				case '/':
-					if (quoted) result.append(c);
+					//System.out.println("/ " + prev + " " + comment + " " + quoted);
+					if (quoted) pass1.append(c);
+					else if (prev == '*') {
+						if (comment) comment = false;
+						else pass1.append(c);
+					}
+					else if (!comment) pass1.append(c);
+						
+					break;
+					
+				case '*':
+					//System.out.println("* " + prev + " " + comment + " " + quoted);
+					if (quoted) pass1.append(c);
+					else if (prev == '/') {
+						comment = true;
+					}
+				break;
+
+				case '\n':
+					if (!comment) pass1.append(c);
+					line++;
+					pos = 0;
+					break;
+					
+				default:
+					if (!comment) pass1.append(c);
+				}
+			}			
+			prev = c;
+			pos++;
+		}
+		System.out.println("-------------------------------\n" + pass1.toString());
+		System.out.println("-------------------------------");
+
+		// Pass 2. Remove multi-line comments.		
+		// Support Scala style nested comments.
+		first = true;
+		quoted = false;
+		comment = false;
+		prev = 0;
+		StringBuilder pass2 = new StringBuilder();
+
+		for (char c: pass1.toString().toCharArray()) {
+			
+			if (first) {
+				first = false;
+				if (c != '/') pass2.append(c);
+			}
+			else {
+				// If prev unquoted char was / and this one isn't, print the prev char as
+				// we hold the first / in case it's followed by another /.
+				if (!quoted && !comment && c != '/' && prev == '/') pass2.append('/');
+				
+				switch (c) {
+
+				case '"': 
+				case '\'':
+					if (!comment) {
+						quoted = ! quoted;
+						pass2.append(c);
+					}
+					break;
+
+				case '/':
+					if (quoted) pass2.append(c);
 					else if (prev == '/') comment = true;
 					break;
 					
 				case '\n':
 					comment = false;
-					result.append(c);
+					pass2.append(c);
 					break;
 					
 				default:
-					if (!comment) result.append(c);
+					if (!comment) pass2.append(c);
 				}
 			}			
 			prev = c;
 		}
 
-		// TODO: Pass 2. Expansion Variables.
-		
-		return result.toString();
+
+		// TODO: Pass 3. Expansion Variables.
+		System.out.println("-------------------------------\n" + pass2.toString());
+		System.out.println("-------------------------------");
+		new RuntimeException().printStackTrace();
+		return pass2.toString();
 	}
 	
 	/**
@@ -191,7 +265,7 @@ public abstract class SchemaParser implements Keywords {
 		
 		try {
 			//cbb = jacksonDataMapper.readValue(configAsJsonString, ConfigBinderBean.class);
-			mappedJson = jacksonDataMapper.readValue(preParse(cleanJsonString), Map.class);
+			mappedJson = jacksonDataMapper.readValue(cleanJsonString, Map.class);
 		}
 		catch(JsonParseException parseException) {
 			toParserError(parseException, cleanJsonString, response);
