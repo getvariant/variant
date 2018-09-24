@@ -61,12 +61,12 @@ public abstract class SchemaParser implements Keywords {
 	/**
 	 * Schema pre-parser.
 	 * 
-	 * 1. Remove single line comments: // to EOL.
+	 * 1. Remove multi-line non-nesting comments.
+	 *    Pay attention to when we're inside or outside of quotation marks (both single or double).
+	 * 
+	 * 2. Remove single line comments: // to EOL.
 	 *    Pay attention to when we're inside or outside of quotation marks (both single or double):
 	 *    '//' inside quotation mark is just part of a JSON string.
-	 *    
-	 * 2. Remove multi-line non-nesting comments.
-	 *    Pay attention to when we're inside or outside of quotation marks (both single or double).
 	 * 
 	 * 3. (TODO) variable expansion?
 	 * 
@@ -75,30 +75,18 @@ public abstract class SchemaParser implements Keywords {
 	 */
 	private String preParse(String annotatedJsonString) {
 		
-		// Pass 1. Remove single line comments.
+		// Pass 1. Remove multi-line non-nesting comments.
 		StringBuilder pass1 = new StringBuilder();
 
 		boolean quoted = false;
 		boolean comment = false;
-		boolean first = true;
 		char prev = 0;  // Just for compiler's sake.
-		int line = 1, pos = 1;
 
 		for (char c: annotatedJsonString.toCharArray()) {
-			System.out.println(
-					"(" + line + "," + pos + ") " + (c == '\n' ? "\\n" : c) + " " + comment + " '" + 
-					pass1.toString().substring(0, Math.min(pass1.length(), 200)).replaceAll("\n", "\\n") + "'");
-			if (first) {
-				first = false;
-				if (c != '/') pass1.append(c);
-			}
-			else {
-				// We hold unquoted characters / and *,
-				// in case it is followed by * or / respectively. 
-				if (!quoted && !comment && prev == '*' && c != '/') 
-						pass1.append(prev);
-				
-				switch (c) {
+
+			if (!quoted && !comment && (prev == '/' || prev == '*' && c != '/')) pass1.append(prev);
+
+			switch (c) {
 
 				case '"': 
 				case '\'':
@@ -111,12 +99,9 @@ public abstract class SchemaParser implements Keywords {
 				case '/':
 					//System.out.println("/ " + prev + " " + comment + " " + quoted);
 					if (quoted) pass1.append(c);
-					else if (prev == '*') {
-						if (comment) comment = false;
-						else pass1.append(c);
+					else if (comment && prev == '*') {
+						comment = false;
 					}
-					else if (!comment) pass1.append(c);
-						
 					break;
 					
 				case '*':
@@ -126,26 +111,16 @@ public abstract class SchemaParser implements Keywords {
 						comment = true;
 					}
 				break;
-
-				case '\n':
-					if (!comment) pass1.append(c);
-					line++;
-					pos = 0;
-					break;
-					
+				
 				default:
 					if (!comment) pass1.append(c);
-				}
+
 			}			
 			prev = c;
-			pos++;
 		}
-		System.out.println("-------------------------------\n" + pass1.toString());
-		System.out.println("-------------------------------");
 
-		// Pass 2. Remove multi-line comments.		
-		// Support Scala style nested comments.
-		first = true;
+		// Pass 2. Remove single-line comments - from '//' to EOL.
+		boolean first = true;
 		quoted = false;
 		comment = false;
 		prev = 0;
@@ -191,9 +166,7 @@ public abstract class SchemaParser implements Keywords {
 
 
 		// TODO: Pass 3. Expansion Variables.
-		System.out.println("-------------------------------\n" + pass2.toString());
-		System.out.println("-------------------------------");
-		new RuntimeException().printStackTrace();
+
 		return pass2.toString();
 	}
 	
