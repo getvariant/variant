@@ -56,7 +56,7 @@ public class ParserSerialOkayTest extends BaseTestCore {
 			            
 			    	    //=========================================================================//
 			    	    
-				        "  'tests':[                                                              \n" +
+				        "  'variations':[                                                              \n" +
 			    	    "     {                                                                   \n" +
 			    	    "        'name':'test1',                                                  \n" +
 			    	    "        'isOn':true,                                                     \n" +
@@ -286,7 +286,7 @@ public class ParserSerialOkayTest extends BaseTestCore {
 			            
 			    	    //=========================================================================//
 			    	    
-				        "  'tests':[                                                              \n" +
+				        "  'variations':[                                                         \n" +
 			    	    "     {                                                                   \n" +
 			    	    "        'name':'test1',                                                  \n" +
 			    	    "        'isOn':false,                                                    \n" +
@@ -443,7 +443,7 @@ public class ParserSerialOkayTest extends BaseTestCore {
 			            
 			    	    //=========================================================================//
 			    	    
-				        "  'tests':[                                                              \n" +
+				        "  'variations':[                                                         \n" +
 			    	    "     {                                                                   \n" +
 			    	    "        'name':'test1',                                                  \n" +
 			    	    "        'isOn':true ,                                                    \n" +
@@ -662,7 +662,7 @@ public class ParserSerialOkayTest extends BaseTestCore {
             
     	    //=========================================================================//
     	    
-	        "  'TeSts':[                                                              \n" +
+	        "  'variations':[                                                         \n" +
     	    "     {                                                                   \n" +
     	    "        'name':'test1',                                                  \n" +
     	    "        'isOn':true,                                                     \n" +

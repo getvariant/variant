@@ -25,7 +25,7 @@ import com.variant.core.schema.parser.error.SemanticError.Location;
  * @author Igor
  *
  */
-public class ParserTestHooksErrorTest extends BaseTestCore {
+public class ParserVariationHooksErrorTest extends BaseTestCore {
 	
 	/**
 	 * HOOKS_NOT_LIS
@@ -43,7 +43,7 @@ public class ParserTestHooksErrorTest extends BaseTestCore {
 			    "   'states':[                                                 \n" +
 			    "     { 'name':'state1' }                                      \n" +
 			    "  ],                                                          \n" +
-				"  'tests':[                                                   \n" +
+				"  'variations':[                                              \n" +
 			    "     {                                                        \n" +
 			    "        'name':'TEST',                                        \n" +
 			    "        'experiences':[                                       \n" +
@@ -79,7 +79,7 @@ public class ParserTestHooksErrorTest extends BaseTestCore {
 		assertTrue(response.hasMessages(Severity.ERROR));
 		assertEquals(1, response.getMessages().size());
 		ParserMessage actual = response.getMessages().get(0);
-		ParserMessage expected = new ParserMessageImpl(new Location("/tests[0]/hooks/"), PROPERTY_NOT_LIST, "hooks");
+		ParserMessage expected = new ParserMessageImpl(new Location("/variations[0]/hooks/"), PROPERTY_NOT_LIST, "hooks");
 		assertMessageEqual(expected, actual);
 	}
 
@@ -99,7 +99,7 @@ public class ParserTestHooksErrorTest extends BaseTestCore {
 			    "   'states':[                                                 \n" +
 			    "     { 'name':'state1' }                                      \n" +
 			    "  ],                                                          \n" +
-				"  'tests':[                                                   \n" +
+				"  'variations':[                                              \n" +
 			    "     {                                                        \n" +
 			    "        'name':'TEST',                                        \n" +
 			    "        'hooks':[1,2,3],                                      \n" +
@@ -137,7 +137,7 @@ public class ParserTestHooksErrorTest extends BaseTestCore {
 		for (int i = 0; i < 3; i++) {
 			ParserMessage actual = response.getMessages().get(i);
 			ParserMessage expected = new ParserMessageImpl(
-					new Location(String.format("/tests[0]/hooks[%s]/", i)), ELEMENT_NOT_OBJECT, "hooks");
+					new Location(String.format("/variations[0]/hooks[%s]/", i)), ELEMENT_NOT_OBJECT, "hooks");
 			assertMessageEqual(expected, actual);
 		}
 	}
@@ -158,7 +158,7 @@ public class ParserTestHooksErrorTest extends BaseTestCore {
 			    "   'states':[                                                 \n" +
 			    "     { 'name':'state1' }                                      \n" +
 			    "  ],                                                          \n" +
-				"  'tests':[                                                   \n" +
+				"  'variations':[                                              \n" +
 			    "     {                                                        \n" +
 			    "        'name':'TEST',                                        \n" +
 			    "        'experiences':[                                       \n" +
@@ -194,7 +194,7 @@ public class ParserTestHooksErrorTest extends BaseTestCore {
 		assertTrue(response.hasMessages(Severity.ERROR));
 		assertEquals(1, response.getMessages().size());
 		ParserMessage actual = response.getMessages().get(0);
-		ParserMessage expected = new ParserMessageImpl(new Location("/tests[0]/hooks[0]/"), NAME_MISSING);
+		ParserMessage expected = new ParserMessageImpl(new Location("/variations[0]/hooks[0]/"), NAME_MISSING);
 		assertMessageEqual(expected, actual);
 
 	}
@@ -215,7 +215,7 @@ public class ParserTestHooksErrorTest extends BaseTestCore {
 			    "   'states':[                                                 \n" +
 			    "     { 'name':'state1' }                                      \n" +
 			    "  ],                                                          \n" +
-				"  'tests':[                                                   \n" +
+				"  'variations':[                                              \n" +
 			    "     {                                                        \n" +
 			    "        'hooks':[{'name':'bar', 'class-Name':'c.v.s'}],       \n" +
 			    "        'name':'TEST',                                        \n" +
@@ -251,10 +251,10 @@ public class ParserTestHooksErrorTest extends BaseTestCore {
 		assertTrue(response.hasMessages(Severity.ERROR));
 		assertEquals(2, response.getMessages().size());
 		ParserMessage actual = response.getMessages().get(0);
-		ParserMessage expected = new ParserMessageImpl(new Location("/tests[0]/hooks[0]/class-Name"), UNSUPPORTED_PROPERTY, "class-Name");
+		ParserMessage expected = new ParserMessageImpl(new Location("/variations[0]/hooks[0]/class-Name"), UNSUPPORTED_PROPERTY, "class-Name");
 		assertMessageEqual(expected, actual);
 		actual = response.getMessages().get(1);
-		expected = new ParserMessageImpl(new Location("/tests[0]/hooks[0]/"), PROPERTY_MISSING, "class");
+		expected = new ParserMessageImpl(new Location("/variations[0]/hooks[0]/"), PROPERTY_MISSING, "class");
 		assertMessageEqual(expected, actual);
 	}
 
@@ -274,7 +274,7 @@ public class ParserTestHooksErrorTest extends BaseTestCore {
 			    "   'states':[                                                 \n" +
 			    "     { 'name':'state1' }                                      \n" +
 			    "  ],                                                          \n" +
-				"  'tests':[                                                   \n" +
+				"  'variations':[                                              \n" +
 			    "     {                                                        \n" +
 			    "        'name':'TEST',                                        \n" +
 			    "        'experiences':[                                       \n" +
@@ -310,7 +310,7 @@ public class ParserTestHooksErrorTest extends BaseTestCore {
 		assertFalse(response.hasMessages(Severity.ERROR));
 		assertEquals(1, response.getMessages().size());
 		ParserMessage actual = response.getMessages().get(0);
-		ParserMessage expected = new ParserMessageImpl(new Location("/tests[0]/hooks[0]/foo"), UNSUPPORTED_PROPERTY, "foo");
+		ParserMessage expected = new ParserMessageImpl(new Location("/variations[0]/hooks[0]/foo"), UNSUPPORTED_PROPERTY, "foo");
 		assertMessageEqual(expected, actual);
 	}
 
@@ -330,7 +330,7 @@ public class ParserTestHooksErrorTest extends BaseTestCore {
 			    "   'states':[                                                 \n" +
 			    "     { 'name':'state1' }                                      \n" +
 			    "  ],                                                          \n" +
-				"  'tests':[                                                   \n" +
+				"  'variations':[                                              \n" +
 			    "     {                                                        \n" +
 			    "        'name':'TEST',                                        \n" +
 			    "        'experiences':[                                       \n" +
@@ -368,7 +368,7 @@ public class ParserTestHooksErrorTest extends BaseTestCore {
 		assertTrue(response.hasMessages(Severity.ERROR));
 		assertEquals(1, response.getMessages().size());
 		ParserMessage actual = response.getMessages().get(0);
-		ParserMessage expected = new ParserMessageImpl(new Location("/tests[0]/hooks[0]/name"), NAME_INVALID);
+		ParserMessage expected = new ParserMessageImpl(new Location("/variations[0]/hooks[0]/name"), NAME_INVALID);
 		assertMessageEqual(expected, actual);
 	}
 
@@ -388,7 +388,7 @@ public class ParserTestHooksErrorTest extends BaseTestCore {
 			    "   'states':[                                                 \n" +
 			    "     { 'name':'state1' }                                      \n" +
 			    "  ],                                                          \n" +
-				"  'tests':[                                                   \n" +
+				"  'variations':[                                              \n" +
 			    "     {                                                        \n" +
 			    "        'name':'TEST',                                        \n" +
 			    "        'experiences':[                                       \n" +
@@ -427,7 +427,7 @@ public class ParserTestHooksErrorTest extends BaseTestCore {
 		assertTrue(response.hasMessages(Severity.ERROR));
 		assertEquals(1, response.getMessages().size());
 		ParserMessage actual = response.getMessages().get(0);
-		ParserMessage expected = new ParserMessageImpl(new Location("/tests[0]/hooks[1]/"), DUPE_OBJECT, "bar");
+		ParserMessage expected = new ParserMessageImpl(new Location("/variations[0]/hooks[1]/"), DUPE_OBJECT, "bar");
 		assertMessageEqual(expected, actual);
 	}
 

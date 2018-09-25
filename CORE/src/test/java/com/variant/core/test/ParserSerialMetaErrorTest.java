@@ -45,7 +45,7 @@ public class ParserSerialMetaErrorTest extends BaseTestCore {
 			    "     {  'name':'state1'                                       \n" +
 			    "     }                                                        \n" +
 			    "  ]                                                           \n" + // missing comma
-				"  'tests':[                                                   \n" +
+				"  'variations':[                                              \n" +
 			    "     {                                                        \n" +
 			    "        'name':'Test1',                                       \n" +
 			    "        'experiences':[                                       \n" +
@@ -109,7 +109,7 @@ public class ParserSerialMetaErrorTest extends BaseTestCore {
 		ParserMessage expected = new ParserMessageImpl(new Location("/"), PROPERTY_MISSING, "states");
 		assertMessageEqual(expected, actual);
 		actual = response.getMessages().get(1);
-		expected = new ParserMessageImpl(new Location("/"), PROPERTY_MISSING, "tests");
+		expected = new ParserMessageImpl(new Location("/"), PROPERTY_MISSING, "variations");
 		assertMessageEqual(expected, actual);
 	}
 
@@ -125,7 +125,7 @@ public class ParserSerialMetaErrorTest extends BaseTestCore {
 			    "   'states':[                                                 \n" +
 			    "     { 'name':'state1' }                                      \n" +
 			    "  ],                                                          \n" +
-				"  'tests':[                                                   \n" +
+				"  'variations':[                                              \n" +
 			    "     {                                                        \n" +
 			    "        'name':'TEST',                                        \n" +
 			    "        'experiences':[                                       \n" +
@@ -177,7 +177,7 @@ public class ParserSerialMetaErrorTest extends BaseTestCore {
 			    "   'states':[                                                 \n" +
 			    "     { 'name':'state1' }                                      \n" +
 			    "  ],                                                          \n" +
-				"  'tests':[                                                   \n" +
+				"  'variations':[                                              \n" +
 			    "     {                                                        \n" +
 			    "        'name':'TEST',                                        \n" +
 			    "        'experiences':[                                       \n" +
@@ -232,7 +232,7 @@ public class ParserSerialMetaErrorTest extends BaseTestCore {
 			    "   'states':[                                                 \n" +
 			    "     { 'name':'state1' }                                      \n" +
 			    "  ],                                                          \n" +
-				"  'tests':[                                                   \n" +
+				"  'variations':[                                              \n" +
 			    "     {                                                        \n" +
 			    "        'name':'TEST',                                        \n" +
 			    "        'experiences':[                                       \n" +
@@ -287,7 +287,7 @@ public class ParserSerialMetaErrorTest extends BaseTestCore {
 			    "   'states':[                                                 \n" +
 			    "     { 'name':'state1' }                                      \n" +
 			    "  ],                                                          \n" +
-				"  'tests':[                                                   \n" +
+				"  'variations':[                                              \n" +
 			    "     {                                                        \n" +
 			    "        'name':'TEST',                                        \n" +
 			    "        'experiences':[                                       \n" +
@@ -342,7 +342,7 @@ public class ParserSerialMetaErrorTest extends BaseTestCore {
 			    "   'states':[                                                 \n" +
 			    "     { 'name':'state1' }                                      \n" +
 			    "  ],                                                          \n" +
-				"  'tests':[                                                   \n" +
+				"  'variations':[                                              \n" +
 			    "     {                                                        \n" +
 			    "        'name':'TEST',                                        \n" +
 			    "        'experiences':[                                       \n" +
@@ -397,7 +397,7 @@ public class ParserSerialMetaErrorTest extends BaseTestCore {
 			    "   'states':[                                                 \n" +
 			    "     { 'name':'state1' }                                      \n" +
 			    "  ],                                                          \n" +
-				"  'tests':[                                                   \n" +
+				"  'variations':[                                              \n" +
 			    "     {                                                        \n" +
 			    "        'name':'TEST',                                        \n" +
 			    "        'experiences':[                                       \n" +
@@ -453,7 +453,7 @@ public class ParserSerialMetaErrorTest extends BaseTestCore {
 			    "   'states':[                                                 \n" +
 			    "     { 'name':'state1' }                                      \n" +
 			    "  ],                                                          \n" +
-				"  'tests':[                                                   \n" +
+				"  'variations':[                                              \n" +
 			    "     {                                                        \n" +
 			    "        'name':'TEST',                                        \n" +
 			    "        'experiences':[                                       \n" +

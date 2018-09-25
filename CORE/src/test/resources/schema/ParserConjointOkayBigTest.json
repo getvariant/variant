@@ -61,7 +61,7 @@
         ]
      }                                                                   
   ],                                                                     
-  'tests':[  
+  'variations':[  
      // TEST 1 Comment.                                                            
      {                                                                   
         'name':'test1', /// Another comment                                                  
@@ -232,7 +232,7 @@
      },                                                                  
      {                                                                   
         'name':'test3',
-        'conjointTestRefs': ['test2'],                                                  
+        'conjointVariationRefs': ['test2'],                                                  
         'experiences':[                                                  
            {                                                             
               'name':'A',                                                
@@ -278,7 +278,7 @@
                     'experienceRef':'B',                                 
                     'conjointExperienceRefs': [                         
                        {                                                 
-                          'testRef': 'test2',                            
+                          'variationRef': 'test2',                            
                           'experienceRef': 'B'                           
                        }                                                 
                      ],                                                  
@@ -293,7 +293,7 @@
                     'experienceRef':'B',                                 
                     'conjointExperienceRefs': [                         
                        {                                                 
-                          'testRef': 'test2',                            
+                          'variationRef': 'test2',                            
                           'experienceRef': 'C'                           
                        }                                                 
                      ],                                                  
@@ -308,7 +308,7 @@
                     'experienceRef':'C',                                 
                     'conjointExperienceRefs': [                         
                        {                                                 
-                          'testRef': 'test2',                            
+                          'variationRef': 'test2',                            
                           'experienceRef': 'B'                           
                        }                                                 
                      ],                                                  
@@ -323,7 +323,7 @@
                     'experienceRef':'C',                                 
                     'conjointExperienceRefs': [                         
                        {                                                 
-                          'testRef': 'test2',                            
+                          'variationRef': 'test2',                            
                           'experienceRef': 'C'                           
                        }                                                 
                      ],                                                  
@@ -365,7 +365,7 @@
                     'experienceRef':'B',                                 
                     'conjointExperienceRefs': [                         
                        {                                                 
-                          'testRef': 'test2',                            
+                          'variationRef': 'test2',                            
                           'experienceRef': 'B'                           
                        }                                                 
                      ],                                                  
@@ -380,7 +380,7 @@
                     'experienceRef':'B',                                 
                     'conjointExperienceRefs': [                         
                        {                                                 
-                          'testRef': 'test2',                            
+                          'variationRef': 'test2',                            
                           'experienceRef': 'C'                           
                        }                                                 
                      ],                                                  
@@ -395,7 +395,7 @@
                     'experienceRef':'C',                                 
                     'conjointExperienceRefs': [                         
                        {                                                 
-                          'testRef': 'test2',                            
+                          'variationRef': 'test2',                            
                           'experienceRef': 'B'                           
                        }                                                 
                      ],                                                  
@@ -410,7 +410,7 @@
                     'experienceRef':'C',                                 
                     'conjointExperienceRefs': [                         
                        {                                                 
-                          'testRef': 'test2',                            
+                          'variationRef': 'test2',                            
                           'experienceRef': 'C'                           
                        }                                                 
                      ],                                                  
@@ -427,7 +427,7 @@
      },                                                                  
      {                                                                   
         'name':'test4',                                                  
-        'conjointTestRefs': ['test1'],                                  
+        'conjointVariationRefs': ['test1'],                                  
         'experiences':[                                                  
            {                                                             
               'name':'A',                                                
@@ -492,7 +492,7 @@
                     'experienceRef':'B',                                 
                     'conjointExperienceRefs': [                         
                        {                                                 
-                          'testRef': 'test1',                            
+                          'variationRef': 'test1',                            
                           'experienceRef': 'B'                           
                        }                                                 
                      ],                                                  
@@ -507,7 +507,7 @@
                     'experienceRef':'B',                                 
                     'conjointExperienceRefs': [                         
                        {                                                 
-                          'testRef': 'test1',                            
+                          'variationRef': 'test1',                            
                           'experienceRef': 'C'                           
                        }                                                 
                      ],                                                  
@@ -522,7 +522,7 @@
                     'experienceRef':'C',                                 
                     'conjointExperienceRefs': [                         
                        {                                                 
-                          'testRef': 'test1',                            
+                          'variationRef': 'test1',                            
                           'experienceRef': 'B'                           
                        }                                                 
                      ],                                                  
@@ -537,7 +537,7 @@
                     'experienceRef':'C',                                 
                     'conjointExperienceRefs': [                         
                        {                                                 
-                          'testRef': 'test1',                            
+                          'variationRef': 'test1',                            
                           'experienceRef': 'C'                           
                        }                                                 
                      ],                                                  
@@ -562,7 +562,7 @@
      },                                                                  
      {                                                                   
         'name':'test5',                                                  
-        'conjointTestRefs': ['test2', 'test4'],                         
+        'conjointVariationRefs': ['test2', 'test4'],                         
         'experiences':[                                                  
            {                                                             
               'name':'A',                                                
@@ -604,7 +604,7 @@
                     'experienceRef':'B',                                 
                     'conjointExperienceRefs': [                         
                        {                                                 
-                          'testRef': 'test4',                            
+                          'variationRef': 'test4',                            
                           'experienceRef': 'B'                           
                        }                                                 
                      ],                                                  
@@ -619,7 +619,7 @@
                     'experienceRef':'B',                                 
                     'conjointExperienceRefs': [                         
                        {                                                 
-                          'testRef': 'test4',                            
+                          'variationRef': 'test4',                            
                           'experienceRef': 'C'                           
                        }                                                 
                      ],                                                  
@@ -634,7 +634,7 @@
                     'experienceRef':'C',                                 
                     'conjointExperienceRefs': [                         
                        {                                                 
-                          'testRef': 'test4',                            
+                          'variationRef': 'test4',                            
                           'experienceRef': 'B'                           
                        }                                                 
                      ],                                                  
@@ -649,7 +649,7 @@
                     'experienceRef':'C',                                 
                     'conjointExperienceRefs': [                         
                        {                                                 
-                          'testRef': 'test4',                            
+                          'variationRef': 'test4',                            
                           'experienceRef': 'C'                           
                        }                                                 
                      ],                                                  
@@ -687,7 +687,7 @@
                     'experienceRef':'B',                                 
                     'conjointExperienceRefs': [                         
                        {                                                 
-                          'testRef': 'test2',                            
+                          'variationRef': 'test2',                            
                           'experienceRef': 'B'                           
                        }                                                 
                      ],                                                  
@@ -702,7 +702,7 @@
                     'experienceRef':'B',                                 
                     'conjointExperienceRefs': [                         
                        {                                                 
-                          'testRef': 'test2',                            
+                          'variationRef': 'test2',                            
                           'experienceRef': 'C'                           
                        }                                                 
                      ],                                                  
@@ -717,7 +717,7 @@
                     'experienceRef':'C',                                 
                     'conjointExperienceRefs': [                         
                        {                                                 
-                          'testRef': 'test2',                            
+                          'variationRef': 'test2',                            
                           'experienceRef': 'B'                           
                        }                                                 
                      ],                                                  
@@ -732,7 +732,7 @@
                     'experienceRef':'C',                                 
                     'conjointExperienceRefs': [                         
                        {                                                 
-                          'testRef': 'test2',                            
+                          'variationRef': 'test2',                            
                           'experienceRef': 'C'                           
                        }                                                 
                      ],                                                  
@@ -747,7 +747,7 @@
                     'experienceRef':'B',                                 
                     'conjointExperienceRefs': [                         
                        {                                                 
-                          'testRef': 'test4',                            
+                          'variationRef': 'test4',                            
                           'experienceRef': 'B'                           
                        }                                                 
                      ],                                                  
@@ -762,7 +762,7 @@
                     'experienceRef':'B',                                 
                     'conjointExperienceRefs': [                         
                        {                                                 
-                          'testRef': 'test4',                            
+                          'variationRef': 'test4',                            
                           'experienceRef': 'C'                           
                        }                                                 
                      ],                                                  
@@ -777,7 +777,7 @@
                     'experienceRef':'C',                                 
                     'conjointExperienceRefs': [                         
                        {                                                 
-                          'testRef': 'test4',                            
+                          'variationRef': 'test4',                            
                           'experienceRef': 'B'                           
                        }                                                 
                      ],                                                  
@@ -792,7 +792,7 @@
                     'experienceRef':'C',                                 
                     'conjointExperienceRefs': [                         
                        {                                                 
-                          'testRef': 'test4',                            
+                          'variationRef': 'test4',                            
                           'experienceRef': 'C'                           
                        }                                                 
                      ],                                                  
@@ -834,7 +834,7 @@
                     'experienceRef':'B',                                 
                     'conjointExperienceRefs': [                         
                        {                                                 
-                          'testRef': 'test2',                            
+                          'variationRef': 'test2',                            
                           'experienceRef': 'B'                           
                        }                                                 
                      ],                                                  
@@ -849,7 +849,7 @@
                     'experienceRef':'B',                                 
                     'conjointExperienceRefs': [                         
                        {                                                 
-                          'testRef': 'test2',                            
+                          'variationRef': 'test2',                            
                           'experienceRef': 'C'                           
                        }                                                 
                      ],                                                  
@@ -864,7 +864,7 @@
                     'experienceRef':'C',                                 
                     'conjointExperienceRefs': [                         
                        {                                                 
-                          'testRef': 'test2',                            
+                          'variationRef': 'test2',                            
                           'experienceRef': 'B'                           
                        }                                                 
                      ],                                                  
@@ -879,7 +879,7 @@
                     'experienceRef':'C',                                 
                     'conjointExperienceRefs': [                         
                        {                                                 
-                          'testRef': 'test2',                            
+                          'variationRef': 'test2',                            
                           'experienceRef': 'C'                           
                        }                                                 
                      ],                                                  
@@ -900,7 +900,7 @@
      },                                                                  
      {                                                                   
         'name':'test6',                                                  
-        'conjointTestRefs': ['test2', 'test4', 'test1', 'test5'],       
+        'conjointVariationRefs': ['test2', 'test4', 'test1', 'test5'],       
         'experiences':[                                                  
            {                                                             
               'name':'A',                                                
@@ -942,7 +942,7 @@
                     'experienceRef':'B',                                 
                     'conjointExperienceRefs': [                         
                        {                                                 
-                          'testRef': 'test4',                            
+                          'variationRef': 'test4',                            
                           'experienceRef': 'B'                           
                        }                                                 
                      ],                                                  
@@ -957,7 +957,7 @@
                     'experienceRef':'B',                                 
                     'conjointExperienceRefs': [                         
                        {                                                 
-                          'testRef': 'test4',                            
+                          'variationRef': 'test4',                            
                           'experienceRef': 'C'                           
                        }                                                 
                      ],                                                  
@@ -972,7 +972,7 @@
                     'experienceRef':'C',                                 
                     'conjointExperienceRefs': [                         
                        {                                                 
-                          'testRef': 'test4',                            
+                          'variationRef': 'test4',                            
                           'experienceRef': 'B'                           
                        }                                                 
                      ],                                                  
@@ -987,7 +987,7 @@
                     'experienceRef':'C',                                 
                     'conjointExperienceRefs': [                         
                        {                                                 
-                          'testRef': 'test4',                            
+                          'variationRef': 'test4',                            
                           'experienceRef': 'C'                           
                        }                                                 
                      ],                                                  
@@ -1002,7 +1002,7 @@
                     'experienceRef':'B',                                 
                     'conjointExperienceRefs': [                         
                        {                                                 
-                          'testRef': 'test5',                            
+                          'variationRef': 'test5',                            
                           'experienceRef': 'B'                           
                        }                                                 
                      ],                                                  
@@ -1017,7 +1017,7 @@
                     'experienceRef':'B',                                 
                     'conjointExperienceRefs': [                         
                        {                                                 
-                          'testRef': 'test5',                            
+                          'variationRef': 'test5',                            
                           'experienceRef': 'C'                           
                        }                                                 
                      ],                                                  
@@ -1032,7 +1032,7 @@
                     'experienceRef':'C',                                 
                     'conjointExperienceRefs': [                         
                        {                                                 
-                          'testRef': 'test5',                            
+                          'variationRef': 'test5',                            
                           'experienceRef': 'B'                           
                        }                                                 
                      ],                                                  
@@ -1047,7 +1047,7 @@
                     'experienceRef':'C',                                 
                     'conjointExperienceRefs': [                         
                        {                                                 
-                          'testRef': 'test5',                            
+                          'variationRef': 'test5',                            
                           'experienceRef': 'C'                           
                        }                                                 
                      ],                                                  
@@ -1062,11 +1062,11 @@
                     'experienceRef':'B',                                 
                     'conjointExperienceRefs': [                         
                        {                                                 
-                          'testRef': 'test4',                            
+                          'variationRef': 'test4',                            
                           'experienceRef': 'B'                           
                        },                                                
                        {                                                 
-                          'testRef': 'test5',                            
+                          'variationRef': 'test5',                            
                           'experienceRef': 'B'                           
                        }                                                 
                      ],                                                  
@@ -1081,11 +1081,11 @@
                     'experienceRef':'B',                                 
                     'conjointExperienceRefs': [                         
                        {                                                 
-                          'testRef': 'test4',                            
+                          'variationRef': 'test4',                            
                           'experienceRef': 'B'                           
                        },                                                
                        {                                                 
-                          'testRef': 'test5',                            
+                          'variationRef': 'test5',                            
                           'experienceRef': 'C'                           
                        }                                                 
                      ],                                                  
@@ -1100,11 +1100,11 @@
                     'experienceRef':'B',                                 
                     'conjointExperienceRefs': [                         
                        {                                                 
-                          'testRef': 'test4',                            
+                          'variationRef': 'test4',                            
                           'experienceRef': 'C'                           
                        },                                                
                        {                                                 
-                          'testRef': 'test5',                            
+                          'variationRef': 'test5',                            
                           'experienceRef': 'B'                           
                        }                                                 
                      ],                                                  
@@ -1119,11 +1119,11 @@
                     'experienceRef':'B',                                 
                     'conjointExperienceRefs': [                         
                        {                                                 
-                          'testRef': 'test4',                            
+                          'variationRef': 'test4',                            
                           'experienceRef': 'C'                           
                        },                                                
                        {                                                 
-                          'testRef': 'test5',                            
+                          'variationRef': 'test5',                            
                           'experienceRef': 'C'                           
                        }                                                 
                      ],                                                  
@@ -1138,11 +1138,11 @@
                     'experienceRef':'C',                                 
                     'conjointExperienceRefs': [                         
                        {                                                 
-                          'testRef': 'test4',                            
+                          'variationRef': 'test4',                            
                           'experienceRef': 'B'                           
                        },                                                
                        {                                                 
-                          'testRef': 'test5',                            
+                          'variationRef': 'test5',                            
                           'experienceRef': 'B'                           
                        }                                                 
                      ],                                                  
@@ -1157,11 +1157,11 @@
                     'experienceRef':'C',                                 
                     'conjointExperienceRefs': [                         
                        {                                                 
-                          'testRef': 'test4',                            
+                          'variationRef': 'test4',                            
                           'experienceRef': 'B'                           
                        },                                                
                        {                                                 
-                          'testRef': 'test5',                            
+                          'variationRef': 'test5',                            
                           'experienceRef': 'C'                           
                        }                                                 
                      ],                                                  
@@ -1176,11 +1176,11 @@
                     'experienceRef':'C',                                 
                     'conjointExperienceRefs': [                         
                        {                                                 
-                          'testRef': 'test4',                            
+                          'variationRef': 'test4',                            
                           'experienceRef': 'C'                           
                        },                                                
                        {                                                 
-                          'testRef': 'test5',                            
+                          'variationRef': 'test5',                            
                           'experienceRef': 'B'                           
                        }                                                 
                      ],                                                  
@@ -1195,11 +1195,11 @@
                     'experienceRef':'C',                                 
                     'conjointExperienceRefs': [                         
                        {                                                 
-                          'testRef': 'test4',                            
+                          'variationRef': 'test4',                            
                           'experienceRef': 'C'                           
                        },                                                
                        {                                                 
-                          'testRef': 'test5',                            
+                          'variationRef': 'test5',                            
                           'experienceRef': 'C'                           
                        }                                                 
                      ],                                                  
@@ -1241,7 +1241,7 @@
                     'experienceRef':'B',                                 
                     'conjointExperienceRefs': [                         
                        {                                                 
-                          'testRef': 'test1',                            
+                          'variationRef': 'test1',                            
                           'experienceRef': 'B'                           
                        }                                                 
                      ],                                                  
@@ -1256,7 +1256,7 @@
                     'experienceRef':'B',                                 
                     'conjointExperienceRefs': [                         
                        {                                                 
-                          'testRef': 'test1',                            
+                          'variationRef': 'test1',                            
                           'experienceRef': 'C'                           
                        }                                                 
                      ],                                                  
@@ -1271,7 +1271,7 @@
                     'experienceRef':'C',                                 
                     'conjointExperienceRefs': [                         
                        {                                                 
-                          'testRef': 'test1',                            
+                          'variationRef': 'test1',                            
                           'experienceRef': 'B'                           
                        }                                                 
                      ],                                                  
@@ -1286,7 +1286,7 @@
                     'experienceRef':'C',                                 
                     'conjointExperienceRefs': [                         
                        {                                                 
-                          'testRef': 'test1',                            
+                          'variationRef': 'test1',                            
                           'experienceRef': 'C'                           
                        }                                                 
                      ],                                                  
@@ -1301,7 +1301,7 @@
                     'experienceRef':'B',                                 
                     'conjointExperienceRefs': [                         
                        {                                                 
-                          'testRef': 'test2',                            
+                          'variationRef': 'test2',                            
                           'experienceRef': 'B'                           
                        }                                                 
                      ],                                                  
@@ -1316,7 +1316,7 @@
                     'experienceRef':'B',                                 
                     'conjointExperienceRefs': [                         
                        {                                                 
-                          'testRef': 'test2',                            
+                          'variationRef': 'test2',                            
                           'experienceRef': 'C'                           
                        }                                                 
                      ],                                                  
@@ -1331,7 +1331,7 @@
                     'experienceRef':'C',                                 
                     'conjointExperienceRefs': [                         
                        {                                                 
-                          'testRef': 'test2',                            
+                          'variationRef': 'test2',                            
                           'experienceRef': 'B'                           
                        }                                                 
                      ],                                                  
@@ -1346,7 +1346,7 @@
                     'experienceRef':'C',                                 
                     'conjointExperienceRefs': [                         
                        {                                                 
-                          'testRef': 'test2',                            
+                          'variationRef': 'test2',                            
                           'experienceRef': 'C'                           
                        }                                                 
                      ],                                                  

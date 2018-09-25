@@ -40,14 +40,14 @@ public class ParserMixedInstrumentationTest extends BaseTestCore {
 					    "  'meta':{                                                                \n" +
 					    "      'name':'errorsTest1'                                                \n" +
 					    "  },                                                                      \n" +
-			    	    //==========================================================================//
+			    	    /* ======================================================================== */
 			    	    "   'states':[                                                             \n" +
 			    	    "     {'name':'state1'},                                                   \n" +
 			    	    "     {'name':'state2'}                                                    \n" +
 			            "  ],                                                                      \n" +
-			    	    //=========================================================================//
+			    	    /* ======================================================================= */
 			    	    
-				        "  'tests':[                                                              \n" +
+				        "  'variations':[                                                         \n" +
 			    	    "     {                                                                   \n" +
 			    	    "        'name':'test1',                                                  \n" +
 			    	    "        'experiences':[                                                  \n" +
@@ -181,32 +181,32 @@ public class ParserMixedInstrumentationTest extends BaseTestCore {
 		assertEquals(6, response.getMessages().size());
 		ParserMessage actual = response.getMessages().get(0);
 		ParserMessage expected = new ParserMessageImpl(
-				new Location("/tests[0]/onStates[0]/variants[0]/parameters/"), 
+				new Location("/variations[0]/onStates[0]/variants[0]/parameters/"), 
 				PROPERTY_NOT_ALLOWED_PHANTOM_VARIANT, "parameters");
 		assertMessageEqual(expected, actual);
 		actual = response.getMessages().get(1);
 		expected = new ParserMessageImpl(
-				new Location("/tests[0]/onStates[0]/variants/"), 
+				new Location("/variations[0]/onStates[0]/variants/"), 
 				PROPER_VARIANT_MISSING, "B");
 		assertMessageEqual(expected, actual);
 		actual = response.getMessages().get(2);
 		expected = new ParserMessageImpl(
-				new Location("/tests[1]/onStates[0]/variants/"), 
+				new Location("/variations[1]/onStates[0]/variants/"), 
 				PROPER_VARIANT_MISSING, "B");
 		assertMessageEqual(expected, actual);
 		actual = response.getMessages().get(3);
 		expected = new ParserMessageImpl(
-				new Location("/tests[2]/onStates[0]/variants[0]/isPhantom"), 
+				new Location("/variations[2]/onStates[0]/variants[0]/isPhantom"), 
 				PROPERTY_NOT_BOOLEAN, "isPhantom");
 		assertMessageEqual(expected, actual);
 		actual = response.getMessages().get(4);
 		expected = new ParserMessageImpl(
-				new Location("/tests[3]/onStates[0]/variants[0]/isPhantom"), 
+				new Location("/variations[3]/onStates[0]/variants[0]/isPhantom"), 
 				PROPERTY_NOT_BOOLEAN, "isPhantom");
 		assertMessageEqual(expected, actual);
 		actual = response.getMessages().get(5);
 		expected = new ParserMessageImpl(
-				new Location("/tests[3]/onStates[0]/variants[1]/experienceRef"), 
+				new Location("/variations[3]/onStates[0]/variants[1]/experienceRef"), 
 				EXPERIENCEREF_ISCONTROL, "A");
 		assertMessageEqual(expected, actual);
 	}
@@ -223,13 +223,13 @@ public class ParserMixedInstrumentationTest extends BaseTestCore {
 					    "  'meta':{                                                                \n" +
 					    "      'name':'errorsTest2'                                                \n" +
 					    "  },                                                                      \n" +
-			    	    //==========================================================================//
+			    	    /* ======================================================================== */
 			    	    "   'states':[                                                             \n" +
 			    	    "     {'name':'state1'},                                                   \n" +
 			    	    "     {'name':'state2'}                                                    \n" +
 			            "  ],                                                                      \n" +
-			    	    //=========================================================================//			    	    
-				        "  'tests':[                                                              \n" +
+			    	    /* ======================================================================= */			    	    
+				        "  'variations':[                                                         \n" +
 			    	    "     {                                                                   \n" +
 				        "        /// B is undef on S1 and A is undef on S2                        \n" +
 			    	    "        'name':'test1',                                                  \n" +
@@ -289,7 +289,7 @@ public class ParserMixedInstrumentationTest extends BaseTestCore {
 			    	    "              'weight':20                                                \n" +
 			    	    "           }                                                             \n" +
 			    	    "        ],                                                               \n" +
-			    	    "        'conjointTestRefs':['test1'],                                   \n" +
+			    	    "        'conjointVariationRefs':['test1'],                                   \n" +
 			    	    "        'onStates':[                                                     \n" +
 			    	    "           {                                                             \n" +
 			    	    "              'stateRef':'state1',                                       \n" +
@@ -330,7 +330,7 @@ public class ParserMixedInstrumentationTest extends BaseTestCore {
 		assertEquals(1, response.getMessages().size());
 		ParserMessage actual = response.getMessages().get(0);
 		ParserMessage expected = new ParserMessageImpl(
-				new Location("/tests[1]/onStates[0]/variants/"), 
+				new Location("/variations[1]/onStates[0]/variants/"), 
 				PROPER_VARIANT_MISSING, "B");
 		assertMessageEqual(expected, actual);
 
@@ -348,13 +348,13 @@ public class ParserMixedInstrumentationTest extends BaseTestCore {
 					    "  'meta':{                                                                \n" +
 					    "      'name':'errorsTest3'                                                \n" +
 					    "  },                                                                      \n" +
-			    	    //==========================================================================//
+			    	    /* ======================================================================== */
 			    	    "   'states':[                                                             \n" +
 			    	    "     {'name':'state1'},                                                   \n" +
 			    	    "     {'name':'state2'}                                                    \n" +
 			            "  ],                                                                      \n" +
-			    	    //=========================================================================//			    	    
-				        "  'tests':[                                                              \n" +
+			    	    /* ======================================================================= */			    	    
+				        "  'variations':[                                                          \n" +
 			    	    "     {                                                                   \n" +
 				        "        /// B is undef on S1 and A is undef on S2                        \n" +
 			    	    "        'name':'test1',                                                  \n" +
@@ -414,7 +414,7 @@ public class ParserMixedInstrumentationTest extends BaseTestCore {
 			    	    "              'weight':20                                                \n" +
 			    	    "           }                                                             \n" +
 			    	    "        ],                                                               \n" +
-			    	    "        'conjointTestRefs':['test1'],                                   \n" +
+			    	    "        'conjointVariationRefs':['test1'],                                   \n" +
 			    	    "        'onStates':[                                                     \n" +
 			    	    "           {                                                             \n" +
 			    	    "              'stateRef':'state1',                                       \n" +
@@ -437,7 +437,7 @@ public class ParserMixedInstrumentationTest extends BaseTestCore {
 			    	    "                    'experienceRef':'B',                                 \n" +
 			    	    "                    'conjointExperienceRefs': [                         \n" +
 			    	    "                       {                                                 \n" +
-			    	    "                          'testRef': 'test1',                            \n" +
+			    	    "                          'variationRef': 'test1',                            \n" +
 			    	    "                          'experienceRef': 'B'                           \n" +
 			    	    "                       }                                                 \n" +
 			    	    "                     ],                                                  \n" +
@@ -462,7 +462,7 @@ public class ParserMixedInstrumentationTest extends BaseTestCore {
 			    	    "                    'experienceRef':'B',                                 \n" +
 			    	    "                    'conjointExperienceRefs': [                         \n" +
 			    	    "                       {                                                 \n" +
-			    	    "                          'testRef': 'test1',                            \n" +
+			    	    "                          'variationRef': 'test1',                            \n" +
 			    	    "                          'experienceRef': 'B'                           \n" +
 			    	    "                       }                                                 \n" +
 			    	    "                     ],                                                  \n" +
@@ -493,12 +493,12 @@ public class ParserMixedInstrumentationTest extends BaseTestCore {
 		assertEquals(2, response.getMessages().size());
 		ParserMessage actual = response.getMessages().get(0);
 		ParserMessage expected = new ParserMessageImpl(
-				new Location("/tests[1]/onStates[0]/variants/"), 
+				new Location("/variations[1]/onStates[0]/variants/"), 
 				CONJOINT_VARIANT_CONJOINT_PHANTOM, "test1.B", "state1");
 		assertMessageEqual(expected, actual);
 		actual = response.getMessages().get(1);
 		expected = new ParserMessageImpl(
-				new Location("/tests[1]/onStates[1]/variants/"), 
+				new Location("/variations[1]/onStates[1]/variants/"), 
 				CONJOINT_VARIANT_PROPER_PHANTOM, "test2.B", "state2");
 		assertMessageEqual(expected, actual);
 	}
@@ -515,13 +515,13 @@ public class ParserMixedInstrumentationTest extends BaseTestCore {
 					    "  'meta':{                                                                \n" +
 					    "      'name':'errorsTest4'                                                \n" +
 					    "  },                                                                      \n" +
-			    	    //==========================================================================//
+			    	    /* ======================================================================== */
 			    	    "   'states':[                                                             \n" +
 			    	    "     {'name':'state1'},                                                   \n" +
 			    	    "     {'name':'state2'}                                                    \n" +
 			            "  ],                                                                      \n" +
-			    	    //=========================================================================//			    	    
-				        "  'tests':[                                                              \n" +
+			    	    /* ======================================================================= */			    	    
+				        "  'variations':[                                                         \n" +
 			    	    "     {                                                                   \n" +
 				        "        /// B is undef on S1 and A is undef on S2                        \n" +
 			    	    "        'name':'test1',                                                  \n" +
@@ -581,7 +581,7 @@ public class ParserMixedInstrumentationTest extends BaseTestCore {
 			    	    "              'weight':20                                                \n" +
 			    	    "           }                                                             \n" +
 			    	    "        ],                                                               \n" +
-			    	    "        'conjointTestRefs':['test1'],                                   \n" +
+			    	    "        'conjointVariationRefs':['test1'],                                   \n" +
 			    	    "        'onStates':[                                                     \n" +
 			    	    "           {                                                             \n" +
 			    	    "              'stateRef':'state1',                                       \n" +
@@ -604,7 +604,7 @@ public class ParserMixedInstrumentationTest extends BaseTestCore {
 			    	    "                    'experienceRef':'B',                                 \n" +
 			    	    "                    'conjointExperienceRefs': [                         \n" +
 			    	    "                       {                                                 \n" +
-			    	    "                          'testRef': 'test1',                            \n" +
+			    	    "                          'variationRef': 'test1',                            \n" +
 			    	    "                          'experienceRef': 'B'                           \n" +
 			    	    "                       }                                                 \n" +
 			    	    "                     ],                                                  \n" +
@@ -629,7 +629,7 @@ public class ParserMixedInstrumentationTest extends BaseTestCore {
 			    	    "                    'experienceRef':'B',                                 \n" +
 			    	    "                    'conjointExperienceRefs': [                         \n" +
 			    	    "                       {                                                 \n" +
-			    	    "                          'testRef': 'test1',                            \n" +
+			    	    "                          'variationRef': 'test1',                            \n" +
 			    	    "                          'experienceRef': 'B'                           \n" +
 			    	    "                       }                                                 \n" +
 			    	    "                     ],                                                  \n" +
@@ -660,12 +660,12 @@ public class ParserMixedInstrumentationTest extends BaseTestCore {
 		assertEquals(2, response.getMessages().size());
 		ParserMessage actual = response.getMessages().get(0);
 		ParserMessage expected = new ParserMessageImpl(
-				new Location("/tests[1]/onStates[0]/variants/"), 
+				new Location("/variations[1]/onStates[0]/variants/"), 
 				CONJOINT_VARIANT_CONJOINT_PHANTOM, "test1.B", "state1");
 		assertMessageEqual(expected, actual);
 		actual = response.getMessages().get(1);
 		expected = new ParserMessageImpl(
-				new Location("/tests[1]/onStates[1]/variants/"), 
+				new Location("/variations[1]/onStates[1]/variants/"), 
 				CONJOINT_VARIANT_PROPER_PHANTOM, "test2.B", "state2");
 		assertMessageEqual(expected, actual);
 	}
@@ -694,13 +694,13 @@ public class ParserMixedInstrumentationTest extends BaseTestCore {
 					    "  'meta':{                                                                \n" +
 					    "      'name':'errorsTest5'                                                \n" +
 					    "  },                                                                      \n" +
-			    	    //==========================================================================//
+			    	    /* ======================================================================== */
 			    	    "   'states':[                                                             \n" +
 			    	    "     {'name':'state1'},                                                   \n" +
 			    	    "     {'name':'state2'}                                                    \n" +
 			            "  ],                                                                      \n" +
-			    	    //=========================================================================//			    	    
-				        "  'tests':[                                                              \n" +
+			    	    /* ======================================================================= */			    	    
+				        "  'variations':[                                                         \n" +
 			    	    "     {                                                                   \n" +
 			    	    "        'name':'test1',                                                  \n" +
 			    	    "        'experiences':[                                                  \n" +
@@ -780,7 +780,7 @@ public class ParserMixedInstrumentationTest extends BaseTestCore {
 			    	    "     },                                                                  \n" +
 			    	    "     {                                                                   \n" +
 			    	    "        'name':'test2',                                                  \n" +
-			    	    "        'conjointTestRefs':['test1'],                                   \n" +
+			    	    "        'conjointVariationRefs':['test1'],                                   \n" +
 			    	    "        'experiences':[                                                  \n" +
 			    	    "           {                                                             \n" +
 			    	    "              'name':'A',                                                \n" +
@@ -822,7 +822,7 @@ public class ParserMixedInstrumentationTest extends BaseTestCore {
 					    "                    'experienceRef': 'B',                                \n" +
 			    	    "                    'conjointExperienceRefs': [                         \n" +
 			    	    "                       {                                                 \n" +
-			    	    "                          'testRef': 'test1',                            \n" +
+			    	    "                          'variationRef': 'test1',                            \n" +
 			    	    "                          'experienceRef': 'C'                           \n" +
 			    	    "                       }                                                 \n" +
 			    	    "                     ],                                                  \n" +
@@ -851,7 +851,7 @@ public class ParserMixedInstrumentationTest extends BaseTestCore {
 					    "                    'experienceRef': 'D',                                \n" +
 			    	    "                    'conjointExperienceRefs': [                         \n" +
 			    	    "                       {                                                 \n" +
-			    	    "                          'testRef': 'test1',                            \n" +
+			    	    "                          'variationRef': 'test1',                            \n" +
 			    	    "                          'experienceRef': 'C'                           \n" +
 			    	    "                       }                                                 \n" +
 			    	    "                     ],                                                  \n" +
@@ -882,7 +882,7 @@ public class ParserMixedInstrumentationTest extends BaseTestCore {
 		assertEquals(1, response.getMessages().size());
 		ParserMessage actual = response.getMessages().get(0);
 		ParserMessage expected = new ParserMessageImpl(
-				new Location("/tests[1]/onStates[0]/variants/"), 
+				new Location("/variations[1]/onStates[0]/variants/"), 
 				CONJOINT_VARIANT_MISSING, "B", "test1.C");
 		assertMessageEqual(expected, actual);
 
@@ -912,14 +912,14 @@ public class ParserMixedInstrumentationTest extends BaseTestCore {
 					    "  'meta':{                                                                \n" +
 					    "      'name':'okayTest1'                                                  \n" +
 					    "  },                                                                      \n" +
-			    	    //==========================================================================//
+			    	    /* ======================================================================== */
 			    	    "   'states':[                                                             \n" +
 			    	    "     {'name':'state1'},                                                   \n" +
 			    	    "     {'name':'state2'},                                                   \n" +
 			    	    "     {'name':'state3'}                                                    \n" +
 			            "  ],                                                                      \n" +
-			    	    //=========================================================================//			    	    
-				        "  'tests':[                                                              \n" +
+			    	    /* ======================================================================= */			    	    
+				        "  'variations':[                                                         \n" +
 			    	    "     {                                                                   \n" +
 			    	    "        'name':'test1',                                                  \n" +
 			    	    "        'experiences':[                                                  \n" +
@@ -1003,7 +1003,7 @@ public class ParserMixedInstrumentationTest extends BaseTestCore {
 			    	    "     },                                                                  \n" +
 			    	    "     {                                                                   \n" +
 			    	    "        'name':'test2',                                                  \n" +
-			    	    "        'conjointTestRefs':['test1'],                                   \n" +
+			    	    "        'conjointVariationRefs':['test1'],                                   \n" +
 			    	    "        'experiences':[                                                  \n" +
 			    	    "           {                                                             \n" +
 			    	    "              'name':'A',                                                \n" +
@@ -1044,7 +1044,7 @@ public class ParserMixedInstrumentationTest extends BaseTestCore {
 					    "                    'experienceRef': 'B',                                \n" +
 			    	    "                    'conjointExperienceRefs': [                         \n" +
 			    	    "                       {                                                 \n" +
-			    	    "                          'testRef': 'test1',                            \n" +
+			    	    "                          'variationRef': 'test1',                            \n" +
 			    	    "                          'experienceRef': 'C'                           \n" +
 			    	    "                       }                                                 \n" +
 			    	    "                     ],                                                  \n" +
@@ -1072,7 +1072,7 @@ public class ParserMixedInstrumentationTest extends BaseTestCore {
 					    "                    'experienceRef': 'D',                                \n" +
 			    	    "                    'conjointExperienceRefs': [                         \n" +
 			    	    "                       {                                                 \n" +
-			    	    "                          'testRef': 'test1',                            \n" +
+			    	    "                          'variationRef': 'test1',                            \n" +
 			    	    "                          'experienceRef': 'C'                           \n" +
 			    	    "                       }                                                 \n" +
 			    	    "                     ],                                                  \n" +
@@ -1101,7 +1101,7 @@ public class ParserMixedInstrumentationTest extends BaseTestCore {
 					    "                    'experienceRef': 'B',                                \n" +
 			    	    "                    'conjointExperienceRefs': [                         \n" +
 			    	    "                       {                                                 \n" +
-			    	    "                          'testRef': 'test1',                            \n" +
+			    	    "                          'variationRef': 'test1',                            \n" +
 			    	    "                          'experienceRef': 'B'                           \n" +
 			    	    "                       }                                                 \n" +
 			    	    "                     ],                                                  \n" +
@@ -1116,7 +1116,7 @@ public class ParserMixedInstrumentationTest extends BaseTestCore {
 					    "                    'experienceRef': 'B',                                \n" +
 			    	    "                    'conjointExperienceRefs': [                         \n" +
 			    	    "                       {                                                 \n" +
-			    	    "                          'testRef': 'test1',                            \n" +
+			    	    "                          'variationRef': 'test1',                            \n" +
 			    	    "                          'experienceRef': 'D'                           \n" +
 			    	    "                       }                                                 \n" +
 			    	    "                     ],                                                  \n" +
@@ -1140,7 +1140,7 @@ public class ParserMixedInstrumentationTest extends BaseTestCore {
 					    "                    'experienceRef': 'C',                                \n" +
 			    	    "                    'conjointExperienceRefs': [                         \n" +
 			    	    "                       {                                                 \n" +
-			    	    "                          'testRef': 'test1',                            \n" +
+			    	    "                          'variationRef': 'test1',                            \n" +
 			    	    "                          'experienceRef': 'B'                           \n" +
 			    	    "                       }                                                 \n" +
 			    	    "                     ],                                                  \n" +
@@ -1155,7 +1155,7 @@ public class ParserMixedInstrumentationTest extends BaseTestCore {
 					    "                    'experienceRef': 'C',                                \n" +
 			    	    "                    'conjointExperienceRefs': [                         \n" +
 			    	    "                       {                                                 \n" +
-			    	    "                          'testRef': 'test1',                            \n" +
+			    	    "                          'variationRef': 'test1',                            \n" +
 			    	    "                          'experienceRef': 'D'                           \n" +
 			    	    "                       }                                                 \n" +
 			    	    "                     ],                                                  \n" +
@@ -1179,7 +1179,7 @@ public class ParserMixedInstrumentationTest extends BaseTestCore {
 					    "                    'experienceRef': 'D',                                \n" +
 			    	    "                    'conjointExperienceRefs': [                         \n" +
 			    	    "                       {                                                 \n" +
-			    	    "                          'testRef': 'test1',                            \n" +
+			    	    "                          'variationRef': 'test1',                            \n" +
 			    	    "                          'experienceRef': 'B'                           \n" +
 			    	    "                       }                                                 \n" +
 			    	    "                     ],                                                  \n" +
@@ -1194,7 +1194,7 @@ public class ParserMixedInstrumentationTest extends BaseTestCore {
 					    "                    'experienceRef': 'D',                                \n" +
 			    	    "                    'conjointExperienceRefs': [                         \n" +
 			    	    "                       {                                                 \n" +
-			    	    "                          'testRef': 'test1',                            \n" +
+			    	    "                          'variationRef': 'test1',                            \n" +
 			    	    "                          'experienceRef': 'D'                           \n" +
 			    	    "                       }                                                 \n" +
 			    	    "                     ],                                                  \n" +

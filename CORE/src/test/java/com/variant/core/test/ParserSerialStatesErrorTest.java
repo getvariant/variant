@@ -43,7 +43,7 @@ public class ParserSerialStatesErrorTest extends BaseTestCore {
 			    "      'comment':'schema comment'                               \n" +
 			    "  },                                                           \n" +
 			    "  'states':'state1, state2',                                  \n" +
-				"  'tests':[                                                   \n" +
+				"  'variations':[                                              \n" +
 			    "     {                                                        \n" +
 			    "        'name':'Test1',                                       \n" +
 			    "        'isOn': false,                                       \n" +
@@ -93,7 +93,7 @@ public class ParserSerialStatesErrorTest extends BaseTestCore {
 		ParserMessage expected = new ParserMessageImpl(new Location("/states"), PROPERTY_NOT_LIST, "states");
 		assertMessageEqual(expected, actual);
 		actual = response.getMessages().get(1);
-		expected = new ParserMessageImpl(new Location("/tests[0]/onStates[0]/stateRef"), STATEREF_UNDEFINED, "state1");
+		expected = new ParserMessageImpl(new Location("/variations[0]/onStates[0]/stateRef"), STATEREF_UNDEFINED, "state1");
 		assertMessageEqual(expected, actual);
 	}
 
@@ -110,7 +110,7 @@ public class ParserSerialStatesErrorTest extends BaseTestCore {
 			    "      'name':'schema_name',                                   \n" +
 			    "      'comment':'schema comment'                              \n" +
 			    "  },                                                          \n" +
-				"  'tests':[                                                   \n" +
+				"  'variations':[                                              \n" +
 			    "     {                                                        \n" +
 			    "        'name':'Test1',                                       \n" +
 			    "        'experiences':[                                       \n" +
@@ -149,7 +149,7 @@ public class ParserSerialStatesErrorTest extends BaseTestCore {
 		assertMessageEqual(expected, actual);
 
 		actual = response.getMessages().get(1);
-	    expected = new ParserMessageImpl(new Location("/tests[0]/onStates[0]/stateRef"), STATEREF_UNDEFINED, "state1");
+	    expected = new ParserMessageImpl(new Location("/variations[0]/onStates[0]/stateRef"), STATEREF_UNDEFINED, "state1");
 		assertMessageEqual(expected, actual);
 	}
 
@@ -168,7 +168,7 @@ public class ParserSerialStatesErrorTest extends BaseTestCore {
 			    "  },                                                           \n" +
 			    "   'states':[                                                  \n" +		    	    
 			    "  ],                                                          \n" +
-				"  'tests':[                                                   \n" +
+				"  'variations':[                                              \n" +
 			    "     {                                                        \n" +
 			    "        'name':'Test1',                                       \n" +
 			    "        'experiences':[                                       \n" +
@@ -207,7 +207,7 @@ public class ParserSerialStatesErrorTest extends BaseTestCore {
 		assertMessageEqual(expected, actual);
 
 		actual = response.getMessages().get(1);
-		expected = new ParserMessageImpl(new Location("/tests[0]/onStates[0]/stateRef"), STATEREF_UNDEFINED, "state1");
+		expected = new ParserMessageImpl(new Location("/variations[0]/onStates[0]/stateRef"), STATEREF_UNDEFINED, "state1");
 		assertMessageEqual(expected, actual);
 
 	}
@@ -232,7 +232,7 @@ public class ParserSerialStatesErrorTest extends BaseTestCore {
 //			    "        'name':'state2'                                        \n" +
 			    "     }                                                        \n" +
 			    "  ],                                                          \n" +
-				"  'tests':[                                                   \n" +
+				"  'variations':[                                              \n" +
 			    "     {                                                        \n" +
 			    "        'name':'Test1',                                       \n" +
 			    "        'experiences':[                                       \n" +
@@ -293,7 +293,7 @@ public class ParserSerialStatesErrorTest extends BaseTestCore {
 			    "     {  'name':[1,2]                                           \n" + 
 			    "     }                                                        \n" +
 			    "  ],                                                          \n" +
-				"  'tests':[                                                   \n" +
+				"  'variations':[                                              \n" +
 			    "     {                                                        \n" +
 			    "        'name':'Test1',                                       \n" +
 			    "        'experiences':[                                       \n" +
@@ -352,7 +352,7 @@ public class ParserSerialStatesErrorTest extends BaseTestCore {
 			    "        'name':'state1'                                       \n" +
 			    "     }                                                        \n" +
 			    "  ],                                                          \n" +
-				"  'tests':[                                                   \n" +
+				"  'variations':[                                              \n" +
 			    "     {                                                        \n" +
 			    "        'name':'Test1',                                       \n" +
 			    "        'experiences':[                                       \n" +
@@ -413,7 +413,7 @@ public class ParserSerialStatesErrorTest extends BaseTestCore {
 			    "        'invalid property':'throw an error'                   \n" +
 			    "     }                                                        \n" +
 			    "  ],                                                          \n" +
-				"  'TESTS':[                                                   \n" +
+				"  'variations':[                                              \n" +
 			    "     {                                                        \n" +
 			    "        'name':'Test1',                                       \n" +
 			    "        'experiences':[                                       \n" +
@@ -487,7 +487,7 @@ public class ParserSerialStatesErrorTest extends BaseTestCore {
 			    "     {'name':'_0Bc9'},                                        \n" +
 			    "     {'name':'state1'}                                        \n" +
 			    "  ],                                                          \n" +
-				"  'tests':[                                                   \n" +
+				"  'variations':[                                              \n" +
 			    "     {                                                        \n" +
 			    "        'name':'TEST',                                        \n" +
 			    "        'experiences':[                                       \n" +
@@ -557,7 +557,7 @@ public class ParserSerialStatesErrorTest extends BaseTestCore {
 			    "           }                                                  \n" +
 			    "     }                                                        \n" +
 			    "  ],                                                          \n" +
-				"  'tests':[                                                   \n" +
+				"  'variations':[                                              \n" +
 			    "     {                                                        \n" +
 			    "        'name':'Test1',                                       \n" +
 			    "        'isOn': false,                                       \n" +
@@ -624,7 +624,7 @@ public class ParserSerialStatesErrorTest extends BaseTestCore {
 			    "        'name':'state1'                                       \n" +
 			    "     }                                                        \n" +
 			    "   ,                                                          \n" +
-				"  'tests':[                                                   \n" +
+				"  'variations':[                                              \n" +
 			    "     {                                                        \n" +
 			    "        'name':'Test1',                                       \n" +
 			    "        'isOn': false,                                       \n" +
@@ -675,7 +675,7 @@ public class ParserSerialStatesErrorTest extends BaseTestCore {
 		assertMessageEqual(expected, actual);
 
 		actual = response.getMessages().get(1);
-		expected = new ParserMessageImpl(new Location("/tests[0]/onStates[0]/stateRef"), STATEREF_UNDEFINED, "state1");
+		expected = new ParserMessageImpl(new Location("/variations[0]/onStates[0]/stateRef"), STATEREF_UNDEFINED, "state1");
 		assertMessageEqual(expected, actual);
 
 	}

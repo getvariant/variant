@@ -259,7 +259,7 @@ public abstract class SchemaParser implements Keywords {
 		// Clean map will contain only expected clauses AND keys uppercased.
 		Map<String, Object> cleanMap = new LinkedHashMap<String, Object>();
 		for (Map.Entry<String, ?> entry: mappedJson.entrySet()) {
-			if (StringUtils.equalsIgnoreCase(entry.getKey(), KEYWORD_META, KEYWORD_STATES, KEYWORD_TESTS)) {
+			if (StringUtils.equalsIgnoreCase(entry.getKey(), KEYWORD_META, KEYWORD_STATES, KEYWORD_VARIATIONS)) {
 				cleanMap.put(entry.getKey().toUpperCase(), entry.getValue());
 			}
 			else {
@@ -303,13 +303,13 @@ public abstract class SchemaParser implements Keywords {
 			return response;
 		}
 
-		Object tests = cleanMap.get(KEYWORD_TESTS.toUpperCase());
+		Object tests = cleanMap.get(KEYWORD_VARIATIONS.toUpperCase());
 		if (tests == null) {
-			response.addMessage(rootLocation, PROPERTY_MISSING, KEYWORD_TESTS);
+			response.addMessage(rootLocation, PROPERTY_MISSING, KEYWORD_VARIATIONS);
 		}
 		else {
 			// Parse all tests
-			TestsParser.parse(tests, rootLocation.plusObj(KEYWORD_TESTS), response, hooksService);			
+			VariationsParser.parse(tests, rootLocation.plusObj(KEYWORD_VARIATIONS), response, hooksService);			
 		}
 		
 		response.setMessageListener(null);

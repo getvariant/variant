@@ -88,89 +88,12 @@ public class SemanticError extends ParserError {
 	// 
 	// 001-020 Schema parser, Meta 
 	//
-/*
-	public static final SemanticError NO_META_CLAUSE =
-			new SemanticError(1, Severity.ERROR,  "'/meta' clause is missing");
-
-	public static final SemanticError META_NOT_OBJECT =
-			new SemanticError(2, Severity.ERROR, "'/meta' property must be an object"); 
-
-	public static final SemanticError META_NAME_INVALID =
-			new SemanticError(3, Severity.ERROR, "Schema name must be a string, containing letters, digits and _, and cannot start with a digit"); 
-
-	public static final SemanticError META_NAME_MISSING =
-			new SemanticError(4, Severity.ERROR, "Schema name is missing"); 
-
-	public static final SemanticError META_COMMENT_INVALID =
-			new SemanticError(5, Severity.ERROR, "Schema comment must be a string"); 
-
-	public static final SemanticError META_UNSUPPORTED_PROPERTY =
-			new SemanticError(6, Severity.WARN,  "Unsupported property [%s]"); 
-*/
-/*
-	public static final SemanticError HOOK_NAME_INVALID =
-			new SemanticError(7, Severity.ERROR, "Hook name must be a string, containing letters, digits and _, and cannot start with a digit"); 
-
-	public static final SemanticError HOOK_CLASS_NAME_INVALID =
-			new SemanticError(8, Severity.ERROR, "Hook class name must be a string (hook [%s]"); 
-	
-	public static final SemanticError HOOK_UNSUPPORTED_PROPERTY =
-			new SemanticError(9, Severity.WARN,  "Unsupported hook property [%s] (hook [%s])"); 
-
-	public static final SemanticError HOOK_NAME_MISSING =
-			new SemanticError(10, Severity.ERROR, "Hook name missing"); 
-
-	public static final SemanticError HOOK_CLASS_NAME_MISSING =
-			new SemanticError(11, Severity.ERROR, "Hook class name missing for hook [%s]"); 
-
-	public static final SemanticError HOOK_NAME_DUPE =
-			new SemanticError(12, Severity.ERROR, "Duplicate hook name [%s]"); 
-
-	public static final SemanticError HOOKS_NOT_LIST = 
-			new SemanticError(13, Severity.ERROR, "'hooks' property must be a list"); 
-
-	public static final SemanticError HOOK_NOT_OBJECT =
-			new SemanticError(14, Severity.ERROR, "'meta/hooks' property element must be an object"); 
-
-	public static final SemanticError FLUSHER_NOT_OBJECT =
-			new SemanticError(15, Severity.ERROR, "'meta/flusher' property must be an object"); 
-
-	public static final SemanticError FLUSHER_CLASS_NAME_INVALID =
-			new SemanticError(16, Severity.ERROR, "Flusher class name must be a string"); 
-
-	public static final SemanticError FLUSHER_UNSUPPORTED_PROPERTY =
-			new SemanticError(17, Severity.WARN,  "Unsupported flusher property [%s]"); 
-
-	public static final SemanticError FLUSHER_CLASS_NAME_MISSING =
-			new SemanticError(18, Severity.ERROR, "Flusher class name missing"); 
-*/
 	// 
 	// 021-050 Schema parser, State
 	//
-/*
-	public static final SemanticError STATE_UNSUPPORTED_PROPERTY =
-			new SemanticError(21, Severity.WARN,  "Unsupported state property [%s] (State [%s])"); 
 
-	public static final SemanticError NO_STATES_CLAUSE =
-			new SemanticError(22, Severity.INFO,  "'states' clause is missing");
-	
-	public static final SemanticError STATES_CLAUSE_NOT_LIST = 
-			new SemanticError(23, Severity.ERROR, "'/states' element must be a list"); 
-	
-	public static final SemanticError STATES_CLAUSE_EMPTY = 
-			new SemanticError(24, Severity.INFO, "'states' clause is empty"); 
-
-	public static final SemanticError STATE_NAME_MISSING =
-			new SemanticError(25, Severity.ERROR, "State name is missing"); 
-	
-	public static final SemanticError STATE_NAME_INVALID =
-			new SemanticError(26, Severity.ERROR, "State name must be a string, containing letters, digits and _, and cannot start with a digit"); 
-	
-	public static final SemanticError STATE_NAME_DUPE =
-			new SemanticError(27, Severity.ERROR, "Duplicate state name [%s]"); 
-*/
 	// 
-	// 051-150 Schema parser, Test
+	// 051-150 Schema parser, Variation
 	//
 
 	public static final SemanticError CONJOINT_TESTREF_UNDEFINED =

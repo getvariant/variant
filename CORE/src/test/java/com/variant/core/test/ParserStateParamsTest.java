@@ -40,7 +40,7 @@ public class ParserStateParamsTest extends BaseTestCore {
 			    "        'name':'state1'                                       \n" +
 			    "     }                                                        \n" +
 			    "  ],                                                          \n" +
-				"  'tests':[                                                   \n" +
+				"  'variations':[                                              \n" +
 			    "     {                                                        \n" +
 			    "        'name':'test1',                                       \n" +
 			    "        'experiences':[                                       \n" +
@@ -98,7 +98,7 @@ public class ParserStateParamsTest extends BaseTestCore {
 			    "           }                                                  \n" +
 			    "     }                                                        \n" +
 			    "  ],                                                          \n" +
-				"  'tests':[                                                   \n" +
+				"  'variations':[                                              \n" +
 			    "     {                                                        \n" +
 			    "        'name':'test1',                                       \n" +
 			    "        'experiences':[                                       \n" +
@@ -155,7 +155,7 @@ public class ParserStateParamsTest extends BaseTestCore {
 	    	    "        'parameters': []                                      \n" +
 			    "     }                                                        \n" +
 			    "  ],                                                          \n" +
-				"  'tests':[                                                   \n" +
+				"  'variations':[                                              \n" +
 			    "     {                                                        \n" +
 			    "        'name':'test1',                                       \n" +
 			    "        'experiences':[                                       \n" +
@@ -218,7 +218,7 @@ public class ParserStateParamsTest extends BaseTestCore {
 			    "        ]                                                     \n" +
 			    "     }                                                        \n" +
 			    "  ],                                                          \n" +
-				"  'tests':[                                                   \n" +
+				"  'variations':[                                              \n" +
 			    "     {                                                        \n" +
 			    "        'name':'test1',                                       \n" +
 			    "        'experiences':[                                       \n" +
@@ -284,7 +284,7 @@ public class ParserStateParamsTest extends BaseTestCore {
 			    "        ]                                                     \n" +
 			    "     }                                                        \n" +
 			    "  ],                                                          \n" +
-				"  'tests':[                                                   \n" +
+				"  'variations':[                                              \n" +
 			    "     {                                                        \n" +
 			    "        'name':'test1',                                       \n" +
 			    "        'experiences':[                                       \n" +
@@ -352,7 +352,7 @@ public class ParserStateParamsTest extends BaseTestCore {
 			    "        ]                                                     \n" +
 			    "     }                                                        \n" +
 			    "  ],                                                          \n" +
-				"  'tests':[                                                   \n" +
+				"  'variations':[                                              \n" +
 			    "     {                                                        \n" +
 			    "        'name':'test1',                                       \n" +
 			    "        'experiences':[                                       \n" +
@@ -421,7 +421,7 @@ public class ParserStateParamsTest extends BaseTestCore {
 			    "        ]                                                     \n" +
 			    "     }                                                        \n" +
 			    "  ],                                                          \n" +
-				"  'tests':[                                                   \n" +
+				"  'variations':[                                              \n" +
 			    "     {                                                        \n" +
 			    "        'name':'test1',                                       \n" +
 			    "        'experiences':[                                       \n" +

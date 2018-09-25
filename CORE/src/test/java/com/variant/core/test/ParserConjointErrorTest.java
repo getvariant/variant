@@ -53,7 +53,7 @@ public class ParserConjointErrorTest extends BaseTestCore {
 			    "        'name':'state2'                                        \n" +
 			    "     }                                                         \n" +
 			    "  ],                                                           \n" +
-				"  'tests':[                                                    \n" +
+				"  'variations':[                                               \n" +
 			    "     {                                                         \n" +
 			    "        'name':'test1',                                        \n" +
 			    "        'experiences':[                                        \n" +
@@ -88,7 +88,7 @@ public class ParserConjointErrorTest extends BaseTestCore {
 			    //----------------------------------------------------------------//	
 			    "     {                                                        \n" +
 			    "        'name':'test2',                                       \n" +
-	    	    "        'conjointTestRefs': 'test1',                         \n" +
+	    	    "        'conjointVariationRefs': 'test1',                         \n" +
 			    "        'experiences':[                                       \n" +
 			    "           {                                                  \n" +
 			    "              'name':'A',                                     \n" +
@@ -135,8 +135,8 @@ public class ParserConjointErrorTest extends BaseTestCore {
 		assertEquals(1, response.getMessages().size());
 		ParserMessage actual = response.getMessages().get(0);
 		ParserMessage expected = new ParserMessageImpl(
-				new Location("/tests[1]/conjointTestRefs"), 
-				PROPERTY_NOT_LIST, "conjointTestRefs");
+				new Location("/variations[1]/conjointVariationRefs"), 
+				PROPERTY_NOT_LIST, "conjointVariationRefs");
 		assertMessageEqual(expected, actual);
 	}
 
@@ -159,7 +159,7 @@ public class ParserConjointErrorTest extends BaseTestCore {
 	            "        'name':'state2'                                        \n" +
 	            "     }                                                         \n" +
 	            "  ],                                                           \n" +
-				"  'tests':[                                                   \n" +
+				"  'variations':[                                               \n" +
 			    "     {                                                        \n" +
 			    "        'name':'test1',                                       \n" +
 			    "        'experiences':[                                       \n" +
@@ -194,7 +194,7 @@ public class ParserConjointErrorTest extends BaseTestCore {
 			    //----------------------------------------------------------------//	
 			    "     {                                                        \n" +
 			    "        'name':'test2',                                       \n" +
-	    	    "        'conjointTestRefs': ['test1'],                         \n" +
+	    	    "        'conjointVariationRefs': ['test1'],                         \n" +
 			    "        'experiences':[                                       \n" +
 			    "           {                                                  \n" +
 			    "              'name':'A',                                     \n" +
@@ -241,7 +241,7 @@ public class ParserConjointErrorTest extends BaseTestCore {
 		assertEquals(1, response.getMessages().size());
 		ParserMessage actual = response.getMessages().get(0);
 		ParserMessage expected = new ParserMessageImpl(
-				new Location("/tests[1]/conjointTestRefs[0]"), 
+				new Location("/variations[1]/conjointVariationRefs[0]"), 
 				CONJOINT_TEST_DISJOINT, "test2", "test1");
 		assertMessageEqual(expected, actual);
 	}
@@ -266,7 +266,7 @@ public class ParserConjointErrorTest extends BaseTestCore {
 				"        'name':'state2'                                        \n" +
 				"     }                                                         \n" +
 				"  ],                                                           \n" +
-				"  'tests':[                                                   \n" +
+				"  'variations':[                                               \n" +
 			    "     {                                                        \n" +
 			    "        'name':'test1',                                       \n" +
 			    "        'experiences':[                                       \n" +
@@ -301,7 +301,7 @@ public class ParserConjointErrorTest extends BaseTestCore {
 			    //----------------------------------------------------------------//	
 			    "     {                                                        \n" +
 			    "        'name':'test2',                                       \n" +
-	    	    "        'conjointTestRefs': [1,{}],                          \n" +
+	    	    "        'conjointVariationRefs': [1,{}],                          \n" +
 			    "        'experiences':[                                       \n" +
 			    "           {                                                  \n" +
 			    "              'name':'A',                                     \n" +
@@ -348,13 +348,13 @@ public class ParserConjointErrorTest extends BaseTestCore {
 		assertEquals(2, response.getMessages().size());
 		ParserMessage actual = response.getMessages().get(0);
 		ParserMessage expected = new ParserMessageImpl(
-				new Location("/tests[1]/conjointTestRefs[0]"), 
-				ELEMENT_NOT_STRING, "conjointTestRefs");
+				new Location("/variations[1]/conjointVariationRefs[0]"), 
+				ELEMENT_NOT_STRING, "conjointVariationRefs");
 		assertMessageEqual(expected, actual);
 		actual = response.getMessages().get(1);
 		expected = new ParserMessageImpl(
-				new Location("/tests[1]/conjointTestRefs[1]"), 
-				ELEMENT_NOT_STRING, "conjointTestRefs");
+				new Location("/variations[1]/conjointVariationRefs[1]"), 
+				ELEMENT_NOT_STRING, "conjointVariationRefs");
 		assertMessageEqual(expected, actual);
 	}
 	
@@ -377,7 +377,7 @@ public class ParserConjointErrorTest extends BaseTestCore {
 				"        'name':'state2'                                        \n" +
 				"     }                                                         \n" +
 				"  ],                                                           \n" +
-				"  'tests':[                                                   \n" +
+				"  'variations':[                                              \n" +
 			    "     {                                                        \n" +
 			    "        'name':'test1',                                       \n" +
 			    "        'experiences':[                                       \n" +
@@ -412,7 +412,7 @@ public class ParserConjointErrorTest extends BaseTestCore {
 			    //----------------------------------------------------------------//	
 			    "     {                                                        \n" +
 			    "        'name':'test2',                                       \n" +
-	    	    "        'conjointTestRefs': ['bad'],                         \n" +
+	    	    "        'conjointVariationRefs': ['bad'],                         \n" +
 			    "        'experiences':[                                       \n" +
 			    "           {                                                  \n" +
 			    "              'name':'A',                                     \n" +
@@ -459,9 +459,9 @@ public class ParserConjointErrorTest extends BaseTestCore {
 		assertEquals(1, response.getMessages().size());
 		ParserMessage actual = response.getMessages().get(0);
 		ParserMessage expected = new ParserMessageImpl(
-				new Location("/tests[1]/conjointTestRefs[0]"), 
+				new Location("/variations[1]/conjointVariationRefs[0]"), 
 				CONJOINT_TESTREF_UNDEFINED, "bad", "test2");
-		assertMessageEqual(actual, expected);	
+		assertMessageEqual(expected, actual);	
 	}
 
 	/**
@@ -485,7 +485,7 @@ public class ParserConjointErrorTest extends BaseTestCore {
 				"     {  'name':'state3'                                        \n" +
 				"     }                                                        \n" +
 				"  ],                                                          \n" +
-				"  'tests':[                                                   \n" +
+				"  'variations':[                                              \n" +
 			    "     {                                                        \n" +
 			    "        'name':'test1',                                       \n" +
 			    "        'experiences':[                                       \n" +
@@ -524,7 +524,7 @@ public class ParserConjointErrorTest extends BaseTestCore {
 			    //----------------------------------------------------------------//	
 			    "     {                                                        \n" +
 			    "        'name':'test2',                                       \n" +
-	    	    "        'conjointTestRefs': ['test1'],                       \n" +
+	    	    "        'conjointVariationRefs': ['test1'],                       \n" +
 			    "        'experiences':[                                       \n" +
 			    "           {                                                  \n" +
 			    "              'name':'A',                                     \n" +
@@ -562,7 +562,7 @@ public class ParserConjointErrorTest extends BaseTestCore {
 	    	    "                    'experienceRef':'B',                      \n" +
 	    	    "                    'conjointExperienceRefs': [              \n" +
 	    	    "                       {                                      \n" +
-	    	    "                          'testRef': 'test1',                 \n" +
+	    	    "                          'variationRef': 'test1',                 \n" +
 	    	    "                          'experienceRef': 'B'                \n" +
 	    	    "                       }                                      \n" +
 	    	    "                    ]                                         \n" +
@@ -571,7 +571,7 @@ public class ParserConjointErrorTest extends BaseTestCore {
 	    	    "                    'experienceRef':'B',                      \n" +
 	    	    "                    'conjointExperienceRefs': [              \n" +
 	    	    "                       {                                      \n" +
-	    	    "                          'testRef': 'test1',                 \n" +
+	    	    "                          'variationRef': 'test1',                 \n" +
 	    	    "                          'experienceRef': 'C'                \n" +
 	    	    "                       }                                      \n" +
 	    	    "                    ]                                         \n" +
@@ -587,7 +587,7 @@ public class ParserConjointErrorTest extends BaseTestCore {
 	    	    "                    'experienceRef':'C',                      \n" +
 	    	    "                    'conjointExperienceRefs': [              \n" +
 	    	    "                        {                                     \n" +
-	    	    "                           'testRef': 'test1',                \n" +
+	    	    "                           'variationRef': 'test1',                \n" +
 	    	    "                           'experienceRef': 'C'               \n" +
 	    	    "                        }                                     \n" +
 	    	    "                    ]                                         \n" +
@@ -617,14 +617,14 @@ public class ParserConjointErrorTest extends BaseTestCore {
 		assertEquals(2, response.getMessages().size());
 		ParserMessage actual = response.getMessages().get(0);
 		ParserMessage expected = new ParserMessageImpl(
-				new Location("/tests[1]/onStates[1]/variants[4]/conjointExperienceRefs/"), 
+				new Location("/variations[1]/onStates[1]/variants[4]/conjointExperienceRefs/"), 
 				PROPERTY_NOT_LIST, "conjointExperienceRefs");
 		assertMessageEqual(actual, expected);
 		actual = response.getMessages().get(1);
 		expected = new ParserMessageImpl(
-				new Location("/tests[1]/onStates[1]/variants/"), 
+				new Location("/variations[1]/onStates[1]/variants/"), 
 				CONJOINT_VARIANT_MISSING, "C", "test1.B");
-		assertMessageEqual(actual, expected);
+		assertMessageEqual(expected, actual);
 
 	}
 
@@ -649,7 +649,7 @@ public class ParserConjointErrorTest extends BaseTestCore {
 				"     {  'name':'state3'                                       \n" +
 				"     }                                                        \n" +
 				"  ],                                                          \n" +
-				"  'tests':[                                                   \n" +
+				"  'variations':[                                              \n" +
 			    "     {                                                        \n" +
 			    "        'name':'test1',                                       \n" +
 			    "        'experiences':[                                       \n" +
@@ -688,7 +688,7 @@ public class ParserConjointErrorTest extends BaseTestCore {
 			    //----------------------------------------------------------------//	
 			    "     {                                                        \n" +
 			    "        'name':'test2',                                       \n" +
-	    	    "        'conjointTestRefs': ['test1'],                       \n" +
+	    	    "        'conjointVariationRefs': ['test1'],                       \n" +
 			    "        'experiences':[                                       \n" +
 			    "           {                                                  \n" +
 			    "              'name':'A',                                     \n" +
@@ -726,7 +726,7 @@ public class ParserConjointErrorTest extends BaseTestCore {
 	    	    "                    'experienceRef':'B',                      \n" +
 	    	    "                    'conjointExperienceRefs': [              \n" +
 	    	    "                       {                                      \n" +
-	    	    "                          'testRef': 'test1',                 \n" +
+	    	    "                          'variationRef': 'test1',                 \n" +
 	    	    "                          'experienceRef': 'B'                \n" +
 	    	    "                       }                                      \n" +
 	    	    "                    ]                                         \n" +
@@ -742,7 +742,7 @@ public class ParserConjointErrorTest extends BaseTestCore {
 	    	    "                    'experienceRef':'C',                      \n" +
 	    	    "                    'conjointExperienceRefs': [              \n" +
 	    	    "                       {                                      \n" +
-	    	    "                          'testRef': 'test1',                 \n" +
+	    	    "                          'variationRef': 'test1',                 \n" +
 	    	    "                          'experienceRef': 'B'                \n" +
 	    	    "                       }                                      \n" +
 	    	    "                    ]                                         \n" +
@@ -751,7 +751,7 @@ public class ParserConjointErrorTest extends BaseTestCore {
 	    	    "                    'experienceRef':'C',                      \n" +
 	    	    "                    'conjointExperienceRefs': [              \n" +
 	    	    "                        {                                     \n" +
-	    	    "                           'testRef': 'test1',                \n" +
+	    	    "                           'variationRef': 'test1',                \n" +
 	    	    "                           'experienceRef': 'C'               \n" +
 	    	    "                        }                                     \n" +
 	    	    "                    ]                                         \n" +
@@ -781,14 +781,14 @@ public class ParserConjointErrorTest extends BaseTestCore {
 		assertEquals(2, response.getMessages().size());
 		ParserMessage actual = response.getMessages().get(0);
 		ParserMessage expected = new ParserMessageImpl(
-				new Location("/tests[1]/onStates[1]/variants[2]/conjointExperienceRefs[0]/"), 
+				new Location("/variations[1]/onStates[1]/variants[2]/conjointExperienceRefs[0]/"), 
 				ELEMENT_NOT_OBJECT, "conjointExperienceRefs");
 		assertMessageEqual(actual, expected);
 		actual = response.getMessages().get(1);
 		expected = new ParserMessageImpl(
-				new Location("/tests[1]/onStates[1]/variants/"), 
+				new Location("/variations[1]/onStates[1]/variants/"), 
 				CONJOINT_VARIANT_MISSING, "B", "test1.C");
-		assertMessageEqual(actual, expected);
+		assertMessageEqual(expected, actual);
 
 	}
 
@@ -814,7 +814,7 @@ public class ParserConjointErrorTest extends BaseTestCore {
 				"     {  'name':'state3'                                        \n" +
 				"     }                                                        \n" +
 				"  ],                                                          \n" +
-				"  'tests':[                                                   \n" +
+				"  'variations':[                                              \n" +
 			    "     {                                                        \n" +
 			    "        'name':'test1',                                       \n" +
 			    "        'experiences':[                                       \n" +
@@ -853,7 +853,7 @@ public class ParserConjointErrorTest extends BaseTestCore {
 			    //----------------------------------------------------------------//	
 			    "     {                                                        \n" +
 			    "        'name':'test2',                                       \n" +
-	    	    "        'conjointTestRefs': ['test1'],                       \n" +
+	    	    "        'conjointVariationRefs': ['test1'],                       \n" +
 			    "        'experiences':[                                       \n" +
 			    "           {                                                  \n" +
 			    "              'name':'A',                                     \n" +
@@ -891,7 +891,7 @@ public class ParserConjointErrorTest extends BaseTestCore {
 	    	    "                    'experienceRef':'B',                      \n" +
 	    	    "                    'conjointExperienceRefs': [              \n" +
 	    	    "                       {                                      \n" +
-	    	    "                          'testRef': 'test1',                 \n" +
+	    	    "                          'variationRef': 'test1',                 \n" +
 	    	    "                          'experienceRef': 'B'                \n" +
 	    	    "                       }                                      \n" +
 	    	    "                    ]                                         \n" +
@@ -900,7 +900,7 @@ public class ParserConjointErrorTest extends BaseTestCore {
 	    	    "                    'experienceRef':'B',                      \n" +
 	    	    "                    'conjointExperienceRefs': [              \n" +
 	    	    "                       {                                      \n" +
-	    	    "                          'testRef': 'test1',                 \n" +
+	    	    "                          'variationRef': 'test1',                 \n" +
 	    	    "                          'experienceRef': 'C'                \n" +
 	    	    "                       }                                      \n" +
 	    	    "                    ]                                         \n" +
@@ -912,7 +912,7 @@ public class ParserConjointErrorTest extends BaseTestCore {
 	    	    "                    'experienceRef':'C',                      \n" +
 	    	    "                    'conjointExperienceRefs': [              \n" +
 	    	    "                       {                                      \n" +
-	    	    "                          'testRef': {},                      \n" +  // Not a string.
+	    	    "                          'variationRef': {},                      \n" +  // Not a string.
 	    	    "                          'experienceRef': 34                 \n" +  // Not a string
 	    	    "                       }                                      \n" +
 	    	    "                    ]                                         \n" +
@@ -921,7 +921,7 @@ public class ParserConjointErrorTest extends BaseTestCore {
 	    	    "                    'experienceRef':'C',                      \n" +
 	    	    "                    'conjointExperienceRefs': [              \n" +
 	    	    "                        {                                     \n" +
-	    	    "                           'testRef': 'test1',                \n" +
+	    	    "                           'variationRef': 'test1',                \n" +
 	    	    "                           'experienceRef': 'C'               \n" +
 	    	    "                        }                                     \n" +
 	    	    "                    ]                                         \n" +
@@ -951,19 +951,19 @@ public class ParserConjointErrorTest extends BaseTestCore {
 		assertEquals(3, response.getMessages().size());
 		ParserMessage actual = response.getMessages().get(0);
 		ParserMessage expected = new ParserMessageImpl(
-				new Location("/tests[1]/onStates[1]/variants[4]/conjointExperienceRefs[0]/testRef"), 
-				PROPERTY_NOT_STRING, "testRef");
+				new Location("/variations[1]/onStates[1]/variants[4]/conjointExperienceRefs[0]/variationRef"), 
+				PROPERTY_NOT_STRING, "variationRef");
 		assertMessageEqual(actual, expected);
 		actual = response.getMessages().get(1);
 		expected = new ParserMessageImpl(
-				new Location("/tests[1]/onStates[1]/variants[4]/conjointExperienceRefs[0]/experienceRef"), 
+				new Location("/variations[1]/onStates[1]/variants[4]/conjointExperienceRefs[0]/experienceRef"), 
 				PROPERTY_NOT_STRING, "experienceRef");
 		assertMessageEqual(actual, expected);
 		actual = response.getMessages().get(2);
 		expected = new ParserMessageImpl(
-				new Location("/tests[1]/onStates[1]/variants/"), 
+				new Location("/variations[1]/onStates[1]/variants/"), 
 				CONJOINT_VARIANT_MISSING, "C", "test1.B");
-		assertMessageEqual(actual, expected);
+		assertMessageEqual(expected, actual);
 
 	}
 
@@ -988,7 +988,7 @@ public class ParserConjointErrorTest extends BaseTestCore {
 				"     {  'name':'state3'                                        \n" +
 				"     }                                                        \n" +
 				"  ],                                                          \n" +
-				"  'tests':[                                                   \n" +
+				"  'variations':[                                              \n" +
 			    "     {                                                        \n" +
 			    "        'name':'test1',                                       \n" +
 			    "        'experiences':[                                       \n" +
@@ -1027,7 +1027,7 @@ public class ParserConjointErrorTest extends BaseTestCore {
 			    //----------------------------------------------------------------//	
 			    "     {                                                        \n" +
 			    "        'name':'test2',                                       \n" +
-	    	    "        'conjointTestRefs': ['test1'],                       \n" +
+	    	    "        'conjointVariationRefs': ['test1'],                       \n" +
 			    "        'experiences':[                                       \n" +
 			    "           {                                                  \n" +
 			    "              'name':'A',                                     \n" +
@@ -1065,7 +1065,7 @@ public class ParserConjointErrorTest extends BaseTestCore {
 	    	    "                    'experienceRef':'B',                      \n" +
 	    	    "                    'conjointExperienceRefs': [              \n" +
 	    	    "                       {                                      \n" +
-	    	    "                          'testRef': 'test1',                 \n" +
+	    	    "                          'variationRef': 'test1',                 \n" +
 	    	    "                          'experienceRef': 'B'                \n" +
 	    	    "                       }                                      \n" +
 	    	    "                    ]                                         \n" +
@@ -1074,7 +1074,7 @@ public class ParserConjointErrorTest extends BaseTestCore {
 	    	    "                    'experienceRef':'B',                      \n" +
 	    	    "                    'conjointExperienceRefs': [              \n" +
 	    	    "                       {                                      \n" +
-	    	    "                          'testRef': 'test1',                 \n" +
+	    	    "                          'variationRef': 'test1',                 \n" +
 	    	    "                          'experienceRef': 'C'                \n" +
 	    	    "                       }                                      \n" +
 	    	    "                    ]                                         \n" +
@@ -1086,7 +1086,7 @@ public class ParserConjointErrorTest extends BaseTestCore {
 	    	    "                    'experienceRef':'C',                      \n" +
 	    	    "                    'conjointExperienceRefs': [              \n" +
 	    	    "                       {                                      \n" +
-	    	    "                          'testRef': 'bad',                   \n" +
+	    	    "                          'variationRef': 'bad',                   \n" +
 	    	    "                          'experienceRef': 'B'                \n" +
 	    	    "                       }                                      \n" +
 	    	    "                    ]                                         \n" +
@@ -1095,7 +1095,7 @@ public class ParserConjointErrorTest extends BaseTestCore {
 	    	    "                    'experienceRef':'C',                      \n" +
 	    	    "                    'conjointExperienceRefs': [              \n" +
 	    	    "                        {                                     \n" +
-	    	    "                           'testRef': 'test1',                \n" +
+	    	    "                           'variationRef': 'test1',                \n" +
 	    	    "                           'experienceRef': 'C'               \n" +
 	    	    "                        }                                     \n" +
 	    	    "                    ]                                         \n" +
@@ -1114,7 +1114,7 @@ public class ParserConjointErrorTest extends BaseTestCore {
 		
 		SchemaParser parser = getSchemaParser();
 		ParserResponse response = (ParserResponse) parser.parse(schema);
-
+		
 		assertTrue(response.hasMessages());
 		assertNull(response.getSchema());
 		assertNull(response.getSchemaSrc());
@@ -1125,14 +1125,14 @@ public class ParserConjointErrorTest extends BaseTestCore {
 		assertEquals(2, response.getMessages().size());
 		ParserMessage actual = response.getMessages().get(0);
 		ParserMessage expected = new ParserMessageImpl(
-				new Location("/tests[1]/onStates[1]/variants[4]/conjointExperienceRefs[0]/testRef"), 
+				new Location("/variations[1]/onStates[1]/variants[4]/conjointExperienceRefs[0]/variationRef"), 
 				CONJOINT_EXPERIENCE_TEST_REF_UNDEFINED, "bad");
 		assertMessageEqual(actual, expected);
 		actual = response.getMessages().get(1);
 		expected = new ParserMessageImpl(
-				new Location("/tests[1]/onStates[1]/variants/"), 
+				new Location("/variations[1]/onStates[1]/variants/"), 
 				CONJOINT_VARIANT_MISSING, "C", "test1.B");
-		assertMessageEqual(actual, expected);
+		assertMessageEqual(expected, actual);
 	}
 
 
@@ -1158,7 +1158,7 @@ public class ParserConjointErrorTest extends BaseTestCore {
 				"     {  'name':'state3'                                        \n" +
 				"     }                                                        \n" +
 				"  ],                                                          \n" +
-				"  'tests':[                                                   \n" +
+				"  'variations':[                                              \n" +
 			    "     {                                                        \n" +
 			    "        'name':'test1',                                       \n" +
 			    "        'experiences':[                                       \n" +
@@ -1197,7 +1197,7 @@ public class ParserConjointErrorTest extends BaseTestCore {
 			    //----------------------------------------------------------------//	
 			    "     {                                                        \n" +
 			    "        'name':'test2',                                       \n" +
-	    	    "        'conjointTestRefs': ['test1'],                       \n" +
+	    	    "        'conjointVariationRefs': ['test1'],                       \n" +
 			    "        'experiences':[                                       \n" +
 			    "           {                                                  \n" +
 			    "              'name':'A',                                     \n" +
@@ -1235,7 +1235,7 @@ public class ParserConjointErrorTest extends BaseTestCore {
 	    	    "                    'experienceRef':'B',                      \n" +
 	    	    "                    'conjointExperienceRefs': [              \n" +
 	    	    "                       {                                      \n" +
-	    	    "                          'testRef': 'test1',                 \n" +
+	    	    "                          'variationRef': 'test1',                 \n" +
 	    	    "                          'experienceRef': 'B'                \n" +
 	    	    "                       }                                      \n" +
 	    	    "                    ]                                         \n" +
@@ -1244,7 +1244,7 @@ public class ParserConjointErrorTest extends BaseTestCore {
 	    	    "                    'experienceRef':'B',                      \n" +
 	    	    "                    'conjointExperienceRefs': [              \n" +
 	    	    "                       {                                      \n" +
-	    	    "                          'testRef': 'test1',                 \n" +
+	    	    "                          'variationRef': 'test1',                 \n" +
 	    	    "                          'experienceRef': 'C'                \n" +
 	    	    "                       }                                      \n" +
 	    	    "                    ]                                         \n" +
@@ -1256,7 +1256,7 @@ public class ParserConjointErrorTest extends BaseTestCore {
 	    	    "                    'experienceRef':'C',                      \n" +
 	    	    "                    'conjointExperienceRefs': [              \n" +
 	    	    "                       {                                      \n" +
-	    	    "                          'testRef': 'test1',                 \n" +
+	    	    "                          'variationRef': 'test1',                 \n" +
 	    	    "                          'experienceRef': 'Bad'              \n" +  // Non-existent
 	    	    "                       }                                      \n" +
 	    	    "                    ]                                         \n" +
@@ -1265,7 +1265,7 @@ public class ParserConjointErrorTest extends BaseTestCore {
 	    	    "                    'experienceRef':'C',                      \n" +
 	    	    "                    'conjointExperienceRefs': [              \n" +
 	    	    "                        {                                     \n" +
-	    	    "                           'testRef': 'test1',                \n" +
+	    	    "                           'variationRef': 'test1',                \n" +
 	    	    "                           'experienceRef': 'C'               \n" +
 	    	    "                        }                                     \n" +
 	    	    "                    ]                                         \n" +
@@ -1295,14 +1295,14 @@ public class ParserConjointErrorTest extends BaseTestCore {
 		assertEquals(2, response.getMessages().size());
 		ParserMessage actual = response.getMessages().get(0);
 		ParserMessage expected = new ParserMessageImpl(
-				new Location("/tests[1]/onStates[1]/variants[4]/conjointExperienceRefs[0]/experienceRef"), 
+				new Location("/variations[1]/onStates[1]/variants[4]/conjointExperienceRefs[0]/experienceRef"), 
 				CONJOINT_EXPERIENCE_EXPERIENCE_REF_UNDEFINED, "test1", "Bad");
 		assertMessageEqual(actual, expected);
 		actual = response.getMessages().get(1);
 		expected = new ParserMessageImpl(
-				new Location("/tests[1]/onStates[1]/variants/"), 
+				new Location("/variations[1]/onStates[1]/variants/"), 
 				CONJOINT_VARIANT_MISSING,  "C", "test1.B");
-		assertMessageEqual(actual, expected);
+		assertMessageEqual(expected, actual);
 
 	}
 
@@ -1327,7 +1327,7 @@ public class ParserConjointErrorTest extends BaseTestCore {
 				"     {  'name':'state3'                                        \n" +
 				"     }                                                        \n" +
 				"  ],                                                          \n" +
-				"  'tests':[                                                   \n" +
+				"  'variations':[                                              \n" +
 			    "     {                                                        \n" +
 			    "        'name':'test1',                                       \n" +
 			    "        'experiences':[                                       \n" +
@@ -1403,7 +1403,7 @@ public class ParserConjointErrorTest extends BaseTestCore {
 	    	    "                    'experienceRef':'B',                      \n" +
 	    	    "                    'conjointExperienceRefs': [              \n" +
 	    	    "                       {                                      \n" +
-	    	    "                          'testRef': 'test1',                 \n" +
+	    	    "                          'variationRef': 'test1',                 \n" +
 	    	    "                          'experienceRef': 'B'                \n" +
 	    	    "                       }                                      \n" +
 	    	    "                     ]                                        \n" +
@@ -1436,9 +1436,9 @@ public class ParserConjointErrorTest extends BaseTestCore {
 		assertEquals(1, response.getMessages().size());
 		ParserMessage actual = response.getMessages().get(0);
 		ParserMessage expected = new ParserMessageImpl(
-				new Location("/tests[1]/onStates[1]/variants[1]/conjointExperienceRefs[0]/experienceRef"), 
+				new Location("/variations[1]/onStates[1]/variants[1]/conjointExperienceRefs[0]/experienceRef"), 
 				CONJOINT_VARIANT_TEST_NOT_CONJOINT, "test1");
-		assertMessageEqual(actual, expected);
+		assertMessageEqual(expected, actual);
 
 	}
 
@@ -1463,7 +1463,7 @@ public class ParserConjointErrorTest extends BaseTestCore {
 				"     {  'name':'state3'                                        \n" +
 				"     }                                                        \n" +
 				"  ],                                                          \n" +
-				"  'tests':[                                                   \n" +
+				"  'variations':[                                              \n" +
 			    "     {                                                        \n" +
 			    "        'name':'test1',                                       \n" +
 			    "        'experiences':[                                       \n" +
@@ -1502,7 +1502,7 @@ public class ParserConjointErrorTest extends BaseTestCore {
 			    //----------------------------------------------------------------//	
 			    "     {                                                        \n" +
 			    "        'name':'test2',                                       \n" +
-                "        'conjointTestRefs':['test1'],                        \n" +
+                "        'conjointVariationRefs':['test1'],                        \n" +
 			    "        'experiences':[                                       \n" +
 			    "           {                                                  \n" +
 			    "              'name':'A',                                     \n" +
@@ -1530,7 +1530,7 @@ public class ParserConjointErrorTest extends BaseTestCore {
 	    	    "                    'conjointExperienceRefs': [              \n" +
 	    	    // Invalid because state1 is nonvariant in test1.
 	    	    "                       {                                      \n" +
-	    	    "                          'testRef': 'test1',                 \n" +
+	    	    "                          'variationRef': 'test1',                 \n" +
 	    	    "                          'experienceRef': 'B'                \n" +
 	    	    "                       }                                      \n" +
 	    	    "                     ]                                        \n" +
@@ -1550,7 +1550,7 @@ public class ParserConjointErrorTest extends BaseTestCore {
 	    	    "                    'experienceRef':'B',                      \n" +
 	    	    "                    'conjointExperienceRefs': [              \n" +
 	    	    "                       {                                      \n" +
-	    	    "                          'testRef': 'test1',                 \n" +
+	    	    "                          'variationRef': 'test1',                 \n" +
 	    	    "                          'experienceRef': 'B'                \n" +
 	    	    "                       }                                      \n" +
 	    	    "                     ]                                        \n" +
@@ -1559,7 +1559,7 @@ public class ParserConjointErrorTest extends BaseTestCore {
 	    	    "                    'experienceRef':'B',                      \n" +
 	    	    "                    'conjointExperienceRefs': [              \n" +
 	    	    "                       {                                      \n" +
-	    	    "                          'testRef': 'test1',                 \n" +
+	    	    "                          'variationRef': 'test1',                 \n" +
 	    	    "                          'experienceRef': 'C'                \n" +
 	    	    "                       }                                      \n" +
 	    	    "                     ]                                        \n" +
@@ -1571,7 +1571,7 @@ public class ParserConjointErrorTest extends BaseTestCore {
 	    	    "                    'experienceRef':'C',                      \n" +
 	    	    "                    'conjointExperienceRefs': [              \n" +
 	    	    "                       {                                      \n" +
-	    	    "                          'testRef': 'test1',                 \n" +
+	    	    "                          'variationRef': 'test1',                 \n" +
 	    	    "                          'experienceRef': 'B'                \n" +
 	    	    "                       }                                      \n" +
 	    	    "                     ]                                        \n" +
@@ -1580,7 +1580,7 @@ public class ParserConjointErrorTest extends BaseTestCore {
 	    	    "                    'experienceRef':'C',                      \n" +
 	    	    "                    'conjointExperienceRefs': [              \n" +
 	    	    "                       {                                      \n" +
-	    	    "                          'testRef': 'test1',                 \n" +
+	    	    "                          'variationRef': 'test1',                 \n" +
 	    	    "                          'experienceRef': 'C'                \n" +
 	    	    "                       }                                      \n" +
 	    	    "                     ]                                        \n" +
@@ -1610,9 +1610,9 @@ public class ParserConjointErrorTest extends BaseTestCore {
 		assertEquals(1, response.getMessages().size());
 		ParserMessage actual = response.getMessages().get(0);
 		ParserMessage expected = new ParserMessageImpl(
-				new Location("/tests[1]/onStates[0]/variants[1]/conjointExperienceRefs[0]/experienceRef"), 
+				new Location("/variations[1]/onStates[0]/variants[1]/conjointExperienceRefs[0]/experienceRef"), 
 				CONJOINT_EXPERIENCE_TEST_REF_NONVARIANT, "test1", "state1");
-		assertMessageEqual(actual, expected);
+		assertMessageEqual(expected, actual);
 
 	}
 
@@ -1639,7 +1639,7 @@ public class ParserConjointErrorTest extends BaseTestCore {
 				"     {  'name':'state3'                                        \n" +
 				"     }                                                        \n" +
 				"  ],                                                          \n" +
-				"  'tests':[                                                   \n" +
+				"  'variations':[                                              \n" +
 			    "     {                                                        \n" +
 			    "        'name':'test1',                                       \n" +
 			    "        'experiences':[                                       \n" +
@@ -1678,7 +1678,7 @@ public class ParserConjointErrorTest extends BaseTestCore {
 			    //----------------------------------------------------------------//	
 			    "     {                                                        \n" +
 			    "        'name':'test2',                                       \n" +
-                "        'conjointTestRefs': ['test1'],                       \n" +
+                "        'conjointVariationRefs': ['test1'],                       \n" +
 			    "        'experiences':[                                       \n" +
 			    "           {                                                  \n" +
 			    "              'name':'A',                                     \n" +
@@ -1716,7 +1716,7 @@ public class ParserConjointErrorTest extends BaseTestCore {
 			    "                    'experienceRef': 'B',                     \n" +
 	    	    "                    'conjointExperienceRefs': [              \n" +
 	    	    "                       {                                      \n" +
-	    	    "                          'testRef': 'test1',                 \n" +
+	    	    "                          'variationRef': 'test1',                 \n" +
 	    	    "                          'experienceRef': 'B'                \n" +
 	    	    "                       }                                      \n" +
 	    	    "                    ]                                         \n" +
@@ -1725,7 +1725,7 @@ public class ParserConjointErrorTest extends BaseTestCore {
 			    "                    'experienceRef': 'B',                     \n" +
 	    	    "                    'conjointExperienceRefs': [              \n" +
 	    	    "                       {                                      \n" +
-	    	    "                          'testRef': 'test1',                 \n" +
+	    	    "                          'variationRef': 'test1',                 \n" +
 	    	    "                          'experienceRef': 'C'                \n" +
 	    	    "                       }                                      \n" +
 	    	    "                     ]                                        \n" +
@@ -1737,7 +1737,7 @@ public class ParserConjointErrorTest extends BaseTestCore {
 			    "                    'experienceRef': 'C',                     \n" +
 	    	    "                    'conjointExperienceRefs': [              \n" +
 	    	    "                       {                                      \n" +
-	    	    "                          'testRef': 'test1',                 \n" +
+	    	    "                          'variationRef': 'test1',                 \n" +
 	    	    "                          'experienceRef': 'B'                \n" +
 	    	    "                       }                                      \n" +
 	    	    "                    ]                                         \n" +
@@ -1746,7 +1746,7 @@ public class ParserConjointErrorTest extends BaseTestCore {
 			    "                    'experienceRef': 'C',                     \n" +
 	    	    "                    'conjointExperienceRefs': [              \n" +
 	    	    "                       {                                      \n" +
-	    	    "                          'testRef': 'test1',                 \n" +
+	    	    "                          'variationRef': 'test1',                 \n" +
 	    	    "                          'experienceRef': 'C'                \n" +
 	    	    "                       }                                      \n" +
 	    	    "                     ]                                        \n" +
@@ -1762,7 +1762,7 @@ public class ParserConjointErrorTest extends BaseTestCore {
 			    //----------------------------------------------------------------//	
 			    "     {                                                        \n" +
 			    "        'name':'test3',                                       \n" +
-                "        'conjointTestRefs': ['test1', 'test2'],              \n" +
+                "        'conjointVariationRefs': ['test1', 'test2'],              \n" +
 			    "        'experiences':[                                       \n" +
 			    "           {                                                  \n" +
 			    "              'name':'A',                                     \n" +
@@ -1789,7 +1789,7 @@ public class ParserConjointErrorTest extends BaseTestCore {
 			    "                    'experienceRef': 'B',                     \n" +
 	    	    "                    'conjointExperienceRefs': [              \n" +
 	    	    "                       {                                      \n" +
-	    	    "                          'testRef': 'test2',                 \n" +
+	    	    "                          'variationRef': 'test2',                 \n" +
 	    	    "                          'experienceRef': 'B'                \n" +
 	    	    "                       }                                      \n" +
 	    	    "                     ]                                        \n" +
@@ -1798,7 +1798,7 @@ public class ParserConjointErrorTest extends BaseTestCore {
 			    "                    'experienceRef': 'B',                     \n" +
 	    	    "                    'conjointExperienceRefs': [              \n" +
 	    	    "                       {                                      \n" +
-	    	    "                          'testRef': 'test2',                 \n" +
+	    	    "                          'variationRef': 'test2',                 \n" +
 	    	    "                          'experienceRef': 'C'                \n" +
 	    	    "                       }                                      \n" +
 	    	    "                     ]                                        \n" +
@@ -1810,7 +1810,7 @@ public class ParserConjointErrorTest extends BaseTestCore {
 			    "                    'experienceRef': 'C',                     \n" +
 	    	    "                    'conjointExperienceRefs': [              \n" +
 	    	    "                       {                                      \n" +
-	    	    "                          'testRef': 'test2',                 \n" +
+	    	    "                          'variationRef': 'test2',                 \n" +
 	    	    "                          'experienceRef': 'B'                \n" +
 	    	    "                       }                                      \n" +
 	    	    "                     ]                                        \n" +
@@ -1819,7 +1819,7 @@ public class ParserConjointErrorTest extends BaseTestCore {
 			    "                    'experienceRef': 'C',                     \n" +
 	    	    "                    'conjointExperienceRefs': [              \n" +
 	    	    "                       {                                      \n" +
-	    	    "                          'testRef': 'test2',                 \n" +
+	    	    "                          'variationRef': 'test2',                 \n" +
 	    	    "                          'experienceRef': 'C'                \n" +
 	    	    "                       }                                      \n" +
 	    	    "                     ]                                        \n" +
@@ -1836,7 +1836,7 @@ public class ParserConjointErrorTest extends BaseTestCore {
 			    "                    'experienceRef': 'B',                     \n" +
 	    	    "                    'conjointExperienceRefs': [              \n" +
 	    	    "                       {                                      \n" +
-	    	    "                          'testRef': 'test1',                 \n" +
+	    	    "                          'variationRef': 'test1',                 \n" +
 	    	    "                          'experienceRef': 'B'                \n" +
 	    	    "                       }                                      \n" +
 	    	    "                     ]                                        \n" +
@@ -1845,7 +1845,7 @@ public class ParserConjointErrorTest extends BaseTestCore {
 			    "                    'experienceRef': 'B',                     \n" +
 	    	    "                    'conjointExperienceRefs': [              \n" +
 	    	    "                       {                                      \n" +
-	    	    "                          'testRef': 'test1',                 \n" +
+	    	    "                          'variationRef': 'test1',                 \n" +
 	    	    "                          'experienceRef': 'C'                \n" +
 	    	    "                       }                                      \n" +
 	    	    "                     ]                                        \n" +
@@ -1854,7 +1854,7 @@ public class ParserConjointErrorTest extends BaseTestCore {
 			    "                    'experienceRef': 'B',                     \n" +
 	    	    "                    'conjointExperienceRefs': [              \n" +
 	    	    "                       {                                      \n" +
-	    	    "                          'testRef': 'test2',                 \n" +
+	    	    "                          'variationRef': 'test2',                 \n" +
 	    	    "                          'experienceRef': 'B'                \n" +
 	    	    "                       }                                      \n" +
 	    	    "                     ]                                        \n" +
@@ -1863,7 +1863,7 @@ public class ParserConjointErrorTest extends BaseTestCore {
 			    "                    'experienceRef': 'B',                     \n" +
 	    	    "                    'conjointExperienceRefs': [              \n" +
 	    	    "                       {                                      \n" +
-	    	    "                          'testRef': 'test2',                 \n" +
+	    	    "                          'variationRef': 'test2',                 \n" +
 	    	    "                          'experienceRef': 'C'                \n" +
 	    	    "                       }                                      \n" +
 	    	    "                     ]                                        \n" +
@@ -1872,11 +1872,11 @@ public class ParserConjointErrorTest extends BaseTestCore {
 			    "                    'experienceRef': 'B',                     \n" +
 	    	    "                    'conjointExperienceRefs': [              \n" +
 	    	    "                       {                                      \n" +
-	    	    "                          'testRef': 'test1',                 \n" +
+	    	    "                          'variationRef': 'test1',                 \n" +
 	    	    "                          'experienceRef': 'B'                \n" +
 	    	    "                       },                                     \n" +
 	    	    "                       {                                      \n" +
-	    	    "                          'testRef': 'test2',                 \n" +
+	    	    "                          'variationRef': 'test2',                 \n" +
 	    	    "                          'experienceRef': 'B'                \n" +
 	    	    "                       }                                      \n" +
 	    	    "                     ]                                        \n" +
@@ -1885,11 +1885,11 @@ public class ParserConjointErrorTest extends BaseTestCore {
 			    "                    'experienceRef': 'B',                     \n" +
 	    	    "                    'conjointExperienceRefs': [              \n" +
 	    	    "                       {                                      \n" +
-	    	    "                          'testRef': 'test1',                 \n" +
+	    	    "                          'variationRef': 'test1',                 \n" +
 	    	    "                          'experienceRef': 'B'                \n" +
 	    	    "                       },                                     \n" +
 	    	    "                       {                                      \n" +
-	    	    "                          'testRef': 'test2',                 \n" +
+	    	    "                          'variationRef': 'test2',                 \n" +
 	    	    "                          'experienceRef': 'C'                \n" +
 	    	    "                       }                                      \n" +
 	    	    "                     ]                                        \n" +
@@ -1898,11 +1898,11 @@ public class ParserConjointErrorTest extends BaseTestCore {
 			    "                    'experienceRef': 'B',                     \n" +
 	    	    "                    'conjointExperienceRefs': [              \n" +
 	    	    "                       {                                      \n" +
-	    	    "                          'testRef': 'test1',                 \n" +
+	    	    "                          'variationRef': 'test1',                 \n" +
 	    	    "                          'experienceRef': 'C'                \n" +
 	    	    "                       },                                     \n" +
 	    	    "                       {                                      \n" +
-	    	    "                          'testRef': 'test2',                 \n" +
+	    	    "                          'variationRef': 'test2',                 \n" +
 	    	    "                          'experienceRef': 'B'                \n" +
 	    	    "                       }                                      \n" +
 	    	    "                     ]                                        \n" +
@@ -1911,11 +1911,11 @@ public class ParserConjointErrorTest extends BaseTestCore {
 			    "                    'experienceRef': 'B',                     \n" +
 	    	    "                    'conjointExperienceRefs': [              \n" +
 	    	    "                       {                                      \n" +
-	    	    "                          'testRef': 'test1',                 \n" +
+	    	    "                          'variationRef': 'test1',                 \n" +
 	    	    "                          'experienceRef': 'C'                \n" +
 	    	    "                       },                                     \n" +
 	    	    "                       {                                      \n" +
-	    	    "                          'testRef': 'test2',                 \n" +
+	    	    "                          'variationRef': 'test2',                 \n" +
 	    	    "                          'experienceRef': 'C'                \n" +
 	    	    "                       }                                      \n" +
 	    	    "                     ]                                        \n" +
@@ -1928,7 +1928,7 @@ public class ParserConjointErrorTest extends BaseTestCore {
 			    "                    'experienceRef': 'C',                     \n" +
 	    	    "                    'conjointExperienceRefs': [              \n" +
 	    	    "                       {                                      \n" +
-	    	    "                          'testRef': 'test1',                 \n" +
+	    	    "                          'variationRef': 'test1',                 \n" +
 	    	    "                          'experienceRef': 'B'                \n" +
 	    	    "                       }                                      \n" +
 	    	    "                     ]                                        \n" +
@@ -1937,7 +1937,7 @@ public class ParserConjointErrorTest extends BaseTestCore {
 			    "                    'experienceRef': 'C',                     \n" +
 	    	    "                    'conjointExperienceRefs': [              \n" +
 	    	    "                       {                                      \n" +
-	    	    "                          'testRef': 'test1',                 \n" +
+	    	    "                          'variationRef': 'test1',                 \n" +
 	    	    "                          'experienceRef': 'C'                \n" +
 	    	    "                       }                                      \n" +
 	    	    "                     ]                                        \n" +
@@ -1946,7 +1946,7 @@ public class ParserConjointErrorTest extends BaseTestCore {
 			    "                    'experienceRef': 'C',                     \n" +
 	    	    "                    'conjointExperienceRefs': [              \n" +
 	    	    "                       {                                      \n" +
-	    	    "                          'testRef': 'test2',                 \n" +
+	    	    "                          'variationRef': 'test2',                 \n" +
 	    	    "                          'experienceRef': 'B'                \n" +
 	    	    "                       }                                      \n" +
 	    	    "                     ]                                        \n" +
@@ -1955,7 +1955,7 @@ public class ParserConjointErrorTest extends BaseTestCore {
 			    "                    'experienceRef': 'C',                     \n" +
 	    	    "                    'conjointExperienceRefs': [              \n" +
 	    	    "                       {                                      \n" +
-	    	    "                          'testRef': 'test2',                 \n" +
+	    	    "                          'variationRef': 'test2',                 \n" +
 	    	    "                          'experienceRef': 'C'                \n" +
 	    	    "                       }                                      \n" +
 	    	    "                     ]                                        \n" +
@@ -1964,11 +1964,11 @@ public class ParserConjointErrorTest extends BaseTestCore {
 			    "                    'experienceRef': 'C',                     \n" +
 	    	    "                    'conjointExperienceRefs': [              \n" +
 	    	    "                       {                                      \n" +
-	    	    "                          'testRef': 'test1',                 \n" +
+	    	    "                          'variationRef': 'test1',                 \n" +
 	    	    "                          'experienceRef': 'B'                \n" +
 	    	    "                       },                                     \n" +
 	    	    "                       {                                      \n" +
-	    	    "                          'testRef': 'test2',                 \n" +
+	    	    "                          'variationRef': 'test2',                 \n" +
 	    	    "                          'experienceRef': 'B'                \n" +
 	    	    "                       }                                      \n" +
 	    	    "                     ]                                        \n" +
@@ -1977,11 +1977,11 @@ public class ParserConjointErrorTest extends BaseTestCore {
 			    "                    'experienceRef': 'C',                     \n" +
 	    	    "                    'conjointExperienceRefs': [              \n" +
 	    	    "                       {                                      \n" +
-	    	    "                          'testRef': 'test1',                 \n" +
+	    	    "                          'variationRef': 'test1',                 \n" +
 	    	    "                          'experienceRef': 'B'                \n" +
 	    	    "                       },                                     \n" +
 	    	    "                       {                                      \n" +
-	    	    "                          'testRef': 'test2',                 \n" +
+	    	    "                          'variationRef': 'test2',                 \n" +
 	    	    "                          'experienceRef': 'C'                \n" +
 	    	    "                       }                                      \n" +
 	    	    "                     ]                                        \n" +
@@ -1990,11 +1990,11 @@ public class ParserConjointErrorTest extends BaseTestCore {
 			    "                    'experienceRef': 'C',                     \n" +
 	    	    "                    'conjointExperienceRefs': [              \n" +
 	    	    "                       {                                      \n" +
-	    	    "                          'testRef': 'test1',                 \n" +
+	    	    "                          'variationRef': 'test1',                 \n" +
 	    	    "                          'experienceRef': 'C'                \n" +
 	    	    "                       },                                     \n" +
 	    	    "                       {                                      \n" +
-	    	    "                          'testRef': 'test2',                 \n" +
+	    	    "                          'variationRef': 'test2',                 \n" +
 	    	    "                          'experienceRef': 'B'                \n" +
 	    	    "                       }                                      \n" +
 	    	    "                     ]                                        \n" +
@@ -2003,11 +2003,11 @@ public class ParserConjointErrorTest extends BaseTestCore {
 			    "                    'experienceRef': 'C',                     \n" +
 	    	    "                    'conjointExperienceRefs': [              \n" +
 	    	    "                       {                                      \n" +
-	    	    "                          'testRef': 'test1',                 \n" +
+	    	    "                          'variationRef': 'test1',                 \n" +
 	    	    "                          'experienceRef': 'C'                \n" +
 	    	    "                       },                                     \n" +
 	    	    "                       {                                      \n" +
-	    	    "                          'testRef': 'test2',                 \n" +
+	    	    "                          'variationRef': 'test2',                 \n" +
 	    	    "                          'experienceRef': 'C'                \n" +
 	    	    "                       }                                      \n" +
 	    	    "                     ]                                        \n" +
@@ -2037,19 +2037,19 @@ public class ParserConjointErrorTest extends BaseTestCore {
 		assertEquals(3, response.getMessages().size());
 		ParserMessage actual = response.getMessages().get(0);
 		ParserMessage expected = new ParserMessageImpl(
-				new Location("/tests[1]/onStates[1]/variants/"), 
+				new Location("/variations[1]/onStates[1]/variants/"), 
 					PROPER_VARIANT_MISSING, "B");
 		assertMessageEqual(actual, expected);
 		actual = response.getMessages().get(1);
 		expected = new ParserMessageImpl(
-				new Location("/tests[2]/onStates[0]/variants/"), 
+				new Location("/variations[2]/onStates[0]/variants/"), 
 				CONJOINT_VARIANT_MISSING, "B", "test2.C");
 		assertMessageEqual(actual, expected);
 		actual = response.getMessages().get(2);
 		expected = new ParserMessageImpl(
-				new Location("/tests[2]/onStates[1]/variants/"), 
+				new Location("/variations[2]/onStates[1]/variants/"), 
 				CONJOINT_VARIANT_MISSING, "B", "test1.B,test2.B");
-		assertMessageEqual(actual, expected);
+		assertMessageEqual(expected, actual);
 
 	}
 

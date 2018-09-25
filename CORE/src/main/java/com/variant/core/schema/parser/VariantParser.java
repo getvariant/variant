@@ -141,7 +141,7 @@ public class VariantParser implements Keywords {
 
 				int index = 0;
 				for (Object covarExperienceRefObj: covarExperienceRefList) {
-					
+
 					Location covarExpRefLocation = variantLocation.plusObj(KEYWORD_CONJOINT_EXPERIENCE_REFS).plusIx(index++);
 					
 					Map<String,?> covarExperienceRefMap;
@@ -158,13 +158,13 @@ public class VariantParser implements Keywords {
 					}
 					String covarTestRef = null, covarExperienceRef = null;
 					try {
-						covarTestRef = (String) covarExperienceRefMap.get(KEYWORD_TEST_REF);
+						covarTestRef = (String) covarExperienceRefMap.get(KEYWORD_VARIATION_REF);
 					}
 					catch (Exception e) {
 						response.addMessage(
-								covarExpRefLocation.plusProp(KEYWORD_TEST_REF),
+								covarExpRefLocation.plusProp(KEYWORD_VARIATION_REF),
 								PROPERTY_NOT_STRING, 
-								KEYWORD_TEST_REF);
+								KEYWORD_VARIATION_REF);
 					}
 					try {
 						covarExperienceRef = (String) covarExperienceRefMap.get(KEYWORD_EXPERIENCE_REF);
@@ -182,7 +182,7 @@ public class VariantParser implements Keywords {
 					TestImpl covarTest = (TestImpl) response.getSchema().getTest(covarTestRef);					
 					if (covarTest == null) {
 						response.addMessage(
-								covarExpRefLocation.plusProp(KEYWORD_TEST_REF),
+								covarExpRefLocation.plusProp(KEYWORD_VARIATION_REF),
 								CONJOINT_EXPERIENCE_TEST_REF_UNDEFINED,
 								covarTestRef);
 						return null;

@@ -113,7 +113,7 @@ public class ParserConjointOkay6Test extends BaseTestCore {
 	            
 	    	    //=========================================================================//
 	    	    
-		        "  'tests':[                                                              \n" +
+		        "  'variations':[                                                         \n" +
 	    	    "     {                                                                   \n" +
 	    	    "        'name':'test1',                                                  \n" +
 	    	    "        'experiences':[                                                  \n" +
@@ -191,7 +191,7 @@ public class ParserConjointOkay6Test extends BaseTestCore {
 	    	    //--------------------------------------------------------------------------//	
 	    	    "     {                                                                   \n" +
 	    	    "        'name':'test2',                                                  \n" +
-	    	    "        'conjointTestRefs': ['test1'],                                  \n" +
+	    	    "        'conjointVariationRefs': ['test1'],                                  \n" +
 	    	    "        'experiences':[                                                  \n" +
 	    	    "           {                                                             \n" +
 	    	    "              'name':'A',                                                \n" +
@@ -229,7 +229,7 @@ public class ParserConjointOkay6Test extends BaseTestCore {
 	    	    "                    'experienceRef':'B',                                 \n" +
 	    	    "                    'conjointExperienceRefs': [                         \n" +
 	    	    "                       {                                                 \n" +
-	    	    "                          'testRef': 'test1',                            \n" +
+	    	    "                          'variationRef': 'test1',                            \n" +
 	    	    "                          'experienceRef': 'B'                           \n" +
 	    	    "                       }                                                 \n" +
 	    	    "                     ],                                                  \n" +
@@ -244,7 +244,7 @@ public class ParserConjointOkay6Test extends BaseTestCore {
 	    	    "                    'experienceRef':'B',                                 \n" +
 	    	    "                    'conjointExperienceRefs': [                         \n" +
 	    	    "                       {                                                 \n" +
-	    	    "                          'testRef': 'test1',                            \n" +
+	    	    "                          'variationRef': 'test1',                            \n" +
 	    	    "                          'experienceRef': 'C'                           \n" +
 	    	    "                       }                                                 \n" +
 	    	    "                     ],                                                  \n" +
@@ -269,7 +269,7 @@ public class ParserConjointOkay6Test extends BaseTestCore {
 	    	    "                    'experienceRef':'C',                                 \n" +
 	    	    "                    'conjointExperienceRefs': [                         \n" +
 	    	    "                       {                                                 \n" +
-	    	    "                          'testRef': 'test1',                            \n" +
+	    	    "                          'variationRef': 'test1',                            \n" +
 	    	    "                          'experienceRef': 'B'                           \n" +
 	    	    "                       }                                                 \n" +
 	    	    "                     ],                                                  \n" +
@@ -284,7 +284,7 @@ public class ParserConjointOkay6Test extends BaseTestCore {
 	    	    "                    'experienceRef':'C',                                 \n" +
 	    	    "                    'conjointExperienceRefs': [                         \n" +
 	    	    "                       {                                                 \n" +
-	    	    "                          'testRef': 'test1',                            \n" +
+	    	    "                          'variationRef': 'test1',                            \n" +
 	    	    "                          'experienceRef': 'C'                           \n" +
 	    	    "                       }                                                 \n" +
 	    	    "                     ],                                                  \n" +
@@ -315,7 +315,7 @@ public class ParserConjointOkay6Test extends BaseTestCore {
 	    	    "                    'experienceRef':'B',                                 \n" +
 	    	    "                    'conjointExperienceRefs': [                         \n" +
 	    	    "                       {                                                 \n" +
-	    	    "                          'testRef': 'test1',                            \n" +
+	    	    "                          'variationRef': 'test1',                            \n" +
 	    	    "                          'experienceRef': 'B'                           \n" +
 	    	    "                       }                                                 \n" +
 	    	    "                     ],                                                  \n" +
@@ -330,7 +330,7 @@ public class ParserConjointOkay6Test extends BaseTestCore {
 	    	    "                    'experienceRef':'B',                                 \n" +
 	    	    "                    'conjointExperienceRefs': [                         \n" +
 	    	    "                       {                                                 \n" +
-	    	    "                          'testRef': 'test1',                            \n" +
+	    	    "                          'variationRef': 'test1',                            \n" +
 	    	    "                          'experienceRef': 'C'                           \n" +
 	    	    "                       }                                                 \n" +
 	    	    "                     ],                                                  \n" +
@@ -355,7 +355,7 @@ public class ParserConjointOkay6Test extends BaseTestCore {
 	    	    "                    'experienceRef':'C',                                 \n" +
 	    	    "                    'conjointExperienceRefs': [                         \n" +
 	    	    "                       {                                                 \n" +
-	    	    "                          'testRef': 'test1',                            \n" +
+	    	    "                          'variationRef': 'test1',                            \n" +
 	    	    "                          'experienceRef': 'B'                           \n" +
 	    	    "                       }                                                 \n" +
 	    	    "                     ],                                                  \n" +
@@ -370,7 +370,7 @@ public class ParserConjointOkay6Test extends BaseTestCore {
 	    	    "                    'experienceRef':'C',                                 \n" +
 	    	    "                    'conjointExperienceRefs': [                         \n" +
 	    	    "                       {                                                 \n" +
-	    	    "                          'testRef': 'test1',                            \n" +
+	    	    "                          'variationRef': 'test1',                            \n" +
 	    	    "                          'experienceRef': 'C'                           \n" +
 	    	    "                       }                                                 \n" +
 	    	    "                     ],                                                  \n" +
@@ -412,7 +412,7 @@ public class ParserConjointOkay6Test extends BaseTestCore {
 	    	    //--------------------------------------------------------------------------//	
 	    	    "     {                                                                   \n" +
 	    	    "        'name':'test3',                                                  \n" +
-	    	    "        'conjointTestRefs': ['test2', 'test1'],                         \n" +
+	    	    "        'conjointVariationRefs': ['test2', 'test1'],                         \n" +
 	    	    "        'experiences':[                                                  \n" +
 	    	    "           {                                                             \n" +
 	    	    "              'name':'A',                                                \n" +
@@ -469,7 +469,7 @@ public class ParserConjointOkay6Test extends BaseTestCore {
 	    	    "                    'experienceRef':'B',                                 \n" +
 	    	    "                    'conjointExperienceRefs': [                         \n" +
 	    	    "                       {                                                 \n" +
-	    	    "                          'testRef': 'test1',                            \n" +
+	    	    "                          'variationRef': 'test1',                            \n" +
 	    	    "                          'experienceRef': 'B'                           \n" +
 	    	    "                       }                                                 \n" +
 	    	    "                     ],                                                  \n" +
@@ -484,7 +484,7 @@ public class ParserConjointOkay6Test extends BaseTestCore {
 	    	    "                    'experienceRef':'B',                                 \n" +
 	    	    "                    'conjointExperienceRefs': [                         \n" +
 	    	    "                       {                                                 \n" +
-	    	    "                          'testRef': 'test1',                            \n" +
+	    	    "                          'variationRef': 'test1',                            \n" +
 	    	    "                          'experienceRef': 'C'                           \n" +
 	    	    "                       }                                                 \n" +
 	    	    "                     ],                                                  \n" +
@@ -499,7 +499,7 @@ public class ParserConjointOkay6Test extends BaseTestCore {
 	    	    "                    'experienceRef':'B',                                 \n" +
 	    	    "                    'conjointExperienceRefs': [                         \n" +
 	    	    "                       {                                                 \n" +
-	    	    "                          'testRef': 'test2',                            \n" +
+	    	    "                          'variationRef': 'test2',                            \n" +
 	    	    "                          'experienceRef': 'B'                           \n" +
 	    	    "                       }                                                 \n" +
 	    	    "                     ],                                                  \n" +
@@ -514,7 +514,7 @@ public class ParserConjointOkay6Test extends BaseTestCore {
 	    	    "                    'experienceRef':'B',                                 \n" +
 	    	    "                    'conjointExperienceRefs': [                         \n" +
 	    	    "                       {                                                 \n" +
-	    	    "                          'testRef': 'test2',                            \n" +
+	    	    "                          'variationRef': 'test2',                            \n" +
 	    	    "                          'experienceRef': 'C'                           \n" +
 	    	    "                       }                                                 \n" +
 	    	    "                     ],                                                  \n" +
@@ -529,11 +529,11 @@ public class ParserConjointOkay6Test extends BaseTestCore {
 	    	    "                    'experienceRef':'B',                                 \n" +
 	    	    "                    'conjointExperienceRefs': [                         \n" +
 	    	    "                       {                                                 \n" +
-	    	    "                          'testRef': 'test1',                            \n" +
+	    	    "                          'variationRef': 'test1',                            \n" +
 	    	    "                          'experienceRef': 'B'                           \n" +
 	    	    "                       },                                                \n" +
 	    	    "                       {                                                 \n" +
-	    	    "                          'testRef': 'test2',                            \n" +
+	    	    "                          'variationRef': 'test2',                            \n" +
 	    	    "                          'experienceRef': 'B'                           \n" +
 	    	    "                       }                                                 \n" +
 	    	    "                     ],                                                  \n" +
@@ -548,11 +548,11 @@ public class ParserConjointOkay6Test extends BaseTestCore {
 	    	    "                    'experienceRef':'B',                                 \n" +
 	    	    "                    'conjointExperienceRefs': [                         \n" +
 	    	    "                       {                                                 \n" +
-	    	    "                          'testRef': 'test1',                            \n" +
+	    	    "                          'variationRef': 'test1',                            \n" +
 	    	    "                          'experienceRef': 'B'                           \n" +
 	    	    "                       },                                                \n" +
 	    	    "                       {                                                 \n" +
-	    	    "                          'testRef': 'test2',                            \n" +
+	    	    "                          'variationRef': 'test2',                            \n" +
 	    	    "                          'experienceRef': 'C'                           \n" +
 	    	    "                       }                                                 \n" +
 	    	    "                     ],                                                  \n" +
@@ -567,11 +567,11 @@ public class ParserConjointOkay6Test extends BaseTestCore {
 	    	    "                    'experienceRef':'B',                                 \n" +
 	    	    "                    'conjointExperienceRefs': [                         \n" +
 	    	    "                       {                                                 \n" +
-	    	    "                          'testRef': 'test1',                            \n" +
+	    	    "                          'variationRef': 'test1',                            \n" +
 	    	    "                          'experienceRef': 'C'                           \n" +
 	    	    "                       },                                                \n" +
 	    	    "                       {                                                 \n" +
-	    	    "                          'testRef': 'test2',                            \n" +
+	    	    "                          'variationRef': 'test2',                            \n" +
 	    	    "                          'experienceRef': 'B'                           \n" +
 	    	    "                       }                                                 \n" +
 	    	    "                     ],                                                  \n" +
@@ -586,11 +586,11 @@ public class ParserConjointOkay6Test extends BaseTestCore {
 	    	    "                    'experienceRef':'B',                                 \n" +
 	    	    "                    'conjointExperienceRefs': [                         \n" +
 	    	    "                       {                                                 \n" +
-	    	    "                          'testRef': 'test1',                            \n" +
+	    	    "                          'variationRef': 'test1',                            \n" +
 	    	    "                          'experienceRef': 'C'                           \n" +
 	    	    "                       },                                                \n" +
 	    	    "                       {                                                 \n" +
-	    	    "                          'testRef': 'test2',                            \n" +
+	    	    "                          'variationRef': 'test2',                            \n" +
 	    	    "                          'experienceRef': 'C'                           \n" +
 	    	    "                       }                                                 \n" +
 	    	    "                     ],                                                  \n" +
@@ -615,7 +615,7 @@ public class ParserConjointOkay6Test extends BaseTestCore {
 	    	    "                    'experienceRef':'C',                                 \n" +
 	    	    "                    'conjointExperienceRefs': [                         \n" +
 	    	    "                       {                                                 \n" +
-	    	    "                          'testRef': 'test1',                            \n" +
+	    	    "                          'variationRef': 'test1',                            \n" +
 	    	    "                          'experienceRef': 'B'                           \n" +
 	    	    "                       }                                                 \n" +
 	    	    "                     ],                                                  \n" +
@@ -630,7 +630,7 @@ public class ParserConjointOkay6Test extends BaseTestCore {
 	    	    "                    'experienceRef':'C',                                 \n" +
 	    	    "                    'conjointExperienceRefs': [                         \n" +
 	    	    "                       {                                                 \n" +
-	    	    "                          'testRef': 'test1',                            \n" +
+	    	    "                          'variationRef': 'test1',                            \n" +
 	    	    "                          'experienceRef': 'C'                           \n" +
 	    	    "                       }                                                 \n" +
 	    	    "                     ],                                                  \n" +
@@ -645,7 +645,7 @@ public class ParserConjointOkay6Test extends BaseTestCore {
 	    	    "                    'experienceRef':'C',                                 \n" +
 	    	    "                    'conjointExperienceRefs': [                         \n" +
 	    	    "                       {                                                 \n" +
-	    	    "                          'testRef': 'test2',                            \n" +
+	    	    "                          'variationRef': 'test2',                            \n" +
 	    	    "                          'experienceRef': 'B'                           \n" +
 	    	    "                       }                                                 \n" +
 	    	    "                     ],                                                  \n" +
@@ -660,7 +660,7 @@ public class ParserConjointOkay6Test extends BaseTestCore {
 	    	    "                    'experienceRef':'C',                                 \n" +
 	    	    "                    'conjointExperienceRefs': [                         \n" +
 	    	    "                       {                                                 \n" +
-	    	    "                          'testRef': 'test2',                            \n" +
+	    	    "                          'variationRef': 'test2',                            \n" +
 	    	    "                          'experienceRef': 'C'                           \n" +
 	    	    "                       }                                                 \n" +
 	    	    "                     ],                                                  \n" +
@@ -675,11 +675,11 @@ public class ParserConjointOkay6Test extends BaseTestCore {
 	    	    "                    'experienceRef':'C',                                 \n" +
 	    	    "                    'conjointExperienceRefs': [                         \n" +
 	    	    "                       {                                                 \n" +
-	    	    "                          'testRef': 'test1',                            \n" +
+	    	    "                          'variationRef': 'test1',                            \n" +
 	    	    "                          'experienceRef': 'B'                           \n" +
 	    	    "                       },                                                \n" +
 	    	    "                       {                                                 \n" +
-	    	    "                          'testRef': 'test2',                            \n" +
+	    	    "                          'variationRef': 'test2',                            \n" +
 	    	    "                          'experienceRef': 'B'                           \n" +
 	    	    "                       }                                                 \n" +
 	    	    "                     ],                                                  \n" +
@@ -694,11 +694,11 @@ public class ParserConjointOkay6Test extends BaseTestCore {
 	    	    "                    'experienceRef':'C',                                 \n" +
 	    	    "                    'conjointExperienceRefs': [                         \n" +
 	    	    "                       {                                                 \n" +
-	    	    "                          'testRef': 'test1',                            \n" +
+	    	    "                          'variationRef': 'test1',                            \n" +
 	    	    "                          'experienceRef': 'B'                           \n" +
 	    	    "                       },                                                \n" +
 	    	    "                       {                                                 \n" +
-	    	    "                          'testRef': 'test2',                            \n" +
+	    	    "                          'variationRef': 'test2',                            \n" +
 	    	    "                          'experienceRef': 'C'                           \n" +
 	    	    "                       }                                                 \n" +
 	    	    "                     ],                                                  \n" +
@@ -713,11 +713,11 @@ public class ParserConjointOkay6Test extends BaseTestCore {
 	    	    "                    'experienceRef':'C',                                 \n" +
 	    	    "                    'conjointExperienceRefs': [                         \n" +
 	    	    "                       {                                                 \n" +
-	    	    "                          'testRef': 'test1',                            \n" +
+	    	    "                          'variationRef': 'test1',                            \n" +
 	    	    "                          'experienceRef': 'C'                           \n" +
 	    	    "                       },                                                \n" +
 	    	    "                       {                                                 \n" +
-	    	    "                          'testRef': 'test2',                            \n" +
+	    	    "                          'variationRef': 'test2',                            \n" +
 	    	    "                          'experienceRef': 'B'                           \n" +
 	    	    "                       }                                                 \n" +
 	    	    "                     ],                                                  \n" +
@@ -732,11 +732,11 @@ public class ParserConjointOkay6Test extends BaseTestCore {
 	    	    "                    'experienceRef':'C',                                 \n" +
 	    	    "                    'conjointExperienceRefs': [                         \n" +
 	    	    "                       {                                                 \n" +
-	    	    "                          'testRef': 'test1',                            \n" +
+	    	    "                          'variationRef': 'test1',                            \n" +
 	    	    "                          'experienceRef': 'C'                           \n" +
 	    	    "                       },                                                \n" +
 	    	    "                       {                                                 \n" +
-	    	    "                          'testRef': 'test2',                            \n" +
+	    	    "                          'variationRef': 'test2',                            \n" +
 	    	    "                          'experienceRef': 'C'                           \n" +
 	    	    "                       }                                                 \n" +
 	    	    "                     ],                                                  \n" +

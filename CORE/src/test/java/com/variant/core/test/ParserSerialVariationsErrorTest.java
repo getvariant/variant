@@ -37,7 +37,7 @@ import com.variant.core.schema.parser.error.SemanticError.Location;
  * @author Igor
  *
  */
-public class ParserSerialTestsErrorTest extends BaseTestCore {
+public class ParserSerialVariationsErrorTest extends BaseTestCore {
 	
 	/**
 	 * NO_TESTS_CLAUSE
@@ -74,7 +74,7 @@ public class ParserSerialTestsErrorTest extends BaseTestCore {
 		assertTrue(response.hasMessages());
 		assertEquals(1, response.getMessages().size());
 		ParserMessage actual = response.getMessages().get(0);
-		ParserMessage expected = new ParserMessageImpl(new Location("/"), PROPERTY_MISSING, "tests");
+		ParserMessage expected = new ParserMessageImpl(new Location("/"), PROPERTY_MISSING, "variations");
 		assertMessageEqual(expected, actual);
 	}
 
@@ -95,7 +95,7 @@ public class ParserSerialTestsErrorTest extends BaseTestCore {
 			    "     {  'name':'state1'  },                                   \n" +
 	    	    "     {  'name':'state2'  }                                    \n" +
 			    "  ],                                                          \n" +
-				"  'tests':[                                                   \n" +
+				"  'variations':[                                              \n" +
 			    "  ]                                                           \n" +
 			    "}                                                             \n";
 		
@@ -105,7 +105,7 @@ public class ParserSerialTestsErrorTest extends BaseTestCore {
 		assertTrue(response.hasMessages());
 		assertEquals(1, response.getMessages().size());
 		ParserMessage actual = response.getMessages().get(0);
-		ParserMessage expected = new ParserMessageImpl(new Location("/tests/"), PROPERTY_EMPTY_LIST, "tests");
+		ParserMessage expected = new ParserMessageImpl(new Location("/variations/"), PROPERTY_EMPTY_LIST, "variations");
 		assertMessageEqual(expected, actual);
 	}
 
@@ -126,7 +126,7 @@ public class ParserSerialTestsErrorTest extends BaseTestCore {
 			    "     {  'name':'state1'  },                                   \n" +
 	    	    "     {  'name':'state2'  }                                    \n" +
 			    "  ],                                                          \n" +
-				"  'tests':[                                                   \n" +
+				"  'variations':[                                              \n" +
 			    "     {                                                        \n" +
 			    "        'name':'Test1',                                       \n" +
 			    "        'isOn':'false',                                       \n" +
@@ -172,7 +172,7 @@ public class ParserSerialTestsErrorTest extends BaseTestCore {
 		assertTrue(response.hasMessages());
 		assertEquals(1, response.getMessages().size());
 		ParserMessage actual = response.getMessages().get(0);
-		ParserMessage expected = new ParserMessageImpl(new Location("/tests[0]/isOn"), PROPERTY_NOT_BOOLEAN, "isOn");
+		ParserMessage expected = new ParserMessageImpl(new Location("/variations[0]/isOn"), PROPERTY_NOT_BOOLEAN, "isOn");
 		assertMessageEqual(expected, actual);
 	}
 
@@ -193,7 +193,7 @@ public class ParserSerialTestsErrorTest extends BaseTestCore {
 			    "     {  'name':'state1'  },                                   \n" +
 	    	    "     {  'name':'state2'  }                                    \n" +
 			    "  ],                                                          \n" +
-				"  'TESTS':[                                                   \n" +
+				"  'variations':[                                              \n" +
 			    "     {                                                        \n" +
 //			    "        'name':'Test1',                                       \n" +
 			    "        'experiences':[                                       \n" +
@@ -238,7 +238,7 @@ public class ParserSerialTestsErrorTest extends BaseTestCore {
 		assertTrue(response.hasMessages(Severity.INFO));
 		assertEquals(1, response.getMessages().size());
 		ParserMessage actual = response.getMessages().get(0);
-		ParserMessage expected = new ParserMessageImpl(new Location("/tests[0]/"), NAME_MISSING);
+		ParserMessage expected = new ParserMessageImpl(new Location("/variations[0]/"), NAME_MISSING);
 		assertMessageEqual(expected, actual);
 	}
 
@@ -259,7 +259,7 @@ public class ParserSerialTestsErrorTest extends BaseTestCore {
 			    "     {  'name':'state1'  },                                   \n" +
 	    	    "     {  'name':'state2'  }                                    \n" +
 			    "  ],                                                          \n" +
-				"  'TESTS':[                                                   \n" +
+				"  'variations':[                                              \n" +
 			    "     {                                                        \n" +
 			    "        'name':23,                                            \n" +
 			    "        'experiences':[                                       \n" +
@@ -304,7 +304,7 @@ public class ParserSerialTestsErrorTest extends BaseTestCore {
 		assertTrue(response.hasMessages(Severity.INFO));
 		assertEquals(1, response.getMessages().size());
 		ParserMessage actual = response.getMessages().get(0);
-		ParserMessage expected = new ParserMessageImpl(new Location("/tests[0]/name"), NAME_INVALID);
+		ParserMessage expected = new ParserMessageImpl(new Location("/variations[0]/name"), NAME_INVALID);
 		assertMessageEqual(expected, actual);
 	}
 	
@@ -325,7 +325,7 @@ public class ParserSerialTestsErrorTest extends BaseTestCore {
 			    "     {  'name':'state1'  },                                   \n" +
 	    	    "     {  'name':'state2'  }                                    \n" +
 			    "  ],                                                          \n" +
-				"  'Tests':[                                                   \n" +
+				"  'variations':[                                              \n" +
 			    "     {                                                        \n" +
 			    "        'name':'test1',                                       \n" +
 			    "        'experiences':[                                       \n" +
@@ -401,7 +401,7 @@ public class ParserSerialTestsErrorTest extends BaseTestCore {
 		assertTrue(response.hasMessages(Severity.INFO));
 		assertEquals(1, response.getMessages().size());
 		ParserMessage actual = response.getMessages().get(0);
-		ParserMessage expected = new ParserMessageImpl(new Location("/tests[1]/"), DUPE_OBJECT, "test1");
+		ParserMessage expected = new ParserMessageImpl(new Location("/variations[1]/"), DUPE_OBJECT, "test1");
 		assertMessageEqual(expected, actual);
 	}
 
@@ -422,7 +422,7 @@ public class ParserSerialTestsErrorTest extends BaseTestCore {
 			    "     {  'name':'state1'  },                                   \n" +
 	    	    "     {  'name':'state2'  }                                    \n" +
 			    "  ],                                                          \n" +
-				"  'TESTS':[                                                   \n" +
+				"  'variations':[                                              \n" +
 			    "     {                                                        \n" +
 			    "        'name':'test1',                                       \n" +
 			    "        'unsupported':[],                                     \n" +
@@ -462,7 +462,7 @@ public class ParserSerialTestsErrorTest extends BaseTestCore {
 		assertTrue(response.hasMessages(Severity.INFO));
 		assertEquals(1, response.getMessages().size());
 		ParserMessage actual = response.getMessages().get(0);
-		ParserMessage expected = new ParserMessageImpl(new Location("/tests[0]/unsupported"), UNSUPPORTED_PROPERTY, "unsupported");
+		ParserMessage expected = new ParserMessageImpl(new Location("/variations[0]/unsupported"), UNSUPPORTED_PROPERTY, "unsupported");
 		assertMessageEqual(expected, actual);
 	}
 
@@ -483,7 +483,7 @@ public class ParserSerialTestsErrorTest extends BaseTestCore {
 			    "     {  'name':'state1'  },                                   \n" +
 	    	    "     {  'name':'state2'  }                                    \n" +
 			    "  ],                                                          \n" +
-				"  'tests':[                                                   \n" +
+				"  'variations':[                                              \n" +
 			    "     {                                                        \n" +
 			    "        'name':'test1',                                       \n" +
 			    "        'experiences':{'foo':'bar'},                          \n" +
@@ -519,7 +519,7 @@ public class ParserSerialTestsErrorTest extends BaseTestCore {
 		assertEquals(1, response.getMessages().size());
 		ParserMessage actual = response.getMessages().get(0);
 		ParserMessage expected = new ParserMessageImpl(
-				new Location("/tests[0]/experiences/"), PROPERTY_NOT_LIST, "experiences");
+				new Location("/variations[0]/experiences/"), PROPERTY_NOT_LIST, "experiences");
 		assertMessageEqual(expected, actual);
 	}
 
@@ -541,7 +541,7 @@ public class ParserSerialTestsErrorTest extends BaseTestCore {
 			    "     {  'name':'state1'  },                                   \n" +
 	    	    "     {  'name':'state2'  }                                    \n" +
 			    "  ],                                                          \n" +
-				"  'TESTS':[                                                   \n" +
+				"  'variations':[                                              \n" +
 			    "     {                                                        \n" +
 			    "        'name':'test1',                                       \n" +
 			    "        'experiences':[                                       \n" +
@@ -571,7 +571,7 @@ public class ParserSerialTestsErrorTest extends BaseTestCore {
 		assertTrue(response.hasMessages(Severity.INFO));
 		assertEquals(1, response.getMessages().size());
 		ParserMessage actual = response.getMessages().get(0);
-		ParserMessage expected = new ParserMessageImpl(new Location("/tests[0]/experiences/"), PROPERTY_EMPTY_LIST, "experiences");
+		ParserMessage expected = new ParserMessageImpl(new Location("/variations[0]/experiences/"), PROPERTY_EMPTY_LIST, "experiences");
 		assertMessageEqual(expected, actual);
 	}
 
@@ -592,7 +592,7 @@ public class ParserSerialTestsErrorTest extends BaseTestCore {
 			    "     {  'name':'state1'  },                                   \n" +
 	    	    "     {  'name':'state2'  }                                    \n" +
 			    "  ],                                                          \n" +
-				"  'TESTS':[                                                   \n" +
+				"  'variations':[                                              \n" +
 			    "     {                                                        \n" +
 			    "        'name':'test1',                                       \n" +
 			    "        'experiences':[                                       \n" +
@@ -633,7 +633,7 @@ public class ParserSerialTestsErrorTest extends BaseTestCore {
 		assertTrue(response.hasMessages(Severity.INFO));
 		assertEquals(1, response.getMessages().size());
 		ParserMessage actual = response.getMessages().get(0);
-		ParserMessage expected = new ParserMessageImpl(new Location("/tests[0]/experiences[2]/"), ELEMENT_NOT_OBJECT, "experiences");
+		ParserMessage expected = new ParserMessageImpl(new Location("/variations[0]/experiences[2]/"), ELEMENT_NOT_OBJECT, "experiences");
 		assertMessageEqual(expected, actual);
 	}
 
@@ -654,7 +654,7 @@ public class ParserSerialTestsErrorTest extends BaseTestCore {
 			    "     {  'name':'state1'  },                                   \n" +
 	    	    "     {  'name':'state2'  }                                    \n" +
 			    "  ],                                                          \n" +
-				"  'TESTS':[                                                   \n" +
+				"  'variations':[                                              \n" +
 			    "     {                                                        \n" +
 			    "        'name':'test1',                                       \n" +
 			    "        'experiences':[                                       \n" +
@@ -717,7 +717,7 @@ public class ParserSerialTestsErrorTest extends BaseTestCore {
 		for (int i = 0; i < 6; i++) {
 			ParserMessage actual = response.getMessages().get(i);
 			ParserMessage expected = new ParserMessageImpl(
-					new Location(String.format("/tests[0]/experiences[%s]/name", i+2)), NAME_INVALID);
+					new Location(String.format("/variations[0]/experiences[%s]/name", i+2)), NAME_INVALID);
 			assertMessageEqual(expected, actual);
 		}
 	}
@@ -739,7 +739,7 @@ public class ParserSerialTestsErrorTest extends BaseTestCore {
 			    "     {  'name':'state1'  },                                   \n" +
 	    	    "     {  'name':'state2'  }                                    \n" +
 			    "  ],                                                          \n" +
-				"  'TESTS':[                                                   \n" +
+				"  'variations':[                                              \n" +
 			    "     {                                                        \n" +
 			    "        'name':'test1',                                       \n" +
 			    "        'experiences':[                                       \n" +
@@ -785,7 +785,7 @@ public class ParserSerialTestsErrorTest extends BaseTestCore {
 		assertTrue(response.hasMessages(Severity.INFO));
 		assertEquals(1, response.getMessages().size());
 		ParserMessage actual = response.getMessages().get(0);
-		ParserMessage expected = new ParserMessageImpl(new Location("/tests[0]/experiences[0]/isControl"), PROPERTY_NOT_BOOLEAN, "isControl");
+		ParserMessage expected = new ParserMessageImpl(new Location("/variations[0]/experiences[0]/isControl"), PROPERTY_NOT_BOOLEAN, "isControl");
 		assertMessageEqual(expected, actual);
 	}
 
@@ -806,7 +806,7 @@ public class ParserSerialTestsErrorTest extends BaseTestCore {
 			    "     {  'name':'state1'  },                                   \n" +
 	    	    "     {  'name':'state2'  }                                    \n" +
 			    "  ],                                                          \n" +
-				"  'TESTS':[                                                   \n" +
+				"  'variations':[                                              \n" +
 			    "     {                                                        \n" +
 			    "        'name':'test1',                                       \n" +
 			    "        'experiences':[                                       \n" +
@@ -845,7 +845,7 @@ public class ParserSerialTestsErrorTest extends BaseTestCore {
 		assertTrue(response.hasMessages(Severity.INFO));
 		assertEquals(1, response.getMessages().size());
 		ParserMessage actual = response.getMessages().get(0);
-		ParserMessage expected = new ParserMessageImpl(new Location("/tests[0]/experiences[0]/weight"), PROPERTY_NOT_NUMBER, "weight");
+		ParserMessage expected = new ParserMessageImpl(new Location("/variations[0]/experiences[0]/weight"), PROPERTY_NOT_NUMBER, "weight");
 		assertMessageEqual(expected, actual);
 	}
 
@@ -866,7 +866,7 @@ public class ParserSerialTestsErrorTest extends BaseTestCore {
 			    "     {  'name':'state1'  },                                   \n" +
 	    	    "     {  'name':'state2'  }                                    \n" +
 			    "  ],                                                          \n" +
-				"  'TESTS':[                                                   \n" +
+				"  'variations':[                                              \n" +
 			    "     {                                                        \n" +
 			    "        'NAME':'test1',                                       \n" +
 			    "        'EXPERIENCES':[                                       \n" +
@@ -913,7 +913,7 @@ public class ParserSerialTestsErrorTest extends BaseTestCore {
 		assertEquals(1, response.getMessages().size());
 		ParserMessage actual = response.getMessages().get(0);
 		ParserMessage expected = new ParserMessageImpl(
-				new Location("/tests[0]/experiences[0]/unsupported"), UNSUPPORTED_PROPERTY, "unsupported");
+				new Location("/variations[0]/experiences[0]/unsupported"), UNSUPPORTED_PROPERTY, "unsupported");
 		assertMessageEqual(expected, actual);
 	}
 
@@ -934,7 +934,7 @@ public class ParserSerialTestsErrorTest extends BaseTestCore {
 			    "     {  'name':'state1'  },                                   \n" +
 	    	    "     {  'name':'state2'  }                                    \n" +
 			    "  ],                                                          \n" +
-				"  'TESTS':[                                                   \n" +
+				"  'variations':[                                              \n" +
 			    "     {                                                        \n" +
 			    "        'NAME':'test1',                                       \n" +
 			    "        'EXPERIENCES':[                                       \n" +
@@ -973,7 +973,7 @@ public class ParserSerialTestsErrorTest extends BaseTestCore {
 		assertTrue(response.hasMessages(Severity.INFO));
 		assertEquals(1, response.getMessages().size());
 		ParserMessage actual = response.getMessages().get(0);
-		ParserMessage expected = new ParserMessageImpl(new Location("/tests[0]/onStates/"), PROPERTY_NOT_LIST, "onStates");
+		ParserMessage expected = new ParserMessageImpl(new Location("/variations[0]/onStates/"), PROPERTY_NOT_LIST, "onStates");
 		assertMessageEqual(expected, actual);
 	}
 
@@ -994,7 +994,7 @@ public class ParserSerialTestsErrorTest extends BaseTestCore {
 			    "     {  'name':'state1'  },                                   \n" +
 	    	    "     {  'name':'state2'  }                                    \n" +
 			    "  ],                                                          \n" +
-				"  'TESTS':[                                                   \n" +
+				"  'variations':[                                              \n" +
 			    "     {                                                        \n" +
 			    "        'NAME':'test1',                                       \n" +
 			    "        'EXPERIENCES':[                                       \n" +
@@ -1024,7 +1024,7 @@ public class ParserSerialTestsErrorTest extends BaseTestCore {
 		assertTrue(response.hasMessages(Severity.INFO));
 		assertEquals(1, response.getMessages().size());
 		ParserMessage actual = response.getMessages().get(0);
-		ParserMessage expected = new ParserMessageImpl(new Location("/tests[0]/onStates/"), PROPERTY_EMPTY_LIST, "onStates");
+		ParserMessage expected = new ParserMessageImpl(new Location("/variations[0]/onStates/"), PROPERTY_EMPTY_LIST, "onStates");
 		assertMessageEqual(expected, actual);
 	}
 	
@@ -1046,7 +1046,7 @@ public class ParserSerialTestsErrorTest extends BaseTestCore {
 			    "     {  'name':'state1'  },                                   \n" +
 	    	    "     {  'name':'state2'  }                                    \n" +
 			    "  ],                                                          \n" +
-				"  'TESTS':[                                                   \n" +
+				"  'variations':[                                              \n" +
 			    "     {                                                        \n" +
 			    "        'NAME':'test1',                                       \n" +
 			    "        'EXPERIENCES':[                                       \n" +
@@ -1076,7 +1076,7 @@ public class ParserSerialTestsErrorTest extends BaseTestCore {
 		assertTrue(response.hasMessages(Severity.INFO));
 		assertEquals(1, response.getMessages().size());
 		ParserMessage actual = response.getMessages().get(0);
-		ParserMessage expected = new ParserMessageImpl(new Location("/tests[0]/onStates[0]/"), ELEMENT_NOT_OBJECT, "onStates");
+		ParserMessage expected = new ParserMessageImpl(new Location("/variations[0]/onStates[0]/"), ELEMENT_NOT_OBJECT, "onStates");
 		assertMessageEqual(expected, actual);
 	}
 
@@ -1097,7 +1097,7 @@ public class ParserSerialTestsErrorTest extends BaseTestCore {
 			    "     {  'name':'state1'  },                                   \n" +
 	    	    "     {  'name':'state2'  }                                    \n" +
 			    "  ],                                                          \n" +
-				"  'TESTS':[                                                   \n" +
+				"  'variations':[                                              \n" +
 			    "     {                                                        \n" +
 			    "        'NAME':'test1',                                       \n" +
 			    "        'EXPERIENCES':[                                       \n" +
@@ -1146,7 +1146,7 @@ public class ParserSerialTestsErrorTest extends BaseTestCore {
 		assertTrue(response.hasMessages(Severity.INFO));
 	    assertEquals(1, response.getMessages().size());
 		ParserMessage actual = response.getMessages().get(0);
-		ParserMessage expected = new ParserMessageImpl(new Location("/tests[0]/onStates[0]/stateRef"), PROPERTY_NOT_STRING, "stateRef");
+		ParserMessage expected = new ParserMessageImpl(new Location("/variations[0]/onStates[0]/stateRef"), PROPERTY_NOT_STRING, "stateRef");
 		assertMessageEqual(expected, actual);
 	}
 
@@ -1167,7 +1167,7 @@ public class ParserSerialTestsErrorTest extends BaseTestCore {
 			    "     {  'name':'state1'  },                                   \n" +
 	    	    "     {  'name':'state2'  }                                    \n" +
 			    "  ],                                                          \n" +
-				"  'TESTS':[                                                   \n" +
+				"  'variations':[                                              \n" +
 			    "     {                                                        \n" +
 			    "        'NAME':'test1',                                       \n" +
 			    "        'EXPERIENCES':[                                       \n" +
@@ -1211,7 +1211,7 @@ public class ParserSerialTestsErrorTest extends BaseTestCore {
 		assertTrue(response.hasMessages(Severity.INFO));
 		assertEquals(1, response.getMessages().size());
 		ParserMessage actual = response.getMessages().get(0);
-		ParserMessage expected = new ParserMessageImpl(new Location("/tests[0]/onStates[0]/"), PROPERTY_MISSING, "stateRef");
+		ParserMessage expected = new ParserMessageImpl(new Location("/variations[0]/onStates[0]/"), PROPERTY_MISSING, "stateRef");
 		assertMessageEqual(expected, actual);
 	}
 
@@ -1232,7 +1232,7 @@ public class ParserSerialTestsErrorTest extends BaseTestCore {
 			    "     {  'name':'state1'  },                                   \n" +
 	    	    "     {  'name':'state2'  }                                    \n" +
 			    "  ],                                                          \n" +
-				"  'TESTS':[                                                   \n" +
+				"  'variations':[                                              \n" +
 			    "     {                                                        \n" +
 			    "        'NAME':'test1',                                       \n" +
 			    "        'EXPERIENCES':[                                       \n" +
@@ -1279,7 +1279,7 @@ public class ParserSerialTestsErrorTest extends BaseTestCore {
 		assertTrue(response.hasMessages(Severity.INFO));
 		assertEquals(1, response.getMessages().size());
 		ParserMessage actual = response.getMessages().get(0);
-		ParserMessage expected = new ParserMessageImpl(new Location("/tests[0]/onStates[1]/"), DUPE_OBJECT, "state1");
+		ParserMessage expected = new ParserMessageImpl(new Location("/variations[0]/onStates[1]/"), DUPE_OBJECT, "state1");
 		assertMessageEqual(expected, actual);
 	}
 
@@ -1300,7 +1300,7 @@ public class ParserSerialTestsErrorTest extends BaseTestCore {
 			    "     {  'name':'state1'  },                                   \n" +
 	    	    "     {  'name':'state2'  }                                    \n" +
 			    "  ],                                                          \n" +
-				"  'TESTS':[                                                   \n" +
+				"  'variations':[                                              \n" +
 			    "     {                                                        \n" +
 			    "        'NAME':'test1',                                       \n" +
 			    "        'EXPERIENCES':[                                       \n" +
@@ -1347,7 +1347,7 @@ public class ParserSerialTestsErrorTest extends BaseTestCore {
 		assertEquals(1, response.getMessages().size());
 		ParserMessage actual = response.getMessages().get(0);
 		ParserMessage expected = new ParserMessageImpl(
-				new Location("/tests[0]/onStates[0]/stateRef"), STATEREF_UNDEFINED, "State1");
+				new Location("/variations[0]/onStates[0]/stateRef"), STATEREF_UNDEFINED, "State1");
 		assertMessageEqual(expected, actual);
 	}
 
@@ -1368,7 +1368,7 @@ public class ParserSerialTestsErrorTest extends BaseTestCore {
 			    "     {  'name':'state1'  },                                   \n" +
 	    	    "     {  'name':'state2'  }                                    \n" +
 			    "  ],                                                          \n" +
-				"  'TESTS':[                                                   \n" +
+				"  'variations':[                                              \n" +
 			    "     {                                                        \n" +
 			    "        'NAME':'test1',                                       \n" +
 			    "        'EXPERIENCES':[                                       \n" +
@@ -1408,7 +1408,7 @@ public class ParserSerialTestsErrorTest extends BaseTestCore {
 		assertTrue(response.hasMessages(Severity.INFO));
 		assertEquals(1, response.getMessages().size());
 		ParserMessage actual = response.getMessages().get(0);
-		ParserMessage expected = new ParserMessageImpl(new Location("/tests[0]/onStates[0]/isNonvariant"), PROPERTY_NOT_BOOLEAN, "isNonvariant");
+		ParserMessage expected = new ParserMessageImpl(new Location("/variations[0]/onStates[0]/isNonvariant"), PROPERTY_NOT_BOOLEAN, "isNonvariant");
 		assertMessageEqual(expected, actual);
 	}
 
@@ -1429,7 +1429,7 @@ public class ParserSerialTestsErrorTest extends BaseTestCore {
 			    "     {  'name':'state1'  },                                   \n" +
 	    	    "     {  'name':'state2'  }                                    \n" +
 			    "  ],                                                          \n" +
-				"  'TESTS':[                                                   \n" +
+				"  'variations':[                                              \n" +
 			    "     {                                                        \n" +
 			    "        'NAME':'test1',                                       \n" +
 			    "        'EXPERIENCES':[                                       \n" +
@@ -1470,7 +1470,7 @@ public class ParserSerialTestsErrorTest extends BaseTestCore {
 		assertEquals(1, response.getMessages().size());
 		ParserMessage actual = response.getMessages().get(0);
 		ParserMessage expected = new ParserMessageImpl(
-				new Location("/tests[0]/onStates[0]/variants"), PROPERTY_NOT_LIST, "variants");
+				new Location("/variations[0]/onStates[0]/variants"), PROPERTY_NOT_LIST, "variants");
 		assertMessageEqual(expected, actual);
 	}
 
@@ -1488,7 +1488,7 @@ public class ParserSerialTestsErrorTest extends BaseTestCore {
 			    "      'name':'schema_name',                                    \n" +
 			    "      'comment':'schema comment'                               \n" +
 			    "  },                                                           \n" +
-				"  'TESTS':[                                                   \n" +
+				"  'variations':[                                              \n" +
 			    "     {                                                        \n" +
 			    "        'NAME':'test1',                                       \n" +
 			    "        'EXPERIENCES':[                                       \n" +
@@ -1527,7 +1527,7 @@ public class ParserSerialTestsErrorTest extends BaseTestCore {
 		ParserMessage expected = new ParserMessageImpl(new Location("/"), PROPERTY_MISSING, "states");
 		assertMessageEqual(expected, actual);
 		actual = response.getMessages().get(1);
-		expected = new ParserMessageImpl(new Location("/tests[0]/onStates[0]/stateRef"), STATEREF_UNDEFINED, "state1");
+		expected = new ParserMessageImpl(new Location("/variations[0]/onStates[0]/stateRef"), STATEREF_UNDEFINED, "state1");
 		assertMessageEqual(expected, actual);
 
 	}
@@ -1549,7 +1549,7 @@ public class ParserSerialTestsErrorTest extends BaseTestCore {
 			    "     {  'name':'state1'  },                                   \n" +
 	    	    "     {  'name':'state2'  }                                    \n" +
 			    "  ],                                                          \n" +
-				"  'TESTS':[                                                   \n" +
+				"  'variations':[                                              \n" +
 			    "     {                                                        \n" +
 			    "        'NAME':'test1',                                       \n" +
 			    "        'EXPERIENCES':[                                       \n" +
@@ -1599,7 +1599,7 @@ public class ParserSerialTestsErrorTest extends BaseTestCore {
 		assertTrue(response.hasMessages(Severity.INFO));
 		assertEquals(1, response.getMessages().size());
 		ParserMessage actual = response.getMessages().get(0);
-		ParserMessage expected = new ParserMessageImpl(new Location("/tests[0]/onStates[0]/variants[0]/unsupported"), UNSUPPORTED_PROPERTY, "unsupported");
+		ParserMessage expected = new ParserMessageImpl(new Location("/variations[0]/onStates[0]/variants[0]/unsupported"), UNSUPPORTED_PROPERTY, "unsupported");
 		assertMessageEqual(expected, actual);
 	}
 
@@ -1620,7 +1620,7 @@ public class ParserSerialTestsErrorTest extends BaseTestCore {
 			    "     {  'name':'state1'  },                                   \n" +
 	    	    "     {  'name':'state2'  }                                    \n" +
 			    "  ],                                                          \n" +
-				"  'TESTS':[                                                   \n" +
+				"  'variations':[                                              \n" +
 			    "     {                                                        \n" +
 			    "        'NAME':'test1',                                       \n" +
 			    "        'EXPERIENCES':[                                       \n" +
@@ -1667,7 +1667,7 @@ public class ParserSerialTestsErrorTest extends BaseTestCore {
 		assertEquals(1, response.getMessages().size());
 		ParserMessage actual = response.getMessages().get(0);
 		ParserMessage expected = new ParserMessageImpl(
-				new Location("/tests[0]/onStates[0]/"), VARIANTS_ISNONVARIANT_INCOMPATIBLE);
+				new Location("/variations[0]/onStates[0]/"), VARIANTS_ISNONVARIANT_INCOMPATIBLE);
 		assertMessageEqual(expected, actual);
 	}
 
@@ -1688,7 +1688,7 @@ public class ParserSerialTestsErrorTest extends BaseTestCore {
 			    "     {  'name':'state1'  },                                   \n" +
 	    	    "     {  'name':'state2'  }                                    \n" +
 			    "  ],                                                          \n" +
-				"  'TESTS':[                                                   \n" +
+				"  'variations':[                                              \n" +
 			    "     {                                                        \n" +
 			    "        'NAME':'test1',                                       \n" +
 			    "        'EXPERIENCES':[                                       \n" +
@@ -1722,7 +1722,7 @@ public class ParserSerialTestsErrorTest extends BaseTestCore {
 		assertTrue(response.hasMessages(Severity.INFO));
 		assertEquals(1, response.getMessages().size());
 		ParserMessage actual = response.getMessages().get(0);
-		ParserMessage expected = new ParserMessageImpl(new Location("/tests[0]/onStates[0]/"), VARIANTS_ISNONVARIANT_XOR);
+		ParserMessage expected = new ParserMessageImpl(new Location("/variations[0]/onStates[0]/"), VARIANTS_ISNONVARIANT_XOR);
 		assertMessageEqual(expected, actual);
 	}
 
@@ -1743,7 +1743,7 @@ public class ParserSerialTestsErrorTest extends BaseTestCore {
 			    "     {  'name':'state1'  },                                   \n" +
 	    	    "     {  'name':'state2'  }                                    \n" +
 			    "  ],                                                          \n" +
-				"  'TESTS':[                                                   \n" +
+				"  'variations':[                                              \n" +
 			    "     {                                                        \n" +
 			    "        'NAME':'test1',                                       \n" +
 			    "        'EXPERIENCES':[                                       \n" +
@@ -1778,13 +1778,13 @@ public class ParserSerialTestsErrorTest extends BaseTestCore {
 		assertTrue(response.hasMessages(Severity.INFO));
 		assertEquals(3, response.getMessages().size());
 		ParserMessage actual = response.getMessages().get(0);
-		ParserMessage expected = new ParserMessageImpl(new Location("/tests[0]/onStates[0]/variants[0]/"), ELEMENT_NOT_OBJECT, "variants");
+		ParserMessage expected = new ParserMessageImpl(new Location("/variations[0]/onStates[0]/variants[0]/"), ELEMENT_NOT_OBJECT, "variants");
 		assertMessageEqual(expected, actual);
 		actual = response.getMessages().get(1);
-		expected = new ParserMessageImpl(new Location("/tests[0]/onStates[0]/variants[1]/"), ELEMENT_NOT_OBJECT, "variants");
+		expected = new ParserMessageImpl(new Location("/variations[0]/onStates[0]/variants[1]/"), ELEMENT_NOT_OBJECT, "variants");
 		assertMessageEqual(expected, actual);
 		actual = response.getMessages().get(2);
-		expected = new ParserMessageImpl(new Location("/tests[0]/onStates[0]/variants/"), PROPER_VARIANT_MISSING, "A");
+		expected = new ParserMessageImpl(new Location("/variations[0]/onStates[0]/variants/"), PROPER_VARIANT_MISSING, "A");
 		assertMessageEqual(expected, actual);
 	}
 
@@ -1805,7 +1805,7 @@ public class ParserSerialTestsErrorTest extends BaseTestCore {
 			    "     {  'name':'state1'  },                                   \n" +
 	    	    "     {  'name':'state2'  }                                    \n" +
 			    "  ],                                                          \n" +
-				"  'TESTS':[                                                   \n" +
+				"  'variations':[                                              \n" +
 			    "     {                                                        \n" +
 			    "        'NAME':'test1',                                       \n" +
 			    "        'EXPERIENCES':[                                       \n" +
@@ -1851,11 +1851,11 @@ public class ParserSerialTestsErrorTest extends BaseTestCore {
 		assertEquals(2, response.getMessages().size());
 		ParserMessage actual = response.getMessages().get(0);
 		ParserMessage expected = new ParserMessageImpl(
-				new Location("/tests[0]/onStates[0]/variants[0]/"), PROPERTY_MISSING, "experienceRef");
+				new Location("/variations[0]/onStates[0]/variants[0]/"), PROPERTY_MISSING, "experienceRef");
 		assertMessageEqual(expected, actual);
 		actual = response.getMessages().get(1);
 		expected = new ParserMessageImpl(
-				new Location("/tests[0]/onStates[0]/variants/"), PROPER_VARIANT_MISSING, "A");
+				new Location("/variations[0]/onStates[0]/variants/"), PROPER_VARIANT_MISSING, "A");
 		assertMessageEqual(expected, actual);
 	}
 	
@@ -1876,7 +1876,7 @@ public class ParserSerialTestsErrorTest extends BaseTestCore {
 			    "     {  'name':'state1'  },                                   \n" +
 	    	    "     {  'name':'state2'  }                                    \n" +
 			    "  ],                                                          \n" +
-				"  'TESTS':[                                                   \n" +
+				"  'variations':[                                              \n" +
 			    "     {                                                        \n" +
 			    "        'NAME':'test1',                                       \n" +
 			    "        'EXPERIENCES':[                                       \n" +
@@ -1928,7 +1928,7 @@ public class ParserSerialTestsErrorTest extends BaseTestCore {
 		assertEquals(1, response.getMessages().size());
 		ParserMessage actual = response.getMessages().get(0);
 		ParserMessage expected = new ParserMessageImpl(
-				new Location("/tests[0]/onStates[0]/variants[0]/experienceRef"), PROPERTY_NOT_STRING, "experienceRef");
+				new Location("/variations[0]/onStates[0]/variants[0]/experienceRef"), PROPERTY_NOT_STRING, "experienceRef");
 		assertMessageEqual(expected, actual);
 	}
 
@@ -1949,7 +1949,7 @@ public class ParserSerialTestsErrorTest extends BaseTestCore {
 			    "     {  'name':'state1'  },                                   \n" +
 	    	    "     {  'name':'state2'  }                                    \n" +
 			    "  ],                                                          \n" +
-				"  'TESTS':[                                                   \n" +
+				"  'variations':[                                              \n" +
 			    "     {                                                        \n" +
 			    "        'NAME':'test1',                                       \n" +
 			    "        'EXPERIENCES':[                                       \n" +
@@ -1995,12 +1995,12 @@ public class ParserSerialTestsErrorTest extends BaseTestCore {
 		assertEquals(2, response.getMessages().size());
 		ParserMessage actual = response.getMessages().get(0);
 		ParserMessage expected = new ParserMessageImpl(
-				new Location("/tests[0]/onStates[0]/variants[0]/experienceRef"), 
+				new Location("/variations[0]/onStates[0]/variants[0]/experienceRef"), 
 				EXPERIENCEREF_UNDEFINED, "foo");
 		assertMessageEqual(expected, actual);
 		actual = response.getMessages().get(1);
 		expected = new ParserMessageImpl(
-				new Location("/tests[0]/onStates[0]/variants/"), PROPER_VARIANT_MISSING, "A");
+				new Location("/variations[0]/onStates[0]/variants/"), PROPER_VARIANT_MISSING, "A");
 		assertMessageEqual(expected, actual);
 	}
 
@@ -2021,7 +2021,7 @@ public class ParserSerialTestsErrorTest extends BaseTestCore {
 			    "     {  'name':'state1'  },                                   \n" +
 	    	    "     {  'name':'state2'  }                                    \n" +
 			    "  ],                                                          \n" +
-				"  'TESTS':[                                                   \n" +
+				"  'variations':[                                              \n" +
 			    "     {                                                        \n" +
 			    "        'NAME':'test1',                                       \n" +
 			    "        'EXPERIENCES':[                                       \n" +
@@ -2064,7 +2064,7 @@ public class ParserSerialTestsErrorTest extends BaseTestCore {
 		assertEquals(1, response.getMessages().size());
 		ParserMessage actual = response.getMessages().get(0);
 		ParserMessage expected = new ParserMessageImpl(
-				new Location("/tests[0]/onStates[0]/variants[1]/experienceRef"), EXPERIENCEREF_ISCONTROL);
+				new Location("/variations[0]/onStates[0]/variants[1]/experienceRef"), EXPERIENCEREF_ISCONTROL);
 		assertMessageEqual(expected, actual);
 	}
 
@@ -2085,7 +2085,7 @@ public class ParserSerialTestsErrorTest extends BaseTestCore {
 			    "     {  'name':'state1'  },                                   \n" +
 	    	    "     {  'name':'state2'  }                                    \n" +
 			    "  ],                                                          \n" +
-				"  'TESTS':[                                                   \n" +
+				"  'variations':[                                              \n" +
 			    "     {                                                        \n" +
 			    "        'NAME':'test1',                                       \n" +
 			    "        'EXPERIENCES':[                                       \n" +
@@ -2135,17 +2135,17 @@ public class ParserSerialTestsErrorTest extends BaseTestCore {
 		assertEquals(3, response.getMessages().size());
 		ParserMessage actual = response.getMessages().get(0);
 		ParserMessage expected = new ParserMessageImpl(
-				new Location("/tests[0]/onStates[0]/variants[0]/parameters[0]/"), 
+				new Location("/variations[0]/onStates[0]/variants[0]/parameters[0]/"), 
 				ELEMENT_NOT_OBJECT, "parameters");
 		assertMessageEqual(expected, actual);
 		actual = response.getMessages().get(1);
 		expected = new ParserMessageImpl(
-				new Location("/tests[0]/onStates[0]/variants[0]/parameters[1]/"), 
+				new Location("/variations[0]/onStates[0]/variants[0]/parameters[1]/"), 
 				ELEMENT_NOT_OBJECT, "parameters");
 		assertMessageEqual(expected, actual);
 		actual = response.getMessages().get(2);
 		expected = new ParserMessageImpl(
-				new Location("/tests[0]/onStates[1]/variants[0]/parameters/"), 
+				new Location("/variations[0]/onStates[1]/variants[0]/parameters/"), 
 				PROPERTY_NOT_LIST, "parameters");
 		assertMessageEqual(expected, actual);
 	}
@@ -2167,7 +2167,7 @@ public class ParserSerialTestsErrorTest extends BaseTestCore {
 			    "     {  'name':'state1'  },                                   \n" +
 	    	    "     {  'name':'state2'  }                                    \n" +
 			    "  ],                                                          \n" +
-				"  'tests':[                                                   \n" +
+				"  'variations':[                                              \n" +
 			    "     {                                                        \n" +
 			    "        'name':'TEST',                                        \n" +
 			    "        'experiences':[                                       \n" +
@@ -2220,10 +2220,10 @@ public class ParserSerialTestsErrorTest extends BaseTestCore {
 		assertTrue(response.hasMessages(Severity.INFO));
 		assertEquals(2, response.getMessages().size());
 		ParserMessage actual = response.getMessages().get(0);
-		ParserMessage expected = new ParserMessageImpl(new Location("/tests[0]/experiences[2]/"), DUPE_OBJECT, "B");
+		ParserMessage expected = new ParserMessageImpl(new Location("/variations[0]/experiences[2]/"), DUPE_OBJECT, "B");
 		assertMessageEqual(expected, actual);
 		actual = response.getMessages().get(1);
-		expected = new ParserMessageImpl(new Location("/tests[0]/onStates[0]/variants/"), PROPER_VARIANT_MISSING, "B");
+		expected = new ParserMessageImpl(new Location("/variations[0]/onStates[0]/variants/"), PROPER_VARIANT_MISSING, "B");
 		assertMessageEqual(expected, actual);
 	}
 
@@ -2244,7 +2244,7 @@ public class ParserSerialTestsErrorTest extends BaseTestCore {
 			    "     {  'name':'state1'  },                                   \n" +
 	    	    "     {  'name':'state2'  }                                    \n" +
 			    "  ],                                                          \n" +
-				"  'tests':[                                                   \n" +
+				"  'variations':[                                              \n" +
 			    "     {                                                        \n" +
 			    "        'name':'TEST',                                        \n" +
 			    "        'experiences':[                                       \n" +
@@ -2290,7 +2290,7 @@ public class ParserSerialTestsErrorTest extends BaseTestCore {
 		assertTrue(response.hasMessages(Severity.INFO));
 		assertEquals(1, response.getMessages().size());
 		ParserMessage actual = response.getMessages().get(0);
-		ParserMessage expected = new ParserMessageImpl(new Location("/tests[0]/"), CONTROL_EXPERIENCE_MISSING, "TEST");
+		ParserMessage expected = new ParserMessageImpl(new Location("/variations[0]/"), CONTROL_EXPERIENCE_MISSING, "TEST");
 		assertMessageEqual(expected, actual);
 	}
 
@@ -2311,7 +2311,7 @@ public class ParserSerialTestsErrorTest extends BaseTestCore {
 			    "     {  'name':'state1'  },                                   \n" +
 	    	    "     {  'name':'state2'  }                                    \n" +
 			    "  ],                                                          \n" +
-				"  'tests':[                                                   \n" +
+				"  'variations':[                                              \n" +
 			    "     {                                                        \n" +
 			    "        'name':'TEST',                                        \n" +
 			    "        'experiences':[                                       \n" +
@@ -2355,7 +2355,7 @@ public class ParserSerialTestsErrorTest extends BaseTestCore {
 		assertTrue(response.hasMessages(Severity.INFO));
 		assertEquals(1, response.getMessages().size());
 		ParserMessage actual = response.getMessages().get(0);
-		ParserMessage expected = new ParserMessageImpl(new Location("/tests[0]/experiences[2]/"), CONTROL_EXPERIENCE_DUPE, "C", "TEST");
+		ParserMessage expected = new ParserMessageImpl(new Location("/variations[0]/experiences[2]/"), CONTROL_EXPERIENCE_DUPE, "C", "TEST");
 		assertMessageEqual(expected, actual);
 	}
 
@@ -2376,7 +2376,7 @@ public class ParserSerialTestsErrorTest extends BaseTestCore {
 			    "     {  'name':'state1'  },                                   \n" +
 	    	    "     {  'name':'state2'  }                                    \n" +
 			    "  ],                                                          \n" +
-				"  'tests':[                                                   \n" +
+				"  'variations':[                                              \n" +
 			    "     {                                                        \n" +
 			    "        'name':'TEST',                                        \n" +
 			    "        'experiences':[                                       \n" +
@@ -2435,11 +2435,11 @@ public class ParserSerialTestsErrorTest extends BaseTestCore {
 		assertEquals(2, response.getMessages().size());
 		ParserMessage actual = response.getMessages().get(0);
 		ParserMessage expected = new ParserMessageImpl(
-				new Location("/tests[0]/onStates[0]/variants[1]/"), DUPE_OBJECT, "A");
+				new Location("/variations[0]/onStates[0]/variants[1]/"), DUPE_OBJECT, "A");
 		assertMessageEqual(expected, actual);
 		actual = response.getMessages().get(1);
 		expected = new ParserMessageImpl(
-				new Location("/tests[0]/onStates[0]/variants/"), PROPER_VARIANT_MISSING, "B");
+				new Location("/variations[0]/onStates[0]/variants/"), PROPER_VARIANT_MISSING, "B");
 		assertMessageEqual(expected, actual);
 	}
 
@@ -2460,7 +2460,7 @@ public class ParserSerialTestsErrorTest extends BaseTestCore {
 			    "     {  'name':'state1'  },                                   \n" +
 	    	    "     {  'name':'state2'  }                                    \n" +
 			    "  ],                                                          \n" +
-				"  'tests':[                                                   \n" +
+				"  'variations':[                                              \n" +
 			    "     {                                                        \n" +
 			    "        'name':'TEST',                                        \n" +
 			    "        'experiences':[                                       \n" +
@@ -2503,7 +2503,7 @@ public class ParserSerialTestsErrorTest extends BaseTestCore {
 		assertTrue(response.hasMessages(Severity.INFO));
 		assertEquals(1, response.getMessages().size());
 		ParserMessage actual = response.getMessages().get(0);
-		ParserMessage expected = new ParserMessageImpl(new Location("/tests[0]/onStates[0]/variants/"), PROPER_VARIANT_MISSING, "B");
+		ParserMessage expected = new ParserMessageImpl(new Location("/variations[0]/onStates[0]/variants/"), PROPER_VARIANT_MISSING, "B");
 		assertMessageEqual(expected, actual);
 	}
 
@@ -2524,7 +2524,7 @@ public class ParserSerialTestsErrorTest extends BaseTestCore {
 			    "     {  'name':'state1'  },                                   \n" +
 	    	    "     {  'name':'state2'  }                                    \n" +
 			    "  ],                                                          \n" +
-				"  'tests':[                                                   \n" +
+				"  'variations':[                                              \n" +
 			    "     {                                                        \n" +
 			    "        'name':'',                                            \n" +
 			    "        'experiences':[                                       \n" +
@@ -2672,7 +2672,7 @@ public class ParserSerialTestsErrorTest extends BaseTestCore {
 		for (int i = 0; i < 5; i++) {
 			ParserMessage actual = response.getMessages().get(i);
 			ParserMessage expected = new ParserMessageImpl(
-					new Location(String.format("/tests[%s]/name", i)), NAME_INVALID);
+					new Location(String.format("/variations[%s]/name", i)), NAME_INVALID);
 			assertMessageEqual(expected, actual);
 		}
 	}

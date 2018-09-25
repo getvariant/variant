@@ -54,13 +54,13 @@ import com.variant.core.util.MutableInteger;
 import com.variant.core.util.StringUtils;
 
 /**
- * Parse the TESTS clause.
+ * Parse the VARIATIONS clause.
  * @author Igor
  *
  */
-public class TestsParser implements Keywords {
+public class VariationsParser implements Keywords {
 	
-	private static final Logger LOG = LoggerFactory.getLogger(TestsParser.class);
+	private static final Logger LOG = LoggerFactory.getLogger(VariationsParser.class);
 	
 	/**
 	 * @param result
@@ -68,21 +68,21 @@ public class TestsParser implements Keywords {
 	 * @throws VariantRuntimeException 
 	 */
 	@SuppressWarnings("unchecked")
-	static void parse(Object testsObject, Location testsLocation, ParserResponse response, HooksService hooksService) {
-		List<Map<String, ?>> rawTests = null;
+	static void parse(Object varsObject, Location varsLocation, ParserResponse response, HooksService hooksService) {
+		List<Map<String, ?>> rawVars = null;
 		try {
-			rawTests = (List<Map<String, ?>>) testsObject;
+			rawVars = (List<Map<String, ?>>) varsObject;
 		}
 		catch (Exception e) {
 			throw new CoreException.Internal(e);
 		}
 		
-		if (rawTests.size() == 0) {
-			response.addMessage(testsLocation, PROPERTY_EMPTY_LIST, KEYWORD_TESTS);
+		if (rawVars.size() == 0) {
+			response.addMessage(varsLocation, PROPERTY_EMPTY_LIST, KEYWORD_VARIATIONS);
 		}
 		
 		int index = 0;
-		for (Map<String, ?> rawTest: rawTests) {
+		for (Map<String, ?> rawTest: rawVars) {
 			
 			// Increment a local integer count whenever a parse error occurs.
 			final MutableInteger errorCount = new MutableInteger(0);
@@ -95,12 +95,12 @@ public class TestsParser implements Keywords {
 						}
 			});
 
-			Location testLocation = testsLocation.plusIx(index++);
+			Location varLocation = varsLocation.plusIx(index++);
 			
 			// Parse individual test
-			Test test = parseTest(rawTest, testLocation, response);
+			Test test = parseTest(rawTest, varLocation, response);
 			if (test != null && !((SchemaImpl) response.getSchema()).addTest(test)) {
-				response.addMessage(testLocation, DUPE_OBJECT, test.getName());
+				response.addMessage(varLocation, DUPE_OBJECT, test.getName());
 			}
 			
 			// If no errors, register test scoped hooks.
@@ -224,23 +224,23 @@ public class TestsParser implements Keywords {
 		result.setExperiences(experiences);
 		
 		
-		// Pass 3: Parse conjointTestRefs, isOn, hooks.
+		// Pass 3: Parse conjointVariationRefs, isOn, hooks.
 		List<TestImpl> covarTests = null;
 		for(Map.Entry<String, ?> entry: test.entrySet()) {
 			
-			if (entry.getKey().equalsIgnoreCase(KEYWORD_CONJOINT_TEST_REFS)) {
+			if (entry.getKey().equalsIgnoreCase(KEYWORD_CONJOINT_VARIATION_REFS)) {
 				Object covarTestRefsObject = entry.getValue();
 				if (!(covarTestRefsObject instanceof List)) {
-					response.addMessage(testLocation.plusProp(KEYWORD_CONJOINT_TEST_REFS), PROPERTY_NOT_LIST, KEYWORD_CONJOINT_TEST_REFS);
+					response.addMessage(testLocation.plusProp(KEYWORD_CONJOINT_VARIATION_REFS), PROPERTY_NOT_LIST, KEYWORD_CONJOINT_VARIATION_REFS);
 				}
 				else {
 					covarTests = new ArrayList<TestImpl>();
 					List<?> rawCovarTestRefs = (List<?>) covarTestRefsObject;
 					int refIx = 0;
 					for (Object covarTestRefObject: rawCovarTestRefs) {
-						Location testRefLocation = testLocation.plusProp(KEYWORD_CONJOINT_TEST_REFS).plusIx(refIx++);
+						Location testRefLocation = testLocation.plusProp(KEYWORD_CONJOINT_VARIATION_REFS).plusIx(refIx++);
 						if (!(covarTestRefObject instanceof String)) {
-							response.addMessage(testRefLocation, ELEMENT_NOT_STRING, KEYWORD_CONJOINT_TEST_REFS);
+							response.addMessage(testRefLocation, ELEMENT_NOT_STRING, KEYWORD_CONJOINT_VARIATION_REFS);
 						}
 						else {
 							String covarTestRef = (String) covarTestRefObject;
@@ -287,7 +287,7 @@ public class TestsParser implements Keywords {
 			for(Map.Entry<String, ?> entry: test.entrySet()) {
 				
 				if (StringUtils.equalsIgnoreCase(entry.getKey(), 
-						KEYWORD_NAME, KEYWORD_EXPERIENCES, KEYWORD_CONJOINT_TEST_REFS, KEYWORD_IS_ON, KEYWORD_HOOKS)) continue;
+						KEYWORD_NAME, KEYWORD_EXPERIENCES, KEYWORD_CONJOINT_VARIATION_REFS, KEYWORD_IS_ON, KEYWORD_HOOKS)) continue;
 	
 				if (entry.getKey().equalsIgnoreCase(KEYWORD_ON_STATES)) {
 					
@@ -338,7 +338,7 @@ public class TestsParser implements Keywords {
 			int covarTestIx = 0;
 			for (Test covarTest: covarTests) {
 				if (result.isSerialWith(covarTest)) {
-					Location tosLocation = testLocation.plusProp(KEYWORD_CONJOINT_TEST_REFS).plusIx(covarTestIx++);
+					Location tosLocation = testLocation.plusProp(KEYWORD_CONJOINT_VARIATION_REFS).plusIx(covarTestIx++);
 					response.addMessage(tosLocation, CONJOINT_TEST_DISJOINT, name, covarTest.getName());
 				}
 			}
@@ -443,7 +443,7 @@ public class TestsParser implements Keywords {
 			return null;
 		}
 		
-		// Pass 1. Figure out the experienceRef
+		// Pass 1. Figure out the state.
 		String stateRef = null;
 		for (Map.Entry<String, Object> entry: rawTestOnState.entrySet()) {
 			if (entry.getKey().equalsIgnoreCase(KEYWORD_STATE_REF)) {
@@ -550,7 +550,7 @@ public class TestsParser implements Keywords {
 			return null;
 		}
 		
-		// At least one proper variant required to be defined.
+		// At least one proper variant required.
 		boolean allProperVariantsUndefined = true;
 		for (Experience properExperience: test.getExperiences()) {
 			if (!properExperience.isPhantomOn(tos.getState())) { 
@@ -563,7 +563,7 @@ public class TestsParser implements Keywords {
 			return null;
 		}
 		
-		// Confirm Must have a variant for each vector in the variant space,
+		// Confirm we have a variant for each point in the variant space,
 		// defined by the proper and conjoint experiences, unless one of them
 		// undefined, no matter which one. 
 		for (VariantSpace.Point point: tos.variantSpace().getAll()) {

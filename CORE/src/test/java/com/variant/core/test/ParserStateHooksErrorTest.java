@@ -46,7 +46,7 @@ public class ParserStateHooksErrorTest extends BaseTestCore {
 			    "        'hooks':'cannot be a string'                          \n" +
 			    "     }                                                        \n" +
 			    "  ],                                                          \n" +
-				"  'tests':[                                                   \n" +
+				"  'variations':[                                              \n" +
 			    "     {                                                        \n" +
 			    "        'name':'TEST',                                        \n" +
 			    "        'experiences':[                                       \n" +
@@ -110,7 +110,7 @@ public class ParserStateHooksErrorTest extends BaseTestCore {
 			    "        'hooks':[1,2,3]                                       \n" +
 			    "     }                                                        \n" +
 			    "  ],                                                          \n" +
-				"  'tests':[                                                   \n" +
+				"  'variations':[                                              \n" +
 			    "     {                                                        \n" +
 			    "        'name':'TEST',                                        \n" +
 			    "        'experiences':[                                       \n" +
@@ -177,7 +177,7 @@ public class ParserStateHooksErrorTest extends BaseTestCore {
 			    "        'name':'state1'                                       \n" +
 			    "     }                                                        \n" +
 			    "  ],                                                          \n" +
-				"  'tests':[                                                   \n" +
+				"  'variations':[                                              \n" +
 			    "     {                                                        \n" +
 			    "        'name':'TEST',                                        \n" +
 			    "        'experiences':[                                       \n" +
@@ -242,7 +242,7 @@ public class ParserStateHooksErrorTest extends BaseTestCore {
 			    "        'hooks':[{'name':'bar', 'class-Name':'c.v.s'}]        \n" +
 			    "     }                                                        \n" +
 			    "  ],                                                          \n" +
-				"  'tests':[                                                   \n" +
+				"  'variations':[                                              \n" +
 			    "     {                                                        \n" +
 			    "        'name':'TEST',                                        \n" +
 			    "        'experiences':[                                       \n" +
@@ -309,7 +309,7 @@ public class ParserStateHooksErrorTest extends BaseTestCore {
 			    "        'name':'state1'                                       \n" +
 			    "     }                                                        \n" +
 			    "  ],                                                          \n" +
-				"  'tests':[                                                   \n" +
+				"  'variations':[                                              \n" +
 			    "     {                                                        \n" +
 			    "        'name':'TEST',                                        \n" +
 			    "        'experiences':[                                       \n" +
@@ -375,7 +375,7 @@ public class ParserStateHooksErrorTest extends BaseTestCore {
 			    "        ]                                                     \n" +
 			    "     }                                                        \n" +
 			    "  ],                                                          \n" +
-				"  'tests':[                                                   \n" +
+				"  'variations':[                                              \n" +
 			    "     {                                                        \n" +
 			    "        'name':'TEST',                                        \n" +
 			    "        'experiences':[                                       \n" +
@@ -442,7 +442,7 @@ public class ParserStateHooksErrorTest extends BaseTestCore {
 			    "        ]                                                     \n" +
 			    "     }                                                        \n" +
 			    "  ],                                                          \n" +
-				"  'tests':[                                                   \n" +
+				"  'variations':[                                              \n" +
 			    "     {                                                        \n" +
 			    "        'name':'TEST',                                        \n" +
 			    "        'experiences':[                                       \n" +

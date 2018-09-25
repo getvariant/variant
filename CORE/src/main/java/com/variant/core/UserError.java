@@ -17,7 +17,7 @@ Range   Base         Major Area               Minor Area
 001-200              Schema parser
 001-020                                       Meta
 021-050                                       State
-051-150                                       Test
+051-150                                       Variation
 151-170                                       Parameters
 171-180                                       Syntax
 181-200                                       Other

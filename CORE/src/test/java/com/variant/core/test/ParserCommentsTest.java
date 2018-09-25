@@ -33,7 +33,7 @@ public class ParserCommentsTest extends BaseTestCore {
 			    "     {  'name':'state1'                                       \n" +
 			    "     }                                                        \n" +
 			    "  ],/// after punctuation                                     \n" +
-				"  'tests':[                                                   \n" +
+				"  'variations':[                                              \n" +
 			    "     {                                                        \n" +
 			    "        'name':'Test1',                                       \n" +
 			    "        'experiences':[                                       \n" +
@@ -87,7 +87,7 @@ public class ParserCommentsTest extends BaseTestCore {
 			    "     {  'name':'state1'                                       \n" +
 			    "     }                                                        \n" +
 			    "  ],/// after punctuation                                     \n" +
-				"  'tests':[                                                   \n" +
+				"  'variations':[                                              \n" +
 			    "     {                                                        \n" +
 			    "        'name':'Test1',                                       \n" +
 			    "        'experiences':[                                       \n" +

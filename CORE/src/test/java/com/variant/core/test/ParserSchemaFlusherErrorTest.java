@@ -41,7 +41,7 @@ public class ParserSchemaFlusherErrorTest extends BaseTestCore {
 			    "   'states':[                                                 \n" +
 			    "     { 'name':'state1' }                                      \n" +
 			    "  ],                                                          \n" +
-				"  'tests':[                                                   \n" +
+				"  'variations':[                                              \n" +
 			    "     {                                                        \n" +
 			    "        'name':'TEST',                                        \n" +
 			    "        'experiences':[                                       \n" +
@@ -99,7 +99,7 @@ public class ParserSchemaFlusherErrorTest extends BaseTestCore {
 			    "   'states':[                                                 \n" +
 			    "     { 'name':'state1' }                                      \n" +
 			    "  ],                                                          \n" +
-				"  'tests':[                                                   \n" +
+				"  'variations':[                                              \n" +
 			    "     {                                                        \n" +
 			    "        'name':'TEST',                                        \n" +
 			    "        'experiences':[                                       \n" +
@@ -157,7 +157,7 @@ public class ParserSchemaFlusherErrorTest extends BaseTestCore {
 			    "   'states':[                                                 \n" +
 			    "     { 'name':'state1' }                                      \n" +
 			    "  ],                                                          \n" +
-				"  'tests':[                                                   \n" +
+				"  'variations':[                                              \n" +
 			    "     {                                                        \n" +
 			    "        'name':'TEST',                                        \n" +
 			    "        'experiences':[                                       \n" +
