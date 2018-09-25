@@ -29,6 +29,7 @@ import com.variant.core.schema.impl.TestExperienceImpl;
 import com.variant.core.schema.impl.TestImpl;
 import com.variant.core.schema.impl.TestOnStateImpl;
 import com.variant.core.schema.parser.error.SemanticError.Location;
+import com.variant.core.util.CaseInsensitiveMap;
 import com.variant.core.util.CollectionsUtils;
 import com.variant.core.util.StringUtils;
 
@@ -47,7 +48,7 @@ public class VariantParser implements Keywords {
 	 * @param response
 	 * @return
 	 */
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public static StateVariantImpl parseVariant(Object variantObject, Location variantLocation, TestOnStateImpl tov, ParserResponse response) {
 
 		TestImpl test = (TestImpl) tov.getTest();
@@ -146,7 +147,7 @@ public class VariantParser implements Keywords {
 					
 					Map<String,?> covarExperienceRefMap;
 					try {
-						covarExperienceRefMap = (Map<String,?>) covarExperienceRefObj;
+						covarExperienceRefMap = new CaseInsensitiveMap((Map<String,?>) covarExperienceRefObj);
 					}
 					catch (Exception e) {
 						response.addMessage(

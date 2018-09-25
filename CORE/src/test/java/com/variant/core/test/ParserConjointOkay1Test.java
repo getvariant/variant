@@ -136,17 +136,17 @@ public class ParserConjointOkay1Test extends BaseTestCore {
 	    	    "              'stateRef':'state2',                                       \n" +
 	    	    "              'variants':[                                               \n" +
 	    	    "                 {                                                       \n" +
-	    	    "                    'experienceRef':'B',                                 \n" +
-				"                    'parameters': [                                      \n" +
+	    	    "                    'ExperienceRef':'B',                                 \n" +
+				"                    'Parameters': [                                      \n" +
 				"                       {                                                 \n" +
-				"                          'name':'path',                                 \n" +
-				"                          'value':'/path/to/state2/test1.B'              \n" +
+				"                          'NAME':'path',                                 \n" +
+				"                          'VALUE':'/path/to/state2/test1.B'              \n" +
 				"                       }                                                 \n" +
 				"                    ]                                                    \n" +
 	    	    "                 },                                                      \n" +
 	    	    "                 {                                                       \n" +
-	    	    "                    'experienceRef':'C',                                 \n" +
-				"                    'parameters': [                                      \n" +
+	    	    "                    'ExperienceRef':'C',                                 \n" +
+				"                    'Parameters': [                                      \n" +
 				"                       {                                                 \n" +
 				"                          'name':'path',                                 \n" +
 				"                          'value':'/path/to/state2/test1.C'              \n" +
@@ -156,8 +156,8 @@ public class ParserConjointOkay1Test extends BaseTestCore {
 	    	    "              ]                                                          \n" +
 	    	    "           },                                                            \n" +
 	    	    "           {                                                             \n" +
-	    	    "              'stateRef':'state3',                                       \n" +
-	    	    "              'variants':[                                               \n" +
+	    	    "              'StateRef':'state3',                                       \n" +
+	    	    "              'VARIANTS':[                                               \n" +
 	    	    "                 {                                                       \n" +
 	    	    "                    'experienceRef':'B',                                 \n" +
 				"                    'parameters': [                                      \n" +
@@ -179,11 +179,11 @@ public class ParserConjointOkay1Test extends BaseTestCore {
 	    	    "              ]                                                          \n" +
 	    	    "           },                                                            \n" +
 	    	    "           {                                                             \n" +
-	    	    "              'stateRef':'state4',                                        \n" +
+	    	    "              'StateRef':'state4',                                        \n" +
 	    	    "              'isNonvariant':true                                        \n" +
 	    	    "           },                                                            \n" +
 	    	    "           {                                                             \n" +
-	    	    "              'stateRef':'state5',                                        \n" +
+	    	    "              'STATEREF':'state5',                                        \n" +
 	    	    "              'isNonvariant':true                                        \n" +
 	    	    "           }                                                             \n" +
 	    	    "        ]                                                                \n" +
@@ -227,10 +227,10 @@ public class ParserConjointOkay1Test extends BaseTestCore {
 	    	    "                 },                                                      \n" +
 	    	    "                 {                                                       \n" +
 	    	    "                    'experienceRef':'B',                                 \n" +
-	    	    "                    'conjointExperienceRefs': [                         \n" +
+	    	    "                    'CONJOINTExperienceRefs': [                         \n" +
 	    	    "                       {                                                 \n" +
-	    	    "                          'variationRef': 'test1',                            \n" +
-	    	    "                          'experienceRef': 'B'                           \n" +
+	    	    "                          'VARIATIONRef': 'test1',                       \n" +
+	    	    "                          'ExperienceRef': 'B'                           \n" +
 	    	    "                       }                                                 \n" +
 	    	    "                     ],                                                  \n" +
 				"                    'parameters': [                                      \n" +
