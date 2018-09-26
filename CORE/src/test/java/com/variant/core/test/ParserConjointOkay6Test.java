@@ -780,9 +780,9 @@ public class ParserConjointOkay6Test extends BaseTestCore {
 		
 		Schema schema = response.getSchema();
 
-		final Variation test1 = schema.getTest("test1");
-		final Variation test2 = schema.getTest("test2");
-		final Variation test3 = schema.getTest("test3");
+		final Variation test1 = schema.getVariation("test1").get();
+		final Variation test2 = schema.getVariation("test2").get();
+		final Variation test3 = schema.getVariation("test3").get();
 
 		// 
 		// Test concurrence.

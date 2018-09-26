@@ -179,8 +179,8 @@ public class ParserSerialOkayTest extends BaseTestCore {
 		assertEquals("flusher.class.Foo", flusher.getClassName());
 		assertEquals("{\"url\":\"jdbc:postgresql://localhost/variant\",\"user\":\"variant\",\"password\":\"variant\"}", flusher.getInit());
 
-		Variation test1 = schema.getTest("test1");
-		Variation test2 = schema.getTest("test2");
+		Variation test1 = schema.getVariation("test1").get();
+		Variation test2 = schema.getVariation("test2").get();
 		assertTrue(test1.isOn());
 		assertFalse(test2.isOn());
 		assertFalse(test1.isSerialWith(test2));
@@ -387,8 +387,8 @@ public class ParserSerialOkayTest extends BaseTestCore {
 		assertEquals("flusher.class.Foo", flusher.getClassName());
 		assertNull(flusher.getInit());
 
-		Variation test1 = schema.getTest("test1");
-		Variation test2 = schema.getTest("test2");
+		Variation test1 = schema.getVariation("test1").get();
+		Variation test2 = schema.getVariation("test2").get();
 		assertFalse(test1.isOn());
 		assertTrue(test2.isOn());
 		assertFalse(test1.isSerialWith(test2));
@@ -540,8 +540,8 @@ public class ParserSerialOkayTest extends BaseTestCore {
 		assertNull(schema.getMeta().getComment());
 		assertNull(schema.getMeta().getFlusher());
 
-		Variation test1 = schema.getTest("test1");
-		Variation test2 = schema.getTest("test2");
+		Variation test1 = schema.getVariation("test1").get();
+		Variation test2 = schema.getVariation("test2").get();
 		assertTrue(test1.isOn());
 		assertTrue(test2.isOn());
 		assertFalse(test1.isSerialWith(test2));
@@ -871,7 +871,7 @@ public class ParserSerialOkayTest extends BaseTestCore {
 		
 		// Verify states returned individually by name.
 		for (String[] expectedView: expectedStates) {	
-			verifyState(expectedView, schema.getState(expectedView[0]));
+			verifyState(expectedView, schema.getState(expectedView[0]).get());
 		}
 
 		// Verify non-existent views.
@@ -882,59 +882,59 @@ public class ParserSerialOkayTest extends BaseTestCore {
 		}
 		
 		// Instrumented tests.
-		State view = schema.getState("state1");
+		State view = schema.getState("state1").get();
 		ArrayList<Variation> expectedInstrumentedTests = new ArrayList<Variation>() {{
-			add(schema.getTest("test1"));
-			add(schema.getTest("Test1"));
+			add(schema.getVariation("test1").get());
+			add(schema.getVariation("Test1").get());
 		}};
-		assertEquals(expectedInstrumentedTests, view.getInstrumentedTests());
-		assertFalse(view.isNonvariantIn(schema.getTest("test1")));
-		assertFalse(view.isNonvariantIn(schema.getTest("Test1")));
+		assertEquals(expectedInstrumentedTests, view.getInstrumentedVariations());
+		assertFalse(view.isNonvariantIn(schema.getVariation("test1").get()));
+		assertFalse(view.isNonvariantIn(schema.getVariation("Test1").get()));
 		try {
-			assertFalse(view.isNonvariantIn(schema.getTest("non-existent")));
+			assertFalse(view.isNonvariantIn(schema.getVariation("non-existent").get()));
 		}
 		catch (NullPointerException npe ) { /* expected */ }
 
-		view = schema.getState("state2");
+		view = schema.getState("state2").get();
 		expectedInstrumentedTests = new ArrayList<Variation>() {{
-			add(schema.getTest("test2"));
+			add(schema.getVariation("test2").get());
 		}};
-		assertEquals(expectedInstrumentedTests, view.getInstrumentedTests());
-		assertFalse(view.isNonvariantIn(schema.getTest("test2")));
+		assertEquals(expectedInstrumentedTests, view.getInstrumentedVariations());
+		assertFalse(view.isNonvariantIn(schema.getVariation("test2").get()));
 		
-		view = schema.getState("state3");
+		view = schema.getState("state3").get();
 		expectedInstrumentedTests = new ArrayList<Variation>() {{
-			add(schema.getTest("test2"));
+			add(schema.getVariation("test2").get());
 		}};
-		assertEquals(expectedInstrumentedTests, view.getInstrumentedTests());
-		assertFalse(view.isNonvariantIn(schema.getTest("test2")));
+		assertEquals(expectedInstrumentedTests, view.getInstrumentedVariations());
+		assertFalse(view.isNonvariantIn(schema.getVariation("test2").get()));
 
-		view = schema.getState("state4");
+		view = schema.getState("state4").get();
 		expectedInstrumentedTests = new ArrayList<Variation>() {{
-			add(schema.getTest("test2"));
+			add(schema.getVariation("test2").get());
 		}};
-		assertEquals(expectedInstrumentedTests, view.getInstrumentedTests());
-		assertTrue(view.isNonvariantIn(schema.getTest("test2")));
+		assertEquals(expectedInstrumentedTests, view.getInstrumentedVariations());
+		assertTrue(view.isNonvariantIn(schema.getVariation("test2").get()));
 		
-		view = schema.getState("state5");
+		view = schema.getState("state5").get();
 		expectedInstrumentedTests = new ArrayList<Variation>();
-		assertEquals(expectedInstrumentedTests, view.getInstrumentedTests());
+		assertEquals(expectedInstrumentedTests, view.getInstrumentedVariations());
 
 		//
 		// Tests.
 		//
 
-		List<Variation> actualTests = schema.getTests();
+		List<Variation> actualTests = schema.getVariations();
 		
 		assertEquals(3, actualTests.size());
 		verifyTest1(actualTests.get(0), schema);
-		verifyTest1(schema.getTest("test1"), schema);
+		verifyTest1(schema.getVariation("test1").get(), schema);
 		verifyTest2(actualTests.get(1), schema);
-		verifyTest2(schema.getTest("test2"), schema);
+		verifyTest2(schema.getVariation("test2").get(), schema);
 		verifyTest3(actualTests.get(2), schema);
-		verifyTest3(schema.getTest("Test1"), schema);
+		verifyTest3(schema.getVariation("Test1").get(), schema);
 		
-		assertNull(schema.getTest("Test2"));
+		assertFalse(schema.getVariation("Test2").isPresent());
 	
 	}
 	
@@ -985,7 +985,7 @@ public class ParserSerialOkayTest extends BaseTestCore {
 		assertEquals(1, actualonStates.size());
 
 		Variation.OnState tov = actualonStates.get(0);
-		assertEquals(test, tov.getTest());
+		assertEquals(test, tov.getVariation());
 		assertEquals(config.getState("state1"), tov.getState());
 		assertFalse(tov.isNonvariant());
 		List<StateVariant> actualVariants =  tov.getVariants();
@@ -1034,7 +1034,7 @@ public class ParserSerialOkayTest extends BaseTestCore {
 		assertEquals(3, actualonStates.size());
 
 		Variation.OnState tov = actualonStates.get(0);
-		assertEquals(test, tov.getTest());
+		assertEquals(test, tov.getVariation());
 		assertEquals(config.getState("state3"), tov.getState());
 		assertFalse(tov.isNonvariant());
 		List<StateVariant> actualVariants =  tov.getVariants();
@@ -1046,7 +1046,7 @@ public class ParserSerialOkayTest extends BaseTestCore {
 		assertEquals("/path/to/state3/test2.D", variant.getParameters().get("path"));
 
 		tov = actualonStates.get(1);
-		assertEquals(test, tov.getTest());
+		assertEquals(test, tov.getVariation());
 		assertEquals(config.getState("state2"), tov.getState());
 		assertFalse(tov.isNonvariant());
 		actualVariants =  tov.getVariants();
@@ -1058,7 +1058,7 @@ public class ParserSerialOkayTest extends BaseTestCore {
 		assertEquals("/path/to/state2/test2.D", variant.getParameters().get("path"));
 		
 		tov = actualonStates.get(2);
-		assertEquals(test, tov.getTest());
+		assertEquals(test, tov.getVariation());
 		assertEquals(config.getState("state4"), tov.getState());
 		assertTrue(tov.isNonvariant());
 		assertTrue(tov.getVariants().isEmpty());
@@ -1095,7 +1095,7 @@ public class ParserSerialOkayTest extends BaseTestCore {
 		assertEquals(1, actualonStates.size());
 
 		Variation.OnState tov = actualonStates.get(0);
-		assertEquals(test, tov.getTest());
+		assertEquals(test, tov.getVariation());
 		assertEquals(config.getState("state1"), tov.getState());
 		assertFalse(tov.isNonvariant());
 		List<StateVariant> actualVariants =  tov.getVariants();

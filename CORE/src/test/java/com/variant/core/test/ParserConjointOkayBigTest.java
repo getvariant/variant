@@ -47,18 +47,18 @@ public class ParserConjointOkayBigTest extends BaseTestCore {
 		assertEquals(schema.getMeta().getName(), "OkayBigTest");
 		assertEquals(schema.getMeta().getComment(), "Schema for okay big test!");
 		
-		final Variation test1 = schema.getTest("test1");
-		final Variation test2 = schema.getTest("test2");
-		final Variation test3 = schema.getTest("test3");
-		final Variation test4 = schema.getTest("test4");
-		final Variation test5 = schema.getTest("test5");
-		final Variation test6 = schema.getTest("test6");
+		final Variation test1 = schema.getVariation("test1").get();
+		final Variation test2 = schema.getVariation("test2").get();
+		final Variation test3 = schema.getVariation("test3").get();
+		final Variation test4 = schema.getVariation("test4").get();
+		final Variation test5 = schema.getVariation("test5").get();
+		final Variation test6 = schema.getVariation("test6").get();
 
-		final State state1 = schema.getState("state1");
-		final State state2 = schema.getState("state2");
-		final State state3 = schema.getState("state3");
-		final State state4 = schema.getState("state4");
-		final State state5 = schema.getState("state5");
+		final State state1 = schema.getState("state1").get();
+		final State state2 = schema.getState("state2").get();
+		final State state3 = schema.getState("state3").get();
+		final State state4 = schema.getState("state4").get();
+		final State state5 = schema.getState("state5").get();
 
 		// 
 		// Declared test covariance.
@@ -75,7 +75,7 @@ public class ParserConjointOkayBigTest extends BaseTestCore {
 		//
 
 		// test1
-		for (final Variation t: schema.getTests()) {			
+		for (final Variation t: schema.getVariations()) {			
 			
 			new ExceptionInterceptor<IllegalArgumentException>() {
 				@Override public void toRun() { assertFalse(test1.isSerialWith(t)); }
@@ -86,7 +86,7 @@ public class ParserConjointOkayBigTest extends BaseTestCore {
 		}
 		
 		// test2
-		for (final Variation t: schema.getTests()) {
+		for (final Variation t: schema.getVariations()) {
 			
 			new ExceptionInterceptor<IllegalArgumentException>() {
 				@Override public void toRun() { assertFalse(test2.isSerialWith(t)); }
@@ -98,7 +98,7 @@ public class ParserConjointOkayBigTest extends BaseTestCore {
 		}
 
 		// test3
-		for (final Variation t: schema.getTests()) {
+		for (final Variation t: schema.getVariations()) {
 
 			new ExceptionInterceptor<IllegalArgumentException>() {
 					@Override public void toRun() { 
@@ -112,7 +112,7 @@ public class ParserConjointOkayBigTest extends BaseTestCore {
 		}
 
 		// test4
-		for (final Variation t: schema.getTests()) {
+		for (final Variation t: schema.getVariations()) {
 			new ExceptionInterceptor<IllegalArgumentException>() {
 				@Override public void toRun() { assertFalse(test4.isSerialWith(t)); }
 				@Override public void onThrown(IllegalArgumentException e) { assertEquals(test4, t); }
@@ -122,7 +122,7 @@ public class ParserConjointOkayBigTest extends BaseTestCore {
 		}
 
 		// test5
-		for (final Variation t: schema.getTests()) {
+		for (final Variation t: schema.getVariations()) {
 			new ExceptionInterceptor<IllegalArgumentException>() {
 				@Override public void toRun() { assertFalse(test5.isSerialWith(t)); }
 				@Override public void onThrown(IllegalArgumentException e) { assertEquals(test5, t); }

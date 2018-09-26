@@ -319,7 +319,7 @@ public class ParserStateParamsTest extends BaseTestCore {
 		assertEquals(0, response.getMessages().size());
 		
 		Schema schema = response.getSchema();
-		State s1 = schema.getState("state1");
+		State s1 = schema.getState("state1").get();
 		assertTrue(s1.getParameters().containsKey("foo1"));
 		assertNull(s1.getParameters().get("foo1"));
 		assertTrue(s1.getParameters().containsKey("foo2"));
@@ -388,7 +388,7 @@ public class ParserStateParamsTest extends BaseTestCore {
 		assertEquals(0, response.getMessages().size());
 		
 		Schema schema = response.getSchema();
-		State s1 = schema.getState("state1");
+		State s1 = schema.getState("state1").get();
 		assertEquals("bar1", s1.getParameters().get("foo1"));
 		assertEquals("bar2", s1.getParameters().get("foo2"));
 		assertNull(s1.getParameters().get("Foo1"));
@@ -457,7 +457,7 @@ public class ParserStateParamsTest extends BaseTestCore {
 		assertEquals(0, response.getMessages().size());
 		
 		Schema schema = response.getSchema();
-		State s1 = schema.getState("state1");
+		State s1 = schema.getState("state1").get();
 		assertEquals("bar1", s1.getParameters().get("foo1"));
 		assertEquals("bar2", s1.getParameters().get("foo2"));
 		assertNull(s1.getParameters().get("Foo1"));
