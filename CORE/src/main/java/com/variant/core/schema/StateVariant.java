@@ -3,8 +3,8 @@ package com.variant.core.schema;
 import java.util.List;
 import java.util.Map;
 
-import com.variant.core.schema.Test.Experience;
-import com.variant.core.schema.Test.OnState;
+import com.variant.core.schema.Variation.Experience;
+import com.variant.core.schema.Variation.OnState;
 
 
 /**
@@ -35,16 +35,16 @@ public interface StateVariant {
 	/**
 	 * The test for which this variant is defined. Equivalent to {@link #getOnState()}.getTest().
 	 * 
-	 * @return A object of type {@link Test}
+	 * @return A object of type {@link Variation}
 	 * @since 0.5
 	 */
-	public Test getTest();
+	public Variation getTest();
 		
 	/**
 	 * This variant's own test experience, i.e. for the test within whose definition this variant
 	 * is defined.
 	 * 
-	 * @return An object of type {@link Test.Experience}.
+	 * @return An object of type {@link Variation.Experience}.
 	 * @since 0.5
 	 */
 	public Experience getExperience();
@@ -53,7 +53,7 @@ public interface StateVariant {
 	 * The list of this variant's conjointly concurrent experiences, i.e. the ones defined in the 
 	 * conjoint tests clause of the test within whose definition this variant is defined.
 	 * 
-	 * @return A list of objects of type {@link Test.Experience} or null if this test does not have
+	 * @return A list of objects of type {@link Variation.Experience} or null if this test does not have
 	 *         the <code>conjointRestRefs</code> clause;
 	 *         
 	 * @since 0.5

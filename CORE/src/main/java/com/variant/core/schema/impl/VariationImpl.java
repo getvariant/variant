@@ -5,29 +5,30 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Optional;
 
-import com.variant.core.impl.CoreException;
+import com.variant.core.impl.VariantException;
 import com.variant.core.impl.VariantSpace;
 import com.variant.core.schema.Hook;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.State;
-import com.variant.core.schema.Test;
+import com.variant.core.schema.Variation;
 
 /**
  * 
  * @author Igor
  *
  */
-public class TestImpl implements Test {
+public class VariationImpl implements Variation {
 	
 	// As defined:
 	private Schema schema;
 	private String name;
 	private boolean isOn = true;
-	private List<TestImpl> conjointTests;
+	private List<VariationImpl> conjointTests;
 	private List<TestExperienceImpl> experiences;
 	private VariantSpace variantSpace;
-	private List<TestOnStateImpl> onStates;
+	private List<VariationOnStateImpl> onStates;
 	
 	// Hooks are keyed by name.
 	private LinkedHashSet<Hook> hooks = new LinkedHashSet<Hook>();
@@ -39,7 +40,7 @@ public class TestImpl implements Test {
 	 * 
 	 * @param name
 	 */
-	public TestImpl(Schema schema, String name) {
+	public VariationImpl(Schema schema, String name) {
 		this.schema = schema;
 		this.name = name;
 	}
@@ -67,42 +68,35 @@ public class TestImpl implements Test {
 	@Override
 	@SuppressWarnings("unchecked")
 	public List<Experience> getExperiences() {
-		return  (List<Experience>) (List<?>) Collections.unmodifiableList(experiences);
+		return (List<Experience>) (List<?>) Collections.unmodifiableList(experiences);
 	}
 
 	/**
-	 * 
 	 */
 	@Override
-	public Experience getExperience(String name) {
-		for (TestExperienceImpl e: experiences) {
-			if (e.getName().equalsIgnoreCase(name)) return e;
-		}
-		return null;
+	public Optional<Experience> getExperience(String name) {
+		for (Experience exp: experiences) if (exp.getName().equals(name)) return Optional.of(exp);
+		return Optional.empty();
 	}
-	
+
 	/**
-	 * 
 	 */
 	@Override
 	public Experience getControlExperience() {
-		for (TestExperienceImpl e: experiences) {
-			if (e.isControl()) return e;
-		}
-		throw new CoreException.Internal("No control experience found in test [' + getName() + ']");
+		for (Experience exp: experiences) if (exp.isControl()) return exp;
+		throw new VariantException.Internal(
+				String.format("No control experience found for variation [%s] in schema [%s]", name, schema.getMeta().getName()));
 	}
 
 	/**
-	 * 
 	 */
 	@Override
 	@SuppressWarnings("unchecked")
 	public List<OnState> getOnStates() {
-		return (List<Test.OnState>) (List<?>) Collections.unmodifiableList(onStates);
+		return (List<Variation.OnState>) (List<?>) Collections.unmodifiableList(onStates);
 	}
 
 	/**
-	 * 
 	 */
 	@Override
 	public OnState getOnState(State view) {
@@ -111,22 +105,18 @@ public class TestImpl implements Test {
 	}
 
 	/**
-	 * Conjoint tests declared by this test.
-	 * 
-	 * @return
 	 */
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<Test> getConjointTests() {
+	public List<Variation> getConjointTests() {
 		if (conjointTests == null) return null;
-		return (List<Test>) (List<?>) Collections.unmodifiableList(conjointTests);
+		return (List<Variation>) (List<?>) Collections.unmodifiableList(conjointTests);
 	}
 	
 	/**
-	 * 
 	 */
 	@Override
-	public boolean isSerialWith(Test other) {
+	public boolean isSerialWith(Variation other) {
 		
 		if (this.equals(other)) throw new IllegalArgumentException("Argument cannot be equal to this");
 		
@@ -159,13 +149,13 @@ public class TestImpl implements Test {
 	}
 
 	@Override
-	public boolean isConcurrentWith(Test other) {
+	public boolean isConcurrentWith(Variation other) {
 		return !isSerialWith(other);
 	}
 
 	@Override
-	public boolean isConjointWith(Test other) {
-		TestImpl otherImpl = (TestImpl) other;
+	public boolean isConjointWith(Variation other) {
+		VariationImpl otherImpl = (VariationImpl) other;
 		return conjointTests != null && conjointTests.contains(other) || 
 			   otherImpl.conjointTests != null && otherImpl.conjointTests.contains(this);		
 	}
@@ -186,7 +176,7 @@ public class TestImpl implements Test {
 	 * 
 	 * @param onViews
 	 */
-	public void setOnViews(List<TestOnStateImpl> onViews) {
+	public void setOnViews(List<VariationOnStateImpl> onViews) {
 		this.onStates = onViews;
 	}
 	
@@ -202,7 +192,7 @@ public class TestImpl implements Test {
 	 * Caller must ensure that the covarTests are sorted in ordinal order.
 	 * @param tests
 	 */
-	public void setConjointTests(List<TestImpl> covarTests) {
+	public void setConjointTests(List<VariationImpl> covarTests) {
 		this.conjointTests = covarTests;
 	}
 	
@@ -228,8 +218,8 @@ public class TestImpl implements Test {
 	 */
 	@Override
 	public boolean equals(Object other) {
-		if (! (other instanceof Test)) return false;
-		return ((Test) other).getName().equals(this.getName());
+		if (! (other instanceof Variation)) return false;
+		return ((Variation) other).getName().equals(this.getName());
 	}
 
 	@Override
@@ -263,5 +253,6 @@ public class TestImpl implements Test {
 	public String toString() {
 		return name;
 	}
+
 }
 

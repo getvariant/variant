@@ -4,14 +4,14 @@ import java.util.HashSet;
 import java.util.Set;
 
 import com.variant.core.schema.State;
-import com.variant.core.schema.Test;
+import com.variant.core.schema.Variation;
 
 // Remove public modifier is the result of exposing the server side
 // constructor.
-public class TestExperienceImpl implements Test.Experience  {
+public class TestExperienceImpl implements Variation.Experience  {
 
 	private String name;
-	private Test test;
+	private Variation test;
 	private Number weight;
 	private boolean isControl;
 	private Set<State> uninstrumentedStates = new HashSet<State>();
@@ -36,7 +36,7 @@ public class TestExperienceImpl implements Test.Experience  {
 	}
 
 	@Override
-	public Test getTest() {
+	public Variation getTest() {
 		return test;
 	}
 
@@ -51,7 +51,7 @@ public class TestExperienceImpl implements Test.Experience  {
 	}
 	
 	@Override
-	public boolean isPhantomOn(State state) {
+	public boolean isPhantom(State state) {
 		if (state == null) throw new NullPointerException("Null state");
 		return uninstrumentedStates.contains(state);
 	}
@@ -59,7 +59,7 @@ public class TestExperienceImpl implements Test.Experience  {
 	//                                        PUBLIC EXT                                           //
 	//---------------------------------------------------------------------------------------------//
 
-	public void setTest(Test test) {
+	public void setTest(Variation test) {
 		this.test = test;
 	}
 

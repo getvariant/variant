@@ -10,14 +10,14 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.variant.core.impl.CoreException;
 import com.variant.core.schema.State;
 import com.variant.core.schema.StateVariant;
-import com.variant.core.schema.Test;
-import com.variant.core.schema.Test.Experience;
-import com.variant.core.schema.Test.OnState;
+import com.variant.core.schema.Variation;
+import com.variant.core.schema.Variation.Experience;
+import com.variant.core.schema.Variation.OnState;
 
 
 public class StateVariantImpl implements StateVariant {
 
-	private TestOnStateImpl onStateImpl;
+	private VariationOnStateImpl onStateImpl;
 	private TestExperienceImpl ownExperience;
 	private List<TestExperienceImpl> conjointExperiences;
 	private Map<String,String> params;
@@ -27,7 +27,7 @@ public class StateVariantImpl implements StateVariant {
 	 * @param experiences
 	 * @param path
 	 */
-	public StateVariantImpl(TestOnStateImpl onViewImpl, TestExperienceImpl ownExperience, List<TestExperienceImpl> conjointExperiences, Map<String,String> params) {
+	public StateVariantImpl(VariationOnStateImpl onViewImpl, TestExperienceImpl ownExperience, List<TestExperienceImpl> conjointExperiences, Map<String,String> params) {
 		this.onStateImpl = onViewImpl;
 		this.ownExperience = ownExperience;
 		this.conjointExperiences = conjointExperiences;
@@ -63,8 +63,8 @@ public class StateVariantImpl implements StateVariant {
 	/**
 	 */
 	@Override
-	public Test getTest() {
-		return onStateImpl.getTest();
+	public Variation getTest() {
+		return onStateImpl.getVariation();
 	}
 
 	/**
@@ -105,7 +105,7 @@ public class StateVariantImpl implements StateVariant {
 			JsonGenerator jsonGen = new JsonFactory().createGenerator(result);
 			jsonGen.writeStartObject();
 			jsonGen.writeStringField("state", onStateImpl.getState().getName());
-			jsonGen.writeStringField("test", onStateImpl.getTest().getName());
+			jsonGen.writeStringField("test", onStateImpl.getVariation().getName());
 			jsonGen.writeStringField("params", params.toString());
 			jsonGen.writeEndObject();
 			jsonGen.flush();

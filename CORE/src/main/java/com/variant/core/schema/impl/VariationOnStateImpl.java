@@ -6,26 +6,26 @@ import java.util.List;
 import com.variant.core.impl.VariantSpace;
 import com.variant.core.schema.State;
 import com.variant.core.schema.StateVariant;
-import com.variant.core.schema.Test;
+import com.variant.core.schema.Variation;
 import com.variant.core.util.immutable.ImmutableList;
 
 /**
  * An element of the onState array of the test definition.
  * @author Igor
  */
-public class TestOnStateImpl implements Test.OnState {
+public class VariationOnStateImpl implements Variation.OnState {
 
 	private StateImpl state;
-	private TestImpl test;
+	private VariationImpl var;
 	private boolean isNonvariant = false;
 	private List<StateVariant> variants = new ArrayList<StateVariant>();
 	private VariantSpace variantSpace;
 
 	/**
 	 */
-	public TestOnStateImpl(StateImpl state, TestImpl test) {
+	public VariationOnStateImpl(StateImpl state, VariationImpl var) {
 		this.state = state;
-		this.test = test;
+		this.var = var;
 	}
 			
 	//---------------------------------------------------------------------------------------------//
@@ -41,8 +41,9 @@ public class TestOnStateImpl implements Test.OnState {
 		return state;
 	}
 	
-	public Test getTest() {
-		return test;
+	@Override
+	public Variation getVariation() {
+		return var;
 	}
 	
 	/**

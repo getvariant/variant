@@ -13,7 +13,7 @@ import com.variant.core.impl.CoreException;
 import com.variant.core.schema.Hook;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.State;
-import com.variant.core.schema.Test;
+import com.variant.core.schema.Variation;
 
 /**
  * 
@@ -59,12 +59,12 @@ public class StateImpl implements State {
 	}
 
 	@Override
-	public List<Test> getInstrumentedTests() {
+	public List<Variation> getInstrumentedVariations() {
 		
-		ArrayList<Test> result = new ArrayList<Test>();
+		ArrayList<Variation> result = new ArrayList<Variation>();
 		
-		for (Test test: schema.getTests()) {
-			for (Test.OnState tov: test.getOnStates()) {
+		for (Variation test: schema.getVariations()) {
+			for (Variation.OnState tov: test.getOnStates()) {
 				if (tov.getState().equals(this)) result.add(test);
 			}
 		}
@@ -72,18 +72,18 @@ public class StateImpl implements State {
 	}
 
 	@Override
-	public boolean isInstrumentedBy(Test test) {
+	public boolean isInstrumentedBy(Variation test) {
 
-		for (Test.OnState tov: test.getOnStates()) {
+		for (Variation.OnState tov: test.getOnStates()) {
 			if (tov.getState().equals(this)) return true;
 		}
 		return false;
 	}		
 
 	@Override
-	public boolean isNonvariantIn(Test test) {
+	public boolean isNonvariantIn(Variation test) {
 
-		for (Test.OnState tov: test.getOnStates()) {
+		for (Variation.OnState tov: test.getOnStates()) {
 			if (tov.getState().equals(this)) return tov.isNonvariant();
 		}
 		throw new CoreException.User(STATE_NOT_INSTRUMENTED_BY_TEST, name, test.getName());

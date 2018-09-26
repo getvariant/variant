@@ -18,7 +18,7 @@ import com.variant.core.impl.CommonError;
 import com.variant.core.impl.CoreException;
 import com.variant.core.schema.ParserMessage;
 import com.variant.core.schema.Schema;
-import com.variant.core.schema.Test.Experience;
+import com.variant.core.schema.Variation.Experience;
 import com.variant.core.schema.parser.ParserResponse;
 import com.variant.core.session.CoreSession;
 import com.variant.core.session.SessionScopedTargetingStabile;
@@ -75,7 +75,7 @@ abstract public class VariantBaseTest {
 	 */
 	protected Experience experience(Schema schema, String name) {
 		String[] tokens = name.split("\\.");
-		return schema.getTest(tokens[0]).getExperience(tokens[1]);
+		return schema.getVariation(tokens[0]).get().getExperience(tokens[1]).get();
 	}
 
 	//---------------------------------------------------------------------------------------------//

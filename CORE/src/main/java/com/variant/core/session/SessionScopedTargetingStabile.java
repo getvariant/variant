@@ -4,11 +4,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.function.Predicate;
 
 import com.variant.core.schema.Schema;
-import com.variant.core.schema.Test;
-import com.variant.core.schema.Test.Experience;
-import com.variant.core.util.Predicate;
+import com.variant.core.schema.Variation;
+import com.variant.core.schema.Variation.Experience;
 
 /**
  * Session scoped targeting stabilizer provides session scoped targeting stability.
@@ -113,9 +113,9 @@ public class SessionScopedTargetingStabile {
 	public Collection<Experience> getAllAsExperiences(Schema schema) {
 		ArrayList<Experience> result = new ArrayList<Experience>();
 		for (Entry entry: entryMap.values()) {
-			Test test = schema.getTest(entry.testName);
+			Variation test = schema.getVariation(entry.testName).get();
 			if (test != null) {
-				Experience experience = test.getExperience(entry.experienceName);
+				Experience experience = test.getExperience(entry.experienceName).get();
 				if (experience != null) result.add(experience);
 			}
 		}
@@ -138,10 +138,8 @@ public class SessionScopedTargetingStabile {
 	 */
 	public Experience getAsExperience(String testName, Schema schema) {
 		Entry entry =  entryMap.get(testName);
-		if (entry != null) {
-			return schema.getTest(entry.testName).getExperience(entry.experienceName);
-		}
-		return null;
+		return entry == null ? null :
+			schema.getVariation(entry.testName).get().getExperience(entry.experienceName).get();
 	}
 
 	/**

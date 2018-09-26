@@ -4,11 +4,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Optional;
 
 import com.variant.core.schema.Meta;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.State;
-import com.variant.core.schema.Test;
+import com.variant.core.schema.Variation;
 
 /**
  * @author Igor
@@ -22,7 +23,7 @@ public class SchemaImpl implements Schema {
 	private LinkedHashSet<State> states = new LinkedHashSet<State>();
 	
 	// Tests are keyed by name
-	private LinkedHashSet<Test> tests = new LinkedHashSet<Test>();
+	private LinkedHashSet<Variation> vars = new LinkedHashSet<Variation>();
 		
 	/**
 	 */
@@ -40,51 +41,39 @@ public class SchemaImpl implements Schema {
 	}
 
 	/**
-	 * States in the ordinal order, as an immutable list.
 	 */
 	@Override
 	public List<State> getStates() {
-		//isUsable();
 		ArrayList<State> result = new ArrayList<State>(states.size());
 		result.addAll(states);
 		return Collections.unmodifiableList(result);
 	}
 
-	/**
-	 * Get a state by name
-	 */
 	@Override
-	public State getState(String name) {
-		//isUsable();
+	public Optional<State> getState(String name) {
 		for (State state: states) {
-			if (state.getName().equals(name)) return state;
+			if (state.getName().equals(name)) return Optional.of(state);
 		}
-		return null;
+		return Optional.empty();
 	}
 
 	/**
-	 * Get all tests.
 	 */
 	@Override
-	public List<Test> getTests() {
-		//isUsable();
-		ArrayList<Test> result = new ArrayList<Test>(tests.size());
-		for (Test test: tests) {
-			result.add(test);
+	public List<Variation> getVariations() {
+		ArrayList<Variation> result = new ArrayList<Variation>(vars.size());
+		for (Variation var: vars) {
+			result.add(var);
 		}
 		return Collections.unmodifiableList(result);
 	}
 
 	/**
-	 * Gat a test by name.
 	 */
 	@Override
-	public Test getTest(String name) {
-		//isUsable();
-		for (Test test: tests) {
-			if (test.getName().equals(name)) return test;
-		}
-		return null;
+	public Optional<Variation> getVariation(String name) {
+		for (Variation var: vars) if (var.getName().equals(name)) return Optional.of(var);
+		return Optional.empty();
 	}
 	
     //---------------------------------------------------------------------------------------------//
@@ -114,8 +103,8 @@ public class SchemaImpl implements Schema {
 	 * @param test
 	 * @return true if test didn't exist, false if did.
 	 */
-	public boolean addTest(Test test) {
-		return tests.add(test);
+	public boolean addVariation(Variation test) {
+		return vars.add(test);
 	}
 
 }

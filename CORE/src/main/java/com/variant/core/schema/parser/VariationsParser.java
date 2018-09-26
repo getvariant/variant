@@ -29,6 +29,7 @@ import static com.variant.core.schema.parser.error.SemanticError.VARIANTS_ISNONV
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,15 +40,16 @@ import com.variant.core.impl.ServerError;
 import com.variant.core.impl.VariantSpace;
 import com.variant.core.schema.Hook;
 import com.variant.core.schema.ParserMessage;
+import com.variant.core.schema.State;
 import com.variant.core.schema.StateVariant;
-import com.variant.core.schema.Test;
-import com.variant.core.schema.Test.Experience;
+import com.variant.core.schema.Variation;
+import com.variant.core.schema.Variation.Experience;
 import com.variant.core.schema.impl.SchemaImpl;
 import com.variant.core.schema.impl.StateImpl;
 import com.variant.core.schema.impl.StateVariantImpl;
 import com.variant.core.schema.impl.TestExperienceImpl;
-import com.variant.core.schema.impl.TestImpl;
-import com.variant.core.schema.impl.TestOnStateImpl;
+import com.variant.core.schema.impl.VariationImpl;
+import com.variant.core.schema.impl.VariationOnStateImpl;
 import com.variant.core.schema.parser.error.SemanticError.Location;
 import com.variant.core.util.CollectionsUtils;
 import com.variant.core.util.MutableInteger;
@@ -98,18 +100,18 @@ public class VariationsParser implements Keywords {
 			Location varLocation = varsLocation.plusIx(index++);
 			
 			// Parse individual test
-			Test test = parseTest(rawTest, varLocation, response);
-			if (test != null && !((SchemaImpl) response.getSchema()).addTest(test)) {
-				response.addMessage(varLocation, DUPE_OBJECT, test.getName());
+			Variation var = parseTest(rawTest, varLocation, response);
+			if (var != null && !((SchemaImpl) response.getSchema()).addVariation(var)) {
+				response.addMessage(varLocation, DUPE_OBJECT, var.getName());
 			}
 			
 			// If no errors, register test scoped hooks.
 			if (errorCount.intValue() == 0) {
-				for (Hook hook: test.getHooks()) hooksService.initHook(hook, response);
+				for (Hook hook: var.getHooks()) hooksService.initHook(hook, response);
 
 				// Post the test parsed event.
 				try {
-					hooksService.post(new TestParsedLifecycleEventImpl(test, response));
+					hooksService.post(new TestParsedLifecycleEventImpl(var, response));
 				}
 				catch (Exception e) {
 					response.addMessage(ServerError.HOOK_UNHANDLED_EXCEPTION, TestParsedLifecycleEventImpl.class.getName(), e.getMessage());
@@ -127,10 +129,10 @@ public class VariationsParser implements Keywords {
 	 * @param response
 	 * @throws VariantRuntimeException 
 	 */
-	private static Test parseTest(Map<String, ?> test, Location testLocation, ParserResponse response){
+	private static Variation parseTest(Map<String, ?> test, Location testLocation, ParserResponse response){
 		
 		List<TestExperienceImpl> experiences = new ArrayList<TestExperienceImpl>();
-		List<TestOnStateImpl> onStates = new ArrayList<TestOnStateImpl>();
+		List<VariationOnStateImpl> onStates = new ArrayList<VariationOnStateImpl>();
 
 		String name = null;
 		boolean nameFound = false;
@@ -163,7 +165,7 @@ public class VariationsParser implements Keywords {
 			return null;
 		}
 		
-		TestImpl result = new TestImpl(response.getSchema(), name);
+		VariationImpl result = new VariationImpl(response.getSchema(), name);
 		
 		// Pass 2: Parse experiences.
 		for(Map.Entry<String, ?> entry: test.entrySet()) {
@@ -225,7 +227,7 @@ public class VariationsParser implements Keywords {
 		
 		
 		// Pass 3: Parse conjointVariationRefs, isOn, hooks.
-		List<TestImpl> covarTests = null;
+		List<VariationImpl> covarTests = null;
 		for(Map.Entry<String, ?> entry: test.entrySet()) {
 			
 			if (entry.getKey().equalsIgnoreCase(KEYWORD_CONJOINT_VARIATION_REFS)) {
@@ -234,7 +236,7 @@ public class VariationsParser implements Keywords {
 					response.addMessage(testLocation.plusProp(KEYWORD_CONJOINT_VARIATION_REFS), PROPERTY_NOT_LIST, KEYWORD_CONJOINT_VARIATION_REFS);
 				}
 				else {
-					covarTests = new ArrayList<TestImpl>();
+					covarTests = new ArrayList<VariationImpl>();
 					List<?> rawCovarTestRefs = (List<?>) covarTestRefsObject;
 					int refIx = 0;
 					for (Object covarTestRefObject: rawCovarTestRefs) {
@@ -246,12 +248,12 @@ public class VariationsParser implements Keywords {
 							String covarTestRef = (String) covarTestRefObject;
 							// Conjoint test, referenced by conjointTestRefs clause must
 							// have been initialized by now.  Single pass parser!
-							TestImpl covarTest = (TestImpl) response.getSchema().getTest(covarTestRef);
-							if (covarTest == null) {
+							Optional<Variation> conjointVarOpt = response.getSchema().getVariation(covarTestRef);
+							if (!conjointVarOpt.isPresent()) {
 								response.addMessage(testRefLocation, CONJOINT_TESTREF_UNDEFINED, covarTestRef);
 							}
 							else {
-								covarTests.add(covarTest);
+								covarTests.add((VariationImpl)conjointVarOpt.get());
 							}
 						}
 					}
@@ -273,11 +275,11 @@ public class VariationsParser implements Keywords {
 		}
 		
 		// Resort conjoint tests in ordinal order before adding to the result.
-		List<TestImpl> covarTestsReordered = null;
+		List<VariationImpl> covarTestsReordered = null;
 		if (covarTests != null) {
-			covarTestsReordered = new ArrayList<TestImpl>(covarTests.size());
-			for (Test t: response.getSchema().getTests()) {
-				if (covarTests.contains(t)) covarTestsReordered.add((TestImpl)t);
+			covarTestsReordered = new ArrayList<VariationImpl>(covarTests.size());
+			for (Variation t: response.getSchema().getVariations()) {
+				if (covarTests.contains(t)) covarTestsReordered.add((VariationImpl)t);
 			}
 		}
 		result.setConjointTests(covarTestsReordered);
@@ -306,10 +308,10 @@ public class VariationsParser implements Keywords {
 							int tosIx = 0;
 							for (Object testOnViewObject: rawOnViews) {
 								Location tosLocation = testLocation.plusObj(KEYWORD_ON_STATES).plusIx(tosIx++);
-								TestOnStateImpl tos = parseTestOnState(testOnViewObject, result, tosLocation, response);
+								VariationOnStateImpl tos = parseTestOnState(testOnViewObject, result, tosLocation, response);
 								if (tos != null) {
 									boolean dupe = false;
-									for (Test.OnState newTos: onStates) {
+									for (Variation.OnState newTos: onStates) {
 										if (tos.getState().equals(newTos.getState())) {
 											response.addMessage(tosLocation, DUPE_OBJECT, newTos.getState().getName());
 											dupe = true;
@@ -336,7 +338,7 @@ public class VariationsParser implements Keywords {
 		// A conjoint test cannot be disjoint.
 		if (covarTests != null) {
 			int covarTestIx = 0;
-			for (Test covarTest: covarTests) {
+			for (Variation covarTest: covarTests) {
 				if (result.isSerialWith(covarTest)) {
 					Location tosLocation = testLocation.plusProp(KEYWORD_CONJOINT_VARIATION_REFS).plusIx(covarTestIx++);
 					response.addMessage(tosLocation, CONJOINT_TEST_DISJOINT, name, covarTest.getName());
@@ -431,7 +433,7 @@ public class VariationsParser implements Keywords {
 	 * @throws VariantRuntimeException 
 	 */
 	@SuppressWarnings("unchecked")
-	private static TestOnStateImpl parseTestOnState(Object testOnStateObject, TestImpl test, Location tosLocation, ParserResponse response) {
+	private static VariationOnStateImpl parseTestOnState(Object testOnStateObject, VariationImpl test, Location tosLocation, ParserResponse response) {
 
 		Map<String, Object> rawTestOnState = null;
 		
@@ -463,13 +465,13 @@ public class VariationsParser implements Keywords {
 		}
 		
 		// The state must exist.
-		StateImpl refState = (StateImpl) response.getSchema().getState(stateRef);
-		if (refState == null) {
+		Optional<State> stateOpt = response.getSchema().getState(stateRef);
+		if (!stateOpt.isPresent()) {
 			response.addMessage(tosLocation.plusProp(KEYWORD_STATE_REF), STATEREF_UNDEFINED, stateRef);
 			return null;
 		}
 		
-		TestOnStateImpl tos = new TestOnStateImpl(refState, test);
+		VariationOnStateImpl tos = new VariationOnStateImpl((StateImpl)stateOpt.get(), test);
 
 		// Pass 2. Parse the rest of elems.
 		List<Object> rawVariants = null;
@@ -553,7 +555,7 @@ public class VariationsParser implements Keywords {
 		// At least one proper variant required.
 		boolean allProperVariantsUndefined = true;
 		for (Experience properExperience: test.getExperiences()) {
-			if (!properExperience.isPhantomOn(tos.getState())) { 
+			if (!properExperience.isPhantom(tos.getState())) { 
 				allProperVariantsUndefined = false;
 				break;
 			}
@@ -585,14 +587,14 @@ public class VariationsParser implements Keywords {
 			else if (point.getVariant() != null && !point.isDefinedOn(tos.getState())) {
 				// We have a point and one of the coordinate experiences were declared as undefined.
 				// Find out which one.
-				if (point.getExperience().isPhantomOn(tos.getState())) {
+				if (point.getExperience().isPhantom(tos.getState())) {
 					response.addMessage(
 							tosLocation.plusObj(KEYWORD_VARIANTS),
 							CONJOINT_VARIANT_PROPER_PHANTOM, 
 							point.getExperience().toString(), tos.getState().getName());
 				}
 				for (Experience e: point.getConjointExperiences()) {
-					if (!e.isPhantomOn(tos.getState())) continue;
+					if (!e.isPhantom(tos.getState())) continue;
 					response.addMessage(
 							tosLocation.plusObj(KEYWORD_VARIANTS),
 							CONJOINT_VARIANT_CONJOINT_PHANTOM,  

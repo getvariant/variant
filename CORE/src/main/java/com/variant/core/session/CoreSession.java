@@ -18,7 +18,7 @@ import com.variant.core.impl.CoreException;
 import com.variant.core.impl.VariantException;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.State;
-import com.variant.core.schema.Test;
+import com.variant.core.schema.Variation;
 
 /**
  * 
@@ -35,8 +35,8 @@ public class CoreSession implements Serializable {
 	private LinkedHashMap<String, String> attributes = new LinkedHashMap<String, String>();
 	private CoreStateRequest currentRequest = null;
 	private LinkedHashMap<State, Integer> traversedStates = new LinkedHashMap<State, Integer>();
-	private LinkedHashSet<Test> traversedTests = new LinkedHashSet<Test>();
-	private LinkedHashSet<Test> disqualTests = new LinkedHashSet<Test>();
+	private LinkedHashSet<Variation> traversedTests = new LinkedHashSet<Variation>();
+	private LinkedHashSet<Variation> disqualTests = new LinkedHashSet<Variation>();
 	private SessionScopedTargetingStabile targetingStabile = new SessionScopedTargetingStabile();
 	
 	//---------------------------------------------------------------------------------------------//
@@ -132,7 +132,7 @@ public class CoreSession implements Serializable {
 				for (Object obj: statesListRaw) {
 					Map<?,?> objMap = (Map<?,?>) obj;
 					String stateName = (String) objMap.get(FIELD_NAME_STATE);
-					State state = schema.getState(stateName);
+					State state = schema.getState(stateName).get();
 					Integer count =  (Integer) objMap.get(FIELD_NAME_COUNT);
 					statesMap.put(state, count);
 				}
@@ -161,11 +161,11 @@ public class CoreSession implements Serializable {
 		
 		Object testsObj = parsedJson.get(FIELD_NAME_TRAVERSED_TESTS);
 		if (testsObj != null) {
-			LinkedHashSet<Test> tests = new LinkedHashSet<Test>();
+			LinkedHashSet<Variation> tests = new LinkedHashSet<Variation>();
 			try {
 				List<String> testList = (List<String>) testsObj; 
 				for (String test: testList) {
-					tests.add(schema.getTest(test));
+					tests.add(schema.getVariation(test).get());
 				}
 			}
 			catch (Exception e) {
@@ -176,11 +176,11 @@ public class CoreSession implements Serializable {
 		
 		testsObj = parsedJson.get(FIELD_NAME_DISQUAL_TESTS);
 		if (testsObj != null) {
-			LinkedHashSet<Test> tests = new LinkedHashSet<Test>();
+			LinkedHashSet<Variation> tests = new LinkedHashSet<Variation>();
 			try {
 				List<String> testList = (List<String>) testsObj; 
 				for (String testName: testList) {
-					tests.add(schema.getTest(testName));
+					tests.add(schema.getVariation(testName).get());
 				
 				}
 			}
@@ -214,11 +214,11 @@ public class CoreSession implements Serializable {
 		return Collections.unmodifiableMap(traversedStates);
 	}
 
-	public Set<Test> getTraversedTests() {
+	public Set<Variation> getTraversedTests() {
 		return Collections.unmodifiableSet(traversedTests);
 	}
 
-	public Set<Test> getDisqualifiedTests() {
+	public Set<Variation> getDisqualifiedTests() {
 		return Collections.unmodifiableSet(disqualTests);
 	}
 
@@ -249,7 +249,7 @@ public class CoreSession implements Serializable {
 	 * 
 	 * @param test
 	 */
-	public void addTraversedTest(Test test) {
+	public void addTraversedTest(Variation test) {
 
 		if (traversedTests.contains(test)) 
 			throw new CoreException.Internal(
@@ -262,7 +262,7 @@ public class CoreSession implements Serializable {
 	 * 
 	 * @param test
 	 */
-	public void addDisqualifiedTest(Test test) {
+	public void addDisqualifiedTest(Variation test) {
 
 		if (disqualTests.contains(test)) {
 				throw new CoreException.Internal(
@@ -352,7 +352,7 @@ public class CoreSession implements Serializable {
 
 			if (traversedTests.size() > 0) {
 				jsonGen.writeArrayFieldStart(FIELD_NAME_TRAVERSED_TESTS);
-				for (Test t: traversedTests) {
+				for (Variation t: traversedTests) {
 					jsonGen.writeString(t.getName());
 				}
 				jsonGen.writeEndArray();
@@ -360,7 +360,7 @@ public class CoreSession implements Serializable {
 			
 			if (disqualTests.size() > 0) {
 				jsonGen.writeArrayFieldStart(FIELD_NAME_DISQUAL_TESTS);
-				for (Test t: disqualTests) {
+				for (Variation t: disqualTests) {
 					jsonGen.writeString(t.getName());
 				}
 				jsonGen.writeEndArray();

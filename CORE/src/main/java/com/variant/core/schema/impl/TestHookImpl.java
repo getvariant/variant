@@ -9,9 +9,9 @@ import com.variant.core.schema.Hook;
  */
 public class TestHookImpl extends BaseHookImpl implements Hook.Test {
 
-	private final com.variant.core.schema.Test test;
+	private final com.variant.core.schema.Variation test;
 	
-	public TestHookImpl(String name, String className, String init, com.variant.core.schema.Test test) {
+	public TestHookImpl(String name, String className, String init, com.variant.core.schema.Variation test) {
 		super(name, className, init);
 		this.test = test;
 	}
@@ -21,7 +21,7 @@ public class TestHookImpl extends BaseHookImpl implements Hook.Test {
 	//---------------------------------------------------------------------------------------------//
 
 	@Override
-	public com.variant.core.schema.Test getTest() {
+	public com.variant.core.schema.Variation getTest() {
 		return test;
 	}
 

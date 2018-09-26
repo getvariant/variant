@@ -19,9 +19,9 @@ public interface State {
 	public Schema getSchema();
 	
 	/**
-	 * The name of this test.
+	 * The name of this state.
 	 * 
-	 * @return The name of this test.
+	 * @return The name of this state.
 	 * @since 0.5
 	 */
 	public String getName();	
@@ -35,40 +35,40 @@ public interface State {
 	public Map<String,String> getParameters();
 
 	/**
-	 * <p>List of tests which instrument this state.
+	 * <p>List, in ordinal order, of variations which are instrumented on this state.
 	 *  
-	 * @return List of tests in the order they were defined.
+	 * @return A list of {@link Variation} objects.
 	 * @since 0.5
 	 */
-	List<Test> getInstrumentedTests();
+	List<Variation> getInstrumentedVariations();
 
 	/**
-	 * Returns <code>true</code> if this state is instrumented by a given test. In other words,
-	 * is a given test contained in the return value of {@link #getInstrumentedTests()}?
+	 * Returns <code>true</code> if this state is instrumented by a given variation.
+	 * In other words, is a given variation contained in the return value of {@link #getInstrumentedVariants()}?
 	 * 
-	 * @param test The test of interest.
-	 * @return true if this state is instrumented by the given test, false otherwise. 
+	 * @param variation The variation of interest.
+	 * @return <code>true</code> if this state is instrumented by the given variation, <code>false</code> otherwise. 
 	 * @since 0.5
 	 */
-	public boolean isInstrumentedBy(Test test);
+	public boolean isInstrumentedBy(Variation variation);
 
 	/**
-	 * Returns <code>true</code> if this state is declared as non-variant in a given test. 
+	 * Returns <code>true</code> if this state is declared as non-variant in a given variation. 
 	 * It is the responsibility of the caller to ensure that this state is instrumented by the given test, 
-	 * i.e. that {@link #isInstrumentedBy(Test)} returns true.
+	 * i.e. that {@link #isInstrumentedBy(Variation)} returns true.
 	 * 
-	 * @param test The test of interest.
+	 * @param variation The variation of interest.
 	 * 
-	 * @return <code>true</code> if this state is non-variant in the given test, <code>false</code> if this test.
+	 * @return <code>true</code> if this state is non-variant in the given variation, <code>false</code> if this test.
 	 * @throws StateNotInstrumentedException if this state is not instrumented by the given test.
 	 * @since 0.5
 	 */
-	public boolean isNonvariantIn(Test test);
+	public boolean isNonvariantIn(Variation variation);
 	
 	/**
-	 * <p>List of state-scoped life-cycle hooks defined with this state.
+	 * <p>List of variation-scoped life-cycle hooks defined in the scope of this state.
 	 * 
-	 * @return A list of {@link Hook} objects in the ordinal order.
+	 * @return A list, in the ordinal order, of {@link Hook} objects.
 	 * @since 0.8
 	 */
 	public List<Hook> getHooks();

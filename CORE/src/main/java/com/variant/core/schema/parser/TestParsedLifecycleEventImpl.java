@@ -4,7 +4,7 @@ import com.variant.core.UserError.Severity;
 import com.variant.core.impl.CommonError;
 import com.variant.core.impl.ServerError;
 import com.variant.core.lifecycle.TestParsedLifecycleEvent;
-import com.variant.core.schema.Test;
+import com.variant.core.schema.Variation;
 
 /**
  * 
@@ -13,10 +13,10 @@ import com.variant.core.schema.Test;
  */
 public class TestParsedLifecycleEventImpl implements TestParsedLifecycleEvent {
 
-	private Test test;
+	private Variation test;
 	private ParserResponse response;
 	
-	TestParsedLifecycleEventImpl(Test test, ParserResponse response) {
+	TestParsedLifecycleEventImpl(Variation test, ParserResponse response) {
 		this.test = test;
 		this.response = response;
 	}
@@ -26,7 +26,7 @@ public class TestParsedLifecycleEventImpl implements TestParsedLifecycleEvent {
 	//---------------------------------------------------------------------------------------------//
 
 	@Override
-	public Test getTest() {
+	public Variation getTest() {
 		return test;
 	}
 

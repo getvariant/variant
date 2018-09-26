@@ -1,13 +1,14 @@
 package com.variant.core.schema;
 
 import java.util.List;
+import java.util.Optional;
 
 
 /**
  * Representation of a variation schema. A complete description of a set of experience variations 
- * running a Variant server. 
+ * running on a Variant server. 
  * <p>
- * Any schema three top level entities: {@link Meta} {@link State}s and {@link Test}s. A schema
+ * Any schema has three top level entities: <code>meta</code>, <code>states</code>, and <code>variations</code>, in that order. A schema
  * object is instantiated by the schema parser which reads and parses the schema file.
  * 
  * @since 0.5
@@ -17,13 +18,13 @@ public interface Schema {
 	/**
 	 * <p>This schema's <code>meta</code> section.
 	 * 
-	 * @return Schema name, as provided in the meta clause.
+	 * @return An object of type {@link Meta}
 	 * @since 0.9
 	 */
 	Meta getMeta();
 
 	/**
-	 * <p>The list of all states in ordinal order, the order in which they were defined.
+	 * The list, in ordinal order, of all states in this schema.
 	 * 
 	 * @return A list of {@link State} objects.
 	 * @since 0.5
@@ -31,28 +32,28 @@ public interface Schema {
 	List<State> getStates();
 
 	/**
-	 * <p>Get a state by name. State names are case sensitive.
+	 * Get a state by its name. Names are case sensitive.
 	 * 
-	 * @param name The name of the state of interest.
-	 * @return State with the given name, or null if none. 
+	 * @param name The state name.
+	 * @return An {@link Optional}, containing the state with the given name or empty if no such state in the schema.
 	 * @since 0.5
 	 */
-	State getState(String name);
+	Optional<State> getState(String name);
 
 	/**
-	 * <p>The list of all tests in ordinal order, the order in which they were defined.
+	 * The list, in ordinal order, of all variations in this schema.
 	 * 
-	 * @return A list of {@link Test} objects.
+	 * @return A list of {@link Variation} objects.
 	 */
-	List<Test>getTests();
+	List<Variation>getVariations();
 	
 	/**
-	 * <p>Get a test by name. Test names are case sensitive.
+	 * Get a variation by its name. Names are case sensitive.
 	 * 
-	 * @param name The name of the test of interest.
-	 * @return Test with the given name, or null if none.
+	 * @param name The variation name.
+	 * @return An {@link Optional}, containing the variation with the given name or empty if no such variation in the schema.
 	 * @since 0.5
 	 */
-	Test getTest(String name);
-	
+	Optional<Variation> getVariation(String name);
+
 }

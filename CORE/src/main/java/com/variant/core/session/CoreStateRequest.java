@@ -11,6 +11,7 @@ import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 import com.fasterxml.jackson.core.JsonFactory;
@@ -21,8 +22,8 @@ import com.variant.core.impl.ServerError;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.State;
 import com.variant.core.schema.StateVariant;
-import com.variant.core.schema.Test;
-import com.variant.core.schema.Test.Experience;
+import com.variant.core.schema.Variation;
+import com.variant.core.schema.Variation.Experience;
 import com.variant.core.schema.impl.StateImpl;
 import com.variant.core.schema.impl.StateVariantImpl;
 import com.variant.core.util.CaseInsensitiveMap;
@@ -119,18 +120,18 @@ public class CoreStateRequest implements Serializable {
 			SessionScopedTargetingStabile stabile = session.getTargetingStabile();
 			HashSet<Experience> result = new LinkedHashSet<Experience>();
 
-			for (Test test: state.getInstrumentedTests()) {
+			for (Variation test: state.getInstrumentedVariations()) {
 				if (!test.isOn() || session.getDisqualifiedTests().contains(test)) continue;
 				SessionScopedTargetingStabile.Entry entry = stabile.get(test.getName());
 				if (entry == null) throw new CoreException.Internal("Targeted experience for test [" + test.getName() + "] expected but not found in sessioin.");
-				result.add(test.getExperience(entry.getExperienceName()));
+				result.add(test.getExperience(entry.getExperienceName()).get());
 			}
 			liveExperiences = result;
 		}
 		return liveExperiences;
 	}
 
-	public Experience getLiveExperience(Test test) {
+	public Experience getLiveExperience(Variation test) {
 		
 		for (Experience e: getLiveExperiences())
 			if  (e.getTest().getName().equals(test.getName())) return e;
@@ -230,12 +231,12 @@ public class CoreStateRequest implements Serializable {
 		if (!(stateName instanceof String)) 
 			throw new CoreException.Internal("Unable to deserialzie request: state not string");
 		
-		State state = schema.getState(stateName);
+		Optional<State> stateOpt = schema.getState(stateName);
 		
-		if (state == null) 
+		if (!stateOpt.isPresent()) 
 			throw new CoreException.Internal(String.format("State [%s] not in schema [%s]", stateName, schema.getMeta().getName()));
 
-		CoreStateRequest result = new CoreStateRequest(session, state);
+		CoreStateRequest result = new CoreStateRequest(session, stateOpt.get());
 				
 		result.status = StateRequestStatus.values()[(Integer)fields.get(FILED_NAME_STATUS)];
 
@@ -266,7 +267,7 @@ public class CoreStateRequest implements Serializable {
 					String expQualifiedName = (String) obj;
 					// qualified name = testName.expName.bool - need to parse.
 					String[] tokens = expQualifiedName.split("\\.");
-					result.liveExperiences.add(schema.getTest(tokens[0]).getExperience(tokens[1]));
+					result.liveExperiences.add(schema.getVariation(tokens[0]).get().getExperience(tokens[1]).get());
 				}
 			}
 			catch (Exception e) {
@@ -278,7 +279,7 @@ public class CoreStateRequest implements Serializable {
 		if (variantObj != null) {
 			String testName = (String) variantObj.get(FIELD_NAME_TEST);
 			int offset = (Integer) variantObj.get(FIELD_NAME_OFFSET);
-			result.resolvedStateVariant = schema.getTest(testName).getOnState(schema.getState(stateName)).getVariants().get(offset);
+			result.resolvedStateVariant = schema.getVariation(testName).get().getOnState(schema.getState(stateName).get()).getVariants().get(offset);
 		}
 
 		return result;

@@ -14,7 +14,7 @@ import com.variant.core.schema.Hook;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.State;
 import com.variant.core.schema.StateVariant;
-import com.variant.core.schema.Test;
+import com.variant.core.schema.Variation;
 import com.variant.core.schema.parser.ParserResponse;
 import com.variant.core.schema.parser.SchemaParser;
 
@@ -179,8 +179,8 @@ public class ParserSerialOkayTest extends BaseTestCore {
 		assertEquals("flusher.class.Foo", flusher.getClassName());
 		assertEquals("{\"url\":\"jdbc:postgresql://localhost/variant\",\"user\":\"variant\",\"password\":\"variant\"}", flusher.getInit());
 
-		Test test1 = schema.getTest("test1");
-		Test test2 = schema.getTest("test2");
+		Variation test1 = schema.getTest("test1");
+		Variation test2 = schema.getTest("test2");
 		assertTrue(test1.isOn());
 		assertFalse(test2.isOn());
 		assertFalse(test1.isSerialWith(test2));
@@ -387,8 +387,8 @@ public class ParserSerialOkayTest extends BaseTestCore {
 		assertEquals("flusher.class.Foo", flusher.getClassName());
 		assertNull(flusher.getInit());
 
-		Test test1 = schema.getTest("test1");
-		Test test2 = schema.getTest("test2");
+		Variation test1 = schema.getTest("test1");
+		Variation test2 = schema.getTest("test2");
 		assertFalse(test1.isOn());
 		assertTrue(test2.isOn());
 		assertFalse(test1.isSerialWith(test2));
@@ -540,8 +540,8 @@ public class ParserSerialOkayTest extends BaseTestCore {
 		assertNull(schema.getMeta().getComment());
 		assertNull(schema.getMeta().getFlusher());
 
-		Test test1 = schema.getTest("test1");
-		Test test2 = schema.getTest("test2");
+		Variation test1 = schema.getTest("test1");
+		Variation test2 = schema.getTest("test2");
 		assertTrue(test1.isOn());
 		assertTrue(test2.isOn());
 		assertFalse(test1.isSerialWith(test2));
@@ -883,7 +883,7 @@ public class ParserSerialOkayTest extends BaseTestCore {
 		
 		// Instrumented tests.
 		State view = schema.getState("state1");
-		ArrayList<Test> expectedInstrumentedTests = new ArrayList<Test>() {{
+		ArrayList<Variation> expectedInstrumentedTests = new ArrayList<Variation>() {{
 			add(schema.getTest("test1"));
 			add(schema.getTest("Test1"));
 		}};
@@ -896,35 +896,35 @@ public class ParserSerialOkayTest extends BaseTestCore {
 		catch (NullPointerException npe ) { /* expected */ }
 
 		view = schema.getState("state2");
-		expectedInstrumentedTests = new ArrayList<Test>() {{
+		expectedInstrumentedTests = new ArrayList<Variation>() {{
 			add(schema.getTest("test2"));
 		}};
 		assertEquals(expectedInstrumentedTests, view.getInstrumentedTests());
 		assertFalse(view.isNonvariantIn(schema.getTest("test2")));
 		
 		view = schema.getState("state3");
-		expectedInstrumentedTests = new ArrayList<Test>() {{
+		expectedInstrumentedTests = new ArrayList<Variation>() {{
 			add(schema.getTest("test2"));
 		}};
 		assertEquals(expectedInstrumentedTests, view.getInstrumentedTests());
 		assertFalse(view.isNonvariantIn(schema.getTest("test2")));
 
 		view = schema.getState("state4");
-		expectedInstrumentedTests = new ArrayList<Test>() {{
+		expectedInstrumentedTests = new ArrayList<Variation>() {{
 			add(schema.getTest("test2"));
 		}};
 		assertEquals(expectedInstrumentedTests, view.getInstrumentedTests());
 		assertTrue(view.isNonvariantIn(schema.getTest("test2")));
 		
 		view = schema.getState("state5");
-		expectedInstrumentedTests = new ArrayList<Test>();
+		expectedInstrumentedTests = new ArrayList<Variation>();
 		assertEquals(expectedInstrumentedTests, view.getInstrumentedTests());
 
 		//
 		// Tests.
 		//
 
-		List<Test> actualTests = schema.getTests();
+		List<Variation> actualTests = schema.getTests();
 		
 		assertEquals(3, actualTests.size());
 		verifyTest1(actualTests.get(0), schema);
@@ -954,16 +954,16 @@ public class ParserSerialOkayTest extends BaseTestCore {
 	 * 
 	 * @param test
 	 */
-	private static void verifyTest1(Test test, Schema config) {
+	private static void verifyTest1(Variation test, Schema config) {
 		
 		assertNotNull(test);
 		assertEquals("test1", test.getName());
 		assertTrue(test.isOn());
 		
 		// Experiences
-		List<Test.Experience> actualExperiences = test.getExperiences();
+		List<Variation.Experience> actualExperiences = test.getExperiences();
 		assertEquals(3, actualExperiences.size());
-		Test.Experience exp = actualExperiences.get(0);
+		Variation.Experience exp = actualExperiences.get(0);
 		assertEquals("A", exp.getName());
 		assertEquals(10, exp.getWeight().doubleValue(), 0.000001);
 		assertTrue(exp.isControl());
@@ -981,10 +981,10 @@ public class ParserSerialOkayTest extends BaseTestCore {
 		assertEquals(test, exp.getTest());
 		
 		// onStates
-		List<Test.OnState> actualonStates = test.getOnStates();
+		List<Variation.OnState> actualonStates = test.getOnStates();
 		assertEquals(1, actualonStates.size());
 
-		Test.OnState tov = actualonStates.get(0);
+		Variation.OnState tov = actualonStates.get(0);
 		assertEquals(test, tov.getTest());
 		assertEquals(config.getState("state1"), tov.getState());
 		assertFalse(tov.isNonvariant());
@@ -1008,16 +1008,16 @@ public class ParserSerialOkayTest extends BaseTestCore {
 	 * 
 	 * @param test
 	 */
-	private static void verifyTest2(Test test, Schema config) {
+	private static void verifyTest2(Variation test, Schema config) {
 
 		assertNotNull(test);
 		assertEquals("test2", test.getName());
 		assertFalse(test.isOn());
 		
 		// Experiences
-		List<Test.Experience> actualExperiences = test.getExperiences();
+		List<Variation.Experience> actualExperiences = test.getExperiences();
 		assertEquals(2, actualExperiences.size());
-		Test.Experience exp = actualExperiences.get(0);
+		Variation.Experience exp = actualExperiences.get(0);
 		assertEquals("C", exp.getName());
 		assertEquals(0.5, exp.getWeight().doubleValue(), 0.000001);
 		assertTrue(exp.isControl());
@@ -1030,10 +1030,10 @@ public class ParserSerialOkayTest extends BaseTestCore {
 		assertEquals(test, exp.getTest());
 		
 		// onStates
-		List<Test.OnState> actualonStates = test.getOnStates();
+		List<Variation.OnState> actualonStates = test.getOnStates();
 		assertEquals(3, actualonStates.size());
 
-		Test.OnState tov = actualonStates.get(0);
+		Variation.OnState tov = actualonStates.get(0);
 		assertEquals(test, tov.getTest());
 		assertEquals(config.getState("state3"), tov.getState());
 		assertFalse(tov.isNonvariant());
@@ -1069,16 +1069,16 @@ public class ParserSerialOkayTest extends BaseTestCore {
 	 * 
 	 * @param test
 	 */
-	private static void verifyTest3(Test test, Schema config) {
+	private static void verifyTest3(Variation test, Schema config) {
 		
 		assertNotNull(test);
 		assertEquals("Test1", test.getName());
 		assertTrue(test.isOn());
 		
 		// Experiences
-		List<Test.Experience> actualExperiences = test.getExperiences();
+		List<Variation.Experience> actualExperiences = test.getExperiences();
 		assertEquals(2, actualExperiences.size());
-		Test.Experience exp = actualExperiences.get(0);
+		Variation.Experience exp = actualExperiences.get(0);
 		assertEquals("A", exp.getName());
 		assertEquals(10, exp.getWeight().doubleValue(), 0.000001);
 		assertFalse(exp.isControl());
@@ -1091,10 +1091,10 @@ public class ParserSerialOkayTest extends BaseTestCore {
 		assertEquals(test, exp.getTest());
 		
 		// onStates
-		List<Test.OnState> actualonStates = test.getOnStates();
+		List<Variation.OnState> actualonStates = test.getOnStates();
 		assertEquals(1, actualonStates.size());
 
-		Test.OnState tov = actualonStates.get(0);
+		Variation.OnState tov = actualonStates.get(0);
 		assertEquals(test, tov.getTest());
 		assertEquals(config.getState("state1"), tov.getState());
 		assertFalse(tov.isNonvariant());

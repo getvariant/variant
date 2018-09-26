@@ -20,7 +20,7 @@ import com.variant.core.schema.impl.SchemaHookImpl;
 import com.variant.core.schema.impl.StateHookImpl;
 import com.variant.core.schema.impl.StateImpl;
 import com.variant.core.schema.impl.TestHookImpl;
-import com.variant.core.schema.impl.TestImpl;
+import com.variant.core.schema.impl.VariationImpl;
 import com.variant.core.schema.parser.error.SemanticError.Location;
 /**
  * Hooks parser
@@ -194,7 +194,7 @@ public class HooksParser implements Keywords {
 	 * @param hooksObject
 	 * @param response
 	 */
-	static void parseTestHook(Object hooksObject, TestImpl test, Location testLocation, ParserResponse response) {		
+	static void parseTestHook(Object hooksObject, VariationImpl test, Location testLocation, ParserResponse response) {		
 		try {
 			List<?> rawHooks = (List<?>) hooksObject;
 						

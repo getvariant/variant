@@ -51,7 +51,7 @@ public interface Hook {
 		/**
 		 * The state in whose scope this hook is defined.
 		 * 
-		 * @return An object of type {@link com.variant.core.schema.Test}
+		 * @return An object of type {@link com.variant.core.schema.Variation}
 		 * @since 0.7
 		 */
 		public com.variant.core.schema.State getState();
@@ -68,10 +68,10 @@ public interface Hook {
 		/**
 		 * The test in whose scope this hook is defined.
 		 * 
-		 * @return An object of type {@link com.variant.core.schema.Test}
+		 * @return An object of type {@link com.variant.core.schema.Variation}
 		 * @since 0.7
 		 */
-		public com.variant.core.schema.Test getTest();
+		public com.variant.core.schema.Variation getTest();
 		
 	}
 }

@@ -11,7 +11,7 @@ import java.util.List;
 import com.variant.core.UserError.Severity;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.StateVariant;
-import com.variant.core.schema.Test;
+import com.variant.core.schema.Variation;
 import com.variant.core.schema.parser.ParserResponse;
 import com.variant.core.schema.parser.SchemaParser;
 import com.variant.core.util.CollectionsUtils;
@@ -780,9 +780,9 @@ public class ParserConjointOkay6Test extends BaseTestCore {
 		
 		Schema schema = response.getSchema();
 
-		final Test test1 = schema.getTest("test1");
-		final Test test2 = schema.getTest("test2");
-		final Test test3 = schema.getTest("test3");
+		final Variation test1 = schema.getTest("test1");
+		final Variation test2 = schema.getTest("test2");
+		final Variation test3 = schema.getTest("test3");
 
 		// 
 		// Test concurrence.
@@ -815,11 +815,11 @@ public class ParserConjointOkay6Test extends BaseTestCore {
 		// 
 		// test1 onState objects
 		//
-		List<Test.OnState> onStates = test1.getOnStates();
+		List<Variation.OnState> onStates = test1.getOnStates();
 		assertEquals(4, onStates.size());
 		
 		// state2
-		Test.OnState onState = onStates.get(0);
+		Variation.OnState onState = onStates.get(0);
 		assertFalse(onState.isNonvariant());
 		assertEquals(schema.getState("state2"), onState.getState());
 		List<StateVariant> variants = onState.getVariants();

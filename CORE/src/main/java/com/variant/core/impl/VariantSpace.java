@@ -8,9 +8,9 @@ import java.util.List;
 
 import com.variant.core.schema.State;
 import com.variant.core.schema.StateVariant;
-import com.variant.core.schema.Test;
-import com.variant.core.schema.Test.Experience;
-import com.variant.core.schema.impl.TestOnStateImpl;
+import com.variant.core.schema.Variation;
+import com.variant.core.schema.Variation.Experience;
+import com.variant.core.schema.impl.VariationOnStateImpl;
 import com.variant.core.util.CollectionsUtils;
 
 /**
@@ -25,7 +25,7 @@ public class VariantSpace {
 
 	// The basis is a set to prevent dupes and linked to establish
 	// a repeatable iterator order.
-	private LinkedHashSet<Test> basis;
+	private LinkedHashSet<Variation> basis;
 	
 	// Table data is a map.
 	private LinkedHashMap<Coordinates, Point> table = new LinkedHashMap<Coordinates, Point>();
@@ -71,7 +71,7 @@ public class VariantSpace {
 		 * @param test
 		 * @return true, if test is pair-wise conjoint with all tests in this 
 		 */
-		private boolean isCombinableWith(Test test) {
+		private boolean isCombinableWith(Variation test) {
 			for (Experience e: coordinates)
 				if (! e.getTest().isConjointWith(test)) return false;
 			return true;
@@ -110,19 +110,19 @@ public class VariantSpace {
 	 * 
 	 * @param tosImpl
 	 */
-	public VariantSpace(TestOnStateImpl tosImpl)  {
+	public VariantSpace(VariationOnStateImpl vosImpl)  {
 		
-		if (tosImpl.isNonvariant()) 
+		if (vosImpl.isNonvariant()) 
 			throw new CoreException.Internal("Cannot crate VariantSpace for a nonvariant instrumentation");
 		
 		// Build basis sorted in ordinal order.
-		basis = new LinkedHashSet<Test>();
-		basis.add(tosImpl.getTest());
-		List<Test> conjointTests = tosImpl.getTest().getConjointTests();
+		basis = new LinkedHashSet<Variation>();
+		basis.add(vosImpl.getVariation());
+		List<Variation> conjointTests = vosImpl.getVariation().getConjointTests();
 		if (conjointTests != null) basis.addAll(conjointTests);
 
 		// Pass 1. Build empty space, i.e. all Points with nulls for Variant values, for now.
-		for (Test t: basis) {
+		for (Variation t: basis) {
 			
 			// HashTable.keySet() returns a view, which will change if we modify the table.
 			// To take a static snapshot, we crate a new collection;
@@ -140,7 +140,7 @@ public class VariantSpace {
 			else {
 				// 2nd and on test is a conjoint test.  Skip it, if it's not instrumented or is nonvariant on this state.
 				// Otherwise, compute the cartеsian product of what's already in the table and this current tests's experience list.
-				if (!tosImpl.getState().isInstrumentedBy(t) || tosImpl.getState().isNonvariantIn(t)) continue;				
+				if (!vosImpl.getState().isInstrumentedBy(t) || vosImpl.getState().isNonvariantIn(t)) continue;				
 				
 				for (Experience exp: t.getExperiences()) {
 					if (exp.isControl()) continue;
@@ -156,7 +156,7 @@ public class VariantSpace {
 		}
 		
 		// Pass 2. Add variants.
-		for (StateVariant variant: tosImpl.getVariants()) {
+		for (StateVariant variant: vosImpl.getVariants()) {
 
 			// Build coordinate experience list. Must be concurrent with the basis.
 			List<Experience> coordinateExperiences = new ArrayList<Experience>(basis.size());
@@ -165,7 +165,7 @@ public class VariantSpace {
 			coordinateExperiences.add(variant.getExperience());
 			
 			// Conjoint experiences are not concurrent to basis, so we have to reorder.
-			for (Test basisTest: basis) {
+			for (Variation basisTest: basis) {
 			
 				// Skip first test in basis because it refers to the local test and we already have that.
 				if (basisTest.equals(variant.getTest())) continue;
@@ -208,7 +208,7 @@ public class VariantSpace {
 		
 		// resort vector in basis order.
 		ArrayList<Experience> sortedVector = new ArrayList<Experience>(vector.size());
-		for (Test basisTest: basis) {
+		for (Variation basisTest: basis) {
 			for (Experience e: vector) {
 				if (basisTest.equals(e.getTest())) {
 					sortedVector.add(e);
@@ -269,7 +269,7 @@ public class VariantSpace {
 		 */
 		public boolean isDefinedOn(State state) {
 			for (Experience e: coordinates.coordinates) {
-				if (e.isPhantomOn(state)) return false;
+				if (e.isPhantom(state)) return false;
 			}
 			return true;
 		}

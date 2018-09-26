@@ -20,14 +20,15 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
-import com.variant.core.schema.Test;
-import com.variant.core.schema.Test.Experience;
+import com.variant.core.schema.Variation;
+import com.variant.core.schema.Variation.Experience;
 import com.variant.core.schema.impl.StateImpl;
 import com.variant.core.schema.impl.StateVariantImpl;
 import com.variant.core.schema.impl.TestExperienceImpl;
-import com.variant.core.schema.impl.TestImpl;
-import com.variant.core.schema.impl.TestOnStateImpl;
+import com.variant.core.schema.impl.VariationImpl;
+import com.variant.core.schema.impl.VariationOnStateImpl;
 import com.variant.core.schema.parser.error.SemanticError.Location;
 import com.variant.core.util.CaseInsensitiveMap;
 import com.variant.core.util.CollectionsUtils;
@@ -49,10 +50,10 @@ public class VariantParser implements Keywords {
 	 * @return
 	 */
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public static StateVariantImpl parseVariant(Object variantObject, Location variantLocation, TestOnStateImpl tov, ParserResponse response) {
+	public static StateVariantImpl parseVariant(Object variantObject, Location variantLocation, VariationOnStateImpl vos, ParserResponse response) {
 
-		TestImpl test = (TestImpl) tov.getTest();
-		StateImpl state = (StateImpl) tov.getState();
+		VariationImpl test = (VariationImpl) vos.getVariation();
+		StateImpl state = (StateImpl) vos.getState();
 		
 		Map<String, Object> rawVariant = null;
 		
@@ -97,20 +98,22 @@ public class VariantParser implements Keywords {
 		}
 		
 		// The experience must exist
-		TestExperienceImpl experience = (TestExperienceImpl) test.getExperience(experienceRef);
-		if (experience == null) {
+		Optional<Experience> expOpt = test.getExperience(experienceRef);
+		if (!expOpt.isPresent()) {
 			response.addMessage(variantLocation.plusProp(KEYWORD_EXPERIENCE_REF), EXPERIENCEREF_UNDEFINED, experienceRef);
 			return null;			
 		}
-
+		
+		TestExperienceImpl exp = (TestExperienceImpl) expOpt.get();
+		
 		// Variant cannot refer to a control experience, unless phantom.
-		if (experience.isControl() && !isPhantom) {
+		if (exp.isControl() && !isPhantom) {
 			response.addMessage(variantLocation.plusProp(KEYWORD_EXPERIENCE_REF), EXPERIENCEREF_ISCONTROL,  experienceRef);
 			return null;						
 		}
 		
 		// Pass 2. Find conjointExperienceRefs.
-		ArrayList<TestExperienceImpl> conjointTestExperiences = null;
+		ArrayList<TestExperienceImpl> conjointExperiences = null;
 		
 		for (Map.Entry<String, Object> entry: rawVariant.entrySet()) {
 			
@@ -125,9 +128,9 @@ public class VariantParser implements Keywords {
 					return null;					
 				}
 								
-				List<?> covarExperienceRefList; 
+				List<?> conjointExpRefList; 
 				try {
-					covarExperienceRefList = (List<?>) entry.getValue();
+					conjointExpRefList = (List<?>) entry.getValue();
 				}
 				catch (Exception e) {
 					response.addMessage(
@@ -138,16 +141,16 @@ public class VariantParser implements Keywords {
 					return null;
 				}
 				
-				conjointTestExperiences = new ArrayList<TestExperienceImpl>();
+				conjointExperiences = new ArrayList<TestExperienceImpl>();
 
 				int index = 0;
-				for (Object covarExperienceRefObj: covarExperienceRefList) {
+				for (Object conjointExpRefObj: conjointExpRefList) {
 
 					Location covarExpRefLocation = variantLocation.plusObj(KEYWORD_CONJOINT_EXPERIENCE_REFS).plusIx(index++);
 					
-					Map<String,?> covarExperienceRefMap;
+					Map<String,?> conjointExpRefMap;
 					try {
-						covarExperienceRefMap = new CaseInsensitiveMap((Map<String,?>) covarExperienceRefObj);
+						conjointExpRefMap = new CaseInsensitiveMap((Map<String,?>) conjointExpRefObj);
 					}
 					catch (Exception e) {
 						response.addMessage(
@@ -157,9 +160,9 @@ public class VariantParser implements Keywords {
 						
 						return null;
 					}
-					String covarTestRef = null, covarExperienceRef = null;
+					String conjointVarRef = null, conjointExpRef = null;
 					try {
-						covarTestRef = (String) covarExperienceRefMap.get(KEYWORD_VARIATION_REF);
+						conjointVarRef = (String) conjointExpRefMap.get(KEYWORD_VARIATION_REF);
 					}
 					catch (Exception e) {
 						response.addMessage(
@@ -168,7 +171,7 @@ public class VariantParser implements Keywords {
 								KEYWORD_VARIATION_REF);
 					}
 					try {
-						covarExperienceRef = (String) covarExperienceRefMap.get(KEYWORD_EXPERIENCE_REF);
+						conjointExpRef = (String) conjointExpRefMap.get(KEYWORD_EXPERIENCE_REF);
 					}
 					catch (Exception e) {
 						response.addMessage(
@@ -177,66 +180,70 @@ public class VariantParser implements Keywords {
 								KEYWORD_EXPERIENCE_REF);
 					}
 					
-					if (covarTestRef == null || covarExperienceRef == null) return null;
+					if (conjointVarRef == null || conjointExpRef == null) return null;
 					
-					// Covar test must have already been defined.
-					TestImpl covarTest = (TestImpl) response.getSchema().getTest(covarTestRef);					
-					if (covarTest == null) {
+					// Conjoint variation must have already been defined.
+					Optional<Variation> conjointVarOpt = response.getSchema().getVariation(conjointVarRef);					
+					if (!conjointVarOpt.isPresent()) {
 						response.addMessage(
 								covarExpRefLocation.plusProp(KEYWORD_VARIATION_REF),
 								CONJOINT_EXPERIENCE_TEST_REF_UNDEFINED,
-								covarTestRef);
+								conjointVarRef);
 						return null;
 					}
 					
-					// Current view cannot be nonvariant in the covar test.
-					if (state.isNonvariantIn(covarTest)) {
+					Variation conjointVar = conjointVarOpt.get();
+					
+					// Current view cannot be nonvariant in the conjoint variation.
+					if (state.isNonvariantIn(conjointVar)) {
 						response.addMessage(
 								covarExpRefLocation.plusProp(KEYWORD_EXPERIENCE_REF),
 								CONJOINT_EXPERIENCE_TEST_REF_NONVARIANT, 
-								covarTestRef, state.getName());
+								conjointVarRef, state.getName());
 						return null;						
 					}
 					
-					// Covar experience must have already been defined.
-					TestExperienceImpl covarExperience = (TestExperienceImpl) covarTest.getExperience(covarExperienceRef);
-					if (covarExperience == null) {
-						response.addMessage(
-								covarExpRefLocation.plusProp(KEYWORD_EXPERIENCE_REF),
-								CONJOINT_EXPERIENCE_EXPERIENCE_REF_UNDEFINED, 
-								covarTestRef, covarExperienceRef);
-						return null;
-					}
-
 					// This test must declare the other test as conjoint.
-					if (test.getConjointTests() == null || !test.getConjointTests().contains(covarTest)) {
+					if (test.getConjointTests() == null || !test.getConjointTests().contains(conjointVar)) {
 						response.addMessage(
 								covarExpRefLocation.plusProp(KEYWORD_EXPERIENCE_REF),
 								CONJOINT_VARIANT_TEST_NOT_CONJOINT,
-								covarTestRef);
+								conjointVarRef);
 						return null;
 					}
 
-					if (conjointTestExperiences.contains(covarExperience)) {
+					// Conjoint experience must have already been defined.
+					Optional<Experience> conjointExpOpt = conjointVar.getExperience(conjointExpRef);
+					if (!conjointExpOpt.isPresent()) {
+						response.addMessage(
+								covarExpRefLocation.plusProp(KEYWORD_EXPERIENCE_REF),
+								CONJOINT_EXPERIENCE_EXPERIENCE_REF_UNDEFINED, 
+								conjointVarRef, conjointExpRef);
+						return null;
+					}
+
+					Experience conjointExp = conjointExpOpt.get();
+										
+					if (conjointExperiences.contains(conjointExp)) {
 						response.addMessage(
 								covarExpRefLocation.plusProp(KEYWORD_EXPERIENCE_REF),
 								CONJOINT_EXPERIENCE_DUPE,
-								covarTestRef, covarExperienceRef);
+								conjointVarRef, conjointExpRef);
 						return null;
 					}
 
 					// if multiple conjoint experience refs, they can only reference pairwise conjoint tests.
-					for (TestExperienceImpl e: conjointTestExperiences) {
-						if (!e.getTest().isConjointWith(covarExperience.getTest())) {
+					for (TestExperienceImpl e: conjointExperiences) {
+						if (!e.getTest().isConjointWith(conjointExp.getTest())) {
 							response.addMessage(
 									covarExpRefLocation,
 									CONJOINT_EXPERIENCE_REF_TESTS_NOT_CONJOINT, 
-									CollectionsUtils.toString(CollectionsUtils.list(e.getTest(), covarExperience.getTest()), ", "));
+									CollectionsUtils.toString(CollectionsUtils.list(e.getTest(), conjointExp.getTest()), ", "));
 							return null;
 						}
 					}
 
-					conjointTestExperiences.add(covarExperience);
+					conjointExperiences.add((TestExperienceImpl)conjointExp);
 				}
 			}
 		}
@@ -270,18 +277,18 @@ public class VariantParser implements Keywords {
 
 		// Don't create a state variant if undefined.
 		if (isPhantom) {
-			experience.addUninstrumentedState(state);
+			exp.addUninstrumentedState(state);
 			return null;
 		}
 		
 		// Resort covarTestExperiences in ordinal order, if present.
 		List<TestExperienceImpl> orderedCovarTestExperiences = null; 
-		if (conjointTestExperiences != null) {
+		if (conjointExperiences != null) {
 			
-			orderedCovarTestExperiences = new ArrayList<TestExperienceImpl>(conjointTestExperiences.size());
+			orderedCovarTestExperiences = new ArrayList<TestExperienceImpl>(conjointExperiences.size());
 
-			for (Test t: response.getSchema().getTests()) {
-				for (Experience e: conjointTestExperiences) {
+			for (Variation t: response.getSchema().getVariations()) {
+				for (Experience e: conjointExperiences) {
 					if (t.equals(e.getTest())) {
 						orderedCovarTestExperiences.add((TestExperienceImpl) e);
 						break;
@@ -290,6 +297,6 @@ public class VariantParser implements Keywords {
 			}
 		}
 		
-		return new StateVariantImpl(tov, experience, orderedCovarTestExperiences, params);
+		return new StateVariantImpl(vos, exp, orderedCovarTestExperiences, params);
 	}
 }
