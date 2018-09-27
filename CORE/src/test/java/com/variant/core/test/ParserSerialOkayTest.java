@@ -8,6 +8,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 import com.variant.core.schema.Flusher;
 import com.variant.core.schema.Hook;
@@ -875,10 +876,10 @@ public class ParserSerialOkayTest extends BaseTestCore {
 		}
 
 		// Verify non-existent views.
-		assertNull(schema.getState("non-existent'"));		
+		assertFalse(schema.getState("non-existent'").isPresent());		
 
 		for (String[] expectedView: expectedStates) {
-			assertNull(schema.getState(expectedView[0].toUpperCase()));
+			assertFalse(schema.getState(expectedView[0].toUpperCase()).isPresent());
 		}
 		
 		// Instrumented tests.
@@ -893,7 +894,7 @@ public class ParserSerialOkayTest extends BaseTestCore {
 		try {
 			assertFalse(view.isNonvariantIn(schema.getVariation("non-existent").get()));
 		}
-		catch (NullPointerException npe ) { /* expected */ }
+		catch (NoSuchElementException nse) { /* expected */ }
 
 		view = schema.getState("state2").get();
 		expectedInstrumentedTests = new ArrayList<Variation>() {{
@@ -986,17 +987,17 @@ public class ParserSerialOkayTest extends BaseTestCore {
 
 		Variation.OnState tov = actualonStates.get(0);
 		assertEquals(test, tov.getVariation());
-		assertEquals(config.getState("state1"), tov.getState());
+		assertEquals(config.getState("state1").get(), tov.getState());
 		assertFalse(tov.isNonvariant());
 		List<StateVariant> actualVariants =  tov.getVariants();
 		assertEquals(2, actualVariants.size());
 		StateVariant variant = actualVariants.get(0);
-		assertEquals(test.getExperience("B"), variant.getExperience());
+		assertEquals(test.getExperience("B").get(), variant.getExperience());
 		assertNull(variant.getConjointExperiences());
 		assertTrue(variant.isProper());
 		assertEquals("/path/to/state1/test1.B", variant.getParameters().get("path"));
 		variant = actualVariants.get(1);
-		assertEquals(test.getExperience("C"), variant.getExperience());
+		assertEquals(test.getExperience("C").get(), variant.getExperience());
 		assertNull(variant.getConjointExperiences());
 		assertTrue(variant.isProper());
 		assertEquals("/path/to/state1/test1.C", variant.getParameters().get("path"));
@@ -1035,31 +1036,31 @@ public class ParserSerialOkayTest extends BaseTestCore {
 
 		Variation.OnState tov = actualonStates.get(0);
 		assertEquals(test, tov.getVariation());
-		assertEquals(config.getState("state3"), tov.getState());
+		assertEquals(config.getState("state3").get(), tov.getState());
 		assertFalse(tov.isNonvariant());
 		List<StateVariant> actualVariants =  tov.getVariants();
 		assertEquals(1, actualVariants.size());
 		StateVariant variant = actualVariants.get(0);
-		assertEquals(test.getExperience("D"), variant.getExperience());
+		assertEquals(test.getExperience("D").get(), variant.getExperience());
 		assertNull(variant.getConjointExperiences());
 		assertTrue(variant.isProper());
 		assertEquals("/path/to/state3/test2.D", variant.getParameters().get("path"));
 
 		tov = actualonStates.get(1);
 		assertEquals(test, tov.getVariation());
-		assertEquals(config.getState("state2"), tov.getState());
+		assertEquals(config.getState("state2").get(), tov.getState());
 		assertFalse(tov.isNonvariant());
 		actualVariants =  tov.getVariants();
 		assertEquals(1, actualVariants.size());
 		variant = actualVariants.get(0);
-		assertEquals(test.getExperience("D"), variant.getExperience());
+		assertEquals(test.getExperience("D").get(), variant.getExperience());
 		assertNull(variant.getConjointExperiences());
 		assertTrue(variant.isProper());
 		assertEquals("/path/to/state2/test2.D", variant.getParameters().get("path"));
 		
 		tov = actualonStates.get(2);
 		assertEquals(test, tov.getVariation());
-		assertEquals(config.getState("state4"), tov.getState());
+		assertEquals(config.getState("state4").get(), tov.getState());
 		assertTrue(tov.isNonvariant());
 		assertTrue(tov.getVariants().isEmpty());
 
@@ -1096,12 +1097,12 @@ public class ParserSerialOkayTest extends BaseTestCore {
 
 		Variation.OnState tov = actualonStates.get(0);
 		assertEquals(test, tov.getVariation());
-		assertEquals(config.getState("state1"), tov.getState());
+		assertEquals(config.getState("state1").get(), tov.getState());
 		assertFalse(tov.isNonvariant());
 		List<StateVariant> actualVariants =  tov.getVariants();
 		assertEquals(1, actualVariants.size());
 		StateVariant variant = actualVariants.get(0);
-		assertEquals(test.getExperience("A"), variant.getExperience());
+		assertEquals(test.getExperience("A").get(), variant.getExperience());
 		assertNull(variant.getConjointExperiences());
 		assertTrue(variant.isProper());
 		assertEquals("/path/to/state1/Test1.A", variant.getParameters().get("path"));
