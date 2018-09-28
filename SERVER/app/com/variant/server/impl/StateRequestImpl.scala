@@ -4,8 +4,8 @@ import com.variant.core.schema.State
 import com.variant.server.api.StateRequest
 import com.variant.core.session.CoreStateRequest
 import java.util.Date
-import com.variant.core.schema.Test.Experience
-import com.variant.core.schema.Test
+import com.variant.core.schema.Variation
+import com.variant.core.schema.Variation.Experience
 import com.variant.core.schema.StateVariant
 import com.variant.core.TraceEvent
 import com.variant.core.StateRequestStatus
@@ -49,7 +49,7 @@ class StateRequestImpl(private val session: Session, private val coreReq:CoreSta
 
 	/**
 	 */
-	override def getLiveExperience(test: Test): Experience = coreReq.getLiveExperience(test)
+	override def getLiveExperience(variation: Variation): java.util.Optional[Experience] = coreReq.getLiveExperience(variation)
 
 	/**
     */

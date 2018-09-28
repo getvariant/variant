@@ -5,12 +5,13 @@ import java.io.StringWriter;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.variant.core.TraceEvent;
-import com.variant.core.schema.Test.Experience;
+import com.variant.core.schema.Variation.Experience;
 import com.variant.server.api.FlushableTraceEvent;
 import com.variant.server.api.Session;
 import com.variant.server.api.StateRequest;
@@ -40,9 +41,9 @@ public class FlushableTraceEventImpl implements FlushableTraceEvent, Serializabl
 	public FlushableTraceEventImpl(ServerTraceEvent event, Session session) {
 		this.userEvent = event;
 		this.sessionId = session.getId();
-		StateRequest req = session.getStateRequest();
-		if (req != null) 
-			for (Experience e: req.getLiveExperiences()) liveExperiences.add(e);
+		Optional<StateRequest> reqOpt = session.getStateRequest();
+		if (reqOpt.isPresent()) 
+			for (Experience e: reqOpt.get().getLiveExperiences()) liveExperiences.add(e);
 	
 	}
 

@@ -11,7 +11,7 @@ package com.variant.core.lifecycle;
  * they are defined. Finally, hooks defined at the test level are <em>test-scoped</em> and are only applicable
  * to the test where they are defined. It is an error to define a state-scoped hook which listens to a non-
  * {@link StateAwareLifecycleEvent}. Likewise, is an error to define a test-scoped hook which listens to a non-
- * {@link TestAwareLifecycleEvent}. Whenever a life-cycle event of type T is raised, Variant server posts 
+ * {@link VariationAwareLifecycleEvent}. Whenever a life-cycle event of type T is raised, Variant server posts 
  * all hooks whose {@link #getLifecycleEventClass()} returns either T or its subclass.
  * <p>
  * If multiple hooks are to be posted by same life-cycle event, they form a hook chain, and Variant server will 

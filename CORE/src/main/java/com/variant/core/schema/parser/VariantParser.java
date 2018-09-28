@@ -26,7 +26,7 @@ import com.variant.core.schema.Variation;
 import com.variant.core.schema.Variation.Experience;
 import com.variant.core.schema.impl.StateImpl;
 import com.variant.core.schema.impl.StateVariantImpl;
-import com.variant.core.schema.impl.TestExperienceImpl;
+import com.variant.core.schema.impl.VariationExperienceImpl;
 import com.variant.core.schema.impl.VariationImpl;
 import com.variant.core.schema.impl.VariationOnStateImpl;
 import com.variant.core.schema.parser.error.SemanticError.Location;
@@ -104,7 +104,7 @@ public class VariantParser implements Keywords {
 			return null;			
 		}
 		
-		TestExperienceImpl exp = (TestExperienceImpl) expOpt.get();
+		VariationExperienceImpl exp = (VariationExperienceImpl) expOpt.get();
 		
 		// Variant cannot refer to a control experience, unless phantom.
 		if (exp.isControl() && !isPhantom) {
@@ -113,7 +113,7 @@ public class VariantParser implements Keywords {
 		}
 		
 		// Pass 2. Find conjointExperienceRefs.
-		ArrayList<TestExperienceImpl> conjointExperiences = null;
+		ArrayList<VariationExperienceImpl> conjointExperiences = null;
 		
 		for (Map.Entry<String, Object> entry: rawVariant.entrySet()) {
 			
@@ -141,7 +141,7 @@ public class VariantParser implements Keywords {
 					return null;
 				}
 				
-				conjointExperiences = new ArrayList<TestExperienceImpl>();
+				conjointExperiences = new ArrayList<VariationExperienceImpl>();
 
 				int index = 0;
 				for (Object conjointExpRefObj: conjointExpRefList) {
@@ -233,17 +233,17 @@ public class VariantParser implements Keywords {
 					}
 
 					// if multiple conjoint experience refs, they can only reference pairwise conjoint tests.
-					for (TestExperienceImpl e: conjointExperiences) {
-						if (!e.getTest().isConjointWith(conjointExp.getTest())) {
+					for (VariationExperienceImpl e: conjointExperiences) {
+						if (!e.getVariation().isConjointWith(conjointExp.getVariation())) {
 							response.addMessage(
 									covarExpRefLocation,
 									CONJOINT_EXPERIENCE_REF_TESTS_NOT_CONJOINT, 
-									CollectionsUtils.toString(CollectionsUtils.list(e.getTest(), conjointExp.getTest()), ", "));
+									CollectionsUtils.toString(CollectionsUtils.list(e.getVariation(), conjointExp.getVariation()), ", "));
 							return null;
 						}
 					}
 
-					conjointExperiences.add((TestExperienceImpl)conjointExp);
+					conjointExperiences.add((VariationExperienceImpl)conjointExp);
 				}
 			}
 		}
@@ -282,15 +282,15 @@ public class VariantParser implements Keywords {
 		}
 		
 		// Resort covarTestExperiences in ordinal order, if present.
-		List<TestExperienceImpl> orderedCovarTestExperiences = null; 
+		List<VariationExperienceImpl> orderedCovarTestExperiences = null; 
 		if (conjointExperiences != null) {
 			
-			orderedCovarTestExperiences = new ArrayList<TestExperienceImpl>(conjointExperiences.size());
+			orderedCovarTestExperiences = new ArrayList<VariationExperienceImpl>(conjointExperiences.size());
 
 			for (Variation t: response.getSchema().getVariations()) {
 				for (Experience e: conjointExperiences) {
-					if (t.equals(e.getTest())) {
-						orderedCovarTestExperiences.add((TestExperienceImpl) e);
+					if (t.equals(e.getVariation())) {
+						orderedCovarTestExperiences.add((VariationExperienceImpl) e);
 						break;
 					}
 				}

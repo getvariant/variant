@@ -4,7 +4,7 @@ import com.variant.core.schema.State
 import scala.collection.mutable.ListBuffer
 import scala.collection.JavaConversions._
 import com.variant.core.UserError.Severity._
-import com.variant.core.schema.Test
+import com.variant.core.schema.Variation
 import org.scalatest.Assertions._
 import com.variant.server.boot.ServerErrorLocal._
 import org.scalatestplus.play.PlaySpec
@@ -50,15 +50,15 @@ class RuntimeTest extends EmbeddedServerSpec {
          val schema = server.schemata.get("big_conjoint_schema").get.liveGen.get
  	      val runtime = RuntimeTestFacade(schema)
 
-      	val state1 = schema.getState("state1")
-      	val state2 = schema.getState("state2")
-   	   val state3 = schema.getState("state3")
-   	   val test1 = schema.getTest("test1")
-      	val test2 = schema.getTest("test2")
-   	   val test3 = schema.getTest("test3")
-   	   val test4 = schema.getTest("test4")
-   	   val test5 = schema.getTest("test5")
-   	   val test6 = schema.getTest("test6")
+      	val state1 = schema.getState("state1").get
+      	val state2 = schema.getState("state2").get
+   	   val state3 = schema.getState("state3").get
+   	   val test1 = schema.getVariation("test1").get
+      	val test2 = schema.getVariation("test2").get
+   	   val test3 = schema.getVariation("test3").get
+   	   val test4 = schema.getVariation("test4").get
+   	   val test5 = schema.getVariation("test5").get
+   	   val test6 = schema.getVariation("test6").get
  
    	   var caughtEx = intercept[ServerException.Internal] {
              runtime.resolveState(state1, Array(experience("test1.B", schema)))
@@ -185,15 +185,15 @@ class RuntimeTest extends EmbeddedServerSpec {
          val schema = server.schemata.get("big_conjoint_schema").get.liveGen.get
  	      val runtime = RuntimeTestFacade(schema)
 
-      	val state1 = schema.getState("state1")
-      	val state2 = schema.getState("state2")
-   	   val state3 = schema.getState("state3")
-   	   val test1 = schema.getTest("test1")
-      	val test2 = schema.getTest("test2")
-   	   val test3 = schema.getTest("test3")
-   	   val test4 = schema.getTest("test4")
-   	   val test5 = schema.getTest("test5")
-   	   val test6 = schema.getTest("test6")
+      	val state1 = schema.getState("state1").get
+      	val state2 = schema.getState("state2").get
+   	   val state3 = schema.getState("state3").get
+   	   val test1 = schema.getVariation("test1").get
+      	val test2 = schema.getVariation("test2").get
+   	   val test3 = schema.getVariation("test3").get
+   	   val test4 = schema.getVariation("test4").get
+   	   val test5 = schema.getVariation("test5").get
+   	   val test6 = schema.getVariation("test6").get
 
 	      var resolution = runtime.resolveState(
 				   state2, 
@@ -339,15 +339,15 @@ class RuntimeTest extends EmbeddedServerSpec {
          val schema = server.schemata.get("big_conjoint_schema").get.liveGen.get
  	      val runtime = RuntimeTestFacade(schema)
 
-      	val state1 = schema.getState("state1")
-      	val state2 = schema.getState("state2")
-   	   val state3 = schema.getState("state3")
-   	   val test1 = schema.getTest("test1")
-      	val test2 = schema.getTest("test2")
-   	   val test3 = schema.getTest("test3")
-   	   val test4 = schema.getTest("test4")
-   	   val test5 = schema.getTest("test5")
-   	   val test6 = schema.getTest("test6")
+      	val state1 = schema.getState("state1").get
+      	val state2 = schema.getState("state2").get
+   	   val state3 = schema.getState("state3").get
+   	   val test1 = schema.getVariation("test1").get
+      	val test2 = schema.getVariation("test2").get
+   	   val test3 = schema.getVariation("test3").get
+   	   val test4 = schema.getVariation("test4").get
+   	   val test5 = schema.getVariation("test5").get
+   	   val test6 = schema.getVariation("test6").get
 
    	   var resolution = runtime.resolveState(
    				state3, 
@@ -535,15 +535,15 @@ class RuntimeTest extends EmbeddedServerSpec {
          val schema = server.schemata.get("big_conjoint_schema").get.liveGen.get
  	      val runtime = RuntimeTestFacade(schema)
 
-      	val state1 = schema.getState("state1")
-      	val state2 = schema.getState("state2")
-   	   val state3 = schema.getState("state3")
-   	   val test1 = schema.getTest("test1")
-      	val test2 = schema.getTest("test2")
-   	   val test3 = schema.getTest("test3")
-   	   val test4 = schema.getTest("test4")
-   	   val test5 = schema.getTest("test5")
-   	   val test6 = schema.getTest("test6")
+      	val state1 = schema.getState("state1").get
+      	val state2 = schema.getState("state2").get
+   	   val state3 = schema.getState("state3").get
+   	   val test1 = schema.getVariation("test1").get
+      	val test2 = schema.getVariation("test2").get
+   	   val test3 = schema.getVariation("test3").get
+   	   val test4 = schema.getVariation("test4").get
+   	   val test5 = schema.getVariation("test5").get
+   	   val test6 = schema.getVariation("test6").get
 
    	   runtime.isResolvable(Array(experience("test1.A", schema))) mustBe true
 		
@@ -736,15 +736,15 @@ class RuntimeTest extends EmbeddedServerSpec {
          val schema = server.schemata.get("big_conjoint_schema").get.liveGen.get
  	      val runtime = RuntimeTestFacade(schema)
 
-      	val state1 = schema.getState("state1")
-      	val state2 = schema.getState("state2")
-   	   val state3 = schema.getState("state3")
-   	   val test1 = schema.getTest("test1")
-      	val test2 = schema.getTest("test2")
-   	   val test3 = schema.getTest("test3")
-   	   val test4 = schema.getTest("test4")
-   	   val test5 = schema.getTest("test5")
-   	   val test6 = schema.getTest("test6")
+      	val state1 = schema.getState("state1").get
+      	val state2 = schema.getState("state2").get
+   	   val state3 = schema.getState("state3").get
+   	   val test1 = schema.getVariation("test1").get
+      	val test2 = schema.getVariation("test2").get
+   	   val test3 = schema.getVariation("test3").get
+   	   val test4 = schema.getVariation("test4").get
+   	   val test5 = schema.getVariation("test5").get
+   	   val test6 = schema.getVariation("test6").get
 
    	   var caughtEx = intercept[ServerException.Internal] {   
    				runtime.isTargetable(

@@ -18,8 +18,8 @@ import com.variant.core.schema.Variation.OnState;
 public class StateVariantImpl implements StateVariant {
 
 	private VariationOnStateImpl onStateImpl;
-	private TestExperienceImpl ownExperience;
-	private List<TestExperienceImpl> conjointExperiences;
+	private VariationExperienceImpl ownExperience;
+	private List<VariationExperienceImpl> conjointExperiences;
 	private Map<String,String> params;
 	
 	/**
@@ -27,7 +27,7 @@ public class StateVariantImpl implements StateVariant {
 	 * @param experiences
 	 * @param path
 	 */
-	public StateVariantImpl(VariationOnStateImpl onViewImpl, TestExperienceImpl ownExperience, List<TestExperienceImpl> conjointExperiences, Map<String,String> params) {
+	public StateVariantImpl(VariationOnStateImpl onViewImpl, VariationExperienceImpl ownExperience, List<VariationExperienceImpl> conjointExperiences, Map<String,String> params) {
 		this.onStateImpl = onViewImpl;
 		this.ownExperience = ownExperience;
 		this.conjointExperiences = conjointExperiences;
@@ -38,7 +38,7 @@ public class StateVariantImpl implements StateVariant {
 	 * 
 	 * @param experience
 	 */
-	void addConjointExperience(TestExperienceImpl experience) {
+	void addConjointExperience(VariationExperienceImpl experience) {
 		conjointExperiences.add(experience);
 	}
 	

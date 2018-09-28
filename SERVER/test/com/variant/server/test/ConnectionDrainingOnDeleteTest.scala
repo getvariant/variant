@@ -138,7 +138,7 @@ class ConnectionDrainingOnDeleteTest extends BaseSpecWithServerAsync with TempSc
             assertResp(route(app, httpReq(PUT, context + "/session/attr").withBody(body.toString())))
                .isOk
                .withBodySession  { ssn =>
-                  ssn.getAttribute("foo") mustBe "bar"
+                  ssn.getAttributes.get("foo") mustBe "bar"
                }
          }
 

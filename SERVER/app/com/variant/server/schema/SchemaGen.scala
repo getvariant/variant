@@ -61,12 +61,12 @@ class SchemaGen(val response: ParserResponse, val origin: String) extends CoreSc
 	   coreSchema.getState(name)	   
 	}
 
-	override def getTests() = {
-	   coreSchema.getTests
+	override def getVariations() = {
+	   coreSchema.getVariations
 	}
 	
-	override def getTest(name: String) = {
-	   coreSchema.getTest(name)	   
+	override def getVariation(name: String) = {
+	   coreSchema.getVariation(name)	   
 	}
 
 	/*------------------------------------ Public Extensions ------------------------------------*/

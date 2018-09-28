@@ -47,7 +47,7 @@ import com.variant.core.schema.Variation.Experience;
 import com.variant.core.schema.impl.SchemaImpl;
 import com.variant.core.schema.impl.StateImpl;
 import com.variant.core.schema.impl.StateVariantImpl;
-import com.variant.core.schema.impl.TestExperienceImpl;
+import com.variant.core.schema.impl.VariationExperienceImpl;
 import com.variant.core.schema.impl.VariationImpl;
 import com.variant.core.schema.impl.VariationOnStateImpl;
 import com.variant.core.schema.parser.error.SemanticError.Location;
@@ -131,7 +131,7 @@ public class VariationsParser implements Keywords {
 	 */
 	private static Variation parseTest(Map<String, ?> test, Location testLocation, ParserResponse response){
 		
-		List<TestExperienceImpl> experiences = new ArrayList<TestExperienceImpl>();
+		List<VariationExperienceImpl> experiences = new ArrayList<VariationExperienceImpl>();
 		List<VariationOnStateImpl> onStates = new ArrayList<VariationOnStateImpl>();
 
 		String name = null;
@@ -188,10 +188,10 @@ public class VariationsParser implements Keywords {
 						int index = 0;
 						for (Object rawExperience: rawExperiences) {
 							Location expLocation = testLocation.plusObj(KEYWORD_EXPERIENCES).plusIx(index++);
-							TestExperienceImpl experience = parseTestExperience(rawExperience, name, expLocation, response);
+							VariationExperienceImpl experience = parseTestExperience(rawExperience, name, expLocation, response);
 							if (experience != null) {
 								experience.setTest(result);
-								for (TestExperienceImpl e: experiences) {
+								for (VariationExperienceImpl e: experiences) {
 									if (e.equals(experience)) {
 										response.addMessage(expLocation, DUPE_OBJECT, e.getName());
 										break;
@@ -208,7 +208,7 @@ public class VariationsParser implements Keywords {
 		// One must be control.
 		boolean controlExperienceFound = false;
 		int expIx = 0;
-		for (TestExperienceImpl e: experiences) {
+		for (VariationExperienceImpl e: experiences) {
 			Location expLocation = testLocation.plusObj(KEYWORD_EXPERIENCES).plusIx(expIx++);
 			if (e.isControl()) {
 				if (controlExperienceFound) {
@@ -355,7 +355,7 @@ public class VariationsParser implements Keywords {
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	private static TestExperienceImpl parseTestExperience(Object experienceObject, String testName, Location expLocation, ParserResponse response) {
+	private static VariationExperienceImpl parseTestExperience(Object experienceObject, String testName, Location expLocation, ParserResponse response) {
 		
 		Map<String, ?> experience = null;
 		try {
@@ -422,7 +422,7 @@ public class VariationsParser implements Keywords {
 			}
 		}
 		
-		return new TestExperienceImpl(name, weight, isControl);	
+		return new VariationExperienceImpl(name, weight, isControl);	
 	}
 	
 	/**

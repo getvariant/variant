@@ -3,10 +3,10 @@ package com.variant.server.test.hooks;
 import com.typesafe.config.Config;
 import com.variant.core.UserError.Severity;
 import com.variant.core.lifecycle.LifecycleHook;
-import com.variant.core.lifecycle.TestParsedLifecycleEvent;
+import com.variant.core.lifecycle.VariationParsedLifecycleEvent;
 import com.variant.server.api.lifecycle.PostResultFactory;
 
-public class TestParsedHook implements LifecycleHook<TestParsedLifecycleEvent> {
+public class TestParsedHook implements LifecycleHook<VariationParsedLifecycleEvent> {
 	
 	public static final String INFO_MESSAGE_FORMAT = "Info-Message-Test %s %s";
 	public static final String WARN_MESSAGE_FORMAT = "Warn-Message-Test %s %s";
@@ -29,16 +29,16 @@ public class TestParsedHook implements LifecycleHook<TestParsedLifecycleEvent> {
 	}
 
 	@Override
-    public Class<TestParsedLifecycleEvent> getLifecycleEventClass() {
-		return TestParsedLifecycleEvent.class;
+    public Class<VariationParsedLifecycleEvent> getLifecycleEventClass() {
+		return VariationParsedLifecycleEvent.class;
     }
    
 	@Override
-	public PostResult post(TestParsedLifecycleEvent event) {
-		event.addMessage(Severity.INFO, String.format(INFO_MESSAGE_FORMAT, hookName, event.getTest().getName()));
+	public PostResult post(VariationParsedLifecycleEvent event) {
+		event.addMessage(Severity.INFO, String.format(INFO_MESSAGE_FORMAT, hookName, event.getVariation().getName()));
 		if (!infoOnly) {
-			event.addMessage(Severity.WARN, String.format(WARN_MESSAGE_FORMAT, hookName, event.getTest().getName()));
-			event.addMessage(Severity.ERROR, String.format(ERROR_MESSAGE_FORMAT, hookName, event.getTest().getName()));
+			event.addMessage(Severity.WARN, String.format(WARN_MESSAGE_FORMAT, hookName, event.getVariation().getName()));
+			event.addMessage(Severity.ERROR, String.format(ERROR_MESSAGE_FORMAT, hookName, event.getVariation().getName()));
 		}
 		return clipChain ? PostResultFactory.mkPostResult(event) : null;
 	}

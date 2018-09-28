@@ -59,19 +59,19 @@ public interface Hook {
 	}
 
 	/**
-	 * Test-scoped life-cycle hook. Declared in the {@code test//hooks} array
+	 * Variation-scoped life-cycle hook. Declared in the {@code variations//hooks} array
 	 * @author Igor
 	 * @since 0.7
 	 */
-	public interface Test extends Hook {
+	public interface Variation extends Hook {
 		
 		/**
-		 * The test in whose scope this hook is defined.
+		 * The variation in whose scope this hook is defined.
 		 * 
 		 * @return An object of type {@link com.variant.core.schema.Variation}
 		 * @since 0.7
 		 */
-		public com.variant.core.schema.Variation getTest();
+		public com.variant.core.schema.Variation getVariation();
 		
 	}
 }

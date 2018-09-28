@@ -3,8 +3,8 @@ package com.variant.server.boot
 import java.util.ArrayList
 import scala.collection.JavaConversions.seqAsJavaList
 import com.variant.core.schema.State
-import com.variant.core.schema.Test
-import com.variant.core.schema.Test.Experience
+import com.variant.core.schema.Variation
+import com.variant.core.schema.Variation.Experience
 import com.variant.core.schema.impl.StateVariantImpl
 import com.variant.server.schema.SchemaGen
 
@@ -45,7 +45,7 @@ class RuntimeTestFacade(schemaGen: SchemaGen)  extends Runtime(schemaGen) {
    /*
     * 
     */
-   def isTargetable(test: Test, state: State,  alreadyTargetedExperiences: Array[Experience]): Boolean = {
+   def isTargetable(test: Variation, state: State,  alreadyTargetedExperiences: Array[Experience]): Boolean = {
       super.isTargetable(test, state, alreadyTargetedExperiences.toSeq)
    }
 }

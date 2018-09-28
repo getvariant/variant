@@ -5,7 +5,7 @@
  * <p>
  * There are two principal types of server-side extensions which can be developed
  * using this API: life-cycle hooks and event flushers. Life-cycle hooks are
- * listeners to life-cycle events, e.g. the {@link com.variant.server.api.lifecycle.TestQualificationLifecycleEvent},
+ * listeners to life-cycle events, e.g. the {@link com.variant.server.api.lifecycle.VariationQualificationLifecycleEvent},
  * which is raised whenever a session's qualification for a variation must be established.
  * Life-cycle hooks provide a convenient way to augment Variant server's default behavior with
  * custom semantics.

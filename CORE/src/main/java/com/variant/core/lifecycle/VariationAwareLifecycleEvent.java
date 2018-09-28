@@ -3,12 +3,12 @@ package com.variant.core.lifecycle;
 import com.variant.core.schema.Variation;
 
 /**
- * Super-type of all life-cycle event types whose runtime context includes a particular test.
+ * Super-type of all life-cycle event types whose runtime context includes a particular experience variation.
  * 
  * @since 0.7
  *
  */
-public interface TestAwareLifecycleEvent extends LifecycleEvent{
+public interface VariationAwareLifecycleEvent extends LifecycleEvent{
 
 	/**
 	 * The event's triggering test.
@@ -17,6 +17,6 @@ public interface TestAwareLifecycleEvent extends LifecycleEvent{
 	 * 
      * @since 0.7
 	 */
-	public Variation getTest();
+	public Variation getVariation();
 	
 }

@@ -9,7 +9,7 @@ import java.sql.Timestamp;
 import java.util.Collection;
 import java.util.Map;
 
-import com.variant.core.schema.Test;
+import com.variant.core.schema.Variation.Experience;
 import com.variant.server.api.EventFlusher;
 import com.variant.server.api.FlushableTraceEvent;
 import com.variant.server.api.ServerException;
@@ -136,9 +136,9 @@ abstract public class EventFlusherJdbc implements EventFlusher {
 					index = 0;
 					for (FlushableTraceEvent event: events) {
 						long eventId = eventIds[index++];
-						for (Test.Experience exp: event.getLiveExperiences()) {
+						for (Experience exp: event.getLiveExperiences()) {
 							stmt.setLong(1, eventId);
-							stmt.setString(2, exp.getTest().getName());
+							stmt.setString(2, exp.getVariation().getName());
 							stmt.setString(3, exp.getName());
 							stmt.setBoolean(4, exp.isControl());						
 							stmt.addBatch();

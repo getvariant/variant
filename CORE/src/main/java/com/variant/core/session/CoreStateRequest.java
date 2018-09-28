@@ -120,22 +120,22 @@ public class CoreStateRequest implements Serializable {
 			SessionScopedTargetingStabile stabile = session.getTargetingStabile();
 			HashSet<Experience> result = new LinkedHashSet<Experience>();
 
-			for (Variation test: state.getInstrumentedVariations()) {
-				if (!test.isOn() || session.getDisqualifiedTests().contains(test)) continue;
-				SessionScopedTargetingStabile.Entry entry = stabile.get(test.getName());
-				if (entry == null) throw new CoreException.Internal("Targeted experience for test [" + test.getName() + "] expected but not found in sessioin.");
-				result.add(test.getExperience(entry.getExperienceName()).get());
+			for (Variation var: state.getInstrumentedVariations()) {
+				if (!var.isOn() || session.getDisqualifiedVariations().contains(var)) continue;
+				SessionScopedTargetingStabile.Entry entry = stabile.get(var.getName());
+				if (entry == null) throw new CoreException.Internal("Targeted experience for variation [" + var.getName() + "] expected but not found in sessioin.");
+				result.add(var.getExperience(entry.getExperienceName()).get());
 			}
 			liveExperiences = result;
 		}
 		return liveExperiences;
 	}
 
-	public Experience getLiveExperience(Variation test) {
+	public Optional<Experience> getLiveExperience(Variation test) {
 		
 		for (Experience e: getLiveExperiences())
-			if  (e.getTest().getName().equals(test.getName())) return e;
-		return null;
+			if  (e.getVariation().getName().equals(test.getName())) return Optional.of(e);
+		return Optional.empty();
 	}
 	
 	/**
@@ -279,7 +279,7 @@ public class CoreStateRequest implements Serializable {
 		if (variantObj != null) {
 			String testName = (String) variantObj.get(FIELD_NAME_TEST);
 			int offset = (Integer) variantObj.get(FIELD_NAME_OFFSET);
-			result.resolvedStateVariant = schema.getVariation(testName).get().getOnState(schema.getState(stateName).get()).getVariants().get(offset);
+			result.resolvedStateVariant = schema.getVariation(testName).get().getOnState(schema.getState(stateName).get()).get().getVariants().get(offset);
 		}
 
 		return result;

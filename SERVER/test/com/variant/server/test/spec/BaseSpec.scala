@@ -271,7 +271,7 @@ trait BaseSpec extends PlaySpec {
    protected def experience(name: String, schema: Schema) = {
 		val tokens = name.split("\\.")
 		assert(tokens.length == 2)
-		schema.getTest(tokens(0)).getExperience(tokens(1))
+		schema.getVariation(tokens(0)).get.getExperience(tokens(1)).get
 	}
 
    /**

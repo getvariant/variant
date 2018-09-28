@@ -7,7 +7,7 @@ import com.variant.core.schema.Hook;
  * @author Igor
  *
  */
-public class TestHookImpl extends BaseHookImpl implements Hook.Test {
+public class TestHookImpl extends BaseHookImpl implements Hook.Variation {
 
 	private final com.variant.core.schema.Variation test;
 	
@@ -21,7 +21,7 @@ public class TestHookImpl extends BaseHookImpl implements Hook.Test {
 	//---------------------------------------------------------------------------------------------//
 
 	@Override
-	public com.variant.core.schema.Variation getTest() {
+	public com.variant.core.schema.Variation getVariation() {
 		return test;
 	}
 

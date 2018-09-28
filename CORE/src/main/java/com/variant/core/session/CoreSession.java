@@ -8,6 +8,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 import com.fasterxml.jackson.core.JsonFactory;
@@ -35,8 +36,8 @@ public class CoreSession implements Serializable {
 	private LinkedHashMap<String, String> attributes = new LinkedHashMap<String, String>();
 	private CoreStateRequest currentRequest = null;
 	private LinkedHashMap<State, Integer> traversedStates = new LinkedHashMap<State, Integer>();
-	private LinkedHashSet<Variation> traversedTests = new LinkedHashSet<Variation>();
-	private LinkedHashSet<Variation> disqualTests = new LinkedHashSet<Variation>();
+	private LinkedHashSet<Variation> traversedVariations = new LinkedHashSet<Variation>();
+	private LinkedHashSet<Variation> disqualVariations = new LinkedHashSet<Variation>();
 	private SessionScopedTargetingStabile targetingStabile = new SessionScopedTargetingStabile();
 	
 	//---------------------------------------------------------------------------------------------//
@@ -161,33 +162,33 @@ public class CoreSession implements Serializable {
 		
 		Object testsObj = parsedJson.get(FIELD_NAME_TRAVERSED_TESTS);
 		if (testsObj != null) {
-			LinkedHashSet<Variation> tests = new LinkedHashSet<Variation>();
+			LinkedHashSet<Variation> vars = new LinkedHashSet<Variation>();
 			try {
 				List<String> testList = (List<String>) testsObj; 
 				for (String test: testList) {
-					tests.add(schema.getVariation(test).get());
+					vars.add(schema.getVariation(test).get());
 				}
 			}
 			catch (Exception e) {
 				throw new CoreException.Internal("Unable to deserialzie session: bad tests spec", e);
 			}
-			result.traversedTests = tests;
+			result.traversedVariations = vars;
 		}
 		
 		testsObj = parsedJson.get(FIELD_NAME_DISQUAL_TESTS);
 		if (testsObj != null) {
-			LinkedHashSet<Variation> tests = new LinkedHashSet<Variation>();
+			LinkedHashSet<Variation> vars = new LinkedHashSet<Variation>();
 			try {
 				List<String> testList = (List<String>) testsObj; 
 				for (String testName: testList) {
-					tests.add(schema.getVariation(testName).get());
+					vars.add(schema.getVariation(testName).get());
 				
 				}
 			}
 			catch (Exception e) {
 				throw new CoreException.Internal("Unable to deserialzie session: bad disqual tests spec", e);
 			}
-			result.disqualTests = tests;
+			result.disqualVariations = vars;
 		}
 		return result;
 	}
@@ -206,33 +207,25 @@ public class CoreSession implements Serializable {
 		return createDate;
 	}
 	
-	public CoreStateRequest getStateRequest() {
-		return currentRequest;
+	public Optional<CoreStateRequest> getStateRequest() {
+		return Optional.ofNullable(currentRequest);
 	}
 
 	public Map<State, Integer> getTraversedStates() {
 		return Collections.unmodifiableMap(traversedStates);
 	}
 
-	public Set<Variation> getTraversedTests() {
-		return Collections.unmodifiableSet(traversedTests);
+	public Set<Variation> getTraversedVariations() {
+		return Collections.unmodifiableSet(traversedVariations);
 	}
 
-	public Set<Variation> getDisqualifiedTests() {
-		return Collections.unmodifiableSet(disqualTests);
+	public Set<Variation> getDisqualifiedVariations() {
+		return Collections.unmodifiableSet(disqualVariations);
 	}
 
-	public String setAttribute(String name, String value) {
-		return attributes.put(name, value);
+	public Map<String,String> getAttributes() {
+		return attributes;
 	}    
-
-	public String getAttribute(String name) {
-		return attributes.get(name);
-	}
-
-	public String clearAttribute(String name) {
-		return attributes.remove(name);
-	}
 
 	//---------------------------------------------------------------------------------------------//
 	//                                        PUBLIC EXT                                           //
@@ -249,26 +242,26 @@ public class CoreSession implements Serializable {
 	 * 
 	 * @param test
 	 */
-	public void addTraversedTest(Variation test) {
+	public void addTraversedVariation(Variation var) {
 
-		if (traversedTests.contains(test)) 
+		if (traversedVariations.contains(var)) 
 			throw new CoreException.Internal(
-					String.format("Test [%s] already contained in the traversed list", test.getName()));
+					String.format("Test [%s] already contained in the traversed list", var.getName()));
 		
-		traversedTests.add(test);
+		traversedVariations.add(var);
 	}
 
 	/**
 	 * 
 	 * @param test
 	 */
-	public void addDisqualifiedTest(Variation test) {
+	public void addDisqualifiedTest(Variation var) {
 
-		if (disqualTests.contains(test)) {
+		if (disqualVariations.contains(var)) {
 				throw new CoreException.Internal(
-						String.format("Test [%s] already contained in the disqual list", test.getName()));
+						String.format("Variation [%s] already contained in the disqual list", var.getName()));
 		}	
-		disqualTests.add(test);
+		disqualVariations.add(var);
 	}
 
 	/**
@@ -350,17 +343,17 @@ public class CoreSession implements Serializable {
 				jsonGen.writeEndObject();
 			}
 
-			if (traversedTests.size() > 0) {
+			if (traversedVariations.size() > 0) {
 				jsonGen.writeArrayFieldStart(FIELD_NAME_TRAVERSED_TESTS);
-				for (Variation t: traversedTests) {
+				for (Variation t: traversedVariations) {
 					jsonGen.writeString(t.getName());
 				}
 				jsonGen.writeEndArray();
 			}
 			
-			if (disqualTests.size() > 0) {
+			if (disqualVariations.size() > 0) {
 				jsonGen.writeArrayFieldStart(FIELD_NAME_DISQUAL_TESTS);
-				for (Variation t: disqualTests) {
+				for (Variation t: disqualVariations) {
 					jsonGen.writeString(t.getName());
 				}
 				jsonGen.writeEndArray();

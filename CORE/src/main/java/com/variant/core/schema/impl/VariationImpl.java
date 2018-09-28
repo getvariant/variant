@@ -26,7 +26,7 @@ public class VariationImpl implements Variation {
 	private String name;
 	private boolean isOn = true;
 	private List<VariationImpl> conjointTests;
-	private List<TestExperienceImpl> experiences;
+	private List<VariationExperienceImpl> experiences;
 	private VariantSpace variantSpace;
 	private List<VariationOnStateImpl> onStates;
 	
@@ -99,9 +99,9 @@ public class VariationImpl implements Variation {
 	/**
 	 */
 	@Override
-	public OnState getOnState(State view) {
-		for (OnState tov: onStates) if (tov.getState().equals(view)) return tov;
-		return null;
+	public Optional<OnState> getOnState(State state) {
+		for (OnState vos: onStates) if (vos.getState().equals(state)) return Optional.of(vos);
+		return Optional.empty();
 	}
 
 	/**
@@ -168,7 +168,7 @@ public class VariationImpl implements Variation {
 	 * 
 	 * @param experiences
 	 */
-	public void setExperiences(List<TestExperienceImpl> experiences) {
+	public void setExperiences(List<VariationExperienceImpl> experiences) {
 		this.experiences = experiences;
 	}
 	

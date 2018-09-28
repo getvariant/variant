@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.Map;
+import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,22 +16,22 @@ import com.variant.core.util.StringUtils;
 import com.variant.core.session.SessionScopedTargetingStabile;
 import com.variant.core.util.Tuples.Pair;
 import com.variant.core.schema.State;
-import com.variant.core.schema.Test;
-import com.variant.core.schema.Test.Experience;
-import com.variant.core.schema.Test.OnState;
+import com.variant.core.schema.Variation;
+import com.variant.core.schema.Variation.Experience;
+import com.variant.core.schema.Variation.OnState;
 import com.variant.core.schema.impl.StateImpl;
 import com.variant.core.schema.impl.StateVariantImpl;
-import com.variant.core.schema.impl.TestImpl;
-import com.variant.core.schema.impl.TestOnStateImpl;
+import com.variant.core.schema.impl.VariationImpl;
+import com.variant.core.schema.impl.VariationOnStateImpl;
 import com.variant.server.api.ServerException;
 import com.variant.server.api.Session;
-import com.variant.server.api.lifecycle.TestQualificationLifecycleEvent;
+import com.variant.server.api.lifecycle.VariationQualificationLifecycleEvent;
 import com.variant.server.impl.SessionImpl;
 import com.variant.server.impl.StateRequestImpl;
-import com.variant.server.impl.TestQualificationLifecycleEventImpl;
-import com.variant.server.impl.TestQualificationLifecycleEventPostResultImpl;
-import com.variant.server.impl.TestTargetingLifecycleEventImpl;
-import com.variant.server.impl.TestTargetingLifecycleEventPostResultImpl;
+import com.variant.server.impl.VariationQualificationLifecycleEventImpl;
+import com.variant.server.impl.VariationQualificationLifecycleEventPostResultImpl;
+import com.variant.server.impl.VariationTargetingLifecycleEventImpl;
+import com.variant.server.impl.VariationTargetingLifecycleEventPostResultImpl;
 import com.variant.server.schema.SchemaGen;
 
 /**
@@ -91,24 +92,24 @@ public class Runtime {
 	private void target(SessionImpl session, StateImpl state) {
 		
 		// State must be in current schema.
-		State schemaState = schema.getState(state.getName());
+		State schemaState = schema.getState(state.getName()).get();
 		
 		if (System.identityHashCode(schemaState) != System.identityHashCode(state)) 
 			throw new ServerException.Internal("State [" + state.getName() + "] is not in schema");
 				
 		// 1. Build the active test list.
-		ArrayList<Test> activeTestList = new ArrayList<Test>();
-		for (Test test: state.getInstrumentedTests()) {
+		ArrayList<Variation> activeTestList = new ArrayList<Variation>();
+		for (Variation test: state.getInstrumentedVariations()) {
 			if (test.isOn()) activeTestList.add(test);
 		}
 
 		// 2. Remove from ATL those already disqualified, qualify others and remove if disqualified.
-		for (Iterator<Test> iter = activeTestList.iterator(); iter.hasNext();) {
-			TestImpl test = (TestImpl) iter.next();
-			if (session.getDisqualifiedTests().contains(test)) {
+		for (Iterator<Variation> iter = activeTestList.iterator(); iter.hasNext();) {
+			VariationImpl test = (VariationImpl) iter.next();
+			if (session.getDisqualifiedVariations().contains(test)) {
 				iter.remove();
 			}
-			else if (!session.getTraversedTests().contains(test) && !qualifyTest(test, session)) {
+			else if (!session.getTraversedVariations().contains(test) && !qualifyTest(test, session)) {
 				iter.remove();
 			}
 		}
@@ -117,10 +118,10 @@ public class Runtime {
 		//    (in TT and in TTL), pre-targeted (in TT but not in TTL) and free (neither) experience lists.
 		LinkedHashSet<Experience> alreadyTargeted = new LinkedHashSet<Experience>();
 		LinkedHashSet<Experience> preTargeted = new LinkedHashSet<Experience>();
-		LinkedHashSet<Test> free = new LinkedHashSet<Test>();
+		LinkedHashSet<Variation> free = new LinkedHashSet<Variation>();
 		
-		for (Test test: activeTestList) {
-			if (session.getTraversedTests().contains(test)) {
+		for (Variation test: activeTestList) {
+			if (session.getTraversedVariations().contains(test)) {
 				
 				// Already traversed, hence must be already targeted.
 				Experience exp = session.getTargetingStabile().getAsExperience(test.getName(), schema);
@@ -129,7 +130,7 @@ public class Runtime {
 							"Active traversed test [" + test.getName() + "] not in targeting stabile");
 
 				// It's a user error to hit an undefined state in an active experience.
-				if (exp.isPhantomOn(state))  {
+				if (exp.isPhantom(state))  {
 					throw new ServerException.Local(ServerError.STATE_UNDEFINED_IN_EXPERIENCE, exp.toString(), state.getName());
 				}
 
@@ -147,7 +148,7 @@ public class Runtime {
 					// We have a pre-targeted experience for a test that we have just hit.
 					// If this is an undefined state, we need to discard the pre-targeted experience
 					// and treat this as free.
-					if (!exp.isPhantomOn(state)) {
+					if (!exp.isPhantom(state)) {
 						preTargeted.add(exp);						
 					}
 					else {
@@ -156,7 +157,7 @@ public class Runtime {
 					}
 				}
 				
-				session.coreSession().addTraversedTest(test);
+				session.coreSession().addTraversedVariation(test);
 			}
 		}
 				
@@ -174,7 +175,7 @@ public class Runtime {
 			else {
 				// 5. Replace the unresolvable experiences from TT with control.
 				for (Experience e: minUnresolvableSubvector) {
-					session.getTargetingStabile().add(e.getTest().getControlExperience());
+					session.getTargetingStabile().add(e.getVariation().getControlExperience());
 				}
 				LOG.info(
 						"Targeting tracker not resolvable for session [" + session.getId() + "]. " +
@@ -190,12 +191,12 @@ public class Runtime {
 		vector.addAll(preTargeted);
 		
 		// Target free tests.  They are already on the ATL.
-		for (Test ft: free) {
+		for (Variation ft: free) {
 
 			if (isTargetable(ft, state, vector)) {
 				// Target this test. First post targeting hooks.
-				TestTargetingLifecycleEventImpl event = new TestTargetingLifecycleEventImpl(session, ft, state);
-				TestTargetingLifecycleEventPostResultImpl hookResult = (TestTargetingLifecycleEventPostResultImpl) schema.hooksService().post(event);
+				VariationTargetingLifecycleEventImpl event = new VariationTargetingLifecycleEventImpl(session, ft, state);
+				VariationTargetingLifecycleEventPostResultImpl hookResult = (VariationTargetingLifecycleEventPostResultImpl) schema.hooksService().post(event);
 				Experience targetedExperience = hookResult.getTargetedExperience();
 
 				if (LOG.isTraceEnabled()) {
@@ -235,15 +236,15 @@ public class Runtime {
 	 * @param session
 	 * @param test
 	 */
-	private boolean qualifyTest(TestImpl test, SessionImpl session) {
+	private boolean qualifyTest(VariationImpl var, SessionImpl session) {
 		
 
-		TestQualificationLifecycleEvent event = new TestQualificationLifecycleEventImpl(session, test);
-		TestQualificationLifecycleEventPostResultImpl hookResult = (TestQualificationLifecycleEventPostResultImpl) schema.hooksService().post(event);
+		VariationQualificationLifecycleEvent event = new VariationQualificationLifecycleEventImpl(session, var);
+		VariationQualificationLifecycleEventPostResultImpl hookResult = (VariationQualificationLifecycleEventPostResultImpl) schema.hooksService().post(event);
 
 		if (!hookResult.isQualified()) {
-			session.addDisqualifiedTest(test);
-			if (hookResult.isRemoveFromTT()) session.getTargetingStabile().remove(test.getName());
+			session.addDisqualifiedTest(var);
+			if (hookResult.isRemoveFromTT()) session.getTargetingStabile().remove(var.getName());
 		}				
 		
 		return hookResult.isQualified();
@@ -263,8 +264,8 @@ public class Runtime {
 		LinkedHashSet<State> relevantStates = new LinkedHashSet<State>();
 		for (Experience e: vector) {
 			if (e.isControl()) continue;
-			for (OnState tos: e.getTest().getOnStates()) {
-				if (!tos.getState().isNonvariantIn(e.getTest()) && !e.isPhantomOn(tos.getState())) {
+			for (OnState tos: e.getVariation().getOnStates()) {
+				if (!tos.getState().isNonvariantIn(e.getVariation()) && !e.isPhantom(tos.getState())) {
 					relevantStates.add(tos.getState());
 				}
 			}
@@ -275,7 +276,7 @@ public class Runtime {
 			// Otherwise resolveState() with throw an exception.
 			Collection<Experience> instumentedVector = new ArrayList<Experience>();
 			for (Experience e: vector) {
-				if (!e.isControl() && state.isInstrumentedBy(e.getTest()) && !e.isPhantomOn(state)) 
+				if (!e.isControl() && state.isInstrumentedBy(e.getVariation()) && !e.isPhantom(state)) 
 					instumentedVector.add(e);
 			}
 			if (!resolveState(state, instumentedVector)._1()) return false;
@@ -304,7 +305,7 @@ public class Runtime {
 		// W must not contain experiences that contradict those in V
 		for (Experience ew: w) {
 			for (Experience ev: v) {
-				if (ew.getTest().equals(ev.getTest()))
+				if (ew.getVariation().equals(ev.getVariation()))
 					throw new ServerException.Internal(
 							String.format("Experience [%s] in second argument contradicts experience [%s] in first argument", ew, ev));
 			}
@@ -340,12 +341,12 @@ public class Runtime {
 	 * @param test set of tests.  We require set to guarantee no duplicates.
 	 * @return
 	 */
-	boolean isTargetable(Test test, State state, Collection<Experience> alreadyTargetedExperiences) {
+	boolean isTargetable(Variation var, State state, Collection<Experience> alreadyTargetedExperiences) {
 
 		// alreadyTargetedExperiences should not contain an experience for the input test.
 		for (Experience e: alreadyTargetedExperiences) {
-			if (test.equals(e.getTest())) 
-				throw new ServerException.Internal("Input test [" + test + "] is already targeted");
+			if (var.equals(e.getVariation())) 
+				throw new ServerException.Internal("Input test [" + var + "] is already targeted");
 		}
 
 		if (!isResolvable(alreadyTargetedExperiences))
@@ -355,8 +356,8 @@ public class Runtime {
 		// Find some non-control, defined experience. Untargetable if none.
 		ArrayList<Experience> vector = new ArrayList<Experience>();
 		Experience  definedVariantExperience = null;
-		for (Experience e: test.getExperiences()) {
-			if (!e.isControl() && !e.isPhantomOn(state)) {
+		for (Experience e: var.getExperiences()) {
+			if (!e.isControl() && !e.isPhantom(state)) {
 				definedVariantExperience = e;
 				break;
 			}
@@ -399,25 +400,25 @@ public class Runtime {
 
 		ArrayList<Experience> sortedList = new ArrayList<Experience>(vector.size());
 			
-		for (Test t: schema.getTests()) {
+		for (Variation var: schema.getVariations()) {
 			boolean found = false;
 			for (Experience e: vector) {
-				if (e.getTest().equals(t)) {
+				if (e.getVariation().equals(var)) {
 					if (found) {
-						throw new ServerException.Internal("Duplicate test [" + t + "] in input vector");
+						throw new ServerException.Internal("Duplicate test [" + var + "] in input vector");
 					}
 					else {
 						
-						if (!state.isInstrumentedBy(e.getTest()))
+						if (!state.isInstrumentedBy(e.getVariation()))
 							throw new ServerException.Internal("Uninstrumented test [" + e + "] in input vector");
 
-						if (e.isPhantomOn(state))
+						if (e.isPhantom(state))
 							throw new ServerException.Internal("Undefined experience [" + e + "] in input vector");
 
 						found = true;
 
 						// Non-variant instrumentation are resolved as control: skip them and control experiences.
-						if (!state.isNonvariantIn(e.getTest()) && !e.isControl()) { 
+						if (!state.isNonvariantIn(e.getVariation()) && !e.isControl()) { 
 							sortedList.add(e);
 							// Continue down the vector, to ensure that there's no other experience for this test.
 						}
@@ -434,10 +435,11 @@ public class Runtime {
 			resolvable = true;
 		}
 		else {
-			Test highOrderTest = sortedList.get(sortedList.size() - 1).getTest();
-			TestOnStateImpl tos = (TestOnStateImpl) highOrderTest.getOnState(state);
-			if (tos != null) {
-				resolvedStateVariant = (StateVariantImpl) tos.variantSpace().get(sortedList);
+			Variation highOrderVar = sortedList.get(sortedList.size() - 1).getVariation();
+			Optional<Variation.OnState> vosOpt = highOrderVar.getOnState(state);
+			if (vosOpt.isPresent()) {
+				VariationOnStateImpl vos = (VariationOnStateImpl) vosOpt.get();
+				resolvedStateVariant = (StateVariantImpl) vos.variantSpace().get(sortedList);
 				resolvable = resolvedStateVariant != null;
 			}
 		}
@@ -474,7 +476,7 @@ public class Runtime {
 			StringBuilder sb = new StringBuilder();
 			sb.append("Session [").append(session.getId()).append("] resolved state [").append(state.getName()).append("] as [");
 			boolean first = true;
-			for (Map.Entry<String,String> e: session.getStateRequest().getResolvedParameters().entrySet()) {
+			for (Map.Entry<String,String> e: session.getStateRequest().get().getResolvedParameters().entrySet()) {
 				if (first) first = false;
 				else sb.append(",");
 				sb.append(e.getValue());

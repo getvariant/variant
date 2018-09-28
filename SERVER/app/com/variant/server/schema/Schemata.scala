@@ -35,7 +35,7 @@ class Schemata () {
       // Write log message
       val msg = new StringBuilder()
       msg.append("Deployed schema [%s] gen ID [%s], from [%s]:".format(gen.getMeta.getName, gen.id, gen.origin));
-      for (test <- gen.getTests) {
+      for (test <- gen.getVariations) {
          msg.append("\n   ").append(test.getName()).append(":[");
          var first = true;
       for (exp <- test.getExperiences()) {

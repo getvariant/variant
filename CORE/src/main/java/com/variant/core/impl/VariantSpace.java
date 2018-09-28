@@ -73,7 +73,7 @@ public class VariantSpace {
 		 */
 		private boolean isCombinableWith(Variation test) {
 			for (Experience e: coordinates)
-				if (! e.getTest().isConjointWith(test)) return false;
+				if (! e.getVariation().isConjointWith(test)) return false;
 			return true;
 		}
 		
@@ -172,7 +172,7 @@ public class VariantSpace {
 				
 				if (!variant.isProper()) {
 					for (Experience conjointExp: variant.getConjointExperiences()) {
-						if (conjointExp.getTest().equals(basisTest)) {
+						if (conjointExp.getVariation().equals(basisTest)) {
 							coordinateExperiences.add(conjointExp);
 							break;
 						}
@@ -210,7 +210,7 @@ public class VariantSpace {
 		ArrayList<Experience> sortedVector = new ArrayList<Experience>(vector.size());
 		for (Variation basisTest: basis) {
 			for (Experience e: vector) {
-				if (basisTest.equals(e.getTest())) {
+				if (basisTest.equals(e.getVariation())) {
 					sortedVector.add(e);
 					break;
 				}

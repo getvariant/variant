@@ -2,11 +2,12 @@ package com.variant.server.api;
 
 import java.util.Date;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.State;
-import com.variant.core.schema.Test;
+import com.variant.core.schema.Variation;
 
 /**
  * The server side of a Variant user session, contains session-scoped application 
@@ -62,59 +63,44 @@ public interface Session {
 	public Schema getSchema();
 
 	/**
-	 * <p> The set of tests traversed by this session so far. A test T is traversed by
-	 * a session when the session is targeted for a state, which a) is instrumented by T,
-	 * b) T is not OFF, and c) this session qualified for T.
+	 * <p> The set of variations traversed by this session so far. A variation V 
+	 * is traversed by a session when the session is targeted for a state, 
+	 * which a) is instrumented by V, b) V is not OFF, and c) this session is
+	 * qualified for V.
 	 * 
-	 * @return A set of object of type {@link Test}.
+	 * @return A set of {@link Variation} objects.
 	 * 
     * @since 0.7
 	 */
-	public Set<Test> getTraversedTests(); 
+	public Set<Variation> getTraversedVariations(); 
 	
 	/**
-	 * <p>The set of tests that this session is disqualified for. Whenever a session is disqualified
-	 * for a test, it remains disqualified for that test for the life of the session even if the condition 
+	 * <p>The set of variations, which this session is disqualified for. Whenever a session is disqualified
+	 * for a variation, it remains disqualified for that test for the life of the session even if the condition 
 	 * that disqualified it may no longer hold.
 	 * 
-	 * @return A set of {@link Test}s which this session is disqualified for. 
+	 * @return A set of {@link Variation}s objects. 
 	 * 
     * @since 0.7
 	 */
-	public Set<Test> getDisqualifiedTests();
+	public Set<Variation> getDisqualifiedVariations();
 		
 	/**
-	 * <p>The most recent state request, which may be still in progress or already committed.
+	 * <p>The most recent state request, which may be still in progress or already committed or failed.
 	 * 
-	 * @return An object of type {@link VariantCoreStateRequest}, or null, if none yet for this
-	 *         session.
+	 * @return An {@link Optional} of {@link StateRequest}, containing the most recent state request,
+	 *         if this session has not yet been targeted for a state.
 	 *  
 	 * @since 0.7
 	 */
-	public StateRequest getStateRequest();
+	public Optional<StateRequest> getStateRequest();
 
 	/**
-	 * <p>Set the value of a session attribute.
+	 * <p>Get the map, containing session attributes.
 	 * 
-	 * @return The string value, previously associated with this attribute, or <code>null</code> if none.
+	 * @return A mutable {@link Map}.
 	 * @since 0.7
 	 */
-	public String setAttribute(String name, String value);
-	
-	/**
-	 * Retrieve a session attribute.
-	 * 
-	 * @return The string value, associated with this attribute, or <code>null</code> if none.
-	 * @since 0.7
-	 */
-	public String getAttribute(String name);
-
-	/**
-	 * Remove a session attribute.
-	 * 
-	 * @return The string value, previously associated with this attribute, or <code>null</code> if none.
-	 * @since 0.7
-	 */
-	public String clearAttribute(String name);
+	public Map<String, String> getAttributes();	
 }
 

@@ -77,14 +77,14 @@ class TestQualificationHookTest extends EmbeddedServerSpec {
         //response.getMessages.foreach(println(_))
    	   response.hasMessages() mustBe false
        server.schemata.get(schemaName).isDefined mustBe true
-   	   val schema = server.schemata.get(schemaName).get.liveGen.get
-   		 val state1 = schema.getState("state1")
-   	   val test1 = schema.getTest("test1")
-   	   val test2 = schema.getTest("test2")
-   	   val test3 = schema.getTest("test3")
-   	   val test4 = schema.getTest("test4")
-   	   val test5 = schema.getTest("test5")
-   	   val test6 = schema.getTest("test6")
+   	 val schema = server.schemata.get(schemaName).get.liveGen.get
+		 val state1 = schema.getState("state1").get
+	    val test1 = schema.getVariation("test1").get
+	    val test2 = schema.getVariation("test2").get
+	    val test3 = schema.getVariation("test3").get
+	    val test4 = schema.getVariation("test4").get
+	    val test5 = schema.getVariation("test5").get
+	    val test6 = schema.getVariation("test6").get
        ssn = SessionImpl.empty(newSid(), schema)
 
    	   schema.getMeta.getHooks mustBe empty
@@ -108,13 +108,13 @@ class TestQualificationHookTest extends EmbeddedServerSpec {
    	   test6.getHooks.size mustBe 0
    	   
    	   // qualification hooks will not be called before targeting.
-   	   ssn.getAttribute(TestQualificationHookNil.ATTR_KEY) mustBe null 
+   	   ssn.getAttributes.get(TestQualificationHookNil.ATTR_KEY) mustBe null 
    	   
    		val req = ssn.targetForState(state1);
 		   ssn.getTraversedStates.size() mustEqual 1
 		   ssn.getTraversedStates.get(state1) mustEqual 1
-		   ssn.getTraversedTests.toSet mustEqual Set(test3, test4, test5, test6)
-		   ssn.getDisqualifiedTests.size() mustEqual 0
+		   ssn.getTraversedVariations.toSet mustEqual Set(test3, test4, test5, test6)
+		   ssn.getDisqualifiedVariations.size() mustEqual 0
 		   val stabile = ssn.targetingStabile
 		   stabile.getAll().size() mustEqual 4
 		   stabile.get("test1") must be (null)
@@ -123,7 +123,7 @@ class TestQualificationHookTest extends EmbeddedServerSpec {
 		   stabile.get("test4") mustNot be (null)
 		   stabile.get("test5") mustNot be (null)
 		   stabile.get("test6") mustNot be (null)
-		   ssn.getAttribute(TestQualificationHookNil.ATTR_KEY) mustBe "test3"
+		   ssn.getAttributes.get(TestQualificationHookNil.ATTR_KEY) mustBe "test3"
 		   req.asInstanceOf[StateRequestImpl].setStatus(Committed)
 
 	   }
@@ -131,23 +131,23 @@ class TestQualificationHookTest extends EmbeddedServerSpec {
 	   "not be posted for tests already qualified" in {
 
    	   val schema = server.schemata.get(schemaName).get.liveGen.get
-   		val state1 = schema.getState("state1")
-   		val state2 = schema.getState("state2")
-   	   val test1 = schema.getTest("test1")
-   	   val test2 = schema.getTest("test2")
-   	   val test3 = schema.getTest("test3")
-   	   val test4 = schema.getTest("test4")
-   	   val test5 = schema.getTest("test5")
-   	   val test6 = schema.getTest("test6")
-   	   ssn.clearAttribute(TestQualificationHookNil.ATTR_KEY)
-   	   ssn.getAttribute(TestQualificationHookNil.ATTR_KEY) mustBe null
+   		val state1 = schema.getState("state1").get
+   		val state2 = schema.getState("state2").get
+   	   val test1 = schema.getVariation("test1").get
+   	   val test2 = schema.getVariation("test2").get
+   	   val test3 = schema.getVariation("test3").get
+   	   val test4 = schema.getVariation("test4").get
+   	   val test5 = schema.getVariation("test5").get
+   	   val test6 = schema.getVariation("test6").get
+   	   ssn.getAttributes.remove(TestQualificationHookNil.ATTR_KEY)
+   	   ssn.getAttributes.get(TestQualificationHookNil.ATTR_KEY) mustBe null
    	   
 	      val req = ssn.targetForState(state2)
 		   ssn.getTraversedStates.size() mustEqual 2
 		   ssn.getTraversedStates.get(state1) mustEqual 1
 		   ssn.getTraversedStates.get(state2) mustEqual 1
-		   ssn.getTraversedTests.toSet mustEqual Set(test1, test3, test4, test5, test6)
-		   ssn.getDisqualifiedTests.size() mustEqual 0
+		   ssn.getTraversedVariations.toSet mustEqual Set(test1, test3, test4, test5, test6)
+		   ssn.getDisqualifiedVariations.size() mustEqual 0
 		   val stabile = ssn.targetingStabile
 		   stabile.getAll().size() mustEqual 5
 		   stabile.get("test1") mustNot be (null)
@@ -156,7 +156,7 @@ class TestQualificationHookTest extends EmbeddedServerSpec {
 		   stabile.get("test4") mustNot be (null)
 		   stabile.get("test5") mustNot be (null)
 		   stabile.get("test6") mustNot be (null)
-		   ssn.getAttribute(TestQualificationHookNil.ATTR_KEY) mustBe "test1"
+		   ssn.getAttributes.get(TestQualificationHookNil.ATTR_KEY) mustBe "test1"
 
 	   }
 
@@ -196,14 +196,14 @@ class TestQualificationHookTest extends EmbeddedServerSpec {
        response.hasMessages() mustBe false
        server.schemata.get(schemaName).isDefined mustBe true
    	   val schema = server.schemata.get(schemaName).get.liveGen.get
-   		 val state1 = schema.getState("state1")
-   		 val state2 = schema.getState("state2")
-   	   val test1 = schema.getTest("test1")
-   	   val test2 = schema.getTest("test2")
-   	   val test3 = schema.getTest("test3")
-   	   val test4 = schema.getTest("test4")
-   	   val test5 = schema.getTest("test5")
-   	   val test6 = schema.getTest("test6")
+   		 val state1 = schema.getState("state1").get
+   		 val state2 = schema.getState("state2").get
+   	   val test1 = schema.getVariation("test1").get
+   	   val test2 = schema.getVariation("test2").get
+   	   val test3 = schema.getVariation("test3").get
+   	   val test4 = schema.getVariation("test4").get
+   	   val test5 = schema.getVariation("test5").get
+   	   val test6 = schema.getVariation("test6").get
        ssn = SessionImpl.empty(newSid(), schema)
    	   
        schema.getMeta.getHooks mustBe empty
@@ -231,8 +231,8 @@ class TestQualificationHookTest extends EmbeddedServerSpec {
 		   setTargetingStabile(ssn, "test6.B", "test2.C", "test1.A")
 		   val req = ssn.targetForState(state1);
 		   ssn.getTraversedStates.toSet mustEqual Set((state1, 1))
-		   ssn.getTraversedTests.toSet mustEqual Set(test3, test4, test5)
-		   ssn.getDisqualifiedTests.toSet mustEqual Set(test6)
+		   ssn.getTraversedVariations.toSet mustEqual Set(test3, test4, test5)
+		   ssn.getDisqualifiedVariations.toSet mustEqual Set(test6)
 
 		   val stabile = ssn.targetingStabile
 		   stabile.getAll().size() mustEqual 6  
@@ -275,21 +275,21 @@ class TestQualificationHookTest extends EmbeddedServerSpec {
    	   response.hasMessages() mustBe false
        server.schemata.get(schemaName).isDefined mustBe true
    	   val schema = server.schemata.get(schemaName).get.liveGen.get
-   		 val state1 = schema.getState("state1")
-   		 val state2 = schema.getState("state2")
-   	   val test1 = schema.getTest("test1")
-   	   val test2 = schema.getTest("test2")
-   	   val test3 = schema.getTest("test3")
-   	   val test4 = schema.getTest("test4")
-   	   val test5 = schema.getTest("test5")
-   	   val test6 = schema.getTest("test6")
+   		 val state1 = schema.getState("state1").get
+   		 val state2 = schema.getState("state2").get
+   	   val test1 = schema.getVariation("test1").get
+   	   val test2 = schema.getVariation("test2").get
+   	   val test3 = schema.getVariation("test3").get
+   	   val test4 = schema.getVariation("test4").get
+   	   val test5 = schema.getVariation("test5").get
+   	   val test6 = schema.getVariation("test6").get
        ssn = SessionImpl.empty(newSid(), schema)
    	   setTargetingStabile(ssn, "test6.B", "test2.C", "test1.A")
    	 
 		   val req = ssn.targetForState(state2);
 		   ssn.getTraversedStates.toSet mustEqual Set((state2,1))
-		   ssn.getTraversedTests.toSet mustEqual Set(test3, test4, test5)
-		   ssn.getDisqualifiedTests.toSet mustEqual Set(test1, test6)
+		   ssn.getTraversedVariations.toSet mustEqual Set(test3, test4, test5)
+		   ssn.getDisqualifiedVariations.toSet mustEqual Set(test1, test6)
 
 		   val stabile = ssn.targetingStabile
 		   stabile.getAll().size() mustEqual 5  
@@ -306,20 +306,20 @@ class TestQualificationHookTest extends EmbeddedServerSpec {
 	   "honor session-current targeting settings when targeting for state3" in {
 
    	   val schema = server.schemata.get(schemaName).get.liveGen.get
-   		val state1 = schema.getState("state1")
-   		val state2 = schema.getState("state2")
-   		val state3 = schema.getState("state3")
-   	   val test1 = schema.getTest("test1")
-   	   val test2 = schema.getTest("test2")
-   	   val test3 = schema.getTest("test3")
-   	   val test4 = schema.getTest("test4")
-   	   val test5 = schema.getTest("test5")
-   	   val test6 = schema.getTest("test6")
+   		val state1 = schema.getState("state1").get
+   		val state2 = schema.getState("state2").get
+   		val state3 = schema.getState("state3").get
+   	   val test1 = schema.getVariation("test1").get
+   	   val test2 = schema.getVariation("test2").get
+   	   val test3 = schema.getVariation("test3").get
+   	   val test4 = schema.getVariation("test4").get
+   	   val test5 = schema.getVariation("test5").get
+   	   val test6 = schema.getVariation("test6").get
 
 		   val req = ssn.targetForState(state3);
 		   ssn.getTraversedStates.toSet mustEqual Set((state2,1), (state3,1))
-		   ssn.getTraversedTests.toSet mustEqual Set(test3, test4, test5)
-		   ssn.getDisqualifiedTests.toSet mustEqual Set(test1, test6)
+		   ssn.getTraversedVariations.toSet mustEqual Set(test3, test4, test5)
+		   ssn.getDisqualifiedVariations.toSet mustEqual Set(test1, test6)
 
 		   val stabile = ssn.targetingStabile
 		   stabile.getAll().size() mustEqual 5
@@ -355,12 +355,12 @@ class TestQualificationHookTest extends EmbeddedServerSpec {
    		 server.schemata.get(schemaName).isDefined mustBe true
 
    	   val schema = server.schemata.get(schemaName).get.liveGen.get
-   		 val state1 = schema.getState("state1")
+   		 val state1 = schema.getState("state1").get
 		
    		 // New session.
        ssn = SessionImpl.empty(newSid(), schema)
 		   ssn.targetForState(state1)
-		   ssn.getAttribute(TestQualificationHookNil.ATTR_KEY) mustBe null
+		   ssn.getAttributes.get(TestQualificationHookNil.ATTR_KEY) mustBe null
 	   }
 	}
 	

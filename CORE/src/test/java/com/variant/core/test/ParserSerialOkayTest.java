@@ -969,17 +969,17 @@ public class ParserSerialOkayTest extends BaseTestCore {
 		assertEquals(10, exp.getWeight().doubleValue(), 0.000001);
 		assertTrue(exp.isControl());
 		assertEquals(exp, test.getControlExperience());
-		assertEquals(test, exp.getTest());
+		assertEquals(test, exp.getVariation());
 		exp = actualExperiences.get(1);
 		assertEquals("B", exp.getName());
 		assertEquals(20, exp.getWeight().doubleValue(), 0.000001);
 		assertFalse(exp.isControl());
-		assertEquals(test, exp.getTest());
+		assertEquals(test, exp.getVariation());
 		exp = actualExperiences.get(2);
 		assertEquals("C", exp.getName());
 		assertEquals(30, exp.getWeight().doubleValue(), 0.000001);
 		assertFalse(exp.isControl());
-		assertEquals(test, exp.getTest());
+		assertEquals(test, exp.getVariation());
 		
 		// onStates
 		List<Variation.OnState> actualonStates = test.getOnStates();
@@ -1023,12 +1023,12 @@ public class ParserSerialOkayTest extends BaseTestCore {
 		assertEquals(0.5, exp.getWeight().doubleValue(), 0.000001);
 		assertTrue(exp.isControl());
 		assertEquals(exp, test.getControlExperience());
-		assertEquals(test, exp.getTest());
+		assertEquals(test, exp.getVariation());
 		exp = actualExperiences.get(1);
 		assertEquals("D", exp.getName());
 		assertEquals(0.6, exp.getWeight().doubleValue(), 0.000001);
 		assertFalse(exp.isControl());
-		assertEquals(test, exp.getTest());
+		assertEquals(test, exp.getVariation());
 		
 		// onStates
 		List<Variation.OnState> actualonStates = test.getOnStates();
@@ -1083,13 +1083,13 @@ public class ParserSerialOkayTest extends BaseTestCore {
 		assertEquals("A", exp.getName());
 		assertEquals(10, exp.getWeight().doubleValue(), 0.000001);
 		assertFalse(exp.isControl());
-		assertEquals(test, exp.getTest());
+		assertEquals(test, exp.getVariation());
 		exp = actualExperiences.get(1);
 		assertEquals("B", exp.getName());
 		assertEquals(20, exp.getWeight().doubleValue(), 0.000001);
 		assertTrue(exp.isControl());
 		assertEquals(exp, test.getControlExperience());
-		assertEquals(test, exp.getTest());
+		assertEquals(test, exp.getVariation());
 		
 		// onStates
 		List<Variation.OnState> actualonStates = test.getOnStates();

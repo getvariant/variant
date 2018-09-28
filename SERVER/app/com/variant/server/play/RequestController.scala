@@ -1,29 +1,28 @@
 package com.variant.server.play
 
-import javax.inject.Inject
 import scala.collection.JavaConversions._
-import play.api.mvc.Request
-import com.variant.server.boot.SessionStore
-import play.api.Logger
-import com.variant.core.impl.ServerError._
-import play.api.libs.json._
-import play.api.mvc.Result
-import com.variant.server.boot.ServerErrorRemote
-import com.variant.server.api.ServerException
-import com.variant.core.schema.State
+
 import com.variant.core.StateRequestStatus
 import com.variant.core.StateRequestStatus._
-import com.variant.server.api.Session
-import com.variant.core.session.CoreStateRequest
-import play.api.mvc.AnyContent
+import com.variant.core.impl.ServerError._
+import com.variant.core.impl.ServerError
+import com.variant.core.impl.StateVisitedEvent
+import com.variant.core.schema.State
+import com.variant.core.session.SessionScopedTargetingStabile
+import com.variant.server.api.ServerException
+import com.variant.server.boot.SessionStore
+import com.variant.server.boot.VariantServer
+import com.variant.server.event.ServerTraceEvent
 import com.variant.server.impl.SessionImpl
 import com.variant.server.impl.StateRequestImpl
+import com.variant.server.util.JavaImplisits._
+
+import javax.inject.Inject
+import play.api.Logger
+import play.api.libs.json._
 import play.api.mvc.ControllerComponents
-import com.variant.server.boot.VariantServer
-import com.variant.core.impl.StateVisitedEvent
-import com.variant.server.event.ServerTraceEvent
-import com.variant.core.impl.ServerError
-import com.variant.core.session.SessionScopedTargetingStabile
+import play.api.mvc.Request
+import play.api.mvc.Result
 
 //@Singleton -- Is this for non-shared state controllers?
 class RequestController @Inject() (
@@ -55,12 +54,14 @@ class RequestController @Inject() (
 
       val ssn = server.ssnStore.getOrBust(sid)
       
-      if (ssn.getStateRequest != null && ssn.getStateRequest.getStatus == InProgress) {
-         throw new ServerException.Remote(ACTIVE_REQUEST)                
+      // It's an error to request another state, before committing/failing current request.
+      ssn.getStateRequest.foreach { req =>
+         if (req.getStatus == InProgress)
+            throw new ServerException.Remote(ACTIVE_REQUEST)                
       }
+      
       val state = ssn.schemaGen.getState(stateName)
-
-      if (state == null)
+      if (!state.isDefined)
          throw new ServerException.Internal("State [%s] not in schema [%s]".format(stateName, ssn.schemaGen.getMeta.getName))
       
       // If stabile was sent, process it, discarding elements not in the schema,
@@ -70,16 +71,15 @@ class RequestController @Inject() (
          val ssts = new SessionScopedTargetingStabile()
          stabile.get.foreach { e =>
             val tokens = e.split("\\.");
-            val test = ssn.schemaGen.getTest(tokens(0))
-            if (test != null) {
-               val exp = test.getExperience(tokens(1))
-               if (exp != null) ssts.add(exp)
+            ssn.schemaGen.getVariation(tokens(0)).foreach { v => 
+               v.getExperience(tokens(1)).foreach { ssts.add(_) }
             }
          }
+         
          if (ssts.size > 0) ssn.setTargetingStabile(ssts)
       }
       
-      ssn.schemaGen.runtime.targetForState(ssn, state)
+      ssn.schemaGen.runtime.targetForState(ssn, state.get)
 
       val response = JsObject(Seq(
          "session" -> JsString(ssn.asInstanceOf[SessionImpl].coreSession.toJson())

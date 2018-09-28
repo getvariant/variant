@@ -4,7 +4,7 @@ import com.variant.core.schema.State
 import scala.collection.mutable.ListBuffer
 import scala.collection.JavaConversions._
 import com.variant.core.UserError.Severity._
-import com.variant.core.schema.Test
+import com.variant.core.schema.Variation
 import com.variant.core.StateRequestStatus._
 import org.scalatest.Assertions._
 import com.variant.server.boot.ServerErrorLocal._
@@ -169,24 +169,24 @@ class HookScopeTest extends EmbeddedServerSpec {
    		
    		// Confirm runtime hooks were posted.
    		val schema = server.schemata.get(schemaName).get.liveGen.get
-         val state1 = schema.getState("state1")
-         val state2 = schema.getState("state2")
-         val test = schema.getTest("test1")
+         val state1 = schema.getState("state1").get
+         val state2 = schema.getState("state2").get
+         val test = schema.getVariation("test1").get
          val ssn = SessionImpl.empty(newSid(), schema)
-   		ssn.getAttribute(TestQualificationHookNil.ATTR_KEY) mustBe null
-   		ssn.getAttribute(TestTargetingHookNil.ATTR_KEY) mustBe null
+   		ssn.getAttributes.get(TestQualificationHookNil.ATTR_KEY) mustBe null
+   		ssn.getAttributes.get(TestTargetingHookNil.ATTR_KEY) mustBe null
 
    	   val req = ssn.targetForState(state1)
    		// Only test1 is instrumented on state1
-     		ssn.getAttribute(TestQualificationHookNil.ATTR_KEY) mustBe "test1"
-   		ssn.getAttribute(TestTargetingHookNil.ATTR_KEY) mustBe "test1"
+     		ssn.getAttributes.get(TestQualificationHookNil.ATTR_KEY) mustBe "test1"
+   		ssn.getAttributes.get(TestTargetingHookNil.ATTR_KEY) mustBe "test1"
    		// commit before targeting again.
    		req.asInstanceOf[StateRequestImpl].setStatus(Committed);	
 
    		// Test3 is instrumented on state2
    		ssn.targetForState(state2)
-         ssn.getAttribute(TestQualificationHookNil.ATTR_KEY) mustBe "test1 test3"
-   		ssn.getAttribute(TestTargetingHookNil.ATTR_KEY) mustBe "test1 test3"	   
+         ssn.getAttributes.get(TestQualificationHookNil.ATTR_KEY) mustBe "test1 test3"
+   		ssn.getAttributes.get(TestTargetingHookNil.ATTR_KEY) mustBe "test1 test3"	   
    		
 	   }
    }
@@ -445,13 +445,13 @@ class HookScopeTest extends EmbeddedServerSpec {
    		// Confirm runtime hooks were posted.
    		val schema = server.schemata.get(schemaName).get.liveGen.get
 
-         val state1 = schema.getState("state1")
-         val test = schema.getTest("test1")
+         val state1 = schema.getState("state1").get
+         val test = schema.getVariation("test1").get
          val ssn = SessionImpl.empty(newSid(), schema)
-   		ssn.getAttribute(TestTargetingHookNil.ATTR_KEY) mustBe null
+   		ssn.getAttributes.get(TestTargetingHookNil.ATTR_KEY) mustBe null
    		ssn.targetForState(state1)
    		// Only test1 is instrumented on state1
-   		ssn.getAttribute(TestTargetingHookNil.ATTR_KEY) mustBe "test1 test1 test1"  // All three should fire!
+   		ssn.getAttributes.get(TestTargetingHookNil.ATTR_KEY) mustBe "test1 test1 test1"  // All three should fire!
    		   		
 	   }
    }

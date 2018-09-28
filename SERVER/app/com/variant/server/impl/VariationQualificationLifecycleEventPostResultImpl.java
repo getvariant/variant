@@ -1,13 +1,13 @@
 package com.variant.server.impl;
 
-import com.variant.server.api.lifecycle.TestQualificationLifecycleEvent;
+import com.variant.server.api.lifecycle.VariationQualificationLifecycleEvent;
 
-public class TestQualificationLifecycleEventPostResultImpl implements TestQualificationLifecycleEvent.PostResult {
+public class VariationQualificationLifecycleEventPostResultImpl implements VariationQualificationLifecycleEvent.PostResult {
 
 	private boolean qualified = false;
 	private boolean removeFromTT = false;
 	
-	public TestQualificationLifecycleEventPostResultImpl(TestQualificationLifecycleEvent event) {}
+	public VariationQualificationLifecycleEventPostResultImpl(VariationQualificationLifecycleEvent event) {}
 	
 	@Override
 	public void setQualified(boolean qualified) {

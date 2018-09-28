@@ -1,7 +1,7 @@
 package com.variant.server.test.hooks;
 
 import com.variant.core.lifecycle.LifecycleHook;
-import com.variant.server.api.lifecycle.TestQualificationLifecycleEvent;
+import com.variant.server.api.lifecycle.VariationQualificationLifecycleEvent;
 
 /**
  * This class does not implement the required interface.
@@ -12,11 +12,11 @@ public class HookNoInterface {
 	
 	public void foo(String bar) {}
 
-    public Class<TestQualificationLifecycleEvent> getLifecycleEventClass() {
-		return TestQualificationLifecycleEvent.class;
+    public Class<VariationQualificationLifecycleEvent> getLifecycleEventClass() {
+		return VariationQualificationLifecycleEvent.class;
     }
    
-	public LifecycleHook.PostResult post(TestQualificationLifecycleEvent event) {
+	public LifecycleHook.PostResult post(VariationQualificationLifecycleEvent event) {
 		return null;
 	}
 }

@@ -140,7 +140,7 @@ class TraceEventTest extends EmbeddedServerSpec {
             .isOk
             .withBodySession { ssn => 
                ssn.getId mustBe sid
-               val stateReq = ssn.getStateRequest
+               val stateReq = ssn.getStateRequest.get
                stateReq mustNot be (null)
                stateReq.getStatus mustBe InProgress
                stateReq.getLiveExperiences.size mustBe 5
@@ -150,7 +150,7 @@ class TraceEventTest extends EmbeddedServerSpec {
             }
 
          val serverSsn = server.ssnStore.get(sid).get.asInstanceOf[SessionImpl]
-         serverSsn.getStateRequest().getStatus mustBe InProgress
+         serverSsn.getStateRequest.get.getStatus mustBe InProgress
 
          // Commit request body with attributes
          val reqBody2 = Json.obj(
@@ -161,7 +161,7 @@ class TraceEventTest extends EmbeddedServerSpec {
          assertResp(route(app, httpReq(PUT, context + "/request").withTextBody(reqBody2)))
             .isOk
             .withBodySession { ssn => 
-               val stateReq = ssn.getStateRequest
+               val stateReq = ssn.getStateRequest.get
                stateReq mustNot be (null)
                stateReq.getStatus mustBe Committed
                stateReq.getLiveExperiences.size mustBe 5
@@ -210,7 +210,7 @@ class TraceEventTest extends EmbeddedServerSpec {
          assertResp(route(app, httpReq(POST, context + "/request").withTextBody(reqBody1)))
             .isOk
             .withBodySession { ssn => 
-               val stateReq = ssn.getStateRequest
+               val stateReq = ssn.getStateRequest.get
                stateReq mustNot be (null)
                stateReq.getStatus mustBe InProgress
                stateReq.getLiveExperiences.size mustBe 5
@@ -221,7 +221,7 @@ class TraceEventTest extends EmbeddedServerSpec {
 
          val serverSsn = server.ssnStore.get(sid).get.asInstanceOf[SessionImpl]
 
-         serverSsn.getStateRequest().getStatus mustBe InProgress
+         serverSsn.getStateRequest.get.getStatus mustBe InProgress
 
          // Commit request body with attributes
          val reqBody2 = Json.obj(
@@ -233,7 +233,7 @@ class TraceEventTest extends EmbeddedServerSpec {
          assertResp(route(app, httpReq(PUT, context + "/request").withTextBody(reqBody2)))
             .isOk
             .withBodySession { ssn => 
-               val stateReq = ssn.getStateRequest
+               val stateReq = ssn.getStateRequest.get
                stateReq mustNot be (null)
                stateReq.getStatus mustBe Committed
                stateReq.getLiveExperiences.size mustBe 5
@@ -318,7 +318,7 @@ class TraceEventTest extends EmbeddedServerSpec {
          assertResp(route(app, httpReq(POST, context + "/request").withTextBody(reqBody1)))
             .isOk
             .withBodySession { ssn => 
-               val stateReq = ssn.getStateRequest
+               val stateReq = ssn.getStateRequest.get
                stateReq mustNot be (null)
                stateReq.getStatus mustBe InProgress
                stateReq.getLiveExperiences.size mustBe 4
@@ -379,7 +379,7 @@ class TraceEventTest extends EmbeddedServerSpec {
          assertResp(route(app, httpReq(POST, context + "/request").withTextBody(reqBody1)))
             .isOk
             .withBodySession { ssn => 
-               val stateReq = ssn.getStateRequest
+               val stateReq = ssn.getStateRequest.get
                stateReq mustNot be (null)
                stateReq.getStatus mustBe InProgress
                stateReq.getLiveExperiences.size mustBe 5

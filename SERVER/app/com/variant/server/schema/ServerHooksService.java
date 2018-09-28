@@ -10,7 +10,7 @@ import com.variant.core.impl.ServerError;
 import com.variant.core.lifecycle.LifecycleEvent;
 import com.variant.core.lifecycle.LifecycleHook;
 import com.variant.core.lifecycle.StateAwareLifecycleEvent;
-import com.variant.core.lifecycle.TestAwareLifecycleEvent;
+import com.variant.core.lifecycle.VariationAwareLifecycleEvent;
 import com.variant.core.schema.Hook;
 import com.variant.core.schema.parser.HooksService;
 import com.variant.core.schema.parser.ParserResponse;
@@ -97,10 +97,10 @@ public class ServerHooksService implements HooksService {
 						hookDef.getName(), ((Hook.State)hookDef).getState().getName(), hookImpl.getLifecycleEventClass().getName());				
 			}
 			// 2. State-scoped hookDef must define an implementation which listens to a state aware event.
-			if (hookDef instanceof Hook.Test && ! TestAwareLifecycleEvent.class.isAssignableFrom(hookImpl.getLifecycleEventClass())) {
+			if (hookDef instanceof Hook.Variation && ! VariationAwareLifecycleEvent.class.isAssignableFrom(hookImpl.getLifecycleEventClass())) {
 				parserResponse.addMessage(
 						ServerErrorLocal.HOOK_TEST_SCOPE_VIOLATION, 
-						hookDef.getName(), ((Hook.Test)hookDef).getTest().getName(), hookImpl.getLifecycleEventClass().getName());				
+						hookDef.getName(), ((Hook.Variation)hookDef).getVariation().getName(), hookImpl.getLifecycleEventClass().getName());				
 			}
 
 						
@@ -119,11 +119,11 @@ public class ServerHooksService implements HooksService {
 					LOG.debug(String.format("Registered state-scoped hook [%s] [%s] for state [%s]", 
 							hookDef.getName() , hookDef.getClassName(), ((Hook.State)hookDef).getState()));
 			}
-			else if (hookDef instanceof Hook.Test) {
+			else if (hookDef instanceof Hook.Variation) {
 				testHooks.add(hle);
 				if (LOG.isDebugEnabled()) 
 					LOG.debug(String.format("Registered test-scoped hook [%s] [%s] for test [%s]", 
-							hookDef.getName() , hookDef.getClassName(), ((Hook.Test)hookDef).getTest()));
+							hookDef.getName() , hookDef.getClassName(), ((Hook.Variation)hookDef).getVariation()));
 			}
 		}
 		catch (ConfigException.Parse e) {
@@ -164,12 +164,12 @@ public class ServerHooksService implements HooksService {
 			}
 	   }
 
-	   if (event instanceof TestAwareLifecycleEvent) {
+	   if (event instanceof VariationAwareLifecycleEvent) {
 
 		   for (HookListEntry hle : testHooks) {
 				
 			   if (hle.lseClass.isAssignableFrom(event.getClass()) &&
-					   ((TestAwareLifecycleEvent) event).getTest().equals(((Hook.Test)hle.hookDef).getTest())) {
+					   ((VariationAwareLifecycleEvent) event).getVariation().equals(((Hook.Variation)hle.hookDef).getVariation())) {
 											
 				   chain.add(hle);
 				}				   

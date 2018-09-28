@@ -178,7 +178,7 @@ class SessionController @Inject() (
 
       val ssn = server.ssnStore.getOrBust(sid)
 
-      val prevValue = ssn.setAttribute(name, value)
+      val prevValue = ssn.getAttributes.put(name, value)
       
       val response = JsObject(Seq(
          "session" -> JsString(ssn.toJson),
@@ -204,7 +204,7 @@ class SessionController @Inject() (
       }
 
       val ssn = server.ssnStore.getOrBust(sid)
-      val prevValue = ssn.clearAttribute(name)
+      val prevValue = ssn.getAttributes.remove(name)
       val response = JsObject(Seq(
          "session" -> JsString(ssn.toJson),
          "returns" -> JsString(prevValue)

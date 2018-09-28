@@ -1,13 +1,14 @@
 package com.variant.server.api;
 
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 import com.variant.core.StateRequestStatus;
 import com.variant.core.schema.State;
 import com.variant.core.schema.StateVariant;
-import com.variant.core.schema.Test;
-import com.variant.core.schema.Test.Experience;
+import com.variant.core.schema.Variation;
+import com.variant.core.schema.Variation.Experience;
 
 /**
  * The server side of a Variant state request. Contains state request-scoped application 
@@ -46,36 +47,33 @@ public interface StateRequest {
 	StateRequestStatus getStatus();
 
 	/**
-	 * <p>Targeted test experiences in tests instrumented on this state.
-	 * An experience is live iff this session has been targeted for it and its containing test
-	 * is instrumented on this state and is neither off nor disqualified in this session.
-	 * Both, variant and non-variant instrumentations are included.
+	 * <p>Targeted experiences in variations instrumented on the target state.
+	 * An experience is live iff a) this session has been targeted for it, b) its containing variation
+	 * is instrumented on this state, and c) is neither off nor disqualified in this session.
 	 * 
-	 * @return Collection of {@link Test.Experience}s.
+	 * @return A {@link Set} of {@link Test.Experience} objects.
 	 * @since 0.7
 	 */
 	Set<Experience> getLiveExperiences();
 
 	/**
-	 * The live experience in a given test, if any. See {@link #getLiveExperiences()} for
-	 * definition of live experience. Throws the {@link StateNotInstrumentedException} if the
-	 * target state of this request, i.e. given by {@link #getState()}, is not instrumented 
-	 * by the given test. 
+	 * The live experience in a given variation, if any. See {@link #getLiveExperiences()} for
+	 * definition of live experience. Returns an empty {@link Optional} if the
+	 * target state of this request is not instrumented by the given variation. 
 	 * 
-	 * @param test {@link Test}
-	 * @return An object of type {@link Experience}.
+	 * @param variation {@link Variation}
+	 * 
+	 * @return An {@link Optional}, containing the live experience, if session has been targeted
+	 *         for the given variation, or empty otherwise.
 	 * 
 	 * @since 0.7
 	 */
-	Experience getLiveExperience(Test test);
+	Optional<Experience> getLiveExperience(Variation variation);
 
 	/**
-	 * The state variant to which this state request resolved at run time. A state request can 
-	 * have either trivial resolution, or resolve to a {@link StateVariant}. Trivial resolution means that all live
-	 * experiences are control experiences, and the user session will be targeted for the base state. If at least one
-	 * live experience is a variant, the targeting operation will resolve to some state variant definition in the schema.
+	 * The {@link StateVariant} to which this state request resolved.
 	 * 
-	 * @return The {@link StateVariant} to which this request resolved, or null if all live experiences are control.
+	 * @return The {@link StateVariant} to which this request resolved.
 	 * 
 	 * @since 0.7
 	 * @see StateVariant
@@ -83,13 +81,11 @@ public interface StateRequest {
 	public StateVariant getResolvedStateVariant();
 	
 	/**
-	 * The resolved state parameters as an immutable map. In case of trivial resolution, 
-	 * resolved state parameters are the ones declared at the state level. In the case of 
-	 * non-trivial resolution, the parameters declared at the {@link StateVariant} level override
-	 * likely-named state parameters declared at the state level.  
+	 * The resolved state parameters as an immutable map, containing the merged maps of the state
+	 * parameters defined at the state level and at the state variant level, with the latter taking
+	 * precedence over former.  
 	 * 
-	 * @param name Parameter name.
-	 * @return Immutable map keyed by parameter names. Empty, if no state parameters were declared.
+	 * @return Immutable map keyed by parameter names.
 	 * @since 0.7
 	 */	
 	public  Map<String,String> getResolvedParameters();

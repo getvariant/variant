@@ -104,10 +104,10 @@ class RuntimeExceptionTest extends EmbeddedServerSpec {
          val response = schemaDeployer.parserResponses(0)
          server.schemata.get(schemaName).isDefined mustBe true
          val schema = server.schemata.get(schemaName).get.liveGen.get
-         val state2 = schema.getState("state2")
+         val state2 = schema.getState("state2").get
 
          try {
-			   state2.isNonvariantIn(schema.getTest("non-existent"))
+			   state2.isNonvariantIn(schema.getVariation("non-existent").get)
 			   fail("Expected exception not thrown")
          }
          catch {
@@ -116,7 +116,7 @@ class RuntimeExceptionTest extends EmbeddedServerSpec {
          }
          
          try {
-			   state2.isNonvariantIn(schema.getTest("test1"))
+			   state2.isNonvariantIn(schema.getVariation("test1").get)
 			   fail("Expected exception not thrown")
    		}
 	   	catch {
@@ -136,7 +136,7 @@ class RuntimeExceptionTest extends EmbeddedServerSpec {
          val ssn = SessionImpl.empty(newSid(), schema)
    
    		try {
-   		   ssn.targetForState(schema.getState("state1"))
+   		   ssn.targetForState(schema.getState("state1").get)
 			   fail("Expected exception not thrown")
    		}
          catch {

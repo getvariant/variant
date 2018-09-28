@@ -7,7 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.typesafe.config.Config;
-import com.variant.core.schema.Test.Experience;
+import com.variant.core.schema.Variation.Experience;
 
 /**
  * An implementation of {@link EventFlusher}, which appends trace events
@@ -60,7 +60,7 @@ public class EventFlusherAppLogger implements EventFlusher {
    			   if (first) first = false;
    			   else msg.append(", ");
    			   msg.append("{")
-               .append("test_name:'").append(e.getTest().getName()).append("', ")
+               .append("test_name:'").append(e.getVariation().getName()).append("', ")
                .append("experience_name:'").append(e.getName()).append("', ")
                .append("is_control:").append(e.isControl())
                .append("}");

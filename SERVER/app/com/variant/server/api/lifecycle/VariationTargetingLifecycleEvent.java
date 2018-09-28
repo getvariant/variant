@@ -2,8 +2,8 @@ package com.variant.server.api.lifecycle;
 
 import com.variant.core.lifecycle.LifecycleHook;
 import com.variant.core.lifecycle.StateAwareLifecycleEvent;
-import com.variant.core.lifecycle.TestAwareLifecycleEvent;
-import com.variant.core.schema.Test.Experience;
+import com.variant.core.lifecycle.VariationAwareLifecycleEvent;
+import com.variant.core.schema.Variation.Experience;
 
 /**
  * <p>Life cycle event triggered when Variant is about to target a user session for a test, but after the 
@@ -26,7 +26,7 @@ import com.variant.core.schema.Test.Experience;
  * @since 0.7
  *
  */
-public interface TestTargetingLifecycleEvent extends RuntimeLifecycleEvent, TestAwareLifecycleEvent, StateAwareLifecycleEvent {
+public interface VariationTargetingLifecycleEvent extends RuntimeLifecycleEvent, VariationAwareLifecycleEvent, StateAwareLifecycleEvent {
 	
    /**
     * The return type of the {@link LifecycleHook#post(com.variant.core.LifecycleEvent) LifecycleHook.post(TestTargetingLifecycleEvent)} 

@@ -1,7 +1,7 @@
 package com.variant.server.api.lifecycle;
 
 import com.variant.core.lifecycle.LifecycleHook;
-import com.variant.core.lifecycle.TestAwareLifecycleEvent;
+import com.variant.core.lifecycle.VariationAwareLifecycleEvent;
 
 
 /**
@@ -20,7 +20,7 @@ import com.variant.core.lifecycle.TestAwareLifecycleEvent;
  * @since 0.7
  *
  */
-public interface TestQualificationLifecycleEvent extends RuntimeLifecycleEvent, TestAwareLifecycleEvent {
+public interface VariationQualificationLifecycleEvent extends RuntimeLifecycleEvent, VariationAwareLifecycleEvent {
       
    /**
     * The return type of the {@link LifecycleHook#post(com.variant.core.LifecycleEvent) LifecycleHook.post(TestQualificationLifecycleEvent)} 

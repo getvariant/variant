@@ -3,11 +3,11 @@ package com.variant.server.api.lifecycle;
 import com.variant.core.lifecycle.LifecycleEvent;
 import com.variant.core.lifecycle.LifecycleHook.PostResult;
 import com.variant.core.lifecycle.StateParsedLifecycleEvent;
-import com.variant.core.lifecycle.TestParsedLifecycleEvent;
+import com.variant.core.lifecycle.VariationParsedLifecycleEvent;
 import com.variant.server.impl.StateParsedLifecycleEventPostResultImpl;
-import com.variant.server.impl.TestParsedLifecycleEventPostResultImpl;
-import com.variant.server.impl.TestQualificationLifecycleEventPostResultImpl;
-import com.variant.server.impl.TestTargetingLifecycleEventPostResultImpl;
+import com.variant.server.impl.VariationParsedLifecycleEventPostResultImpl;
+import com.variant.server.impl.VariationQualificationLifecycleEventPostResultImpl;
+import com.variant.server.impl.VariationTargetingLifecycleEventPostResultImpl;
 
 /**
  * A class with a number of static factory methods, returning concrete implementations of {@link PostResult}s,
@@ -48,34 +48,34 @@ public class PostResultFactory {
     * 
     * @since 0.7
     */
-	public static TestParsedLifecycleEvent.PostResult mkPostResult( TestParsedLifecycleEvent event) {
-		return new TestParsedLifecycleEventPostResultImpl(event);
+	public static VariationParsedLifecycleEvent.PostResult mkPostResult(VariationParsedLifecycleEvent event) {
+		return new VariationParsedLifecycleEventPostResultImpl(event);
 	}
 
    /**
     * Obtain an instance of {@link PostResult} suitable as the return type of the {@link LifecycleHook#post(LifecycleEvent)},
-    * invoked with the event type of {@link TestQualificationLifecycleEvent}.
+    * invoked with the event type of {@link VariationQualificationLifecycleEvent}.
     * 
-    * @return An "empty" instance of type {@link TestQualificationLifecycleEvent.PostResult}. Use mutator
+    * @return An "empty" instance of type {@link VariationQualificationLifecycleEvent.PostResult}. Use mutator
     *         method(s) of this object to pass additional state back to server. 
     * 
     * @since 0.7
     */
-	public static TestQualificationLifecycleEvent.PostResult mkPostResult(TestQualificationLifecycleEvent event) {
-		return new TestQualificationLifecycleEventPostResultImpl(event);	
+	public static VariationQualificationLifecycleEvent.PostResult mkPostResult(VariationQualificationLifecycleEvent event) {
+		return new VariationQualificationLifecycleEventPostResultImpl(event);
 	}
 
    /**
     * Obtain an instance of {@link PostResult} suitable as the return type of the {@link LifecycleHook#post(LifecycleEvent)},
-    * invoked with the event type of {@link TestTargetingLifecycleEvent}.
+    * invoked with the event type of {@link VariationTargetingLifecycleEvent}.
     * 
-    * @return An "empty" instance of type {@link TestTargetingLifecycleEvent.PostResult}. Use mutator
+    * @return An "empty" instance of type {@link VariationTargetingLifecycleEvent.PostResult}. Use mutator
     *         method(s) of this object to pass additional state back to server. 
     * 
     * @since 0.7
     */
-	public static TestTargetingLifecycleEvent.PostResult mkPostResult(TestTargetingLifecycleEvent event) {
-		return new TestTargetingLifecycleEventPostResultImpl(event);	
+	public static VariationTargetingLifecycleEvent.PostResult mkPostResult(VariationTargetingLifecycleEvent event) {
+		return new VariationTargetingLifecycleEventPostResultImpl(event);	
 	}
 
 }

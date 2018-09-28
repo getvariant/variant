@@ -3,7 +3,7 @@ package com.variant.server.impl
 import com.variant.core.TraceEvent
 import com.variant.core.schema.State
 import com.variant.core.schema.impl.StateImpl
-import com.variant.core.schema.impl.TestImpl
+import com.variant.core.schema.impl.VariationImpl
 import com.variant.core.session.CoreSession
 import com.variant.core.session.CoreStateRequest
 import com.variant.core.session.SessionScopedTargetingStabile
@@ -16,6 +16,7 @@ import com.variant.core.impl.ServerError
 import com.variant.core.schema.impl.StateVariantImpl
 import com.variant.server.event.ServerTraceEvent
 import play.api.Logger
+import java.util.Optional
 
 /**
  * Server session enriches core session with server side functionality.
@@ -65,24 +66,21 @@ class SessionImpl(val coreSession: CoreSession, val schemaGen: SchemaGen) extend
 
    override def getCreateDate = coreSession.createDate
    
-   override def getDisqualifiedTests = coreSession.getDisqualifiedTests
+   override def getDisqualifiedVariations = coreSession.getDisqualifiedVariations
    
    override def getId = coreSession.getId
          
-   override def getStateRequest = {
-      if (coreSession.getStateRequest == null) null 
-      else StateRequestImpl(this, coreSession.getStateRequest)
+   override def getStateRequest: Optional[StateRequest] = {
+      if (coreSession.getStateRequest.isPresent) Optional.of(StateRequestImpl(this, coreSession.getStateRequest.get))
+      else Optional.empty[StateRequest] 
    }
    
    override def getTraversedStates = coreSession.getTraversedStates
    
-   override def getTraversedTests = coreSession.getTraversedTests
+   override def getTraversedVariations = coreSession.getTraversedVariations
       
-   override def clearAttribute(name: java.lang.String) = coreSession.clearAttribute(name)
+   override def getAttributes() = coreSession.getAttributes
 
-   override def getAttribute(name: java.lang.String) = coreSession.getAttribute(name)
-
-   override def setAttribute(name: java.lang.String, value: java.lang.String) = coreSession.setAttribute(name, value)
    
    override def getSchema = schemaGen
    
@@ -96,8 +94,8 @@ class SessionImpl(val coreSession: CoreSession, val schemaGen: SchemaGen) extend
       coreSession.addTraversedState(state)
    }
   
-   def addDisqualifiedTest(test: TestImpl) {
-      coreSession.addDisqualifiedTest(test)
+   def addDisqualifiedTest(variation: VariationImpl) {
+      coreSession.addDisqualifiedTest(variation)
    }
 
    def setTargetingStabile(stabile: SessionScopedTargetingStabile) {
@@ -117,7 +115,7 @@ class SessionImpl(val coreSession: CoreSession, val schemaGen: SchemaGen) extend
     */
    def targetForState(state: State): StateRequest = {
       schemaGen.runtime.targetForState(this, state) 
-      getStateRequest
+      getStateRequest.get
    }
 
    /**

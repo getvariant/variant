@@ -3,37 +3,37 @@ package com.variant.server.impl;
 import static com.variant.core.impl.ServerError.HOOK_TARGETING_BAD_EXPERIENCE;
 
 import com.variant.core.schema.State;
-import com.variant.core.schema.Test;
-import com.variant.core.schema.Test.Experience;
+import com.variant.core.schema.Variation;
+import com.variant.core.schema.Variation.Experience;
 import com.variant.server.api.ServerException;
-import com.variant.server.api.lifecycle.TestTargetingLifecycleEvent;
+import com.variant.server.api.lifecycle.VariationTargetingLifecycleEvent;
 
-public class TestTargetingLifecycleEventPostResultImpl implements TestTargetingLifecycleEvent.PostResult {
+public class VariationTargetingLifecycleEventPostResultImpl implements VariationTargetingLifecycleEvent.PostResult {
 
-	TestTargetingLifecycleEventImpl event;
+	VariationTargetingLifecycleEventImpl event;
 	private Experience experience = null;
 	
 	/**
 	 * 
 	 * @param event
 	 */
-	public TestTargetingLifecycleEventPostResultImpl(TestTargetingLifecycleEvent event) {
-		this.event = (TestTargetingLifecycleEventImpl) event;
+	public VariationTargetingLifecycleEventPostResultImpl(VariationTargetingLifecycleEvent event) {
+		this.event = (VariationTargetingLifecycleEventImpl) event;
 	}
 	
 	@Override
 	public void setTargetedExperience(Experience experience) {
 
-		Test test = event.getTest();
+		Variation var = event.getVariation();
 		State state = event.getState();
 		
-		for (Experience te: test.getExperiences()) {
+		for (Experience te: var.getExperiences()) {
 			if (experience.equals(te)) {
-				if (experience.isPhantomOn(state)) {
+				if (experience.isPhantom(state)) {
 					StackTraceElement caller = Thread.currentThread().getStackTrace()[2];
 					throw new ServerException.Local(
 							HOOK_TARGETING_BAD_EXPERIENCE, 
-							caller.getClassName(), test.getName(), experience.toString(), test.getName());
+							caller.getClassName(), var.getName(), experience.toString(), var.getName());
 				}
 				this.experience = experience;
 				return;
@@ -44,7 +44,7 @@ public class TestTargetingLifecycleEventPostResultImpl implements TestTargetingL
 		StackTraceElement caller = Thread.currentThread().getStackTrace()[2];
 		throw new ServerException.Local(
 				HOOK_TARGETING_BAD_EXPERIENCE, 
-				caller.getClassName(), test.getName(), experience.toString());
+				caller.getClassName(), var.getName(), experience.toString());
 	}
 
 	public Experience getTargetedExperience() {

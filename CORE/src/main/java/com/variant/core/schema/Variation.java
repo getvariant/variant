@@ -83,11 +83,12 @@ public interface Variation {
 	/**
 	 * This variation's instrumentation details on a particular state.
 	 * 
-	 * @return An object of type {@link OnState}, if given state instrumented by this variation, 
-	 * or <code>null</code> otherwise.
+	 * @return An {@link Optional}, containing the {@link OnState} instrumentation on given state by this variation, 
+	 *         or empty if given state is not instrumented by this variation.
+	 * 
 	 * @since 0.5
 	 */
-	OnState getOnState(State state);
+	Optional<OnState> getOnState(State state);
 		
 	/**
 	 * Get a list of variations conjointly concurrent with this instrumentation.
@@ -153,7 +154,7 @@ public interface Variation {
 		 * @return An object of type {@link Variation}
 	     * @since 0.5
 		 */
-		Variation getTest();
+		Variation getVariation();
 		
 		/**
 		 * Is this the control experience?

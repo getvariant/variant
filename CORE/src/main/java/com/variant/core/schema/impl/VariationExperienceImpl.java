@@ -8,10 +8,10 @@ import com.variant.core.schema.Variation;
 
 // Remove public modifier is the result of exposing the server side
 // constructor.
-public class TestExperienceImpl implements Variation.Experience  {
+public class VariationExperienceImpl implements Variation.Experience  {
 
 	private String name;
-	private Variation test;
+	private Variation var;
 	private Number weight;
 	private boolean isControl;
 	private Set<State> uninstrumentedStates = new HashSet<State>();
@@ -20,7 +20,7 @@ public class TestExperienceImpl implements Variation.Experience  {
 	 * Instantiation.
 	 * @param name
 	 */
-	public TestExperienceImpl(String name, Number weight, boolean isControl) {
+	public VariationExperienceImpl(String name, Number weight, boolean isControl) {
 		this.name = name;
 		this.weight = weight;
 		this.isControl = isControl;
@@ -36,8 +36,8 @@ public class TestExperienceImpl implements Variation.Experience  {
 	}
 
 	@Override
-	public Variation getTest() {
-		return test;
+	public Variation getVariation() {
+		return var;
 	}
 
 	@Override
@@ -59,8 +59,8 @@ public class TestExperienceImpl implements Variation.Experience  {
 	//                                        PUBLIC EXT                                           //
 	//---------------------------------------------------------------------------------------------//
 
-	public void setTest(Variation test) {
-		this.test = test;
+	public void setTest(Variation var) {
+		this.var = var;
 	}
 
 	public void addUninstrumentedState(State state) {
@@ -69,18 +69,18 @@ public class TestExperienceImpl implements Variation.Experience  {
 	
 	@Override
 	public boolean equals(Object o) {
-		if (!(o instanceof TestExperienceImpl)) return false;
-		TestExperienceImpl other = (TestExperienceImpl) o;
-		return test.equals(other.test) && name.equals(other.name);
+		if (!(o instanceof VariationExperienceImpl)) return false;
+		VariationExperienceImpl other = (VariationExperienceImpl) o;
+		return var.equals(other.var) && name.equals(other.name);
 	}
 	
 	@Override
 	public int hashCode() {
-		return test.hashCode() + name.hashCode();
+		return var.hashCode() + name.hashCode();
 	}
 	
 	@Override
 	public String toString() {
-		return test.getName() + "." + name;
+		return var.getName() + "." + name;
 	}	
 }

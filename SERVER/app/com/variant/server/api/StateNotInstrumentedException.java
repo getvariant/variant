@@ -7,7 +7,7 @@ import com.variant.core.impl.ServerError;
  * defined in the schema.
  * 
  * @since 0.7
- */
+ *
 @SuppressWarnings("serial")
 public class StateNotInstrumentedException extends ServerException.Local {
 	
@@ -16,3 +16,4 @@ public class StateNotInstrumentedException extends ServerException.Local {
 	}
 
 }
+*/

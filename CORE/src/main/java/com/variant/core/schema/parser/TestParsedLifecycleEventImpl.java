@@ -3,7 +3,7 @@ package com.variant.core.schema.parser;
 import com.variant.core.UserError.Severity;
 import com.variant.core.impl.CommonError;
 import com.variant.core.impl.ServerError;
-import com.variant.core.lifecycle.TestParsedLifecycleEvent;
+import com.variant.core.lifecycle.VariationParsedLifecycleEvent;
 import com.variant.core.schema.Variation;
 
 /**
@@ -11,13 +11,13 @@ import com.variant.core.schema.Variation;
  * @author Igor
  *
  */
-public class TestParsedLifecycleEventImpl implements TestParsedLifecycleEvent {
+public class TestParsedLifecycleEventImpl implements VariationParsedLifecycleEvent {
 
-	private Variation test;
+	private Variation variation;
 	private ParserResponse response;
 	
-	TestParsedLifecycleEventImpl(Variation test, ParserResponse response) {
-		this.test = test;
+	TestParsedLifecycleEventImpl(Variation variation, ParserResponse response) {
+		this.variation = variation;
 		this.response = response;
 	}
 	
@@ -26,8 +26,8 @@ public class TestParsedLifecycleEventImpl implements TestParsedLifecycleEvent {
 	//---------------------------------------------------------------------------------------------//
 
 	@Override
-	public Variation getTest() {
-		return test;
+	public Variation getVariation() {
+		return variation;
 	}
 
 	@Override

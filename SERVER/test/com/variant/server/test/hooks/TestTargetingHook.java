@@ -6,12 +6,12 @@ import java.util.Random;
 import com.typesafe.config.Config;
 import com.variant.core.lifecycle.LifecycleHook;
 import com.variant.core.schema.State;
-import com.variant.core.schema.Test;
-import com.variant.core.schema.Test.Experience;
+import com.variant.core.schema.Variation;
+import com.variant.core.schema.Variation.Experience;
 import com.variant.server.api.ServerException;
 import com.variant.server.api.Session;
 import com.variant.server.api.lifecycle.PostResultFactory;
-import com.variant.server.api.lifecycle.TestTargetingLifecycleEvent;
+import com.variant.server.api.lifecycle.VariationTargetingLifecycleEvent;
 
 /**
  * Test targeter hook.
@@ -19,7 +19,7 @@ import com.variant.server.api.lifecycle.TestTargetingLifecycleEvent;
  * otherwise, if experience is given, attempt to find that experience.
  * 
  */
-public class TestTargetingHook implements LifecycleHook<TestTargetingLifecycleEvent> {
+public class TestTargetingHook implements LifecycleHook<VariationTargetingLifecycleEvent> {
 
 	public static String ATTR_KEY = TestTargetingHook.class.getName();
 
@@ -47,29 +47,29 @@ public class TestTargetingHook implements LifecycleHook<TestTargetingLifecycleEv
 	}
 
 	@Override
-    public Class<TestTargetingLifecycleEvent> getLifecycleEventClass() {
-		return TestTargetingLifecycleEvent.class;
+    public Class<VariationTargetingLifecycleEvent> getLifecycleEventClass() {
+		return VariationTargetingLifecycleEvent.class;
     }
    
 	@Override
-	public PostResult post(TestTargetingLifecycleEvent event) {
+	public PostResult post(VariationTargetingLifecycleEvent event) {
 
 		Session ssn = event.getSession();
-		TestTargetingLifecycleEvent.PostResult result = PostResultFactory.mkPostResult(event);
+		VariationTargetingLifecycleEvent.PostResult result = PostResultFactory.mkPostResult(event);
 		
 		if (experienceToReturn != null) {
 			String[] tokens = experienceToReturn.split("\\.");
-			Experience exp = event.getSession().getSchema().getTest(tokens[0]).getExperience(tokens[1]);			
+			Experience exp = event.getSession().getSchema().getVariation(tokens[0]).get().getExperience(tokens[1]).get();			
 			result.setTargetedExperience(exp);
 			return result;
 		} 
 		
-		Test test = event.getTest();
+		Variation test = event.getVariation();
 		State state = event.getState();
 		
-		String curVal = ssn.getAttribute(ATTR_KEY);
+		String curVal = ssn.getAttributes().get(ATTR_KEY);
 		if (curVal == null) curVal = ""; else curVal += " ";
-		ssn.setAttribute(ATTR_KEY,  curVal + test.getName());
+		ssn.getAttributes().put(ATTR_KEY,  curVal + test.getName());
 		
 		double weightSum = 0;
 		if (weights.length != test.getExperiences().size()) 
@@ -79,7 +79,7 @@ public class TestTargetingHook implements LifecycleHook<TestTargetingLifecycleEv
 					
 		for (int i = 0; i < weights.length; i++) {
 			Experience e = test.getExperiences().get(i);
-			if (e.isPhantomOn(state)) continue;
+			if (e.isPhantom(state)) continue;
 			weightSum += weights[i];
 		}
 
@@ -93,7 +93,7 @@ public class TestTargetingHook implements LifecycleHook<TestTargetingLifecycleEv
 		//Experience lastExperience = null;
 		for (int i = 0; i < weights.length; i++) {
 			Experience e = test.getExperiences().get(i);
-			if (e.isPhantomOn(state)) continue;
+			if (e.isPhantom(state)) continue;
 			//lastExperience = e;
 			weightSum += weights[i];
 			if (randVal < weightSum) {

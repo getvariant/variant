@@ -169,14 +169,14 @@ class TargetingTest extends BaseSpecWithServerAsync {
 	      async {
 	         
             val schema = server.schemata.get(schemaNames(0)).get.liveGen.get
-            val state = schema.getState("state1")
-            val test = schema.getTest("test1")
+            val state = schema.getState("state1").get
+            val test = schema.getVariation("test1").get
       		
             val counts = Array(0, 0, 0)
       		for (i <- 1 to trials) {
       			val ssn = SessionImpl.empty("sid", schema)
       			ssn.targetForState(state)
-      			val expName = ssn.coreSession.getStateRequest.getLiveExperience(test).getName()
+      			val expName = ssn.coreSession.getStateRequest.get.getLiveExperience(test).get.getName()
       			expName match {
       			   case "A" => counts(0) += 1
          			case "B" => counts(1) += 1
@@ -192,16 +192,16 @@ class TargetingTest extends BaseSpecWithServerAsync {
 	      async {
 
 	         val schema = server.schemata.get(schemaNames(1)).get.liveGen.get
-            val state = schema.getState("state1")
-            val test = schema.getTest("test1")
+            val state = schema.getState("state1").get
+            val test = schema.getVariation("test1").get
    
       		val counts = Array(0, 0, 0)
       		for (i <- 1 to trials) {
       			val ssn = SessionImpl.empty("sid" + i, schema)
-      			ssn.getAttribute(TestTargetingHookNil.ATTR_KEY) mustBe null
+      			ssn.getAttributes.get(TestTargetingHookNil.ATTR_KEY) mustBe null
       			val req = ssn.targetForState(state)
-      			ssn.getAttribute(TestTargetingHookNil.ATTR_KEY) mustBe "test1"
-      			val expName = req.getLiveExperience(test).getName()
+      			ssn.getAttributes.get(TestTargetingHookNil.ATTR_KEY) mustBe "test1"
+      			val expName = req.getLiveExperience(test).get.getName()
       			expName match {
       			   case "A" => counts(0) += 1
          			case "B" => counts(1) += 1
@@ -217,16 +217,16 @@ class TargetingTest extends BaseSpecWithServerAsync {
 	      async {
 
             val schema = server.schemata.get(schemaNames(2)).get.liveGen.get
-            val state = schema.getState("state1")
-            val test = schema.getTest("test1")
+            val state = schema.getState("state1").get
+            val test = schema.getVariation("test1").get
    
       		val counts = Array(0, 0, 0)
       		for (i <- 1 to trials) {
       			val ssn = SessionImpl.empty("sid" + i, schema)
-      			ssn.getAttribute(TestTargetingHookNil.ATTR_KEY) mustBe null
+      			ssn.getAttributes.get(TestTargetingHookNil.ATTR_KEY) mustBe null
       			val req = ssn.targetForState(state)
-      			ssn.getAttribute(TestTargetingHookNil.ATTR_KEY) mustBe "test1 test1"
-      			val expName = req.getLiveExperience(test).getName()
+      			ssn.getAttributes.get(TestTargetingHookNil.ATTR_KEY) mustBe "test1 test1"
+      			val expName = req.getLiveExperience(test).get.getName()
       			expName match {
       			   case "A" => counts(0) += 1
          			case "B" => counts(1) += 1
@@ -243,18 +243,18 @@ class TargetingTest extends BaseSpecWithServerAsync {
 	      async {
 
             val schema = server.schemata.get(schemaNames(3)).get.liveGen.get
-            val state = schema.getState("state1")
-            val test = schema.getTest("test1")
+            val state = schema.getState("state1").get
+            val test = schema.getVariation("test1").get
    
       		val counts = Array(0, 0, 0)
       		for (i <- 1 to trials) {
       			val ssn = SessionImpl.empty("sid" + i, schema)
-      			ssn.getAttribute(TestTargetingHookNil.ATTR_KEY) mustBe null
-      			ssn.getAttribute(TestTargetingHook.ATTR_KEY) mustBe null
+      			ssn.getAttributes.get(TestTargetingHookNil.ATTR_KEY) mustBe null
+      			ssn.getAttributes.get(TestTargetingHook.ATTR_KEY) mustBe null
       			val req = ssn.targetForState(state)
-      			ssn.getAttribute(TestTargetingHookNil.ATTR_KEY) mustBe "test1"
-      			ssn.getAttribute(TestTargetingHook.ATTR_KEY) mustBe "test1"
-      			val expName = req.getLiveExperience(test).getName()
+      			ssn.getAttributes.get(TestTargetingHookNil.ATTR_KEY) mustBe "test1"
+      			ssn.getAttributes.get(TestTargetingHook.ATTR_KEY) mustBe "test1"
+      			val expName = req.getLiveExperience(test).get.getName()
       			expName match {
       			   case "A" => counts(0) += 1
          			case "B" => counts(1) += 1
@@ -270,18 +270,18 @@ class TargetingTest extends BaseSpecWithServerAsync {
 	      async {
 
             val schema = server.schemata.get(schemaNames(4)).get.liveGen.get
-            val state = schema.getState("state1")
-            val test = schema.getTest("test1")
+            val state = schema.getState("state1").get
+            val test = schema.getVariation("test1").get
    
       		val counts = Array(0, 0, 0)
       		for (i <- 1 to trials) {
       			val ssn = SessionImpl.empty("sid" + i, schema)
-      			ssn.getAttribute(TestTargetingHookNil.ATTR_KEY) mustBe null
-      			ssn.getAttribute(TestTargetingHook.ATTR_KEY) mustBe null
+      			ssn.getAttributes.get(TestTargetingHookNil.ATTR_KEY) mustBe null
+      			ssn.getAttributes.get(TestTargetingHook.ATTR_KEY) mustBe null
       			val req = ssn.targetForState(state)
-      			ssn.getAttribute(TestTargetingHookNil.ATTR_KEY) mustBe "test1"
-      			ssn.getAttribute(TestTargetingHook.ATTR_KEY) mustBe "test1"
-      			val expName = req.getLiveExperience(test).getName()
+      			ssn.getAttributes.get(TestTargetingHookNil.ATTR_KEY) mustBe "test1"
+      			ssn.getAttributes.get(TestTargetingHook.ATTR_KEY) mustBe "test1"
+      			val expName = req.getLiveExperience(test).get.getName()
       			expName match {
       			   case "A" => counts(0) += 1
          			case "B" => counts(1) += 1
@@ -320,7 +320,7 @@ class TargetingTest extends BaseSpecWithServerAsync {
          server.schemata.get(schemaName).isDefined mustBe true
          
          val schema = server.schemata.get(schemaName).get.liveGen.get
-         val state1 = schema.getState("state1")
+         val state1 = schema.getState("state1").get
 		   
 	
 		   var ssn = SessionImpl.empty(newSid(), schema)
