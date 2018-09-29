@@ -32,7 +32,7 @@ class HookInstantiationExceptionTest extends EmbeddedServerSpec {
       ]                                                                
    },                                                                   
 	'states':[{'name':'state1'}],                                                                   
-	'tests':[                                                           
+	'variations':[                                                           
 	   {                                                                
 		   'name':'test1',
 	      'experiences':[                                               
@@ -88,7 +88,7 @@ class HookInstantiationExceptionTest extends EmbeddedServerSpec {
       ]                                                                
    },                                                                   
 	'states':[{'name':'state1'}],                                                                   
-	'tests':[                                                           
+	'variations':[                                                           
 	   {                                                                
 		   'name':'test1',
 	      'experiences':[                                               
@@ -138,7 +138,7 @@ class HookInstantiationExceptionTest extends EmbeddedServerSpec {
       ]                                                                
    },                                                                   
 	'states':[{'name':'state1'}],                                                                   
-	'tests':[                                                           
+	'variations':[                                                           
 	   {                                                                
 		   'name':'test1',
 	      'experiences':[                                               
@@ -188,7 +188,7 @@ class HookInstantiationExceptionTest extends EmbeddedServerSpec {
       ]                                                                
    },                                                                   
 	'states':[{'name':'state1'}],                                                                   
-	'tests':[                                                           
+	'variations':[                                                           
 	   {                                                                
 		   'name':'test1',
 	      'experiences':[                                               
@@ -232,7 +232,7 @@ class HookInstantiationExceptionTest extends EmbeddedServerSpec {
       'name':'allTestsOffTest'
    },                                                                   
 	'states':[{'name':'state1'}],                                                                   
-	'tests':[                                                           
+	'variations':[                                                           
 	   {                                                                
 		   'name':'test1',
          'hooks':[                                                         

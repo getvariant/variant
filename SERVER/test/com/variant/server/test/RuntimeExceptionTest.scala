@@ -27,7 +27,7 @@ class RuntimeExceptionTest extends EmbeddedServerSpec {
    	{'NaMe':'state3'}
    ],		            
 	    	    
-   'tests':[
+   'variations':[
       {
          'name':'test1',
          'isOn':true,
@@ -106,14 +106,7 @@ class RuntimeExceptionTest extends EmbeddedServerSpec {
          val schema = server.schemata.get(schemaName).get.liveGen.get
          val state2 = schema.getState("state2").get
 
-         try {
-			   state2.isNonvariantIn(schema.getVariation("non-existent").get)
-			   fail("Expected exception not thrown")
-         }
-         catch {
-            case npe: NullPointerException => // Expected
-            case t: Throwable => fail("Unexpected Exception %s".format(t.getMessage))
-         }
+			schema.getVariation("non-existent").isPresent() mustBe false
          
          try {
 			   state2.isNonvariantIn(schema.getVariation("test1").get)

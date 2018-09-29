@@ -113,16 +113,15 @@ class VariantServerImpl @Inject() (
       
       if (startupErrorLog.exists { _.getSeverity == Severity.FATAL }) {
    		logger.error(ServerErrorLocal.SERVER_BOOT_FAILED.asMessage(productName))
-   		startupErrorLog.foreach { e => logger.error(e.getMessage(), e) }
+   		// Only print error stack if internal error.
+   		startupErrorLog.foreach { e => 
+   		   if (e.isInstanceOf[ServerException.Internal])
+      		   logger.error(e.getMessage(), e) 
+      		else
+      		   logger.error(e.getMessage())
+   	   }
    	   shutdown()
    	   
-
-   	   // System.exit(0)  << DO NOT DO THIS! Messes up tests.
-   	   // Ideally, we want to exit in Prod to make the application quit and come back to the
-   	   // OS prompt here, while simply return in Test, in order not to crash the test executor.
-   	   // Figuring out the Mode seems tricky as I keep running into circular dependency in DI.
-   	   // Perhaps not worth wasting time on, because we should drop Play in favor of direct
-   	   // Akka HTTP anyway.
    	}
    	else {
          logger.info(ServerErrorLocal.SERVER_BOOT_OK.asMessage(
@@ -159,6 +158,13 @@ class VariantServerImpl @Inject() (
             config.getString("http.port"),
             config.getString("play.http.context"),
    			DurationFormatUtils.formatDuration(ManagementFactory.getRuntimeMXBean().getUptime(), "HH:mm:ss")))
+   			   			
+      // System.exit(0)  << DO NOT DO THIS! Messes up tests.
+   	// Ideally, we want to exit in Prod to make the application quit and come back to the
+   	// OS prompt here, while simply return in Test, in order not to crash the test executor.
+   	// Figuring out the Mode seems tricky as I keep running into circular dependency in DI.
+   	// Perhaps not worth wasting time on, because we should drop Play in favor of direct Akka HTTP anyway.
+
    }
    
   /** When the application starts, register a stop hook with the

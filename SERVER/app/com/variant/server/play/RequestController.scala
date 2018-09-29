@@ -15,7 +15,7 @@ import com.variant.server.boot.VariantServer
 import com.variant.server.event.ServerTraceEvent
 import com.variant.server.impl.SessionImpl
 import com.variant.server.impl.StateRequestImpl
-import com.variant.server.util.JavaImplisits._
+import com.variant.server.util.JavaImplicits._
 
 import javax.inject.Inject
 import play.api.Logger
@@ -55,6 +55,7 @@ class RequestController @Inject() (
       val ssn = server.ssnStore.getOrBust(sid)
       
       // It's an error to request another state, before committing/failing current request.
+      //val req = Option(ssn.getStateRequest.orElse(null))
       ssn.getStateRequest.foreach { req =>
          if (req.getStatus == InProgress)
             throw new ServerException.Remote(ACTIVE_REQUEST)                
@@ -118,7 +119,8 @@ class RequestController @Inject() (
       
 
       val ssn = server.ssnStore.getOrBust(sid)
-      val stateReq = ssn.getStateRequest.asInstanceOf[StateRequestImpl]
+      // Ok to assume we always have the request?
+      val stateReq = ssn.getStateRequest.get.asInstanceOf[StateRequestImpl]
       
       if (stateReq.getStatus == Committed && status == Failed)
 			throw new ServerException.Remote(ServerError.CANNOT_FAIL);

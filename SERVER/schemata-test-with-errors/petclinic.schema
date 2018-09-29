@@ -33,7 +33,7 @@
         ]
      }                                                     
    ],                                                        
-   'tests':[                                                 
+   'variations':[                                                 
       {                                                      
          'name':'NewOwnerTest',
          'isOn': true,                                     

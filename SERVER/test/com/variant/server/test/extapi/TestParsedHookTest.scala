@@ -48,7 +48,7 @@ class TestParsedHookTest extends EmbeddedServerSpec {
 	'states':[                                                          
 	   {'name':'state1'}                                                 
    ],                                                                   
-	'tests':[
+	'variations':[
 	   {                                                                
 		   'name':'test1',
 	      'experiences':[                                               
@@ -97,9 +97,9 @@ class TestParsedHookTest extends EmbeddedServerSpec {
    ]                                                                   
 }"""
 
-      val schemaDeployer = SchemaDeployer.fromString(schema)
-      server.useSchemaDeployer(schemaDeployer)
-      val response = schemaDeployer.parserResponses(0)
+         val schemaDeployer = SchemaDeployer.fromString(schema)
+         server.useSchemaDeployer(schemaDeployer)
+         val response = schemaDeployer.parserResponses(0)
    		response.getMessages.size mustBe 9
    		response.getMessages(FATAL) mustBe empty
    		response.getMessages(ERROR).size() mustBe 3
@@ -165,7 +165,7 @@ class TestParsedHookTest extends EmbeddedServerSpec {
 	'states':[                                                          
 	   {'name':'state1'}                                                 
    ],                                                                   
-	'tests':[
+	'variations':[
 	   {                                                                
 		   'name':'test1',
 	      'experiences':[                                               
@@ -322,7 +322,7 @@ class TestParsedHookTest extends EmbeddedServerSpec {
         'name':'state1'                                                            
       }
    ],                                                                   
-	'tests':[
+	'variations':[
 	   {                                                                
 		   'name':'invalid name',  //  Bad name
 	      'experiences':[                                               

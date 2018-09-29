@@ -74,8 +74,8 @@ class TestQualificationHookTest extends EmbeddedServerSpec {
        server.useSchemaDeployer(schemaDeployer)
        val response = schemaDeployer.parserResponses(0)
        
-        //response.getMessages.foreach(println(_))
-   	   response.hasMessages() mustBe false
+       response.getMessages.foreach(println(_))
+   	 response.hasMessages() mustBe false
        server.schemata.get(schemaName).isDefined mustBe true
    	 val schema = server.schemata.get(schemaName).get.liveGen.get
 		 val state1 = schema.getState("state1").get

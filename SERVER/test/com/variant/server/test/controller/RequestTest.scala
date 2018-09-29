@@ -20,6 +20,7 @@ import com.variant.server.schema.ServerSchemaParser
 import com.variant.core.TraceEvent
 import com.variant.server.event.ServerTraceEvent
 import com.variant.server.api.StateRequest
+import java.util.Optional
 
 
 /**
@@ -64,7 +65,7 @@ class RequestTest extends EmbeddedServerSpec {
             .isOk
             .withBodyJson { json => 
                val coreSsn = CoreSession.fromJson((json \ "session").as[String], schema)
-               coreSsn.getStateRequest mustBe (null)
+               coreSsn.getStateRequest mustBe Optional.empty
          }
  
          // Target sesion for "state2"
@@ -84,7 +85,7 @@ class RequestTest extends EmbeddedServerSpec {
                stateReq.getLiveExperiences.size mustBe 6
                stateReq.getResolvedParameters.size mustBe 1
                stateReq.getSession.getId mustBe sid
-               stateReq.getState mustBe schema.getState("state2")
+               stateReq.getState mustBe schema.getState("state2").get
             }
 
          val serverSsn = server.ssnStore.get(sid).get.asInstanceOf[SessionImpl]
@@ -108,7 +109,7 @@ class RequestTest extends EmbeddedServerSpec {
                stateReq.getLiveExperiences.size mustBe 6
                stateReq.getResolvedParameters.size mustBe 1
                stateReq.getSession.getId mustBe sid
-               stateReq.getState mustBe schema.getState("state2")
+               stateReq.getState mustBe schema.getState("state2").get
          }
          
          serverSsn.getStateRequest().get.getStatus mustBe Committed
@@ -145,7 +146,7 @@ class RequestTest extends EmbeddedServerSpec {
                ssn.getId mustNot be (sid)
                sid = ssn.getId
                ssn.getSchema.getMeta.getName mustBe "big_conjoint_schema"
-               ssn.getStateRequest() mustBe null
+               ssn.getStateRequest() mustBe Optional.empty
          }
  
          // Target sesion for "state3"
@@ -164,7 +165,7 @@ class RequestTest extends EmbeddedServerSpec {
                stateReq.getLiveExperiences.size mustBe 5
                stateReq.getResolvedParameters.size mustBe 1
                stateReq.getSession.getId mustBe sid
-               stateReq.getState mustBe schema.getState("state3")
+               stateReq.getState mustBe schema.getState("state3").get
             }
 
          val serverSsn = server.ssnStore.get(sid).get.asInstanceOf[SessionImpl]
@@ -189,7 +190,7 @@ class RequestTest extends EmbeddedServerSpec {
                stateReq.getLiveExperiences.size mustBe 5
                stateReq.getResolvedParameters.size mustBe 1
                stateReq.getSession.getId mustBe sid
-               stateReq.getState mustBe schema.getState("state3")
+               stateReq.getState mustBe schema.getState("state3").get
          }
          
          serverSsn.getStateRequest().get.getStatus mustBe Committed
@@ -242,7 +243,7 @@ class RequestTest extends EmbeddedServerSpec {
                stateReq.getLiveExperiences.size mustBe 5
                stateReq.getResolvedParameters.size mustBe 1
                stateReq.getSession.getId mustBe sid
-               stateReq.getState mustBe schema.getState("state4")
+               stateReq.getState mustBe schema.getState("state4").get
             }
 
          val serverSsn = server.ssnStore.get(sid).get.asInstanceOf[SessionImpl]
@@ -266,7 +267,7 @@ class RequestTest extends EmbeddedServerSpec {
                stateReq.getLiveExperiences.size mustBe 5
                stateReq.getResolvedParameters.size mustBe 1
                stateReq.getSession.getId mustBe sid
-               stateReq.getState mustBe schema.getState("state4")
+               stateReq.getState mustBe schema.getState("state4").get
          }
          
          serverSsn.getStateRequest().get.getStatus mustBe Committed
@@ -321,7 +322,7 @@ class RequestTest extends EmbeddedServerSpec {
                stateReq.getLiveExperiences.size mustBe 4
                stateReq.getResolvedParameters.size mustBe 1
                stateReq.getSession.getId mustBe sid
-               stateReq.getState mustBe schema.getState("state5")
+               stateReq.getState mustBe schema.getState("state5").get
             }
 
          val serverSsn = server.ssnStore.get(sid).get.asInstanceOf[SessionImpl]
@@ -344,7 +345,7 @@ class RequestTest extends EmbeddedServerSpec {
                stateReq.getLiveExperiences.size mustBe 4
                stateReq.getResolvedParameters.size mustBe 1
                stateReq.getSession.getId mustBe sid
-               stateReq.getState mustBe schema.getState("state5")
+               stateReq.getState mustBe schema.getState("state5").get
          }
          
          serverSsn.getStateRequest.get.getStatus mustBe Failed
@@ -398,7 +399,7 @@ class RequestTest extends EmbeddedServerSpec {
                stateReq.getLiveExperiences.size mustBe 4
                stateReq.getResolvedParameters.size mustBe 1
                stateReq.getSession.getId mustBe sid
-               stateReq.getState mustBe schema.getState("state5")
+               stateReq.getState mustBe schema.getState("state5").get
             }
 
          val serverSsn = server.ssnStore.get(sid).get.asInstanceOf[SessionImpl]
@@ -421,7 +422,7 @@ class RequestTest extends EmbeddedServerSpec {
                stateReq.getLiveExperiences.size mustBe 4
                stateReq.getResolvedParameters.size mustBe 1
                stateReq.getSession.getId mustBe sid
-               stateReq.getState mustBe schema.getState("state5")
+               stateReq.getState mustBe schema.getState("state5").get
          }
          
          serverSsn.getStateRequest().get.getStatus mustBe Failed
@@ -476,7 +477,7 @@ class RequestTest extends EmbeddedServerSpec {
                stateReq.getLiveExperiences.size mustBe 6
                stateReq.getResolvedParameters.size mustBe 1
                stateReq.getSession.getId mustBe sid
-               stateReq.getState mustBe schema.getState("state2")
+               stateReq.getState mustBe schema.getState("state2").get
             }
 
          // Target again and get the error.
@@ -500,7 +501,7 @@ class RequestTest extends EmbeddedServerSpec {
                stateReq.getLiveExperiences.size mustBe 6
                stateReq.getResolvedParameters.size mustBe 1
                stateReq.getSession.getId mustBe sid
-               stateReq.getState mustBe schema.getState("state2")
+               stateReq.getState mustBe schema.getState("state2").get
          }
 
          // Can target again.
@@ -520,7 +521,7 @@ class RequestTest extends EmbeddedServerSpec {
                stateReq.getLiveExperiences.size mustBe 5
                stateReq.getResolvedParameters.size mustBe 1
                stateReq.getSession.getId mustBe sid
-               stateReq.getState mustBe schema.getState("state3")
+               stateReq.getState mustBe schema.getState("state3").get
             }
 
       }
@@ -565,7 +566,7 @@ class RequestTest extends EmbeddedServerSpec {
             .withBodyJson { json => 
                val coreSsn = CoreSession.fromJson((json \ "session").as[String], schema)
                coreSsn.getAttributes.get("user-agent") mustBe "Safari"
-               coreSsn.getStateRequest mustBe (null)
+               coreSsn.getStateRequest mustBe Optional.empty
              } 
          
          // State request object.
@@ -589,7 +590,7 @@ class RequestTest extends EmbeddedServerSpec {
                stateReq.getResolvedParameters.size mustBe 1
                stateReq.getResolvedParameters.get("path") mustBe schema.getState("newOwner").get.getParameters.get("path")
                stateReq.getSession.getId mustBe sid
-               stateReq.getState mustBe schema.getState("newOwner")
+               stateReq.getState mustBe schema.getState("newOwner").get
          }
          
          val serverSsn = server.ssnStore.get(sid).get.asInstanceOf[SessionImpl]
@@ -615,7 +616,7 @@ class RequestTest extends EmbeddedServerSpec {
                stateReq.getResolvedParameters.size mustBe 1
                stateReq.getResolvedParameters.get("path") mustBe schema.getState("newOwner").get.getParameters.get("path")
                stateReq.getSession.getId mustBe sid
-               stateReq.getState mustBe schema.getState("newOwner")
+               stateReq.getState mustBe schema.getState("newOwner").get
             }
          
          // Send custom event.

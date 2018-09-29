@@ -44,7 +44,7 @@ class StateParsedHookTest extends EmbeddedServerSpec {
 		  {'name':'state2'},                                                
 		  {'name':'state3'}                                                 
    ],                                                                   
-	'tests':[                                                           
+	'variations':[                                                           
 	   {                                                                
 		   'name':'test1',
 	      'experiences':[                                               
@@ -144,7 +144,7 @@ class StateParsedHookTest extends EmbeddedServerSpec {
     {'name':'state2'},                                                
 		{'name':'state3'}                                                 
    ],                                                                   
-	'tests':[                                                           
+	'variations':[                                                           
 	   {                                                                
 		   'name':'test1',
 	      'experiences':[                                               
@@ -274,7 +274,7 @@ class StateParsedHookTest extends EmbeddedServerSpec {
         'name':'state3'
       }                                                 
    ],                                                                   
-	'tests':[                                                           
+	'variations':[                                                           
 	   {                                                                
 		   'name':'test1',
 	      'experiences':[                                               
@@ -362,7 +362,7 @@ class StateParsedHookTest extends EmbeddedServerSpec {
         'name':'state3'
       }                                                 
    ],                                                                   
-	'tests':[                                                           
+	'variations':[                                                           
 	   {                                                                
 		   'name':'test1',
 	      'experiences':[                                               
@@ -461,7 +461,7 @@ class StateParsedHookTest extends EmbeddedServerSpec {
         'name':'state3'
       }                                                 
    ],                                                                   
-	'tests':[                                                           
+	'variations':[                                                           
 	   {
 		   'name':'test1',
 	      'experiences':[                                               
@@ -600,7 +600,7 @@ class StateParsedHookTest extends EmbeddedServerSpec {
         'name':'state3' // schema scoped hook will be posted.
       }                                                 
    ],                                                                   
-	'tests':[                                                           
+	'variations':[                                                           
 	   {                                                                
 		   'name':'test1',
 	      'experiences':[                                               

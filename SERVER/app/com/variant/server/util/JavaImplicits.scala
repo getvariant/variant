@@ -1,8 +1,8 @@
 package com.variant.server.util
 
-object JavaImplisits {
+object JavaImplicits {
   
    implicit def оptional2Option[T](optional: java.util.Optional[T]): Option[T] = {
-      optional.orElse(None)
+      Option(optional.orElse(null.asInstanceOf[T]))
    }
 }

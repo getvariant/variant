@@ -46,7 +46,7 @@
         }                                                               
      }                                                                   
   ],                                                                     
-  'tests':[  
+  'variations':[  
      // TEST 1 Comment.                                                            
      {                                                                   
         'name':'test1',/// Another comment                                                  
@@ -188,7 +188,7 @@
      },                                                                  
      {                                                                   
         'name':'test3',
-        'conjointTestRefs': ['test2'],                                                  
+        'conjointVariationRefs': ['test2'],                                                  
         'experiences':[                                                  
            {                                                             
               'name':'A',                                                
@@ -347,7 +347,7 @@
      },                                                                  
      {                                                                   
         'name':'test4',                                                  
-        'conjointTestRefs': ['test1'],                                  
+        'conjointVariationRefs': ['test1'],                                  
         'experiences':[                                                  
            {                                                             
               'name':'A',                                                
@@ -458,7 +458,7 @@
      },                                                                  
      {                                                                   
         'name':'test5',                                                  
-        'conjointTestRefs': ['test2', 'test4'],                         
+        'conjointVariationRefs': ['test2', 'test4'],                         
         'experiences':[                                                  
            {                                                             
               'name':'A',                                                
@@ -730,7 +730,7 @@
      },                                                                  
      {                                                                   
         'name':'test6',                                                  
-        'conjointTestRefs': ['test2', 'test4', 'test1', 'test5'],       
+        'conjointVariationRefs': ['test2', 'test4', 'test1', 'test5'],       
         'experiences':[                                                  
            {                                                             
               'name':'A',                                                

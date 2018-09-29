@@ -67,7 +67,7 @@ class HookScopeTest extends EmbeddedServerSpec {
 	   {'name':'state1'},
 	   {'name':'state2'}                                                 
    ],                                                                   
-	'tests':[
+	'variations':[
 	   {                                                                
 		   'name':'test1',
 	      'experiences':[                                               
@@ -219,7 +219,7 @@ class HookScopeTest extends EmbeddedServerSpec {
       'name':'state2'
     }                                                 
    ],                                                                   
-	'tests':[
+	'variations':[
 	   {                                                                
 		   'name':'test1',
         'hooks':[
@@ -309,7 +309,7 @@ class HookScopeTest extends EmbeddedServerSpec {
       ]
     }                                                 
    ],                                                                   
-	'tests':[
+	'variations':[
 	   {                                                                
 		   'name':'test1',
         'hooks':[
@@ -355,7 +355,7 @@ class HookScopeTest extends EmbeddedServerSpec {
    		// Confirm parse time hooks were posted. Note that compile time hooks fire for off tests.
    		var msg = response.getMessages.get(0)
    		msg.getSeverity mustBe ERROR
-   		msg.getText must include (ServerErrorLocal.HOOK_STATE_SCOPE_VIOLATION.asMessage("testParsed", "state2", "com.variant.core.lifecycle.TestParsedLifecycleEvent"))
+   		msg.getText must include (ServerErrorLocal.HOOK_STATE_SCOPE_VIOLATION.asMessage("testParsed", "state2", "com.variant.core.lifecycle.VariationParsedLifecycleEvent"))
    		msg = response.getMessages.get(1)
    		msg.getSeverity mustBe INFO
    		msg.getText must include (HOOK_USER_MESSAGE_INFO.asMessage(String.format(TestParsedHook.INFO_MESSAGE_FORMAT, "testParsedT1", "test1")))
@@ -402,7 +402,7 @@ class HookScopeTest extends EmbeddedServerSpec {
 },
 	   {'name':'state2'}                                                 
    ],                                                                   
-	'tests':[
+	'variations':[
 	   {                                                                
 		   'name':'test1',
 	     'experiences':[                                               
@@ -487,7 +487,7 @@ class HookScopeTest extends EmbeddedServerSpec {
      },
 	   {'name':'state2'}                                                 
    ],                                                                   
-	'tests':[
+	'variations':[
 	   {                                                                
 		   'name':'test1',
 	     'experiences':[                                               
@@ -528,7 +528,7 @@ class HookScopeTest extends EmbeddedServerSpec {
 
    		var msg = response.getMessages.get(0)
    		msg.getSeverity mustBe ERROR
-   		msg.getText must include (ServerErrorLocal.HOOK_STATE_SCOPE_VIOLATION.asMessage("testQualifier", "state1", "com.variant.server.api.lifecycle.TestQualificationLifecycleEvent"))
+   		msg.getText must include (ServerErrorLocal.HOOK_STATE_SCOPE_VIOLATION.asMessage("testQualifier", "state1", "com.variant.server.api.lifecycle.VariationQualificationLifecycleEvent"))
 
    		server.schemata.get(schemaName).isDefined mustBe false
    		

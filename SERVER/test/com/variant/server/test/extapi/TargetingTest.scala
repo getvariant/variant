@@ -27,7 +27,7 @@ class TargetingTest extends BaseSpecWithServerAsync {
          'name':'state2'
       } 
    ],
-   'tests':[
+   'variations':[
       {
          'name':'test1',
          'hooks':[${hooks:}], // Defaults to null list

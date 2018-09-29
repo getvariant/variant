@@ -146,7 +146,7 @@ class TraceEventTest extends EmbeddedServerSpec {
                stateReq.getLiveExperiences.size mustBe 5
                stateReq.getResolvedParameters.size mustBe 1
                stateReq.getSession.getId mustBe sid
-               stateReq.getState mustBe schema.getState("state4")
+               stateReq.getState mustBe schema.getState("state4").get
             }
 
          val serverSsn = server.ssnStore.get(sid).get.asInstanceOf[SessionImpl]
@@ -167,7 +167,7 @@ class TraceEventTest extends EmbeddedServerSpec {
                stateReq.getLiveExperiences.size mustBe 5
                stateReq.getResolvedParameters.size mustBe 1
                stateReq.getSession.getId mustBe sid
-               stateReq.getState mustBe schema.getState("state4")
+               stateReq.getState mustBe schema.getState("state4").get
          }
          
          // Read the event back from the db.
@@ -216,7 +216,7 @@ class TraceEventTest extends EmbeddedServerSpec {
                stateReq.getLiveExperiences.size mustBe 5
                stateReq.getResolvedParameters.size mustBe 1
                stateReq.getSession.getId mustBe sid
-               stateReq.getState mustBe ssn.getSchema.getState("state3")
+               stateReq.getState mustBe ssn.getSchema.getState("state3").get
             }
 
          val serverSsn = server.ssnStore.get(sid).get.asInstanceOf[SessionImpl]
@@ -239,7 +239,7 @@ class TraceEventTest extends EmbeddedServerSpec {
                stateReq.getLiveExperiences.size mustBe 5
                stateReq.getResolvedParameters.size mustBe 1
                stateReq.getSession.getId mustBe sid
-               stateReq.getState mustBe schema.getState("state3")
+               stateReq.getState mustBe schema.getState("state3").get
          }
          
          // Read the event back from the db.
@@ -324,7 +324,7 @@ class TraceEventTest extends EmbeddedServerSpec {
                stateReq.getLiveExperiences.size mustBe 4
                stateReq.getResolvedParameters.size mustBe 1
                stateReq.getSession.getId mustBe sid
-               stateReq.getState mustBe schema.getState("state5")
+               stateReq.getState mustBe schema.getState("state5").get
             }
 
          // Custom event.
@@ -385,7 +385,7 @@ class TraceEventTest extends EmbeddedServerSpec {
                stateReq.getLiveExperiences.size mustBe 5
                stateReq.getResolvedParameters.size mustBe 1
                stateReq.getSession.getId mustBe sid
-               stateReq.getState mustBe schema.getState("state4")
+               stateReq.getState mustBe schema.getState("state4").get
             }
 
          // Custom event.

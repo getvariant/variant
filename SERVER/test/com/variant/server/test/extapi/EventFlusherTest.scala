@@ -62,7 +62,7 @@ class EventFlusherTest extends PlaySpec with OneAppPerTest {
 	'states':[ 
 	   {'name':'state1'}
    ],                                                                   
-	'tests':[
+	'variations':[
 	   {                                                                
 		   'name':'test1',
 	      'experiences':[                                               
@@ -139,7 +139,7 @@ class EventFlusherTest extends PlaySpec with OneAppPerTest {
 	'states':[ 
 	   {'name':'state1'}
    ],                                                                   
-	'tests':[
+	'variations':[
 	   {                                                                
 		   'name':'test1',
 	      'experiences':[                                               

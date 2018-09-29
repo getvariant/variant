@@ -47,7 +47,7 @@ class ExtapiInstantiationTest extends EmbeddedServerSpec {
 	'states':[                                                          
 	   {'name':'state1'}                                                 
    ],                                                                   
-	'tests':[
+	'variations':[
 	   {                                                                
 		   'name':'test1',
 	      'experiences':[                                               
@@ -104,7 +104,7 @@ class ExtapiInstantiationTest extends EmbeddedServerSpec {
 	'states':[                                                          
 	   {'name':'state1'}                                                 
    ],                                                                   
-	'tests':[
+	'variations':[
 	   {                                                                
 		   'name':'test1',
 	      'experiences':[                                               
@@ -161,7 +161,7 @@ class ExtapiInstantiationTest extends EmbeddedServerSpec {
 	'states':[                                                          
 	   {'name':'state1'}                                                 
    ],                                                                   
-	'tests':[
+	'variations':[
 	   {                                                                
 		   'name':'test1',
 	      'experiences':[                                               
@@ -221,7 +221,7 @@ class ExtapiInstantiationTest extends EmbeddedServerSpec {
 	'states':[                                                          
 	   {'name':'state1'}                                                 
    ],                                                                   
-	'tests':[
+	'variations':[
 	   {                                                                
 		   'name':'test1',
 	      'experiences':[                                               
@@ -289,7 +289,7 @@ class ExtapiInstantiationTest extends EmbeddedServerSpec {
 	'states':[                                                          
 	   {'name':'state1'}                                                 
    ],                                                                   
-	'tests':[
+	'variations':[
 	   {                                                                
 		   'name':'test1',
 	      'experiences':[                                               
@@ -346,7 +346,7 @@ class ExtapiInstantiationTest extends EmbeddedServerSpec {
 	'states':[                                                          
 	   {'name':'state1'}                                                 
    ],                                                                   
-	'tests':[
+	'variations':[
 	   {                                                                
 		   'name':'test1',
 	      'experiences':[                                               
