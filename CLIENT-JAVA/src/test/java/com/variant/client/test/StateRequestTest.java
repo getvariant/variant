@@ -1,6 +1,8 @@
 package com.variant.client.test;
 
-import static com.variant.core.StateRequestStatus.*;
+import static com.variant.core.StateRequestStatus.Committed;
+import static com.variant.core.StateRequestStatus.Failed;
+import static com.variant.core.StateRequestStatus.InProgress;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -15,7 +17,6 @@ import com.variant.client.StateRequest;
 import com.variant.client.VariantClient;
 import com.variant.client.VariantException;
 import com.variant.client.impl.SchemaImpl;
-import com.variant.client.impl.SessionImpl;
 import com.variant.client.test.util.ClientBaseTestWithServer;
 import com.variant.client.test.util.event.TraceEventFromDatabase;
 import com.variant.client.test.util.event.TraceEventReader;
@@ -24,8 +25,7 @@ import com.variant.core.impl.ServerError;
 import com.variant.core.impl.StateVisitedEvent;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.State;
-import com.variant.core.schema.Test;
-import com.variant.core.schema.Test.Experience;
+import com.variant.core.schema.Variation;
 
 public class StateRequestTest extends ClientBaseTestWithServer {
 
@@ -47,14 +47,14 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 		assertNotNull(ssn);
 
 	   	Schema schema = ssn.getSchema();
-	   	State state1 = schema.getState("state1");
+	   	State state1 = schema.getState("state1").get();
 	   	//State state2 = schema.getState("state2");
-	   	final Test test1 = schema.getTest("test1");
-	   	Test test2 = schema.getTest("test2");
-	   	Test test3 = schema.getTest("test3");
-	   	Test test4 = schema.getTest("test4");
-	   	Test test5 = schema.getTest("test5");
-	   	Test test6 = schema.getTest("test6");
+	   	Variation test1 = schema.getVariation("test1").get();
+	   	Variation test2 = schema.getVariation("test2").get();
+	   	Variation test3 = schema.getVariation("test3").get();
+	   	Variation test4 = schema.getVariation("test4").get();
+	   	Variation test5 = schema.getVariation("test5").get();
+	   	Variation test6 = schema.getVariation("test6").get();
 
 	   	final StateRequest req = ssn.targetForState(state1);
 	   	assertNotNull(req);
@@ -63,16 +63,11 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 
 		assertNull(req.getLiveExperience(test1));
 		
-		Experience e2 = req.getLiveExperience(test2);
-		assertNotNull(e2);
-		Experience e3 = req.getLiveExperience(test3);
-		assertNotNull(e3);
-		Experience e4 = req.getLiveExperience(test4);
-		assertNotNull(e4);
-		Experience e5 = req.getLiveExperience(test5);
-		assertNotNull(e5);
-		Experience e6 = req.getLiveExperience(test6);
-		assertNotNull(e6);
+		assertTrue(req.getLiveExperience(test2).isPresent());
+		assertTrue(req.getLiveExperience(test3).isPresent());
+		assertTrue(req.getLiveExperience(test4).isPresent());
+		assertTrue(req.getLiveExperience(test5).isPresent());
+		assertTrue(req.getLiveExperience(test6).isPresent());
 	   			
 		// On occasion, we may get a trivial resolution and these will fail ????
 		assertNotNull(req.getResolvedParameters().get("path"));
@@ -98,7 +93,7 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 
 		// Reget the session -- should not change anything.
 		Session ssn2 = conn.getSession(ssn.getId());
-		StateRequest req2 = ssn2.getStateRequest();
+		StateRequest req2 = ssn2.getStateRequest().get();
 		assertEquals(Committed, req2.getStatus());
 
 		// Can't fail
@@ -125,15 +120,15 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 		Session ssn = conn.getOrCreateSession(userData);
 		assertNotNull(ssn);
 		assertNotEquals(sid, ssn.getId());
-		assertEquals(0, ssn.getTraversedTests().size());
+		assertEquals(0, ssn.getTraversedVariations().size());
 		Schema schema = ssn.getSchema();
-	   	State state2 = schema.getState("state2");
-	   	Test test1 = schema.getTest("test1");
-	   	Test test2 = schema.getTest("test2");
-	   	Test test3 = schema.getTest("test3");
-	   	Test test4 = schema.getTest("test4");
-	   	Test test5 = schema.getTest("test5");
-	   	Test test6 = schema.getTest("test6");
+	   	State state2 = schema.getState("state2").get();
+	   	Variation test1 = schema.getVariation("test1").get();
+	   	Variation test2 = schema.getVariation("test2").get();
+	   	Variation test3 = schema.getVariation("test3").get();
+	   	Variation test4 = schema.getVariation("test4").get();
+	   	Variation test5 = schema.getVariation("test5").get();
+	   	Variation test6 = schema.getVariation("test6").get();
 
 	   	final StateRequest req = ssn.targetForState(state2);
 	   	assertNotNull(req);
@@ -181,8 +176,8 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 		assertNotNull(ssn1);
 		assertNotEquals(sid, ssn1.getId());
 
-	   	final State state2 = schema.getState("state2");
-	   	final State state3 = schema.getState("state3");
+	   	final State state2 = schema.getState("state2").get();
+	   	final State state3 = schema.getState("state3").get();
 	   	
 	   	final StateRequest req1 = ssn1.targetForState(state2);
 		
@@ -195,7 +190,7 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 		assertNotNull(ssn2);
 		assertNotEquals(ssn1, ssn2); 
 		assertEquals(ssn1.getId(), ssn2.getId());
-		final StateRequest req2 = ssn2.getStateRequest();
+		final StateRequest req2 = ssn2.getStateRequest().get();
 		assertNotEquals(req1, req2);
 		
 		assertEquals(Committed, req1.getStatus());
@@ -214,12 +209,12 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 			}
 		}.assertThrown();
 
-		ssn1.getStateRequest().commit();
+		ssn1.getStateRequest().get().commit();
 		
 		// Fail in parallel session should not go through
 		new ClientExceptionInterceptor() {
 			@Override public void toRun() {
-				ssn2.getStateRequest().fail();
+				ssn2.getStateRequest().get().fail();
 			}
 			@Override public void onThrown(VariantException e) {
 				assertEquals(ServerError.CANNOT_FAIL, e.getError());
@@ -242,14 +237,14 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 
 		assertNotNull(ssn1);
 
-		State state2 = schema.getState("state2");
+		State state2 = schema.getState("state2").get();
 	   	
 	   	StateRequest req1 = ssn1.targetForState(state2);
 	   	req1.getStateVisitedEvent().setAttribute("foo", "bar");
 	   	
 	   	assertEquals(InProgress, req1.getStatus());
 	   	
-	   	StateRequest req2 = conn.getSessionById(ssn1.getId()).getStateRequest();
+	   	StateRequest req2 = conn.getSessionById(ssn1.getId()).getStateRequest().get();
 	   	
 	   	req1.fail();
 	   	assertEquals(Failed, req1.getStatus());
@@ -296,7 +291,7 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 		final Session ssn = conn.getOrCreateSession(sid);
 	
 	   	Schema schema = ssn.getSchema();
-	   	State state2 = schema.getState("state2");
+	   	State state2 = schema.getState("state2").get();
 	   	final StateRequest req = ssn.targetForState(state2);
 	   	
 		assertEquals(1000, ssn.getTimeoutMillis());
@@ -330,7 +325,7 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 		// expect 'user-agent' attribute
 	   	new ClientExceptionInterceptor() {
 			@Override public void toRun() {
-				ssn.targetForState(schema.getState("newOwner"));
+				ssn.targetForState(schema.getState("newOwner").get());
 			}
 			@Override public void onThrown(VariantException e) {
 				assertEquals(ServerError.HOOK_UNHANDLED_EXCEPTION, e.getError());
@@ -342,12 +337,12 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 		
 		assertNull(ssn.getStateRequest());
 		assertTrue(ssn.getTraversedStates().isEmpty());
-		assertTrue(ssn.getTraversedTests().isEmpty());
-		assertTrue(ssn.getDisqualifiedTests().isEmpty());
+		assertTrue(ssn.getTraversedVariations().isEmpty());
+		assertTrue(ssn.getDisqualifiedVariations().isEmpty());
 		
 		// Set the attribute and target. 
-		ssn.setAttribute("user-agent", "Any string");
-		StateRequest req = ssn.targetForState(schema.getState("newOwner"));
+		ssn.getAttributes().put("user-agent", "Any string");
+		StateRequest req = ssn.targetForState(schema.getState("newOwner").get());
 		assertEquals(req, ssn.getStateRequest());
 		assertEquals(InProgress, req.getStatus());
 		req.commit();
@@ -361,7 +356,7 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 
 		Session ssn1 = conn1.getOrCreateSession(newSid());	
 		Schema schema1 = ssn1.getSchema();
-		StateRequest req1 = ssn1.targetForState(schema1.getState("state3"));
+		StateRequest req1 = ssn1.targetForState(schema1.getState("state3").get());
 
 		Connection conn2 = client.connectTo("big_conjoint_schema");		
 	   	Session ssn2 = conn2.getSessionById(ssn1.getId());
@@ -371,7 +366,7 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 	   	assertEquals(((SchemaImpl)schema2).getId(), ((SchemaImpl)schema1).getId());
 	   	
 	   	
-	   	StateRequest req2 = ssn2.getStateRequest();
+	   	StateRequest req2 = ssn2.getStateRequest().get();
 	   	assertNotNull(req2);
 	   	assertNotEquals(req2, req1);
 	   	assertEquals(ssn2, req2.getSession());

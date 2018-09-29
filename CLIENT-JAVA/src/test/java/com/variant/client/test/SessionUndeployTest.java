@@ -67,7 +67,7 @@ public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 			final int _i = i;  // Zhava. 
 			async (() -> {
 				Session ssn = conn1.getOrCreateSession(newSid());
-				State state = ssn.getSchema().getState("state" + ((_i % 5) + 1));
+				State state = ssn.getSchema().getState("state" + ((_i % 5) + 1)).get();
 				StateRequest req = ssn.targetForState(state);
 				assertNotNull(req);
 				assertEquals(req, ssn.getStateRequest());
@@ -95,7 +95,7 @@ public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 				assertEquals(sid, ssn.getId());
 				assertNotEquals(ssn, sessions1[_i]);
 				// Should be okay to use state from parallel schema.
-				StateRequest req = ssn.getStateRequest();
+				StateRequest req = ssn.getStateRequest().get();
 				assertNotNull(req);
 				assertEquals(req.getSession(), ssn);
 				sessions2[_i] = ssn;
@@ -110,10 +110,10 @@ public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 			final int _i = i;  // Zhava. 
 			async (() -> {
 				Session ssn = conn3.getOrCreateSession(newSid());
-				State state = ssn.getSchema().getState("newOwner");
+				State state = ssn.getSchema().getState("newOwner").get();
 				// The qualifying and targeting hooks will throw an NPE
 				// if user-agent attribute is not set.
-				ssn.setAttribute("user-agent", "does not matter");
+				ssn.getAttributes().put("user-agent", "does not matter");
 				StateRequest req = ssn.targetForState(state);
 				assertNotNull(req);
 				assertEquals(req.getSession(), ssn);
@@ -150,13 +150,13 @@ public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 					@Override public void toRun() {
 						switch (_i % 9) {
 						case 0: ssn.getTraversedStates(); break;
-						case 1: ssn.getTraversedTests(); break;
-						case 2: ssn.getDisqualifiedTests(); break;
+						case 1: ssn.getTraversedVariations(); break;
+						case 2: ssn.getDisqualifiedVariations(); break;
 						case 3: ssn.triggerTraceEvent(TraceEvent.mkTraceEvent("foo")); break;
-						case 4: ssn.getAttribute("foo"); break;
-						case 5: ssn.setAttribute("foo", "bar"); break;
-						case 6: ssn.clearAttribute("foo"); break;
-						case 7: ssn.targetForState(ssn.getSchema().getState("state" + ((_i % 5) + 1))); break;
+						case 4: ssn.getAttributes().get("foo"); break;
+						case 5: ssn.getAttributes().put("foo", "bar"); break;
+						case 6: ssn.getAttributes().remove("foo"); break;
+						case 7: ssn.targetForState(ssn.getSchema().getState("state" + ((_i % 5) + 1)).get()); break;
 						case 8: req.commit(); break;
 						}
 					}
@@ -189,14 +189,14 @@ public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 					@Override public void toRun() {
 						switch (_i % 9) {
 						case 0: ssn.getTraversedStates(); break;
-						case 1: ssn.getTraversedTests(); break;
-						case 2: ssn.getDisqualifiedTests(); break;
+						case 1: ssn.getTraversedVariations(); break;
+						case 2: ssn.getDisqualifiedVariations(); break;
 						case 3: ssn.triggerTraceEvent(TraceEvent.mkTraceEvent("foo")); break;
-						case 4: ssn.getAttribute("foo"); break;
-						case 5: ssn.setAttribute("foo", "bar"); break;
-						case 6: ssn.clearAttribute("foo"); break;
+						case 4: ssn.getAttributes().get("foo"); break;
+						case 5: ssn.getAttributes().put("foo", "bar"); break;
+						case 6: ssn.getAttributes().remove("foo"); break;
 						case 7: req.commit(); break;
-						case 8: ssn.targetForState(ssn.getSchema().getState("state" + ((_i % 5) + 1))); break;
+						case 8: ssn.targetForState(ssn.getSchema().getState("state" + ((_i % 5) + 1)).get()); break;
 						}
 					}
 					
@@ -232,13 +232,13 @@ public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 						switch (_i % 9) {
 						case 0: req.commit(); break;
 						case 1: ssn.getTraversedStates(); break;
-						case 2: ssn.getTraversedTests(); break;
-						case 3: ssn.getDisqualifiedTests(); break;
+						case 2: ssn.getTraversedVariations(); break;
+						case 3: ssn.getDisqualifiedVariations(); break;
 						case 4: ssn.triggerTraceEvent(TraceEvent.mkTraceEvent("foo")); break;
-						case 5: ssn.getAttribute("foo"); break;
-						case 6: ssn.setAttribute("foo", "bar"); break;
-						case 7: ssn.clearAttribute("foo"); break;
-						case 8: ssn.targetForState(ssn.getSchema().getState("newOwner")); break;
+						case 5: ssn.getAttributes().get("foo"); break;
+						case 6: ssn.getAttributes().put("foo", "bar"); break;
+						case 7: ssn.getAttributes().remove("foo"); break;
+						case 8: ssn.targetForState(ssn.getSchema().getState("newOwner").get()); break;
 
 						}
 					 }
@@ -312,7 +312,7 @@ public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 			final int _i = i;  // Zhava. 
 			async (() -> {
 				Session ssn = conn1.getOrCreateSession(newSid());
-				State state = ssn.getSchema().getState("state" + ((_i % 5) + 1));
+				State state = ssn.getSchema().getState("state" + ((_i % 5) + 1)).get();
 				StateRequest req = ssn.targetForState(state);
 				assertNotNull(req);
 				assertEquals(req, ssn.getStateRequest());
@@ -340,7 +340,7 @@ public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 				assertEquals(sid, ssn.getId());
 				assertNotEquals(ssn, sessions1[_i]);
 				// Should be okay to use state from parallel schema.
-				StateRequest req = ssn.getStateRequest();
+				StateRequest req = ssn.getStateRequest().get();
 				assertNotNull(req);
 				assertEquals(req.getSession(), ssn);
 				sessions2[_i] = ssn;
@@ -355,10 +355,10 @@ public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 			final int _i = i;  // Zhava. 
 			async (() -> {
 				Session ssn = conn3.getOrCreateSession(newSid());
-				State state = ssn.getSchema().getState("newOwner");
+				State state = ssn.getSchema().getState("newOwner").get();
 				// The qualifying and targeting hooks will throw an NPE
 				// if user-agent attribute is not set.
-				ssn.setAttribute("user-agent", "does not matter");
+				ssn.getAttributes().put("user-agent", "does not matter");
 				StateRequest req = ssn.targetForState(state);
 				assertNotNull(req);
 				assertEquals(req.getSession(), ssn);
@@ -388,20 +388,20 @@ public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 				assertEquals(ssnTimeout * 1000, ssn.getTimeoutMillis());
 				
 				assertNotNull(ssn.getTraversedStates());
-				assertNotNull(ssn.getTraversedTests());
-				assertNotNull(ssn.getDisqualifiedTests());
+				assertNotNull(ssn.getTraversedVariations());
+				assertNotNull(ssn.getDisqualifiedVariations());
 				ssn.triggerTraceEvent(TraceEvent.mkTraceEvent("foo"));
 				String key = "key" + _i;
 				String value = "value" + _i;
-				assertNull(ssn.getAttribute(key));
-				assertNull(ssn.setAttribute(key, value));
-				assertEquals(value, ssn.getAttribute(key));
+				assertNull(ssn.getAttributes().get(key));
+				assertNull(ssn.getAttributes().put(key, value));
+				assertEquals(value, ssn.getAttributes().get(key));
 				
 				// Current state request is active
 				new ClientExceptionInterceptor() {
 					
 					@Override public void toRun() {
-						ssn.targetForState(ssn.getSchema().getState("state" + ((_i % 5) + 1)));			
+						ssn.targetForState(ssn.getSchema().getState("state" + ((_i % 5) + 1)).get());			
 					}
 					
 					@Override public void onThrown(VariantException e) {
@@ -411,19 +411,19 @@ public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 				}.assertThrown();
 				
 				Session ssnByIdFromThisConnection = conn1.getSessionById(ssn.getId());
-				assertEquals(value, ssnByIdFromThisConnection.getAttribute(key));
+				assertEquals(value, ssnByIdFromThisConnection.getAttributes().get(key));
 				
 				// Getting session by ID in different connection should yield different object.
 				Session ssnByIdFromOtherConnection = conn2.getSessionById(ssn.getId());
 				assertNotEquals(ssn, ssnByIdFromOtherConnection);
 				assertNotNull(ssnByIdFromOtherConnection.getStateRequest());
 				assertNotEquals(ssn.getStateRequest(), ssnByIdFromOtherConnection.getStateRequest());
-				assertEquals(value, ssnByIdFromOtherConnection.getAttribute(key));
+				assertEquals(value, ssnByIdFromOtherConnection.getAttributes().get(key));
 
 				req.commit();
 				
 				// Committing in the via other session is OK.
-				ssnByIdFromOtherConnection.getStateRequest().commit();
+				ssnByIdFromOtherConnection.getStateRequest().get().commit();
 			});
 		}
 
@@ -456,14 +456,14 @@ public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 				assertEquals(ssnTimeout * 1000, ssn.getTimeoutMillis());
 				
 				assertNotNull(ssn.getTraversedStates());
-				assertNotNull(ssn.getTraversedTests());
-				assertNotNull(ssn.getDisqualifiedTests());
+				assertNotNull(ssn.getTraversedVariations());
+				assertNotNull(ssn.getDisqualifiedVariations());
 				ssn.triggerTraceEvent(TraceEvent.mkTraceEvent("foo"));
 				String key = "key" + _i;
 				String value = "value" + _i;
-				assertEquals(value, ssn.getAttribute(key));
-				assertEquals(value, sessions1[_i].clearAttribute(key));
-				assertNotNull(ssn.targetForState(ssn.getSchema().getState("state" + ((_i % 5) + 1))));
+				assertEquals(value, ssn.getAttributes().get(key));
+				assertEquals(value, sessions1[_i].getAttributes().remove(key));
+				assertNotNull(ssn.targetForState(ssn.getSchema().getState("state" + ((_i % 5) + 1)).get()));
 				req.commit();
 		
 			});
@@ -488,11 +488,10 @@ public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 				assertEquals(ssnTimeout * 1000, ssn.getTimeoutMillis());
 				
 				assertNotNull(ssn.getTraversedStates());
-				assertNotNull(ssn.getTraversedTests());
-				assertNotNull(ssn.getDisqualifiedTests());
-				State state = ssn.getSchema().getState("newOwner");
+				assertNotNull(ssn.getTraversedVariations());
+				assertNotNull(ssn.getDisqualifiedVariations());
 				// The user-agent attribute should still be set
-				assertEquals("does not matter", ssn.clearAttribute("user-agent"));
+				assertEquals("does not matter", ssn.getAttributes().remove("user-agent"));
 				req.commit();
 
 			});

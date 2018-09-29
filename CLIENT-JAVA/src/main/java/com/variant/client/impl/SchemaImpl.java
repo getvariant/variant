@@ -1,11 +1,12 @@
 package com.variant.client.impl;
 
 import java.util.List;
+import java.util.Optional;
 
 import com.variant.core.schema.Meta;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.State;
-import com.variant.core.schema.Test;
+import com.variant.core.schema.Variation;
 
 /**
  * Client side schema.
@@ -38,18 +39,18 @@ public class SchemaImpl implements Schema {
 	}
 
 	@Override
-	public State getState(String name) {
+	public Optional<State> getState(String name) {
 		return coreSchema.getState(name);
 	}
 
 	@Override
-	public List<Test> getTests() {
-		return coreSchema.getTests();
+	public List<Variation> getVariations() {
+		return coreSchema.getVariations();
 	}
 
 	@Override
-	public Test getTest(String name) {
-		return coreSchema.getTest(name);
+	public Optional<Variation> getVariation(String name) {
+		return coreSchema.getVariation(name);
 	}
 
 }

@@ -236,7 +236,7 @@ public class Server {
 	 * @return previous global value of this attribute.
 	 * 
 	 */
-	public String sessionAttrSet(SessionImpl ssn, String name, String value) {
+	public void sessionAttrSet(SessionImpl ssn, String name, String value) {
 		
 		if (LOG.isTraceEnabled()) LOG.trace(
 				String.format("sessionAttrSet(%s, %s)", name, value));
@@ -264,7 +264,7 @@ public class Server {
 		}.run(ssn);
 		
 		ssn.rewrap(CoreSession.fromJson(response.coreSsnSrc, ssn.getSchema()));
-		return response.returns;
+
 	}
 
 	/**
@@ -272,7 +272,7 @@ public class Server {
 	 * @return previous global value of this attribute.
 	 * 
 	 */
-	public String sessionAttrClear(SessionImpl ssn, String name) {
+	public void sessionAttrClear(SessionImpl ssn, String name) {
 		
 		if (LOG.isTraceEnabled()) LOG.trace(
 				String.format("sessionAttrClear(%s)", name));
@@ -299,7 +299,6 @@ public class Server {
 		}.run(ssn);
 		
 		ssn.rewrap(CoreSession.fromJson(response.coreSsnSrc, ssn.getSchema()));
-		return response.returns;
 	}
 
 	//---------------------------------------------------------------------------------------------//

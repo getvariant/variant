@@ -42,16 +42,18 @@ class SessionAttributeTest extends EmbeddedServerSpec {
             .withNoBody
       }
 
-      "return null on read of non-existent attribute" in {
+      "session must already have 2 attributes" in {
                   
          assertResp(route(app, httpReq(GET, endpointSession + "/big_conjoint_schema/" + sid1)))
             .isOk
-            .withBodyJson  { json =>
-               extractAttr(json, "non-existent") mustBe None
+            .withBodySession  { ssn =>
+               ssn.getAttributes.size mustBe 2
             }         
+         
+         server.ssnStore.get(sid1).get.getAttributes.size mustBe 2
       }
 
-      "clear non-existent attribute should return null" in {
+      "clear non-existent attribute should return noop" in {
                   
          val body: JsValue = Json.obj(
             "sid" -> sid1,
@@ -59,9 +61,11 @@ class SessionAttributeTest extends EmbeddedServerSpec {
          )
          assertResp(route(app, httpReq(DELETE, endpointAttribute).withBody(body.toString())))
             .isOk
-            .withBodyJson  { json =>
-               extractAttr(json, "non-existent") mustBe None
+            .withBodySession  { ssn =>
+               ssn.getAttributes.size mustBe 2
             }         
+         
+         server.ssnStore.get(sid1).get.getAttributes.size mustBe 2
       }
 
       "set an attribute" in {
@@ -73,19 +77,24 @@ class SessionAttributeTest extends EmbeddedServerSpec {
          )
          assertResp(route(app, httpReq(PUT, endpointAttribute).withBody(body.toString())))
             .isOk
-            .withBodyJson  { json =>
-               (json \ "returns").asOpt[String] mustBe None
-               extractAttr(json, "ATTRIBUTE NAME") mustBe Some("ATTRIBUTE VALUE")
+            .withBodySession  { ssn =>
+               ssn.getAttributes.size mustBe 2
             }
+         
+         server.ssnStore.get(sid1).get.getAttributes.size mustBe 3   
+         server.ssnStore.get(sid1).get.getAttributes.get("ATTRIBUTE NAME") mustBe "ATTRIBUTE VALUE"
       }
 
       "read the attribute " in {
                   
          assertResp(route(app, httpReq(POST, endpointSession + "/big_conjoint_schema/" + sid1).withBody(emptyTargetingTrackerBody)))
             .isOk
-            .withBodyJson  { json =>
-               extractAttr(json, "ATTRIBUTE NAME") mustBe Some("ATTRIBUTE VALUE")
+            .withBodySession  { ssn =>
+               ssn.getAttributes.get("ATTRIBUTE NAME") mustBe "ATTRIBUTE VALUE"
             }         
+
+         server.ssnStore.get(sid1).get.getAttributes.size mustBe 3   
+         server.ssnStore.get(sid1).get.getAttributes.get("ATTRIBUTE NAME") mustBe "ATTRIBUTE VALUE"
       }
             
       "update the attribute " in {
@@ -97,19 +106,24 @@ class SessionAttributeTest extends EmbeddedServerSpec {
          )
          assertResp(route(app, httpReq(PUT, endpointAttribute).withBody(body.toString())))
             .isOk
-            .withBodyJson  { json =>
-               (json \ "returns").asOpt[String] mustBe Some("ATTRIBUTE VALUE")
-               extractAttr(json, "ATTRIBUTE NAME") mustBe Some("SOME OTHER VALUE")
+            .withBodySession  { ssn =>
+               ssn.getAttributes.get("ATTRIBUTE NAME") mustBe "ATTRIBUTE VALUE"
             }
+
+         server.ssnStore.get(sid1).get.getAttributes.size mustBe 3
+         server.ssnStore.get(sid1).get.getAttributes.get("ATTRIBUTE NAME") mustBe "SOME OTHER VALUE"
       }
       
       "read the updated attribute in original session" in {
                   
          assertResp(route(app, httpReq(GET, endpointSession + "/big_conjoint_schema/" + sid1)))
             .isOk
-            .withBodyJson  { json =>
-               extractAttr(json, "ATTRIBUTE NAME") mustBe Some("SOME OTHER VALUE")
+            .withBodySession  { ssn =>
+               ssn.getAttributes.get("ATTRIBUTE NAME") mustBe "SOME OTHER VALUE"
             }         
+
+         server.ssnStore.get(sid1).get.getAttributes.size mustBe 3
+         server.ssnStore.get(sid1).get.getAttributes.get("ATTRIBUTE NAME") mustBe "SOME OTHER VALUE"
       }
 
       "clear the attribute" in {
@@ -120,19 +134,24 @@ class SessionAttributeTest extends EmbeddedServerSpec {
          )
          assertResp(route(app, httpReq(DELETE, endpointAttribute).withBody(body.toString())))
             .isOk
-            .withBodyJson  { json =>
-               (json \ "returns").asOpt[String] mustBe Some("SOME OTHER VALUE")
-               extractAttr(json, "ATTRIBUTE NAME") mustBe None
+            .withBodySession  { ssn =>
+               ssn.getAttributes.get("ATTRIBUTE NAME") mustBe "SOME OTHER VALUE"
             }         
+
+         server.ssnStore.get(sid1).get.getAttributes.size mustBe 2
+         server.ssnStore.get(sid1).get.getAttributes.get("ATTRIBUTE NAME") mustBe null
       }
 
       "Confirm that the attribute is gone" in {
                   
          assertResp(route(app, httpReq(POST, endpointSession + "/big_conjoint_schema/" + sid1).withBody(emptyTargetingTrackerBody)))
             .isOk
-            .withBodyJson  { json =>
-               extractAttr(json, "ATTRIBUTE NAME") mustBe None
+            .withBodySession  { ssn =>
+               ssn.getAttributes.get("ATTRIBUTE NAME") mustBe null
+               ssn.getAttributes.size mustBe 2
             }         
+
+         server.ssnStore.get(sid1).get.getAttributes.size mustBe 2
       }
 
    }
@@ -140,10 +159,12 @@ class SessionAttributeTest extends EmbeddedServerSpec {
    /**
     * Extract the value of an attribute from the response JSON.
     * Note that the session JSON is stringified, so has to be parsed.
-    */
+    *
    def extractAttr(json: JsValue, name: String): Option[String] = {
       val ssnJson = Json.parse((json \ "session").as[String])
       val attrs = (ssnJson \ "attrs").as[Map[String, String]]
       attrs.get(name) 
    }
+   * 
+   */
 }

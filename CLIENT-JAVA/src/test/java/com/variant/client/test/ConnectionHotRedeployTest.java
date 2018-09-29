@@ -43,7 +43,7 @@ public class ConnectionHotRedeployTest extends ClientBaseTestWithServer {
 		new ClientExceptionInterceptor() {
 			
 			@Override public void toRun() {
-				ssn1.setAttribute("foo", "bar");
+				ssn1.getAttributes().put("foo", "bar");
 			}
 			
 			@Override public void onThrown(VariantException e) {
@@ -58,12 +58,12 @@ public class ConnectionHotRedeployTest extends ClientBaseTestWithServer {
 		assertNotNull(ssn2);
 		assertEquals(ssn1.getSchema().getMeta().getName(), ssn2.getSchema().getMeta().getName());
 		assertNotEquals(((SchemaImpl)ssn1.getSchema()).getId(), ((SchemaImpl)ssn2.getSchema()).getId());		
-		assertNotNull(ssn2.targetForState(ssn1.getSchema().getState("state3")));
+		assertNotNull(ssn2.targetForState(ssn1.getSchema().getState("state3").get()));
 
 		// New connection should work too
 		Connection conn2 = client.connectTo("big_conjoint_schema");
 		Session ssn3 = conn2.getOrCreateSession("bar");
-		ssn3.setAttribute("foo", "bar");
-		assertEquals("bar", ssn3.getAttribute("foo"));
+		ssn3.getAttributes().put("foo", "bar");
+		assertEquals("bar", ssn3.getAttributes().get("foo"));
 	}
 }

@@ -89,7 +89,7 @@ public interface Session {
 	 * <p>The most recent state request, which may be still in progress or already committed or failed.
 	 * 
 	 * @return An {@link Optional} of {@link StateRequest}, containing the most recent state request,
-	 *         if this session has not yet been targeted for a state.
+	 *         or empty if this session has not yet been targeted for a state.
 	 *  
 	 * @since 0.7
 	 */

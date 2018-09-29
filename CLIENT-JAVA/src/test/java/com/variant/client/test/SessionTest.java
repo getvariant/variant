@@ -44,9 +44,9 @@ public class SessionTest extends ClientBaseTestWithServer {
 		assertNotEquals(sid, ssn1.getId());
 		assertEquals(System.currentTimeMillis(), ssn1.getCreateDate().getTime(), 2);
 		assertEquals(conn, ssn1.getConnection());
-		assertTrue(ssn1.getDisqualifiedTests().isEmpty());
+		assertTrue(ssn1.getDisqualifiedVariations().isEmpty());
 		assertTrue(ssn1.getTraversedStates().isEmpty());
-		assertTrue(ssn1.getTraversedTests().isEmpty());		
+		assertTrue(ssn1.getTraversedVariations().isEmpty());		
 		assertEquals("big_conjoint_schema", ssn1.getSchema().getMeta().getName());
 		
 		// Get same session by SID
@@ -85,7 +85,7 @@ public class SessionTest extends ClientBaseTestWithServer {
 		
 		Thread.sleep(2000);
 		
-		final State state2 = sessions[0].getSchema().getState("state2");
+		final State state2 = sessions[0].getSchema().getState("state2").get();
 		for (int i = 0; i < sessions.length; i++) {
 			final Session ssn = sessions[i];
 			
@@ -136,22 +136,21 @@ public class SessionTest extends ClientBaseTestWithServer {
 				((SessionImpl)ssn2).getCoreSession().toJson());
 		
 		// Set attribute in ssn1
-		assertNull(ssn1.getAttribute("foo"));
-		assertNull(ssn1.clearAttribute("foo"));
+		assertNull(ssn1.getAttributes().get("foo"));
+		assertNull(ssn1.getAttributes().remove("foo"));
 		String attr = "VALUE";
-		ssn1.setAttribute("foo", attr);
+		ssn1.getAttributes().put("foo", attr);
 
 		// read back in ssn1 and ssn2
-		assertEquals(attr, ssn1.getAttribute("foo"));
-		ssn2.getAttribute("foo");
-		assertEquals(attr, ssn2.getAttribute("foo"));
+		assertEquals(attr, ssn1.getAttributes().get("foo"));
+		assertEquals(attr, ssn2.getAttributes().get("foo"));
 		
 		// Clear in ssn2
-		assertEquals(attr, ssn2.clearAttribute("foo"));
+		assertEquals(attr, ssn2.getAttributes().remove("foo"));
 		
 		// Read back in ssn1 and ssn2
-		assertNull(ssn1.getAttribute("foo"));
-		assertNull(ssn2.getAttribute("foo"));
+		assertNull(ssn1.getAttributes().get("foo"));
+		assertNull(ssn2.getAttributes().get("foo"));
 
 	}
 

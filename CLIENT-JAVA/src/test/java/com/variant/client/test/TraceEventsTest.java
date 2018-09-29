@@ -51,9 +51,9 @@ public class TraceEventsTest extends ClientBaseTestWithServer {
 		Session ssn1 = conn.getOrCreateSession(newSid());
 
 		// Crete a session attribute
-		ssn1.setAttribute("ssn1 attr key", "ssn1 attr value");
+		ssn1.getAttributes().put("ssn1 attr key", "ssn1 attr value");
 	   	Schema schema = ssn1.getSchema();
-	   	State state1 = schema.getState("state1");
+	   	State state1 = schema.getState("state1").get();
 	   	//State state2 = schema.getState("state2");
 
 	   	StateRequest req1 = ssn1.targetForState(state1);
@@ -71,9 +71,9 @@ public class TraceEventsTest extends ClientBaseTestWithServer {
 		// Reget the session.  
 		Session ssn2 = conn.getSessionById(ssn1.getId());
 		assertEquals(ssn1.getId(), ssn2.getId());
-		StateRequest req2 = ssn2.getStateRequest();		
+		StateRequest req2 = ssn2.getStateRequest().get();		
 		assertEquals(InProgress, req2.getStatus());
-		assertEquals("ssn1 attr value", ssn2.getAttribute("ssn1 attr key"));
+		assertEquals("ssn1 attr value", ssn2.getAttributes().get("ssn1 attr key"));
 
 		StateVisitedEvent event2 = (StateVisitedEvent) req2.getStateVisitedEvent();
 		assertEquals(event1.getName(), event2.getName());
@@ -123,7 +123,7 @@ public class TraceEventsTest extends ClientBaseTestWithServer {
 		String sid = newSid();
 		Session ssn = conn.getOrCreateSession(sid);
 	   	Schema schema = ssn.getSchema();
-	   	State state1 = schema.getState("state1");
+	   	State state1 = schema.getState("state1").get();
 	   	StateRequest req = ssn.targetForState(state1);
 	   	
 	   	// Cannot explicitly trigger an SVE
@@ -155,7 +155,7 @@ public class TraceEventsTest extends ClientBaseTestWithServer {
 	   	ssn.triggerTraceEvent(TraceEvent.mkTraceEvent("custom1"));
 	   	ssn.triggerTraceEvent(TraceEvent.mkTraceEvent("custom2", CollectionsUtils.pairsToMap(new Pair("foo", "bar"))));
 	   	
-	   	State state3 = schema.getState("state3");
+	   	State state3 = schema.getState("state3").get();
 	   	StateRequest req = ssn.targetForState(state3);
 	   	req.getStateVisitedEvent().setAttribute("yin", "yang");
 	   	req.commit();

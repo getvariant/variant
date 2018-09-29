@@ -6,6 +6,7 @@ import static com.variant.client.impl.ClientUserError.PARAM_CANNOT_BE_NULL;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 import org.slf4j.Logger;
@@ -24,7 +25,7 @@ import com.variant.core.TraceEvent;
 import com.variant.core.impl.StateVisitedEvent;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.State;
-import com.variant.core.schema.Test;
+import com.variant.core.schema.Variation;
 import com.variant.core.session.CoreSession;
 import com.variant.core.session.SessionScopedTargetingStabile;
 
@@ -124,10 +125,7 @@ public class SessionImpl implements Session {
 			throw new VariantException(PARAM_CANNOT_BE_NULL, "state");
 		
 		server.requestCreate(this, state.getName());
-		
-		StateRequestImpl req = (StateRequestImpl) getStateRequest();
-
-		return req;
+		return getStateRequest().get();
 	}
 	
 	/**
@@ -185,20 +183,20 @@ public class SessionImpl implements Session {
 	 * Mutating or mutable state.
 	 */
 	@Override
-	public Set<Test> getTraversedTests() {
+	public Set<Variation> getTraversedVariations() {
 		preChecks();
 		refreshFromServer();
-		return coreSession.getTraversedTests();
+		return coreSession.getTraversedVariations();
 	}
 
 	/**
 	 * Mutating or mutable state.
 	 */
 	@Override
-	public Set<Test> getDisqualifiedTests() {
+	public Set<Variation> getDisqualifiedVariations() {
 		preChecks();
 		refreshFromServer();
-		return coreSession.getDisqualifiedTests();
+		return coreSession.getDisqualifiedVariations();
 	}
 
 	/**
@@ -218,42 +216,19 @@ public class SessionImpl implements Session {
 	 * State request is a local object.
 	 */
 	@Override
-	public StateRequest getStateRequest() {
-		return stateRequest;
+	public Optional<StateRequest> getStateRequest() {
+		return Optional.ofNullable(stateRequest);
 	}
 
 	/**
 	 * Mutating or mutable state.
 	 */
 	@Override
-	public String setAttribute(String name, String value) {
-		if (name == null) throw new VariantException(PARAM_CANNOT_BE_NULL, "name");
-		if (value == null) throw new VariantException(PARAM_CANNOT_BE_NULL, "value");
-		preChecks();
-		return server.sessionAttrSet(this, name, value);
-	}
-
-	/**
-	 * Mutating or mutable state.
-	 */
-	@Override
-	public String getAttribute(String name) {
-		if (name == null) throw new VariantException(PARAM_CANNOT_BE_NULL, "name");
+	public Map<String,String> getAttributes() {
 		preChecks();
 		refreshFromServer();
-		return coreSession.getAttribute(name);
+		return new SessionAttributeMap(this);
 	}
-
-	/**
-	 * Mutating or mutable state.
-	 */
-	@Override
-	public String clearAttribute(String name) {
-		if (name == null) throw new VariantException(PARAM_CANNOT_BE_NULL, "name");
-		preChecks();
-		return server.sessionAttrClear(this, name);
-	}
-
 
 	// ---------------------------------------------------------------------------------------------//
 	//                                           PUBLIC EXT                                         //
@@ -270,6 +245,13 @@ public class SessionImpl implements Session {
 	public CoreSession getCoreSession() {
 		preChecks();
 		return coreSession;
+	}
+
+	/**
+	 */
+	public Server getServer() {
+		preChecks();
+		return server;
 	}
 
 	/**
@@ -302,7 +284,7 @@ public class SessionImpl implements Session {
 				stateRequest = new StateRequestImpl(this);
 		}
 		else {
-			stateRequest.rewrap(coreSession.getStateRequest());			
+			stateRequest.rewrap(coreSession.getStateRequest().get());			
 		}
 		
 		// Update targeting tracker, if a foreground session.

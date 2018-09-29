@@ -1,14 +1,15 @@
 package com.variant.client;
 
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 import com.variant.core.StateRequestStatus;
 import com.variant.core.TraceEvent;
 import com.variant.core.schema.State;
 import com.variant.core.schema.StateVariant;
-import com.variant.core.schema.Test;
-import com.variant.core.schema.Test.Experience;
+import com.variant.core.schema.Variation;
+import com.variant.core.schema.Variation.Experience;
 
 /**
  * Represents a Variant state request, as returned by {@link Session#targetForState(State)}.
@@ -72,10 +73,9 @@ public interface StateRequest {
 	Map<String, String> getResolvedParameters();
 
 	/**
-	 * <p>Targeted test experiences in tests instrumented on this state.
-	 * An experience is live iff this session has been targeted for it and its containing test
-	 * is instrumented on this state and is neither off nor disqualified for in this session.
-	 * Both, variant and non-variant instrumentations are included.
+	 * <p>Targeted experiences in variations instrumented on this state.
+	 * An experience is live iff this session has been targeted for it and its containing variation
+	 * is instrumented on this state, and is neither off nor disqualified for in this session.
 	 * 
 	 * @return Collection of {@link Test.Experience}s. The collection will be of size 0 if no live experiences
 	 *         are instrumented on this state.
@@ -87,13 +87,14 @@ public interface StateRequest {
 	 * The live experience in a given test, if any. See {@link #getLiveExperiences()} for
 	 * definition of live experience. 
 	 * 
-	 * @param test {@link Test}
-	 * @return An object of type {@link Experience} if test is instrumented on this state,
-	 *         or <code>null</code> otherwise.
+	 * @param variation {@link Variation} of interest.
+	 * @return An {@link Optional} of {@link Experience}, containing the live experience
+	 *         in the given variation, or empty if this this variation is off or does not 
+	 *         instrument this state.
 	 * 
 	 * @since 0.6
 	 */
-	Experience getLiveExperience(Test test);
+	Optional<Experience> getLiveExperience(Variation variation);
 
 	/** Pending state visited event. 
 	 *  This is useful if the caller wants to add parameters to this event before it is triggered.

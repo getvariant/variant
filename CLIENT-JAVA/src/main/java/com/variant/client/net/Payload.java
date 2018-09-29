@@ -58,13 +58,11 @@ abstract public class Payload {
 		public final String coreSsnSrc;
 		public final String schemaId;
 		public final String schemaSrc;
-		public final String returns;
 		
-		private Session(String coreSsnSrc, String schemaId, String schemaSrc, String returns) {
+		private Session(String coreSsnSrc, String schemaId, String schemaSrc) {
 			this.coreSsnSrc = coreSsnSrc;
 			this.schemaId = schemaId;
 			this.schemaSrc = schemaSrc;
-			this.returns = returns;			
 		}
 		
 		public static Session parse(com.variant.client.Connection conn, HttpResponse resp) {
@@ -74,7 +72,6 @@ abstract public class Payload {
 				String coreSsnSrc = null;
 				String schemaId = null;
 				String schemaSrc = null;
-				String returns = null;
 				
 				ObjectMapper mapper = new ObjectMapper();
 				
@@ -84,8 +81,6 @@ abstract public class Payload {
 				coreSsnSrc = (String) map.get("session");
 				if (coreSsnSrc == null)
 					throw new VariantException.Internal(NET_PAYLOAD_ELEMENT_MISSING, "session", Session.class.getName());
-
-				returns = (String) map.get("returns");
 
 				@SuppressWarnings("unchecked")
 				Map<String,String> schema = (Map<String,String>) map.get("schema");
@@ -99,7 +94,7 @@ abstract public class Payload {
 				}
 				
 
-				return new Session(coreSsnSrc, schemaId, schemaSrc, returns);
+				return new Session(coreSsnSrc, schemaId, schemaSrc);
 			}
 			catch (VariantException va) {
 				throw va;

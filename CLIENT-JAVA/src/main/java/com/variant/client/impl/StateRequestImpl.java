@@ -1,6 +1,7 @@
 package com.variant.client.impl;
 
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 import com.variant.client.Session;
@@ -12,8 +13,8 @@ import com.variant.core.impl.ServerError;
 import com.variant.core.impl.StateVisitedEvent;
 import com.variant.core.schema.State;
 import com.variant.core.schema.StateVariant;
-import com.variant.core.schema.Test;
-import com.variant.core.schema.Test.Experience;
+import com.variant.core.schema.Variation;
+import com.variant.core.schema.Variation.Experience;
 import com.variant.core.session.CoreStateRequest;
 
 /**
@@ -37,7 +38,7 @@ public class StateRequestImpl implements StateRequest {
 	{	
 		this.session = session;
 		this.conn = (ConnectionImpl) session.getConnection();
-		this.coreRequest = session.getCoreSession().getStateRequest();
+		this.coreRequest = session.getCoreSession().getStateRequest().get();
 		this.sve = new StateVisitedEvent(this.coreRequest.getState());
 	}
 
@@ -48,31 +49,31 @@ public class StateRequestImpl implements StateRequest {
 	@Override
 	public State getState() {
 		checkState();
-		return session.getCoreSession().getStateRequest().getState();
+		return coreRequest.getState();
 	}
 
 	@Override
 	public StateVariant getResolvedStateVariant() {
 		checkState();
-		return session.getCoreSession().getStateRequest().getResolvedStateVariant();
+		return coreRequest.getResolvedStateVariant();
 	}
 
 	@Override
 	public Map<String,String> getResolvedParameters() {
 		checkState();
-		return session.getCoreSession().getStateRequest().getResolvedParameters();
+		return coreRequest.getResolvedParameters();
 	}
 
 	@Override
 	public Set<Experience> getLiveExperiences() {
 		checkState();
-		return session.getCoreSession().getStateRequest().getLiveExperiences();
+		return coreRequest.getLiveExperiences();
 	}
 
 	@Override
-	public Experience getLiveExperience(Test test) {
+	public Optional<Experience> getLiveExperience(Variation var) {
 		checkState();
-		return session.getCoreSession().getStateRequest().getLiveExperience(test);
+		return coreRequest.getLiveExperience(var);
 	}
 
 	/**
@@ -85,7 +86,7 @@ public class StateRequestImpl implements StateRequest {
 		checkState();
 		
 		// If local state already reflects target state -- noop.
-		if (status != session.getCoreSession().getStateRequest().getStatus()) {
+		if (status != coreRequest.getStatus()) {
 		
 			// Persist targeting and session ID trackers.  Note that we expect the userData to apply to both.
 			session.saveTrackers(userData);
@@ -116,7 +117,7 @@ public class StateRequestImpl implements StateRequest {
 	
 	@Override
 	public StateRequestStatus getStatus() {
-		return session.getCoreSession().getStateRequest().getStatus();
+		return coreRequest.getStatus();
 	}
 
 	@Override
