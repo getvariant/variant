@@ -176,10 +176,11 @@ class ConnectionDrainingOnReplaceTest extends BaseSpecWithServerAsync with TempS
             assertResp(route(app, httpReq(PUT, context + "/session/attr").withBody(body.toString())))
                .isOk
                .withBodySession  { ssn =>
-                  ssn.getAttributes.get("foo") mustBe "bar"
+                  ssn.getAttributes.get("foo") mustBe null
                }
+            server.ssnStore.get(sid).get.getAttributes().get("foo") mustBe "bar"
          }
-
+         
          joinAll
    	}
 
