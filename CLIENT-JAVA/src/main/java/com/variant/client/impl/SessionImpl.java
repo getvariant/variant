@@ -105,7 +105,7 @@ public class SessionImpl implements Session {
 		this.sessionIdTracker = null;
 		this.targetingTracker = null;
 		
-		if (coreSession.getStateRequest() != null) {
+		if (coreSession.getStateRequest().isPresent()) {
 			// relies on `this` already containing the coreSession object.
 			this.stateRequest = new StateRequestImpl(this);
 		}
@@ -280,7 +280,7 @@ public class SessionImpl implements Session {
 		// Propagate to the state request wrapper object, if any.
 		// Relies on this SessionImpl already containing the new core session.
 		if(stateRequest == null) {
-			if (coreSession.getStateRequest() != null)
+			if (coreSession.getStateRequest().isPresent())
 				stateRequest = new StateRequestImpl(this);
 		}
 		else {

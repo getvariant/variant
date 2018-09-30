@@ -3,10 +3,7 @@ package com.variant.client.test;
 import static com.variant.core.StateRequestStatus.Committed;
 import static com.variant.core.StateRequestStatus.Failed;
 import static com.variant.core.StateRequestStatus.InProgress;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.util.List;
 
@@ -58,10 +55,10 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 
 	   	final StateRequest req = ssn.targetForState(state1);
 	   	assertNotNull(req);
-	   	assertEquals(req, ssn.getStateRequest());
+	   	assertEquals(req, ssn.getStateRequest().get());
 		assertEquals(5, req.getLiveExperiences().size());
 
-		assertNull(req.getLiveExperience(test1));
+		assertFalse(req.getLiveExperience(test1).isPresent());
 		
 		assertTrue(req.getLiveExperience(test2).isPresent());
 		assertTrue(req.getLiveExperience(test3).isPresent());
@@ -135,15 +132,15 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 		assertEquals(6, req.getLiveExperiences().size());
 
 		// test1 is disjoint with test5 => has to target to control.
-		assertEquals(experience(schema, "test1.A"), req.getLiveExperience(test1));
+		assertEquals(experience(schema, "test1.A"), req.getLiveExperience(test1).get());
 		// test2 is disjoint with test4 => has to target to control. 
-		assertEquals(experience(schema, "test2.A"), req.getLiveExperience(test2));
+		assertEquals(experience(schema, "test2.A"), req.getLiveExperience(test2).get());
 		// test3 is disjoint with both => has to target to control.
-		assertEquals(experience(schema, "test3.A"), req.getLiveExperience(test3));
+		assertEquals(experience(schema, "test3.A"), req.getLiveExperience(test3).get());
 		// must honor tracker
-		assertEquals(experience(schema, "test4.C"), req.getLiveExperience(test4));
+		assertEquals(experience(schema, "test4.C"), req.getLiveExperience(test4).get());
 		// must honor tracker.
-		assertEquals(experience(schema, "test5.C"), req.getLiveExperience(test5));
+		assertEquals(experience(schema, "test5.C"), req.getLiveExperience(test5).get());
 		// test6 is conjoint with both => can target to anything.
 		assertNotNull(req.getLiveExperience(test6));
 
@@ -335,7 +332,7 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 		
 		
 		
-		assertNull(ssn.getStateRequest());
+		assertFalse(ssn.getStateRequest().isPresent());
 		assertTrue(ssn.getTraversedStates().isEmpty());
 		assertTrue(ssn.getTraversedVariations().isEmpty());
 		assertTrue(ssn.getDisqualifiedVariations().isEmpty());
@@ -343,7 +340,7 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 		// Set the attribute and target. 
 		ssn.getAttributes().put("user-agent", "Any string");
 		StateRequest req = ssn.targetForState(schema.getState("newOwner").get());
-		assertEquals(req, ssn.getStateRequest());
+		assertEquals(req, ssn.getStateRequest().get());
 		assertEquals(InProgress, req.getStatus());
 		req.commit();
 		assertEquals(Committed, req.getStatus());

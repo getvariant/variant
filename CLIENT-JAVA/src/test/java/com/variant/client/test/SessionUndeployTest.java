@@ -1,8 +1,6 @@
 package com.variant.client.test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.*;
 
 import com.variant.client.Connection;
 import com.variant.client.Session;
@@ -70,7 +68,7 @@ public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 				State state = ssn.getSchema().getState("state" + ((_i % 5) + 1)).get();
 				StateRequest req = ssn.targetForState(state);
 				assertNotNull(req);
-				assertEquals(req, ssn.getStateRequest());
+				assertEquals(req, ssn.getStateRequest().get());
 				assertEquals(req.getSession(), ssn);
 				sessions1[_i] = ssn;
 				requests1[_i] = req;
@@ -315,7 +313,7 @@ public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 				State state = ssn.getSchema().getState("state" + ((_i % 5) + 1)).get();
 				StateRequest req = ssn.targetForState(state);
 				assertNotNull(req);
-				assertEquals(req, ssn.getStateRequest());
+				assertEquals(req, ssn.getStateRequest().get());
 				assertEquals(req.getSession(), ssn);
 				sessions1[_i] = ssn;
 				requests1[_i] = req;
@@ -416,8 +414,8 @@ public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 				// Getting session by ID in different connection should yield different object.
 				Session ssnByIdFromOtherConnection = conn2.getSessionById(ssn.getId());
 				assertNotEquals(ssn, ssnByIdFromOtherConnection);
-				assertNotNull(ssnByIdFromOtherConnection.getStateRequest());
-				assertNotEquals(ssn.getStateRequest(), ssnByIdFromOtherConnection.getStateRequest());
+				assertTrue(ssnByIdFromOtherConnection.getStateRequest().isPresent());
+				assertNotEquals(ssn.getStateRequest().get(), ssnByIdFromOtherConnection.getStateRequest().get());
 				assertEquals(value, ssnByIdFromOtherConnection.getAttributes().get(key));
 
 				req.commit();

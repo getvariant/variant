@@ -58,7 +58,7 @@ public class TraceEventsTest extends ClientBaseTestWithServer {
 
 	   	StateRequest req1 = ssn1.targetForState(state1);
 	   	assertNotNull(req1);
-	   	assertEquals(req1, ssn1.getStateRequest());
+	   	assertEquals(req1, ssn1.getStateRequest().get());
 		assertEquals(5, req1.getLiveExperiences().size());
 		
 		StateVisitedEvent event1 = (StateVisitedEvent) req1.getStateVisitedEvent();
