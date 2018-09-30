@@ -97,19 +97,19 @@ public class SemanticError extends ParserError {
 	//
 
 	public static final SemanticError CONJOINT_TESTREF_UNDEFINED =
-			new SemanticError(66, Severity.ERROR, "Property 'conjointTestRefs' references non-existent test [%s]"); 
+			new SemanticError(66, Severity.ERROR, "Property 'conjointVariationRefs' references non-existent variation [%s]"); 
 	
 	public static final SemanticError CONJOINT_TEST_DISJOINT =
-			new SemanticError(67, Severity.ERROR, "Test [%s] cannot declar test [%s] as conjoint because they do not share any states"); 
+			new SemanticError(67, Severity.ERROR, "Variation [%s] cannot declar variation [%s] as conjoint because they do not share any states"); 
 /*	
 	public static final SemanticError ISCONTROL_NOT_BOOLEAN =
 			new SemanticError(68, Severity.ERROR, "'tests/experience/isControl' property must be a boolean (Test [%s], Experience [%s])"); 
 */	
 	public static final SemanticError CONTROL_EXPERIENCE_DUPE =
-			new SemanticError(69, Severity.ERROR, "Duplicate control experience [%s] in test [%s]"); 
+			new SemanticError(69, Severity.ERROR, "Duplicate control experience [%s] in variation [%s]"); 
 	
 	public static final SemanticError CONTROL_EXPERIENCE_MISSING =
-			new SemanticError(70, Severity.ERROR, "Control experience is missing in test [%s]"); 
+			new SemanticError(70, Severity.ERROR, "Control experience is missing in variation [%s]"); 
 /*	
 	public static final SemanticError WEIGHT_NOT_NUMBER =
 			new SemanticError(71, Severity.ERROR, "'tests/experience/weight' property must be a number (Test [%s], Experience [%s])"); 
@@ -175,7 +175,7 @@ public class SemanticError extends ParserError {
 			new SemanticError(91, Severity.ERROR, "State variant missing for proper experience [%s] and conjoint experience(s) [%s]");
 	
 	public static final SemanticError CONJOINT_VARIANT_TEST_NOT_CONJOINT =
-			new SemanticError(92, Severity.ERROR, "List element 'conjointExperienceRefs' cannot refer to non-conjoint test [%s]"); 	
+			new SemanticError(92, Severity.ERROR, "List element 'conjointExperienceRefs' cannot refer to non-conjoint variation [%s]"); 	
 	
 	public static final SemanticError CONJOINT_VARIANT_PROPER_PHANTOM =
 			new SemanticError(93, Severity.ERROR, "State variant cannot refer to proper experience [%s], which is phantom on state [%s]"); 	
@@ -187,13 +187,13 @@ public class SemanticError extends ParserError {
 			new SemanticError(95, Severity.ERROR, "Property '%s' is not allowed in a phantom state variant"); 
 	
 	public static final SemanticError CONJOINT_EXPERIENCE_REF_TESTS_NOT_CONJOINT =
-			new SemanticError(99, Severity.ERROR, "Property 'conjointExperienceRefs' cannot reference non-conjoint tests [%s]"); 
+			new SemanticError(99, Severity.ERROR, "Property 'conjointExperienceRefs' cannot reference non-conjoint variations [%s]"); 
 
 	public static final SemanticError CONJOINT_EXPERIENCE_TEST_REF_UNDEFINED =
-			new SemanticError(102, Severity.ERROR, "Property 'testRef' references non-existent test [%s]"); 
+			new SemanticError(102, Severity.ERROR, "Property 'variationRef' references non-existent variation [%s]"); 
 	
 	public static final SemanticError CONJOINT_EXPERIENCE_TEST_REF_NONVARIANT =
-			new SemanticError(103, Severity.ERROR, "Property 'testRef' cannot reference test [%s] because it is nonvariant on the enclosing state [%s]"); 
+			new SemanticError(103, Severity.ERROR, "Property 'variationRef' cannot reference variation [%s] because it is nonvariant on the enclosing variation [%s]"); 
 	
 	public static final SemanticError CONJOINT_EXPERIENCE_EXPERIENCE_REF_UNDEFINED =
 			new SemanticError(104, Severity.ERROR, "Property 'experienceRef' references a non-existent experience [%s.%s]"); 
