@@ -16,7 +16,7 @@ interface Keywords {
 	static String KEYWORD_INIT                      = "init";
 	static String KEYWORD_IS_CONTROL                = "isControl";
 	static String KEYWORD_IS_PHANTOM                = "isPhantom";
-	static String KEYWORD_IS_NONVARIANT             = "isNonvariant";
+//	static String KEYWORD_IS_NONVARIANT             = "isNonvariant";
 	static String KEYWORD_IS_ON                     = "isOn";
 	static String KEYWORD_META                      = "meta";
 	static String KEYWORD_NAME                      = "name";

@@ -143,7 +143,6 @@ public class ParserSerialOkayTest extends BaseTestCore {
 			    	    "           },                                                            \n" +
 			    	    "           {                                                             \n" +
 			    	    "              'stateRef':'state2',                                        \n" +
-			    	    "              'isNonvariant':false,                                      \n" +
 			    	    "              'variants':[                                               \n" +
 			    	    "                 {                                                       \n" +
 			    	    "                    'experienceRef':'D',                                 \n" +
@@ -157,8 +156,7 @@ public class ParserSerialOkayTest extends BaseTestCore {
 			    	    "              ]                                                          \n" +
 			    	    "           },                                                            \n" +
 			    	    "           {                                                             \n" +
-			    	    "              'stateRef':'state3',                                        \n" +
-			    	    "              'isNonvariant':true                                        \n" +
+			    	    "              'stateRef':'state3'                                        \n" +
 			    	    "           }                                                             \n" +
 			    	    "        ]                                                                \n" +
 			    	    "     }                                                                   \n" +
@@ -351,7 +349,6 @@ public class ParserSerialOkayTest extends BaseTestCore {
 			    	    "           },                                                            \n" +
 			    	    "           {                                                             \n" +
 			    	    "              'stateRef':'state2',                                       \n" +
-			    	    "              'isNonvariant':false,                                      \n" +
 			    	    "              'variants':[                                               \n" +
 			    	    "                 {                                                       \n" +
 			    	    "                    'experienceRef':'D',                                 \n" +
@@ -365,8 +362,7 @@ public class ParserSerialOkayTest extends BaseTestCore {
 			    	    "              ]                                                          \n" +
 			    	    "           },                                                            \n" +
 			    	    "           {                                                             \n" +
-			    	    "              'stateRef':'state3',                                       \n" +
-			    	    "              'isNonvariant':true                                        \n" +
+			    	    "              'stateRef':'state3'                                        \n" +
 			    	    "           }                                                             \n" +
 			    	    "        ]                                                                \n" +
 			    	    "     }                                                                   \n" +
@@ -508,7 +504,6 @@ public class ParserSerialOkayTest extends BaseTestCore {
 			    	    "           },                                                            \n" +
 			    	    "           {                                                             \n" +
 			    	    "              'stateRef':'state2',                                       \n" +
-			    	    "              'isNonvariant':false,                                      \n" +
 			    	    "              'variants':[                                               \n" +
 			    	    "                 {                                                       \n" +
 			    	    "                    'experienceRef':'D',                                 \n" +
@@ -522,8 +517,7 @@ public class ParserSerialOkayTest extends BaseTestCore {
 			    	    "              ]                                                          \n" +
 			    	    "           },                                                            \n" +
 			    	    "           {                                                             \n" +
-			    	    "              'stateRef':'state3',                                       \n" +
-			    	    "              'isNonvariant':true                                        \n" +
+			    	    "              'stateRef':'state3'                                        \n" +
 			    	    "           }                                                             \n" +
 			    	    "        ]                                                                \n" +
 			    	    "     }                                                                   \n" +
@@ -740,7 +734,6 @@ public class ParserSerialOkayTest extends BaseTestCore {
     	    "           },                                                            \n" +
     	    "           {                                                             \n" +
     	    "              'stateRef':'state2',                                        \n" +
-    	    "              'isNonvariant':false,                                      \n" +
     	    "              'variants':[                                               \n" +
     	    "                 {                                                       \n" +
     	    "                    'experienceRef':'D',                                 \n" +
@@ -754,8 +747,7 @@ public class ParserSerialOkayTest extends BaseTestCore {
     	    "              ]                                                          \n" +
     	    "           },                                                            \n" +
     	    "           {                                                             \n" +
-    	    "              'stateRef':'state4',                                        \n" +
-    	    "              'isNonvariant':true                                        \n" +
+    	    "              'stateRef':'state4'                                        \n" +
     	    "           }                                                             \n" +
     	    "        ]                                                                \n" +
     	    "     },                                                                  \n" +
@@ -883,43 +875,36 @@ public class ParserSerialOkayTest extends BaseTestCore {
 		}
 		
 		// Instrumented tests.
-		State view = schema.getState("state1").get();
+		State state1 = schema.getState("state1").get();
 		ArrayList<Variation> expectedInstrumentedTests = new ArrayList<Variation>() {{
 			add(schema.getVariation("test1").get());
 			add(schema.getVariation("Test1").get());
 		}};
-		assertEquals(expectedInstrumentedTests, view.getInstrumentedVariations());
-		assertFalse(view.isNonvariantIn(schema.getVariation("test1").get()));
-		assertFalse(view.isNonvariantIn(schema.getVariation("Test1").get()));
-		try {
-			assertFalse(view.isNonvariantIn(schema.getVariation("non-existent").get()));
-		}
-		catch (NoSuchElementException nse) { /* expected */ }
+		assertEquals(expectedInstrumentedTests, state1.getInstrumentedVariations());
+		assertFalse(schema.getVariation("non-existent").isPresent());
 
-		view = schema.getState("state2").get();
+		state1 = schema.getState("state2").get();
 		expectedInstrumentedTests = new ArrayList<Variation>() {{
 			add(schema.getVariation("test2").get());
 		}};
-		assertEquals(expectedInstrumentedTests, view.getInstrumentedVariations());
-		assertFalse(view.isNonvariantIn(schema.getVariation("test2").get()));
+		assertEquals(expectedInstrumentedTests, state1.getInstrumentedVariations());
 		
-		view = schema.getState("state3").get();
+		state1 = schema.getState("state3").get();
 		expectedInstrumentedTests = new ArrayList<Variation>() {{
 			add(schema.getVariation("test2").get());
 		}};
-		assertEquals(expectedInstrumentedTests, view.getInstrumentedVariations());
-		assertFalse(view.isNonvariantIn(schema.getVariation("test2").get()));
+		assertEquals(expectedInstrumentedTests, state1.getInstrumentedVariations());
+		assertTrue(schema.getVariation("test2").isPresent());
 
-		view = schema.getState("state4").get();
+		state1 = schema.getState("state4").get();
 		expectedInstrumentedTests = new ArrayList<Variation>() {{
 			add(schema.getVariation("test2").get());
 		}};
-		assertEquals(expectedInstrumentedTests, view.getInstrumentedVariations());
-		assertTrue(view.isNonvariantIn(schema.getVariation("test2").get()));
+		assertEquals(expectedInstrumentedTests, state1.getInstrumentedVariations());
 		
-		view = schema.getState("state5").get();
+		state1 = schema.getState("state5").get();
 		expectedInstrumentedTests = new ArrayList<Variation>();
-		assertEquals(expectedInstrumentedTests, view.getInstrumentedVariations());
+		assertEquals(expectedInstrumentedTests, state1.getInstrumentedVariations());
 
 		//
 		// Tests.
@@ -966,18 +951,18 @@ public class ParserSerialOkayTest extends BaseTestCore {
 		assertEquals(3, actualExperiences.size());
 		Variation.Experience exp = actualExperiences.get(0);
 		assertEquals("A", exp.getName());
-		assertEquals(10, exp.getWeight().doubleValue(), 0.000001);
+		assertEquals(10, exp.getWeight().get().doubleValue(), 0.000001);
 		assertTrue(exp.isControl());
 		assertEquals(exp, test.getControlExperience());
 		assertEquals(test, exp.getVariation());
 		exp = actualExperiences.get(1);
 		assertEquals("B", exp.getName());
-		assertEquals(20, exp.getWeight().doubleValue(), 0.000001);
+		assertEquals(20, exp.getWeight().get().doubleValue(), 0.000001);
 		assertFalse(exp.isControl());
 		assertEquals(test, exp.getVariation());
 		exp = actualExperiences.get(2);
 		assertEquals("C", exp.getName());
-		assertEquals(30, exp.getWeight().doubleValue(), 0.000001);
+		assertEquals(30, exp.getWeight().get().doubleValue(), 0.000001);
 		assertFalse(exp.isControl());
 		assertEquals(test, exp.getVariation());
 		
@@ -988,7 +973,6 @@ public class ParserSerialOkayTest extends BaseTestCore {
 		Variation.OnState tov = actualonStates.get(0);
 		assertEquals(test, tov.getVariation());
 		assertEquals(config.getState("state1").get(), tov.getState());
-		assertFalse(tov.isNonvariant());
 		List<StateVariant> actualVariants =  tov.getVariants();
 		assertEquals(2, actualVariants.size());
 		StateVariant variant = actualVariants.get(0);
@@ -1020,13 +1004,13 @@ public class ParserSerialOkayTest extends BaseTestCore {
 		assertEquals(2, actualExperiences.size());
 		Variation.Experience exp = actualExperiences.get(0);
 		assertEquals("C", exp.getName());
-		assertEquals(0.5, exp.getWeight().doubleValue(), 0.000001);
+		assertEquals(0.5, exp.getWeight().get().doubleValue(), 0.000001);
 		assertTrue(exp.isControl());
 		assertEquals(exp, test.getControlExperience());
 		assertEquals(test, exp.getVariation());
 		exp = actualExperiences.get(1);
 		assertEquals("D", exp.getName());
-		assertEquals(0.6, exp.getWeight().doubleValue(), 0.000001);
+		assertEquals(0.6, exp.getWeight().get().doubleValue(), 0.000001);
 		assertFalse(exp.isControl());
 		assertEquals(test, exp.getVariation());
 		
@@ -1037,7 +1021,6 @@ public class ParserSerialOkayTest extends BaseTestCore {
 		Variation.OnState tov = actualonStates.get(0);
 		assertEquals(test, tov.getVariation());
 		assertEquals(config.getState("state3").get(), tov.getState());
-		assertFalse(tov.isNonvariant());
 		List<StateVariant> actualVariants =  tov.getVariants();
 		assertEquals(1, actualVariants.size());
 		StateVariant variant = actualVariants.get(0);
@@ -1049,7 +1032,6 @@ public class ParserSerialOkayTest extends BaseTestCore {
 		tov = actualonStates.get(1);
 		assertEquals(test, tov.getVariation());
 		assertEquals(config.getState("state2").get(), tov.getState());
-		assertFalse(tov.isNonvariant());
 		actualVariants =  tov.getVariants();
 		assertEquals(1, actualVariants.size());
 		variant = actualVariants.get(0);
@@ -1061,7 +1043,6 @@ public class ParserSerialOkayTest extends BaseTestCore {
 		tov = actualonStates.get(2);
 		assertEquals(test, tov.getVariation());
 		assertEquals(config.getState("state4").get(), tov.getState());
-		assertTrue(tov.isNonvariant());
 		assertTrue(tov.getVariants().isEmpty());
 
 	}
@@ -1081,12 +1062,12 @@ public class ParserSerialOkayTest extends BaseTestCore {
 		assertEquals(2, actualExperiences.size());
 		Variation.Experience exp = actualExperiences.get(0);
 		assertEquals("A", exp.getName());
-		assertEquals(10, exp.getWeight().doubleValue(), 0.000001);
+		assertEquals(10, exp.getWeight().get().doubleValue(), 0.000001);
 		assertFalse(exp.isControl());
 		assertEquals(test, exp.getVariation());
 		exp = actualExperiences.get(1);
 		assertEquals("B", exp.getName());
-		assertEquals(20, exp.getWeight().doubleValue(), 0.000001);
+		assertEquals(20, exp.getWeight().get().doubleValue(), 0.000001);
 		assertTrue(exp.isControl());
 		assertEquals(exp, test.getControlExperience());
 		assertEquals(test, exp.getVariation());
@@ -1098,7 +1079,6 @@ public class ParserSerialOkayTest extends BaseTestCore {
 		Variation.OnState tov = actualonStates.get(0);
 		assertEquals(test, tov.getVariation());
 		assertEquals(config.getState("state1").get(), tov.getState());
-		assertFalse(tov.isNonvariant());
 		List<StateVariant> actualVariants =  tov.getVariants();
 		assertEquals(1, actualVariants.size());
 		StateVariant variant = actualVariants.get(0);

@@ -17,13 +17,12 @@ public class VariationOnStateImpl implements Variation.OnState {
 
 	private StateImpl state;
 	private VariationImpl var;
-	private boolean isNonvariant = false;
 	private List<StateVariant> variants = new ArrayList<StateVariant>();
 	private VariantSpace variantSpace;
 
 	/**
 	 */
-	public VariationOnStateImpl(StateImpl state, VariationImpl var) {
+	public VariationOnStateImpl(VariationImpl var, StateImpl state) {
 		this.state = state;
 		this.var = var;
 	}
@@ -45,16 +44,7 @@ public class VariationOnStateImpl implements Variation.OnState {
 	public Variation getVariation() {
 		return var;
 	}
-	
-	/**
-	 * 
-	 * @return
-	 */
-	@Override
-	public boolean isNonvariant() {
-		return isNonvariant;
-	}
-	
+		
 	/**
 	 * 
 	 * @return
@@ -67,14 +57,7 @@ public class VariationOnStateImpl implements Variation.OnState {
 	//---------------------------------------------------------------------------------------------//
 	//                                       PUBLIC EXT                                            //
 	//---------------------------------------------------------------------------------------------//
-	
-	/**
-	 * @param isNonvariant
-	 */
-	public void setNonvariant(boolean isNonvariant) {
-		this.isNonvariant = isNonvariant;
-	}
-	
+		
 	/**
 	 * @param variant
 	 */
@@ -84,7 +67,7 @@ public class VariationOnStateImpl implements Variation.OnState {
 
 	/**
 	 * Get (and, if not yet, build) his object's variant space. 
-	 * Note that we have the test and its conjoint set at the time of construction, 
+	 * Note that we have the variation and its conjoint set at the time of construction, 
 	 * but variants are added one by one later. Caller must only call this when last 
 	 * variant was added.
 	 * 

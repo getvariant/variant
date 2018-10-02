@@ -178,12 +178,10 @@ public class ParserConjointOkay5Test extends BaseTestCore {
 	    	    "              ]                                                          \n" +
 	    	    "           },                                                            \n" +
 	    	    "           {                                                             \n" +
-	    	    "              'stateRef':'state4',                                         \n" +
-	    	    "              'isNonvariant':true                                         \n" +
+	    	    "              'stateRef':'state4'                                         \n" +
 	    	    "           },                                                            \n" +
 	    	    "           {                                                             \n" +
-	    	    "              'stateRef':'state5',                                         \n" +
-	    	    "              'isNonvariant':true                                         \n" +
+	    	    "              'stateRef':'state5'                                         \n" +
 	    	    "           }                                                             \n" +
 	    	    "        ]                                                                \n" +
 	    	    "     },                                                                  \n" +
@@ -207,8 +205,7 @@ public class ParserConjointOkay5Test extends BaseTestCore {
 	    	    "        ],                                                               \n" +
 	    	    "        'onStates':[                                                      \n" +
 	    	    "           {                                                             \n" +
-	    	    "              'stateRef':'state1',                                         \n" +
-	    	    "              'isNonvariant':true                                         \n" +
+	    	    "              'stateRef':'state1'                                         \n" +
 	    	    "           },                                                            \n" +
 	    	    "           {                                                             \n" +
 	    	    "              'stateRef':'state2',                                         \n" +
@@ -475,16 +472,13 @@ public class ParserConjointOkay5Test extends BaseTestCore {
 	    	    "              ]                                                          \n" +
 	    	    "           },                                                            \n" +
 	    	    "           {                                                             \n" +
-	    	    "              'stateRef':'state3',                                         \n" +
-	    	    "              'isNonvariant':true                                         \n" +
+	    	    "              'stateRef':'state3'                                         \n" +
 	    	    "           },                                                            \n" +
 	    	    "           {                                                             \n" +
-	    	    "              'stateRef':'state4',                                         \n" +
-	    	    "              'isNonvariant':true                                         \n" +
+	    	    "              'stateRef':'state4'                                         \n" +
 	    	    "           },                                                            \n" +
 	    	    "           {                                                             \n" +
-	    	    "              'stateRef':'state5',                                         \n" +
-	    	    "              'isNonvariant':true                                         \n" +
+	    	    "              'stateRef':'state5'                                         \n" +
 	    	    "           }                                                             \n" +
 	    	    "        ]                                                                \n" +
 	    	    "     }                                                                   \n" +
@@ -532,9 +526,9 @@ public class ParserConjointOkay5Test extends BaseTestCore {
 		assertTrue(test3.isConjointWith(test1));
 		assertTrue(test3.isConjointWith(test2));
 
-		assertNull(test1.getConjointTests());
-		assertNull(test2.getConjointTests());
-		assertEquals(CollectionsUtils.list(test1, test2), test3.getConjointTests());
+		assertNull(test1.getConjointVariations());
+		assertNull(test2.getConjointVariations());
+		assertEquals(CollectionsUtils.list(test1, test2), test3.getConjointVariations());
 
 		// 
 		// test1 onState objects
@@ -544,7 +538,6 @@ public class ParserConjointOkay5Test extends BaseTestCore {
 		
 		// state2
 		Variation.OnState onState = onStates.get(0);
-		assertFalse(onState.isNonvariant());
 		assertEquals(schema.getState("state2").get(), onState.getState());
 		List<StateVariant> variants = onState.getVariants();
 		assertEquals(2, variants.size());
@@ -563,7 +556,6 @@ public class ParserConjointOkay5Test extends BaseTestCore {
 
 		// state3
 		onState = onStates.get(1);
-		assertFalse(onState.isNonvariant());
 		assertEquals(schema.getState("state3").get(), onState.getState());
 		variants = onState.getVariants();
 		assertEquals(2, variants.size());
@@ -582,14 +574,12 @@ public class ParserConjointOkay5Test extends BaseTestCore {
 
 		// state4
 		onState = onStates.get(2);
-		assertTrue(onState.isNonvariant());
 		assertEquals(schema.getState("state4").get(), onState.getState());
 		variants = onState.getVariants();
 		assertEquals(0, variants.size());
 
 		// state5
 		onState = onStates.get(3);
-		assertTrue(onState.isNonvariant());
 		assertEquals(schema.getState("state5").get(), onState.getState());
 		variants = onState.getVariants();
 		assertEquals(0, variants.size());
@@ -602,13 +592,11 @@ public class ParserConjointOkay5Test extends BaseTestCore {
 		
 		// state1
 		onState = onStates.get(0);
-		assertTrue(onState.isNonvariant());
 		assertTrue(onState.getVariants().isEmpty());
 		assertEquals(schema.getState("state1").get(), onState.getState());
 
 		// state2
 		onState = onStates.get(1);
-		assertFalse(onState.isNonvariant());
 		assertEquals(schema.getState("state2").get(), onState.getState());
 		variants = onState.getVariants();
 		assertEquals(2, variants.size());
@@ -627,7 +615,6 @@ public class ParserConjointOkay5Test extends BaseTestCore {
 
 		// state3
 		onState = onStates.get(2);
-		assertFalse(onState.isNonvariant());
 		assertEquals(schema.getState("state3").get(), onState.getState());
 		variants = onState.getVariants();
 		assertEquals(2, variants.size());
@@ -646,7 +633,6 @@ public class ParserConjointOkay5Test extends BaseTestCore {
 
 		// state4
 		onState = onStates.get(3);
-		assertFalse(onState.isNonvariant());
 		assertEquals(schema.getState("state4").get(), onState.getState());
 		variants = onState.getVariants();
 		assertEquals(2, variants.size());
@@ -671,7 +657,6 @@ public class ParserConjointOkay5Test extends BaseTestCore {
 		
 		// state1
 		onState = onStates.get(0);
-		assertFalse(onState.isNonvariant());
 		assertEquals(schema.getState("state1").get(), onState.getState());
 		variants = onState.getVariants();
 		assertEquals(2, variants.size());
@@ -690,7 +675,6 @@ public class ParserConjointOkay5Test extends BaseTestCore {
 
 		// state2
 		onState = onStates.get(1);
-		assertFalse(onState.isNonvariant());
 		assertEquals(schema.getState("state2").get(), onState.getState());
 		variants = onState.getVariants();
 		assertEquals(10, variants.size());
@@ -757,21 +741,18 @@ public class ParserConjointOkay5Test extends BaseTestCore {
 		
 		// state3
 		onState = onStates.get(2);
-		assertTrue(onState.isNonvariant());
 		assertEquals(schema.getState("state3").get(), onState.getState());
 		variants = onState.getVariants();
 		assertEquals(0, variants.size());
 
 		// state4
 		onState = onStates.get(3);
-		assertTrue(onState.isNonvariant());
 		assertEquals(schema.getState("state4").get(), onState.getState());
 		variants = onState.getVariants();
 		assertEquals(0, variants.size());
 
 		// state5
 		onState = onStates.get(4);
-		assertTrue(onState.isNonvariant());
 		assertEquals(schema.getState("state5").get(), onState.getState());
 		variants = onState.getVariants();
 		assertEquals(0, variants.size());

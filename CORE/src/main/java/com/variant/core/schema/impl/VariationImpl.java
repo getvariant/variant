@@ -108,7 +108,7 @@ public class VariationImpl implements Variation {
 	 */
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<Variation> getConjointTests() {
+	public List<Variation> getConjointVariations() {
 		if (conjointTests == null) return null;
 		return (List<Variation>) (List<?>) Collections.unmodifiableList(conjointTests);
 	}
@@ -116,18 +116,15 @@ public class VariationImpl implements Variation {
 	/**
 	 */
 	@Override
-	public boolean isSerialWith(Variation other) {
-		
-		if (this.equals(other)) throw new IllegalArgumentException("Argument cannot be equal to this");
-		
-		for (OnState thisOnView: getOnStates()) {
-			if (thisOnView.isNonvariant()) continue;
-			for (OnState otherOnView: other.getOnStates()) {
-				if (otherOnView.isNonvariant()) continue;
-				if (thisOnView.getState().equals(otherOnView.getState())) return false;
-			}
+	public boolean isConcurrentWith(Variation other) {
+				
+		for (OnState thisOnState: getOnStates()) {
+			for (OnState otherOnState: other.getOnStates()) 
+				if (thisOnState.getState().equals(otherOnState.getState())) 
+					// We found a state instrumented by both variations.
+					return true;
 		}
-		return true;
+		return false;
 	}
 	
 	/**
@@ -146,11 +143,6 @@ public class VariationImpl implements Variation {
 		ArrayList<Hook> result = new ArrayList<Hook>(hooks.size());
 		result.addAll(hooks);
 		return Collections.unmodifiableList(result);
-	}
-
-	@Override
-	public boolean isConcurrentWith(Variation other) {
-		return !isSerialWith(other);
 	}
 
 	@Override

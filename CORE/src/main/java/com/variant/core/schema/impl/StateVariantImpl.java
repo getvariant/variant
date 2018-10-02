@@ -2,6 +2,7 @@ package com.variant.core.schema.impl;
 
 import java.io.StringWriter;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -17,31 +18,47 @@ import com.variant.core.schema.Variation.OnState;
 
 public class StateVariantImpl implements StateVariant {
 
-	private VariationOnStateImpl onStateImpl;
-	private VariationExperienceImpl ownExperience;
-	private List<VariationExperienceImpl> conjointExperiences;
-	private Map<String,String> params;
+	private final Variation.OnState onState;
+	private final Variation.Experience ownExp;
+	private final List<Variation.Experience> conjointExps;
+	private final Map<String,String> params;
+	private boolean isImplicit = false;
 	
 	/**
-	 * @param onView
-	 * @param experiences
-	 * @param path
+	 * Explicit (provided in schema)
 	 */
-	public StateVariantImpl(VariationOnStateImpl onViewImpl, VariationExperienceImpl ownExperience, List<VariationExperienceImpl> conjointExperiences, Map<String,String> params) {
-		this.onStateImpl = onViewImpl;
-		this.ownExperience = ownExperience;
-		this.conjointExperiences = conjointExperiences;
+	public StateVariantImpl(
+			Variation.OnState onState, 
+			Variation.Experience ownExp, 
+			List<Variation.Experience> conjointExps, 
+			Map<String,String> params) {
+		
+		this.onState = onState;
+		this.ownExp = ownExp;
+		this.conjointExps = conjointExps;
 		this.params = params;
+	}
+
+	/**
+	 * Implicit (default, not provided in schema)
+	 */
+	public StateVariantImpl(
+			Variation.OnState onState, 
+			Variation.Experience ownExp, 
+			List<Variation.Experience> conjointExps) {
+		
+		this(onState, ownExp, conjointExps, new HashMap<String,String>());
+		this.isImplicit = true;
 	}
 
 	/**
 	 * 
 	 * @param experience
-	 */
+	 *
 	void addConjointExperience(VariationExperienceImpl experience) {
 		conjointExperiences.add(experience);
 	}
-	
+	*/
 	//---------------------------------------------------------------------------------------------//
 	//                                          PUBLIC                                             //
 	//---------------------------------------------------------------------------------------------//
@@ -50,21 +67,21 @@ public class StateVariantImpl implements StateVariant {
 	 */
 	@Override
 	public OnState getOnState() {
-		return onStateImpl;
+		return onState;
 	}
 
 	/**
 	 */
 	@Override
 	public State getState() {
-		return onStateImpl.getState();
+		return onState.getState();
 	}
 	
 	/**
 	 */
 	@Override
-	public Variation getTest() {
-		return onStateImpl.getVariation();
+	public Variation getVariation() {
+		return onState.getVariation();
 	}
 
 	/**
@@ -77,13 +94,12 @@ public class StateVariantImpl implements StateVariant {
 	@SuppressWarnings("unchecked")
 	@Override
 	public List<Experience> getConjointExperiences() {
-		if (conjointExperiences == null) return null;
-		return (List<Experience>) (List<?>) Collections.unmodifiableList(conjointExperiences);
+		return Collections.unmodifiableList(conjointExps);
 	}
 
 	@Override
 	public boolean isProper() {
-		return conjointExperiences == null;
+		return conjointExps.size() == 0;
 	}
 	
 	/**
@@ -91,21 +107,29 @@ public class StateVariantImpl implements StateVariant {
 	 */
 	@Override
 	public Experience getExperience() {
-		return ownExperience;
+		return ownExp;
 	}
 
 	//---------------------------------------------------------------------------------------------//
 	//                                        PUBLIC EXT                                           //
 	//---------------------------------------------------------------------------------------------//
 	
+	/**
+	 */
+	public boolean isImplicit() {
+		return isImplicit;
+	}
+
+	/**
+	 */
 	@Override
 	public String toString() {
 		try {
 			StringWriter result = new StringWriter(2048);
 			JsonGenerator jsonGen = new JsonFactory().createGenerator(result);
 			jsonGen.writeStartObject();
-			jsonGen.writeStringField("state", onStateImpl.getState().getName());
-			jsonGen.writeStringField("test", onStateImpl.getVariation().getName());
+			jsonGen.writeStringField("state", onState.getState().getName());
+			jsonGen.writeStringField("test", onState.getVariation().getName());
 			jsonGen.writeStringField("params", params.toString());
 			jsonGen.writeEndObject();
 			jsonGen.flush();

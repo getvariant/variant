@@ -33,12 +33,12 @@ public interface StateVariant {
 	public State getState();
 
 	/**
-	 * The test for which this variant is defined. Equivalent to {@link #getOnState()}.getTest().
+	 * The variation for which this variant is defined. Equivalent to {@link #getOnState()}.getVariation().
 	 * 
 	 * @return A object of type {@link Variation}
 	 * @since 0.5
 	 */
-	public Variation getTest();
+	public Variation getVariation();
 		
 	/**
 	 * This variant's own test experience, i.e. for the test within whose definition this variant

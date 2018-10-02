@@ -38,7 +38,7 @@ public class ParserCommentsTest extends BaseTestCore {
 			    "        'name':'Test1',                                       \n" +
 			    "        'experiences':[                                       \n" +
 			    "           {                                                  \n" +
-			    "              'name':'A',                                     \n" +
+			    "              'name': /***/'A',                               \n" +
 			    "              'weight':50,                                    \n" +
 			    "              'isControl':true                                \n" +
 			    "           },                                                 \n" +
@@ -57,7 +57,7 @@ public class ParserCommentsTest extends BaseTestCore {
 			    "              ]                                               \n" +
 			    "           }                                                  \n" +
 			    "        ]                                                     \n" +
-			    "     }                                                        \n" +
+			    "     }                    /**/                                \n" +
 			    //----------------------------------------------------------------//	
 			    "  ]                                                           \n" +
 			    "}                                                           //\n";

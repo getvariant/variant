@@ -51,19 +51,6 @@ public interface State {
 	 * @since 0.5
 	 */
 	public boolean isInstrumentedBy(Variation variation);
-
-	/**
-	 * Returns <code>true</code> if this state is declared as non-variant in a given variation. 
-	 * It is the responsibility of the caller to ensure that this state is instrumented by the given test, 
-	 * i.e. that {@link #isInstrumentedBy(Variation)} returns true.
-	 * 
-	 * @param variation The variation of interest.
-	 * 
-	 * @return <code>true</code> if this state is non-variant in the given variation, <code>false</code> if this test.
-	 * @throws StateNotInstrumentedException if this state is not instrumented by the given test.
-	 * @since 0.5
-	 */
-	public boolean isNonvariantIn(Variation variation);
 	
 	/**
 	 * <p>List of variation-scoped life-cycle hooks defined in the scope of this state.

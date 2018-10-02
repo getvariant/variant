@@ -22,7 +22,7 @@ import com.variant.core.util.IoUtils;
 /**
  * @author Igor
  */
-public class ParserConjointOkayBigTest extends BaseTestCore {
+public class ParserConjointOkayMonsterTest extends BaseTestCore {
 
 	/**
 	 * 
@@ -31,7 +31,7 @@ public class ParserConjointOkayBigTest extends BaseTestCore {
 	public void test() throws Exception {
 		
 		SchemaParser parser = getSchemaParser();
-		ParserResponse response = (ParserResponse) parser.parse(IoUtils.openResourceAsStream("/schema/ParserConjointOkayBigTest.json")._1());
+		ParserResponse response = (ParserResponse) parser.parse(IoUtils.openResourceAsStream("/schema/monster.schema")._1());
 		if (response.hasMessages()) printMessages(response);
 		assertFalse(response.hasMessages());
 		assertNotNull(response.getSchema());
@@ -61,75 +61,102 @@ public class ParserConjointOkayBigTest extends BaseTestCore {
 		final State state5 = schema.getState("state5").get();
 
 		// 
-		// Declared test covariance.
+		// Declared conjoint tests.
 		//
-		assertNull(test1.getConjointTests());
-		assertNull(test2.getConjointTests());
-		assertEquals(CollectionsUtils.list(test2), test3.getConjointTests());
-		assertEquals(CollectionsUtils.list(test1), test4.getConjointTests());
-		assertEquals(CollectionsUtils.list(test2, test4), test5.getConjointTests());
-		assertEquals(CollectionsUtils.list(test1, test2, test4, test5), test6.getConjointTests());
+		assertNull(test1.getConjointVariations());
+		assertNull(test2.getConjointVariations());
+		assertEquals(CollectionsUtils.list(test2), test3.getConjointVariations());
+		assertEquals(CollectionsUtils.list(test1), test4.getConjointVariations());
+		assertEquals(CollectionsUtils.list(test2, test4), test5.getConjointVariations());
+		assertEquals(CollectionsUtils.list(test1, test2, test4, test5), test6.getConjointVariations());
 
 		//
-		// Test disjointness. 
+		// Resulting test concurrency 
 		//
 
 		// test1
-		for (final Variation t: schema.getVariations()) {			
-			
-			new ExceptionInterceptor<IllegalArgumentException>() {
-				@Override public void toRun() { assertFalse(test1.isSerialWith(t)); }
-				@Override public void onThrown(IllegalArgumentException e) { assertEquals(test1, t); }
-				@Override public void onNotThrown() { assertNotEquals(test1, t); }
-				@Override public Class<IllegalArgumentException> getExceptionClass() { return IllegalArgumentException.class; }
-			}.run();
-		}
-		
+		assertFalse(test1.isSerialWith(test1));
+		assertTrue(test1.isConcurrentWith(test1));
+		assertFalse(test1.isSerialWith(test2));
+		assertTrue(test1.isConcurrentWith(test2));
+		assertFalse(test1.isSerialWith(test3));
+		assertTrue(test1.isConcurrentWith(test3));
+		assertFalse(test1.isSerialWith(test4));
+		assertTrue(test1.isConcurrentWith(test4));
+		assertFalse(test1.isSerialWith(test5));
+		assertTrue(test1.isConcurrentWith(test5));
+		assertFalse(test1.isSerialWith(test6));
+		assertTrue(test1.isConcurrentWith(test6));
+
 		// test2
-		for (final Variation t: schema.getVariations()) {
-			
-			new ExceptionInterceptor<IllegalArgumentException>() {
-				@Override public void toRun() { assertFalse(test2.isSerialWith(t)); }
-				@Override public void onThrown(IllegalArgumentException e) { assertEquals(test2, t); }
-				@Override public void onNotThrown() { assertNotEquals(test2, t); }
-				@Override public Class<IllegalArgumentException> getExceptionClass() { return IllegalArgumentException.class; }
-			}.run();
-			
-		}
+		assertFalse(test2.isSerialWith(test1));
+		assertTrue(test2.isConcurrentWith(test1));
+		assertFalse(test2.isSerialWith(test2));
+		assertTrue(test2.isConcurrentWith(test2));
+		assertFalse(test2.isSerialWith(test3));
+		assertTrue(test2.isConcurrentWith(test3));
+		assertFalse(test2.isSerialWith(test4));
+		assertTrue(test2.isConcurrentWith(test4));
+		assertFalse(test2.isSerialWith(test5));
+		assertTrue(test2.isConcurrentWith(test5));
+		assertFalse(test2.isSerialWith(test6));
+		assertTrue(test2.isConcurrentWith(test6));
 
 		// test3
-		for (final Variation t: schema.getVariations()) {
-
-			new ExceptionInterceptor<IllegalArgumentException>() {
-					@Override public void toRun() { 
-						if (t.equals(test6)) assertTrue(test3.isSerialWith(t));
-						else assertFalse(test3.isSerialWith(t));
-					}
-				@Override public void onThrown(IllegalArgumentException e) { assertEquals(test3, t); }
-				@Override public void onNotThrown() { assertNotEquals(test3, t); }
-				@Override public Class<IllegalArgumentException> getExceptionClass() { return IllegalArgumentException.class; }
-			}.run();
-		}
+		assertFalse(test3.isSerialWith(test1));
+		assertTrue(test3.isConcurrentWith(test1));
+		assertFalse(test3.isSerialWith(test2));
+		assertTrue(test3.isConcurrentWith(test2));
+		assertFalse(test3.isSerialWith(test3));
+		assertTrue(test3.isConcurrentWith(test3));
+		assertTrue(test3.isSerialWith(test4));
+		assertFalse(test3.isConcurrentWith(test4));
+		assertFalse(test3.isSerialWith(test5));
+		assertTrue(test3.isConcurrentWith(test5));
+		assertFalse(test3.isSerialWith(test6));
+		assertTrue(test3.isConcurrentWith(test6));
 
 		// test4
-		for (final Variation t: schema.getVariations()) {
-			new ExceptionInterceptor<IllegalArgumentException>() {
-				@Override public void toRun() { assertFalse(test4.isSerialWith(t)); }
-				@Override public void onThrown(IllegalArgumentException e) { assertEquals(test4, t); }
-				@Override public void onNotThrown() { assertNotEquals(test4, t); }
-				@Override public Class<IllegalArgumentException> getExceptionClass() { return IllegalArgumentException.class; }
-			}.run();
-		}
+		assertFalse(test4.isSerialWith(test1));
+		assertTrue(test4.isConcurrentWith(test1));
+		assertFalse(test4.isSerialWith(test2));
+		assertTrue(test4.isConcurrentWith(test2));
+		assertTrue(test4.isSerialWith(test3));
+		assertFalse(test4.isConcurrentWith(test3));
+		assertFalse(test4.isSerialWith(test4));
+		assertTrue(test4.isConcurrentWith(test4));
+		assertFalse(test4.isSerialWith(test5));
+		assertTrue(test4.isConcurrentWith(test5));
+		assertFalse(test4.isSerialWith(test6));
+		assertTrue(test4.isConcurrentWith(test6));
 
 		// test5
-		for (final Variation t: schema.getVariations()) {
-			new ExceptionInterceptor<IllegalArgumentException>() {
-				@Override public void toRun() { assertFalse(test5.isSerialWith(t)); }
-				@Override public void onThrown(IllegalArgumentException e) { assertEquals(test5, t); }
-				@Override public void onNotThrown() { assertNotEquals(test5, t); }
-				@Override public Class<IllegalArgumentException> getExceptionClass() { return IllegalArgumentException.class; }
-			}.run();
-		}
+		assertFalse(test5.isSerialWith(test1));
+		assertTrue(test5.isConcurrentWith(test1));
+		assertFalse(test5.isSerialWith(test2));
+		assertTrue(test5.isConcurrentWith(test2));
+		assertFalse(test5.isSerialWith(test3));
+		assertTrue(test5.isConcurrentWith(test3));
+		assertFalse(test5.isSerialWith(test4));
+		assertTrue(test5.isConcurrentWith(test4));
+		assertFalse(test5.isSerialWith(test5));
+		assertTrue(test5.isConcurrentWith(test5));
+		assertFalse(test5.isSerialWith(test6));
+		assertTrue(test5.isConcurrentWith(test6));
+
+		// test6
+		assertFalse(test6.isSerialWith(test1));
+		assertTrue(test6.isConcurrentWith(test1));
+		assertFalse(test6.isSerialWith(test2));
+		assertTrue(test6.isConcurrentWith(test2));
+		assertFalse(test6.isSerialWith(test3));
+		assertTrue(test6.isConcurrentWith(test3));
+		assertFalse(test6.isSerialWith(test4));
+		assertTrue(test6.isConcurrentWith(test4));
+		assertFalse(test6.isSerialWith(test5));
+		assertTrue(test6.isConcurrentWith(test5));
+		assertFalse(test6.isSerialWith(test6));
+		assertTrue(test6.isConcurrentWith(test6));
 
 		// 
 		// test1 OnState objects
@@ -139,7 +166,6 @@ public class ParserConjointOkayBigTest extends BaseTestCore {
 		
 		// state2
 		Variation.OnState onState = onStates.get(0);
-		assertFalse(onState.isNonvariant());
 		assertEquals(state2, onState.getState());
 		List<StateVariant> variants = onState.getVariants();
 		assertEquals(2, variants.size());
@@ -158,7 +184,6 @@ public class ParserConjointOkayBigTest extends BaseTestCore {
 
 		// state3
 		onState = onStates.get(1);
-		assertFalse(onState.isNonvariant());
 		assertEquals(state3, onState.getState());
 		variants = onState.getVariants();
 		assertEquals(2, variants.size());
@@ -177,14 +202,12 @@ public class ParserConjointOkayBigTest extends BaseTestCore {
 
 		// state4
 		onState = onStates.get(2);
-		assertTrue(onState.isNonvariant());
 		assertEquals(state4, onState.getState());
 		variants = onState.getVariants();
 		assertEquals(0, variants.size());
 
 		// state5
 		onState = onStates.get(3);
-		assertTrue(onState.isNonvariant());
 		assertEquals(state5, onState.getState());
 		variants = onState.getVariants();
 		assertEquals(0, variants.size());
@@ -197,13 +220,11 @@ public class ParserConjointOkayBigTest extends BaseTestCore {
 		
 		// state1
 		onState = onStates.get(0);
-		assertTrue(onState.isNonvariant());
 		assertTrue(onState.getVariants().isEmpty());
 		assertEquals(state1, onState.getState());
 
 		// state2
 		onState = onStates.get(1);
-		assertFalse(onState.isNonvariant());
 		assertEquals(state2, onState.getState());
 		variants = onState.getVariants();
 		assertEquals(2, variants.size());
@@ -222,7 +243,6 @@ public class ParserConjointOkayBigTest extends BaseTestCore {
 
 		// state3
 		onState = onStates.get(2);
-		assertFalse(onState.isNonvariant());
 		assertEquals(state3, onState.getState());
 		variants = onState.getVariants();
 		assertEquals(2, variants.size());
@@ -241,7 +261,6 @@ public class ParserConjointOkayBigTest extends BaseTestCore {
 
 		// state4
 		onState = onStates.get(3);
-		assertFalse(onState.isNonvariant());
 		assertEquals(state4, onState.getState());
 		variants = onState.getVariants();
 		assertEquals(2, variants.size());
@@ -266,14 +285,12 @@ public class ParserConjointOkayBigTest extends BaseTestCore {
 		
 		// state1
 		onState = onStates.get(0);
-		assertTrue(onState.isNonvariant());
 		assertEquals(state1, onState.getState());
 		variants = onState.getVariants();
 		assertEquals(0, variants.size());
 
 		// state2
 		onState = onStates.get(1);
-		assertFalse(onState.isNonvariant());
 		assertEquals(state2, onState.getState());
 		variants = onState.getVariants();
 		assertEquals(6, variants.size());
@@ -316,14 +333,12 @@ public class ParserConjointOkayBigTest extends BaseTestCore {
 
 		// state3
 		onState = onStates.get(2);
-		assertTrue(onState.isNonvariant());
 		assertEquals(state3, onState.getState());
 		variants = onState.getVariants();
 		assertEquals(0, variants.size());
 
 		// state4
 		onState = onStates.get(3);
-		assertFalse(onState.isNonvariant());
 		assertEquals(state4, onState.getState());
 		variants = onState.getVariants();
 		assertEquals(6, variants.size());
@@ -373,7 +388,6 @@ public class ParserConjointOkayBigTest extends BaseTestCore {
 		
 		// state1
 		onState = onStates.get(0);
-		assertFalse(onState.isNonvariant());
 		assertEquals(state1, onState.getState());
 		variants = onState.getVariants();
 		assertEquals(2, variants.size());
@@ -392,7 +406,6 @@ public class ParserConjointOkayBigTest extends BaseTestCore {
 
 		// state2
 		onState = onStates.get(1);
-		assertFalse(onState.isNonvariant());
 		assertEquals(state2, onState.getState());
 		variants = onState.getVariants();
 		assertEquals(6, variants.size());
@@ -435,13 +448,11 @@ public class ParserConjointOkayBigTest extends BaseTestCore {
 		
 		// state4
 		onState = onStates.get(2);
-		assertTrue(onState.isNonvariant());
 		assertEquals(state4, onState.getState());
 		assertEquals(0, onState.getVariants().size());
 
 		// state5
 		onState = onStates.get(3);
-		assertTrue(onState.isNonvariant());
 		assertEquals(state5, onState.getState());
 		assertEquals(0, onState.getVariants().size());
 
@@ -453,7 +464,6 @@ public class ParserConjointOkayBigTest extends BaseTestCore {
 		
 		// state1
 		onState = onStates.get(0);
-		assertFalse(onState.isNonvariant());
 		assertEquals(state1, onState.getState());
 		variants = onState.getVariants();
 		assertEquals(6, variants.size());
@@ -472,7 +482,6 @@ public class ParserConjointOkayBigTest extends BaseTestCore {
 
 		// state2
 		onState = onStates.get(1);
-		assertFalse(onState.isNonvariant());
 		assertEquals(state2, onState.getState());
 		variants = onState.getVariants();
 		assertEquals(10, variants.size());
@@ -531,13 +540,11 @@ public class ParserConjointOkayBigTest extends BaseTestCore {
 		
 		// state3
 		onState = onStates.get(2);
-		assertTrue(onState.isNonvariant());
 		assertEquals(state3, onState.getState());
 		assertEquals(0, onState.getVariants().size());
 		
 		// state4
 		onState = onStates.get(3);
-		assertFalse(onState.isNonvariant());
 		assertEquals(state4, onState.getState());
 		variants = onState.getVariants();
 		assertEquals(6, variants.size());
@@ -576,7 +583,6 @@ public class ParserConjointOkayBigTest extends BaseTestCore {
 				
 		// state5
 		onState = onStates.get(4);
-		assertTrue(onState.isNonvariant());
 		assertEquals(state5, onState.getState());
 		assertEquals(0, onState.getVariants().size());
 
@@ -588,7 +594,6 @@ public class ParserConjointOkayBigTest extends BaseTestCore {
 		
 		// state1
 		onState = onStates.get(0);
-		assertFalse(onState.isNonvariant());
 		assertEquals(state1, onState.getState());
 		variants = onState.getVariants();
 		assertEquals(18, variants.size());
@@ -687,13 +692,11 @@ public class ParserConjointOkayBigTest extends BaseTestCore {
 
 		// state2
 		onState = onStates.get(1);
-		assertTrue(onState.isNonvariant());
 		assertEquals(state2, onState.getState());
 		assertEquals(0, onState.getVariants().size());
 
 		// state3
 		onState = onStates.get(2);
-		assertFalse(onState.isNonvariant());
 		assertEquals(state3, onState.getState());
 		variants = onState.getVariants();
 		assertEquals(10, variants.size());
@@ -753,7 +756,6 @@ public class ParserConjointOkayBigTest extends BaseTestCore {
 		
 		// state2
 		onState = onStates.get(3);
-		assertTrue(onState.isNonvariant());
 		assertEquals(state5, onState.getState());
 		assertEquals(0, onState.getVariants().size());
 

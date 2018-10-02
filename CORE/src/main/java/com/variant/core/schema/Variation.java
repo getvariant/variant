@@ -52,14 +52,15 @@ public interface Variation {
 	Experience getControlExperience();
 
 	/**
-	 * <p>Is this test currently on? Tests that are not on are treated specially:
+	 * <p>Is this variation currently online? Offline variations  are treated specially:
 	 * <ol>
-     * <li>A user traversing this test will always see control experience.
-     * <li>If a user already has an entry for this test in his targeting tracker, it will be ignored, 
-     *     but not discarded. If not, no entries will be added to the user’s targeting tracker.
-     * <li>No trace events will be logged for this test.
+     * <li>A session traversing this variation will always see control experience.
+     * <li>If the session already has an entry for this variation in its targeting tracker, 
+     *     the entry will be ignored, but not discarded. If not, no entries will be added 
+     *     to the user’s targeting tracker.
+     * <li>No trace events will be logged for this variation.
      * </ol>
-	 * @return true if the test is on, false if not.
+	 * @return true if the test is online, false if not.
 	 * @since 0.5
 	 */
 	boolean isOn();
@@ -97,7 +98,7 @@ public interface Variation {
 	 * 
 	 * @since 0.5
 	 */
-	List<Variation> getConjointTests();
+	List<Variation> getConjointVariations();
 		
 	/**
 	 * Is this variation serial with a given variation? Two variations are serial when there does not exist a state
@@ -107,7 +108,9 @@ public interface Variation {
 	 * @return
 	 * @since 0.5
 	 */
-	boolean isSerialWith(Variation other);
+	default boolean isSerialWith(Variation other) {
+		return !isConcurrentWith(other);
+	}
 
 	/**
 	 * Is this variation concurrent with a given variation? This is equivalent to
@@ -166,12 +169,14 @@ public interface Variation {
 		
 		/**
 		 * This experience's probabilistic weight. These are used by Variant's default
-		 * test targeter if no custom targeting was provided.
+		 * targeting algorithm, if no custom tergeting hooks are configured at run time.
 		 * 
-		 * @return Probabilistic weight, if declared, null otherwise.
+		 * @return An {@link Optional}, containing the probabilistic weight defined for this experience, 
+	     *         or empty if not defined.
+         *
 	     * @since 0.5
 		 */
-		Number getWeight();
+		Optional<Number> getWeight();
 		
 		/**
 		 * Is a given state phantom in this experience?
@@ -210,15 +215,7 @@ public interface Variation {
 		 * @since 0.5
 		 */
 		Variation getVariation();
-		
-		/**
-		 * Is this instrumentation non-variant?
-		 * 
-		 * @return True if this instrumentation is non-variant, false otherwise.
-	     * @since 0.5
-		 */
-		boolean isNonvariant();
-		
+				
 		/**
 		 * A list of all state variants for this instrumentation. 
 		 * @return A list of objects of type {@link StateVariant}.

@@ -4,7 +4,6 @@ import static com.variant.core.schema.parser.error.SemanticError.CONJOINT_EXPERI
 import static com.variant.core.schema.parser.error.SemanticError.CONJOINT_EXPERIENCE_EXPERIENCE_REF_UNDEFINED;
 import static com.variant.core.schema.parser.error.SemanticError.CONJOINT_EXPERIENCE_REF_TESTS_NOT_CONJOINT;
 import static com.variant.core.schema.parser.error.SemanticError.CONJOINT_VARIANT_DUPE;
-import static com.variant.core.schema.parser.error.SemanticError.CONJOINT_VARIANT_MISSING;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
@@ -66,21 +65,12 @@ public class ParserConjointErrorMultiTest extends BaseTestCore {
 			    "              'weight':30                                     \n" +
 			    "           }                                                  \n" +
 			    "        ],                                                    \n" +
-			    "        'onStates':[                                           \n" +
+			    "        'onStates':[                                          \n" +
 			    "           {                                                  \n" +
-			    "              'stateRef':'state1',                              \n" +
-			    "              'isNonvariant':true                              \n" +
+			    "              'stateRef':'state1'                             \n" +
 			    "           },                                                 \n" +
 			    "           {                                                  \n" +
-			    "              'stateRef':'state2',                              \n" +
-			    "              'variants':[                                    \n" +
-			    "                 {                                            \n" +
-			    "                    'experienceRef': 'B'                      \n" +
-			    "                 },                                           \n" +
-			    "                 {                                            \n" +
-			    "                    'experienceRef': 'C'                      \n" +
-			    "                 }                                            \n" +
-			    "              ]                                               \n" +
+			    "              'stateRef':'state2'                             \n" +
 			    "           }                                                  \n" +
 			    "        ]                                                     \n" +
 			    "     },                                                       \n" +
@@ -104,37 +94,20 @@ public class ParserConjointErrorMultiTest extends BaseTestCore {
 			    "        ],                                                    \n" +
 			    "        'onStates':[                                           \n" +
 			    "           {                                                  \n" +
-			    "              'stateRef':'state1',                              \n" +
-			    "              'variants':[                                    \n" +
-			    "                 {                                            \n" +
-			    "                    'experienceRef': 'B'                      \n" +
-			    "                 },                                           \n" +
-			    "                 {                                            \n" +
-			    "                    'experienceRef': 'C'                      \n" +
-			    "                 }                                            \n" +
-			    "              ]                                               \n" +
+			    "              'stateRef':'state1'                              \n" +
 			    "           },                                                 \n" +
 			    "           {                                                  \n" +
-			    "              'stateRef':'state2',                              \n" +
-			    "              'variants':[                                    \n" +
-			    "                 {                                            \n" +
-			    "                    'experienceRef': 'B'                      \n" +
-			    "                 },                                           \n" +
-			    "                 {                                            \n" +
-			    "                    'experienceRef': 'C'                      \n" +
-			    "                 }                                            \n" +
-			    "              ]                                               \n" +
+			    "              'stateRef':'state2'                              \n" +
 			    "           },                                                 \n" +
 			    "           {                                                  \n" +
-			    "              'stateRef':'state3',                              \n" +
-			    "              'isNonvariant':true                              \n" +
+			    "              'stateRef':'state3'                             \n" +
 			    "           }                                                  \n" +
 			    "        ]                                                     \n" +
 			    "     },                                                       \n" +
 			    //----------------------------------------------------------------//	
 			    "     {                                                        \n" +
 			    "        'name':'test3',                                       \n" +
-                "        'conjointVariationRefs': ['test1', 'test2'],              \n" +
+                "        'conjointVariationRefs': ['test1', 'test2'],          \n" +
 			    "        'experiences':[                                       \n" +
 			    "           {                                                  \n" +
 			    "              'name':'A',                                     \n" +
@@ -331,17 +304,7 @@ public class ParserConjointErrorMultiTest extends BaseTestCore {
 			    "      'comment':'schema comment'                               \n" +
 			    "  },                                                           \n" +
 				"   'states':[                                                  \n" +
-				"     {  'name':'state1',                                       \n" +
-				"        'parameters': [                                        \n" +
-				"           {                                                   \n" +
-				"             'name': 'path',                                   \n" +
-				"             'value': '/path/to/state1'                        \n" +
-				"           },                                                  \n" +
-				"           {                                                   \n" +
-				"             'name': 'bar',                                    \n" +
-				"             'value': 'foo'                                    \n" +
-				"           }                                                   \n" +
-				"        ]                                                      \n" +
+				"     {  'name':'state1'                                       \n" +
 				"     },                                                        \n" +
 				"     {                                                         \n" +
 				"        'parameters': [                                        \n" +
@@ -356,17 +319,7 @@ public class ParserConjointErrorMultiTest extends BaseTestCore {
 				"        ],                                                     \n" +
 				"        'name':'state2'                                        \n" +
 				"     },                                                       \n" +
-				"     {  'name':'state3',                                       \n" +
-				"        'parameters': [                                        \n" +
-				"           {                                                   \n" +
-				"             'name': 'path',                                   \n" +
-				"             'value': '/path/to/state3'                        \n" +
-				"           },                                                  \n" +
-				"           {                                                   \n" +
-				"             'name': 'bar',                                    \n" +
-				"             'value': 'foo'                                    \n" +
-				"           }                                                   \n" +
-				"        ]                                                      \n" +
+				"     {  'name':'state3'                                       \n" +
 				"     }                                                        \n" +
 				"  ],                                                          \n" +
 				"  'variations':[                                              \n" +
@@ -389,8 +342,7 @@ public class ParserConjointErrorMultiTest extends BaseTestCore {
 			    "        ],                                                    \n" +
 			    "        'onStates':[                                           \n" +
 			    "           {                                                  \n" +
-			    "              'stateRef':'state1',                              \n" +
-			    "              'isNonvariant':true                              \n" +
+			    "              'stateRef':'state1'                             \n" +
 			    "           },                                                 \n" +
 			    "           {                                                  \n" +
 			    "              'stateRef':'state2',                              \n" +
@@ -408,7 +360,7 @@ public class ParserConjointErrorMultiTest extends BaseTestCore {
 			    //----------------------------------------------------------------//	
 			    "     {                                                        \n" +
 			    "        'name':'test2',                                       \n" +
-                "        'conjointVariationRefs': ['test1'],                       \n" +
+                "        'conjointVariationRefs': ['test1'],                   \n" +
 			    "        'experiences':[                                       \n" +
 			    "           {                                                  \n" +
 			    "              'name':'A',                                     \n" +
@@ -426,66 +378,13 @@ public class ParserConjointErrorMultiTest extends BaseTestCore {
 			    "        ],                                                    \n" +
 			    "        'onStates':[                                          \n" +
 			    "           {                                                  \n" +
-			    "              'stateRef':'state1',                            \n" +
-			    "              'variants':[                                    \n" +
-			    "                 {                                            \n" +
-			    "                    'experienceRef': 'B'                      \n" +
-			    "                 },                                           \n" +
-			    "                 {                                            \n" +
-			    "                    'experienceRef': 'C'                      \n" +
-			    "                 }                                            \n" +
-			    "              ]                                               \n" +
+			    "              'stateRef':'state1'                             \n" +
 			    "           },                                                 \n" +
 			    "           {                                                  \n" +
-			    "              'stateRef':'state2',                              \n" +
-			    "              'variants':[                                    \n" +
-			    "                 {                                            \n" +
-			    "                    'experienceRef': 'B'                      \n" +
-			    "                 },                                           \n" +
-			    "                 {                                            \n" +
-			    "                    'experienceRef': 'B',                     \n" +
-	    	    "                    'conjointExperienceRefs': [              \n" +
-	    	    "                       {                                      \n" +
-	    	    "                          'variationRef': 'test1',                 \n" +
-	    	    "                          'experienceRef': 'B'                \n" +
-	    	    "                       }                                      \n" +
-	    	    "                     ]                                        \n" +
-			    "                 },                                           \n" +
-			    "                 {                                            \n" +
-			    "                    'experienceRef': 'B',                     \n" +
-	    	    "                    'conjointExperienceRefs': [              \n" +
-	    	    "                       {                                      \n" +
-	    	    "                          'variationRef': 'test1',                 \n" +
-	    	    "                          'experienceRef': 'C'                \n" +
-	    	    "                       }                                      \n" +
-	    	    "                     ]                                        \n" +
-			    "                 },                                           \n" +
-			    "                 {                                            \n" +
-			    "                    'experienceRef': 'C'                      \n" +
-			    "                 },                                           \n" +
-			    "                 {                                            \n" +
-			    "                    'experienceRef': 'C',                     \n" +
-	    	    "                    'conjointExperienceRefs': [              \n" +
-	    	    "                       {                                      \n" +
-	    	    "                          'variationRef': 'test1',                 \n" +
-	    	    "                          'experienceRef': 'B'                \n" +
-	    	    "                       }                                      \n" +
-	    	    "                     ]                                        \n" +
-			    "                 },                                           \n" +
-			    "                 {                                            \n" +
-			    "                    'experienceRef': 'C',                     \n" +
-	    	    "                    'conjointExperienceRefs': [              \n" +
-	    	    "                       {                                      \n" +
-	    	    "                          'variationRef': 'test1',                 \n" +
-	    	    "                          'experienceRef': 'C'                \n" +
-	    	    "                       }                                      \n" +
-	    	    "                     ]                                        \n" +
-			    "                 }                                            \n" +
-			    "              ]                                               \n" +
+			    "              'stateRef':'state2'                             \n" +
 			    "           },                                                 \n" +
 			    "           {                                                  \n" +
-			    "              'stateRef':'state3',                              \n" +
-			    "              'isNonvariant':true                              \n" +
+			    "              'stateRef':'state3'                             \n" +
 			    "           }                                                  \n" +
 			    "        ]                                                     \n" +
 			    "     },                                                       \n" +
@@ -510,51 +409,7 @@ public class ParserConjointErrorMultiTest extends BaseTestCore {
 			    "        ],                                                    \n" +
 			    "        'onStates':[                                           \n" +
 			    "           {                                                  \n" +
-			    "              'stateRef':'state1',                              \n" +
-			    "              'variants':[                                    \n" +
-			    "                 {                                            \n" +
-			    "                    'experienceRef': 'B'                      \n" +
-			    "                 },                                           \n" +
-			    "                 {                                            \n" +
-			    "                    'experienceRef': 'B',                     \n" +
-	    	    "                    'conjointExperienceRefs': [              \n" +
-	    	    "                       {                                      \n" +
-	    	    "                          'variationRef': 'test2',                 \n" +
-	    	    "                          'experienceRef': 'B'                \n" +
-	    	    "                       }                                      \n" +
-	    	    "                     ]                                        \n" +
-			    "                 },                                           \n" +
-			    "                 {                                            \n" +
-			    "                    'experienceRef': 'B',                     \n" +
-	    	    "                    'conjointExperienceRefs': [              \n" +
-	    	    "                       {                                      \n" +
-	    	    "                          'variationRef': 'test2',                 \n" +
-	    	    "                          'experienceRef': 'C'                \n" +
-	    	    "                       }                                      \n" +
-	    	    "                     ]                                        \n" +
-			    "                 },                                           \n" +
-			    "                 {                                            \n" +
-			    "                    'experienceRef': 'C'                      \n" +
-			    "                 },                                           \n" +
-			    "                 {                                            \n" +
-			    "                    'experienceRef': 'C',                     \n" +
-	    	    "                    'conjointExperienceRefs': [              \n" +
-	    	    "                       {                                      \n" +
-	    	    "                          'variationRef': 'test2',                 \n" +
-	    	    "                          'experienceRef': 'B'                \n" +
-	    	    "                       }                                      \n" +
-	    	    "                     ]                                        \n" +
-			    "                 },                                           \n" +
-			    "                 {                                            \n" +
-			    "                    'experienceRef': 'C',                     \n" +
-	    	    "                    'conjointExperienceRefs': [              \n" +
-	    	    "                       {                                      \n" +
-	    	    "                          'variationRef': 'test2',                 \n" +
-	    	    "                          'experienceRef': 'C'                \n" +
-	    	    "                       }                                      \n" +
-	    	    "                     ]                                        \n" +
-			    "                 }                                            \n" +
-			    "              ]                                               \n" +
+			    "              'stateRef':'state1'                              \n" +
 			    "           },                                                 \n" +
 			    "           {                                                  \n" +
 			    "              'stateRef':'state2',                              \n" +
@@ -745,8 +600,7 @@ public class ParserConjointErrorMultiTest extends BaseTestCore {
 			    "              ]                                               \n" +
 			    "           },                                                 \n" +
 			    "           {                                                  \n" +
-			    "              'stateRef':'state3',                              \n" +
-			    "              'isNonvariant':true                              \n" +
+			    "              'stateRef':'state3'                             \n" +
 			    "           }                                                  \n" +
 			    "        ]                                                     \n" +
 			    "     }                                                        \n" +
@@ -765,15 +619,11 @@ public class ParserConjointErrorMultiTest extends BaseTestCore {
 		assertTrue(response.hasMessages(Severity.WARN));
 		assertTrue(response.hasMessages(Severity.INFO));
 
-		assertEquals(2, response.getMessages().size());
+		assertEquals(1, response.getMessages().size());
 		ParserMessage actual = response.getMessages().get(0);
 		ParserMessage expected = new ParserMessageImpl(
 				new Location("/variations[2]/onStates[1]/variants[14]/conjointExperienceRefs[1]/experienceRef"), 
 				CONJOINT_EXPERIENCE_DUPE, "test1", "B");
-		assertMessageEqual(expected, actual);
-		actual = response.getMessages().get(1);
-		expected = new ParserMessageImpl(
-				new Location("/variations[2]/onStates[1]/variants/"), CONJOINT_VARIANT_MISSING, "C", "test1.B,test2.B", "test3", "state2");
 		assertMessageEqual(expected, actual);
 
 	}
@@ -793,41 +643,11 @@ public class ParserConjointErrorMultiTest extends BaseTestCore {
 	    	    //==========================================================================//
 	    	   
 	    	    "   'states':[                                                             \n" +
-	    	    "     {  'name':'state1',                                                  \n" +
-				"        'parameters': [                                        \n" +
-				"           {                                                   \n" +
-				"             'name': 'path',                                   \n" +
-				"             'value': '/path/to/state1'                        \n" +
-				"           },                                                  \n" +
-				"           {                                                   \n" +
-				"             'name': 'bar',                                    \n" +
-				"             'value': 'foo'                                    \n" +
-				"           }                                                   \n" +
-				"        ]                                                      \n" +
+	    	    "     {  'name':'state1'                                                  \n" +
 	    	    "     },                                                                  \n" +
-	    	    "     {  'NAME':'state2',                                                 \n" +
-				"        'parameters': [                                        \n" +
-				"           {                                                   \n" +
-				"             'name': 'path',                                   \n" +
-				"             'value': '/path/to/state2'                        \n" +
-				"           },                                                  \n" +
-				"           {                                                   \n" +
-				"             'name': 'bar',                                    \n" +
-				"             'value': 'foo'                                    \n" +
-				"           }                                                   \n" +
-				"        ]                                                      \n" +
+	    	    "     {  'NAME':'state2'                                                  \n" +
 	    	    "     },                                                                  \n" +
-	    	    "     {  'nAmE':'state3',                                                 \n" +
-				"        'parameters': [                                        \n" +
-				"           {                                                   \n" +
-				"             'name': 'path',                                   \n" +
-				"             'value': '/path/to/state3'                        \n" +
-				"           },                                                  \n" +
-				"           {                                                   \n" +
-				"             'name': 'bar',                                    \n" +
-				"             'value': 'foo'                                    \n" +
-				"           }                                                   \n" +
-				"        ]                                                      \n" +
+	    	    "     {  'nAmE':'state3'                                                  \n" +
 	    	    "     }                                                                   \n" +
 	            "  ],                                                                     \n" +
 	            
@@ -849,20 +669,10 @@ public class ParserConjointErrorMultiTest extends BaseTestCore {
 	    	    "        ],                                                               \n" +
 	    	    "        'onStates':[                                                     \n" +
 	    	    "           {                                                             \n" +
-	    	    "              'stateRef':'state2',                                       \n" +
-	    	    "              'variants':[                                               \n" +
-	    	    "                 {                                                       \n" +
-	    	    "                    'experienceRef':'B'                                  \n" +
-	    	    "                 }                                                       \n" +
-	    	    "              ]                                                          \n" +
+	    	    "              'stateRef':'state2'                                        \n" +
 	    	    "           },                                                            \n" +
 	    	    "           {                                                             \n" +
-	    	    "              'stateRef':'state3',                                       \n" +
-	    	    "              'variants':[                                               \n" +
-	    	    "                 {                                                       \n" +
-	    	    "                    'experienceRef':'B'                                  \n" +
-	    	    "                 }                                                       \n" +
-	    	    "              ]                                                          \n" +
+	    	    "              'stateRef':'state3'                                        \n" +
 	    	    "           }                                                             \n" +
 	    	    "        ]                                                                \n" +
 	    	    "     },                                                                  \n" +
@@ -882,24 +692,13 @@ public class ParserConjointErrorMultiTest extends BaseTestCore {
 	    	    "        ],                                                               \n" +
 	    	    "        'onStates':[                                                     \n" +
 	    	    "           {                                                             \n" +
-	    	    "              'stateRef':'state1',                                       \n" +
-	    	    "              'isNonvariant':true                                        \n" +
+	    	    "              'stateRef':'state1'                                        \n" +
 	    	    "           },                                                            \n" +
 	    	    "           {                                                             \n" +
-	    	    "              'stateRef':'state2',                                       \n" +
-	    	    "              'variants':[                                               \n" +
-	    	    "                 {                                                       \n" +
-	    	    "                    'experienceRef':'B'                                  \n" +
-	    	    "                 }                                                       \n" +
-	    	    "              ]                                                          \n" +
+	    	    "              'stateRef':'state2'                                        \n" +
 	    	    "           },                                                            \n" +
 	    	    "           {                                                             \n" +
-	    	    "              'stateRef':'state3',                                       \n" +
-	    	    "              'variants':[                                               \n" +
-	    	    "                 {                                                       \n" +
-	    	    "                    'experienceRef':'B'                                  \n" +
-	    	    "                 }                                                       \n" +
-	    	    "              ]                                                          \n" +
+	    	    "              'stateRef':'state3'                                        \n" +
 	    	    "           }                                                             \n" +
 	    	    "        ]                                                                \n" +
 	    	    "     },                                                                  \n" +
@@ -1006,8 +805,7 @@ public class ParserConjointErrorMultiTest extends BaseTestCore {
 	    	    "              ]                                                          \n" +
 	    	    "           },                                                            \n" +
 	    	    "           {                                                             \n" +
-	    	    "              'stateRef':'state3',                                        \n" +
-	    	    "              'isNonvariant':true                                         \n" +
+	    	    "              'stateRef':'state3'                                        \n" +
 	    	    "           }                                                             \n" +
 	    	    "        ]                                                                \n" +
 	    	    "     }                                                                   \n" +

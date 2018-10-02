@@ -192,7 +192,7 @@ public class CoreStateRequest implements Serializable {
 
 		if (resolvedStateVariant != null) {
 			jsonGen.writeObjectFieldStart(FIELD_NAME_VARIANT);
-			jsonGen.writeStringField(FIELD_NAME_TEST, resolvedStateVariant.getTest().getName());
+			jsonGen.writeStringField(FIELD_NAME_TEST, resolvedStateVariant.getVariation().getName());
 			int offset = 0;
 			for (StateVariant var: resolvedStateVariant.getOnState().getVariants()) {
 				if (var == resolvedStateVariant) break;

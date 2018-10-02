@@ -10,6 +10,7 @@ import com.variant.core.schema.State;
 import com.variant.core.schema.StateVariant;
 import com.variant.core.schema.Variation;
 import com.variant.core.schema.Variation.Experience;
+import com.variant.core.schema.impl.StateVariantImpl;
 import com.variant.core.schema.impl.VariationOnStateImpl;
 import com.variant.core.util.CollectionsUtils;
 
@@ -27,8 +28,8 @@ public class VariantSpace {
 	// a repeatable iterator order.
 	private LinkedHashSet<Variation> basis;
 	
-	// Table data is a map.
-	private LinkedHashMap<Coordinates, Point> table = new LinkedHashMap<Coordinates, Point>();
+	// Space table.
+	private LinkedHashMap<Coordinates, Point> spaceMap = new LinkedHashMap<Coordinates, Point>();
 	
 	/**
 	 * Cell coordinates in this space.
@@ -102,53 +103,54 @@ public class VariantSpace {
 	}
 
 	/**
-	 * Crate the variant space for a particular Test.OnState instrumentation object. 
-	 * Assumes that the testOnStateImpl object is fully formed, but does not
+	 * Crate the variant space for a particular Variation.OnState object. 
+	 * Assumes that the VariationOnStateImpl object is fully formed, but does not
 	 * assume anything else of the schema.  This is critical because this is called
 	 * in the middle of the new schema construction, where the existing publicly visible
 	 * schema is, potentially, obsolete, but the new schema doesn't yet exist.
 	 * 
-	 * @param tosImpl
+	 * @param vosImpl
 	 */
 	public VariantSpace(VariationOnStateImpl vosImpl)  {
-		
-		if (vosImpl.isNonvariant()) 
-			throw new CoreException.Internal("Cannot crate VariantSpace for a nonvariant instrumentation");
-		
-		// Build basis sorted in ordinal order.
+				
+		// Build the basis -- list of variations starting with the one where this VoS is defined,
+		// followed by the conjoint variations, sorted in ordinal order.
 		basis = new LinkedHashSet<Variation>();
 		basis.add(vosImpl.getVariation());
-		List<Variation> conjointTests = vosImpl.getVariation().getConjointTests();
-		if (conjointTests != null) basis.addAll(conjointTests);
+		basis.addAll(vosImpl.getVariation().getConjointVariations());
 
-		// Pass 1. Build empty space, i.e. all Points with nulls for Variant values, for now.
-		for (Variation t: basis) {
+		// Pass 1. Build default space, i.e. all Points with implicit state variants.
+		for (Variation basisVar: basis) {
 			
-			// HashTable.keySet() returns a view, which will change if we modify the table.
+			// HashTable.keySet() returns a view, which will change if the table is modified.
 			// To take a static snapshot, we crate a new collection;
-			ArrayList<Coordinates> oldKeys = new ArrayList<Coordinates>(table.keySet());
-			
+			ArrayList<Coordinates> oldKeys = new ArrayList<Coordinates>(spaceMap.keySet());
 			
 			if (oldKeys.size() == 0) {
-				// First test is the proper test - add all non-control experiences.
-				for (Experience exp: t.getExperiences()) {
+				
+				// Empty space map => the first variaiton in basis is the enclosing one.
+				// Add proper variant experiences.
+				for (Experience exp: basisVar.getExperiences()) {
 					if (exp.isControl()) continue;
 					Coordinates coordinates = new Coordinates(exp);
-					table.put(coordinates, new Point(coordinates));
+					spaceMap.put(coordinates, new Point(vosImpl, coordinates));
 				}
 			}
 			else {
-				// 2nd and on test is a conjoint test.  Skip it, if it's not instrumented or is nonvariant on this state.
-				// Otherwise, compute the cartеsian product of what's already in the table and this current tests's experience list.
-				if (!vosImpl.getState().isInstrumentedBy(t) || vosImpl.getState().isNonvariantIn(t)) continue;				
 				
-				for (Experience exp: t.getExperiences()) {
-					if (exp.isControl()) continue;
+				// 2nd and on variation, if present, is conjoint. Skip it, if it's not instrumented on this state.
+				// Otherwise, compute the cartеsian product of what's already in the spaceMap and this current tests's 
+				// variant experiences, skipping those experiences where this state is phantom.
+
+				if (!vosImpl.getState().isInstrumentedBy(basisVar)) continue;				
+				
+				for (Experience exp: basisVar.getExperiences()) {
+					if (exp.isControl() || exp.isPhantom(vosImpl.getState())) continue;
 					for (Coordinates oldKey: oldKeys) {
 						// #30: Only multiply by this dimension, if it is conjoint with all tests already in the table. 
-						if (oldKey.isCombinableWith(t)) {
+						if (oldKey.isCombinableWith(basisVar)) {
 							Coordinates coordinates = new Coordinates(oldKey, exp);
-							table.put(coordinates, new Point(coordinates));
+							spaceMap.put(coordinates, new Point(vosImpl, coordinates));
 						}
 					}
 				}
@@ -168,7 +170,7 @@ public class VariantSpace {
 			for (Variation basisTest: basis) {
 			
 				// Skip first test in basis because it refers to the local test and we already have that.
-				if (basisTest.equals(variant.getTest())) continue;
+				if (basisTest.equals(variant.getVariation())) continue;
 				
 				if (!variant.isProper()) {
 					for (Experience conjointExp: variant.getConjointExperiences()) {
@@ -180,11 +182,11 @@ public class VariantSpace {
 				}				
 			}
 			Coordinates coordinates = new Coordinates(coordinateExperiences);
-			Point p = table.get(coordinates);
+			Point p = spaceMap.get(coordinates);
 			if (p == null) {
 				throw new CoreException.Internal(
 						"No point for coordinates [" + CollectionsUtils.toString(coordinateExperiences, ", ") + 
-						"] in test [" + variant.getTest().getName() + "] and view [" + variant.getOnState().getState().getName() + "]");
+						"] in variation [" + variant.getVariation().getName() + "] and state [" + variant.getOnState().getState().getName() + "]");
 			}
 			if (p.variant != null)
 				throw new CoreException.Internal("Variant already added");
@@ -197,7 +199,7 @@ public class VariantSpace {
 	 * @return
 	 */
 	public Collection<Point> getAll() {
-		return table.values();
+		return spaceMap.values();
 	}
 	
 	/**
@@ -221,22 +223,26 @@ public class VariantSpace {
 		// were not found in basis, the input vector is not in this space.
 		if (vector.size() > sortedVector.size()) return null;
 		
-		Point result = table.get(new Coordinates(sortedVector));
+		Point result = spaceMap.get(new Coordinates(sortedVector));
 		return result == null? null : result.variant;
 	}
 
 	
 	/**
 	 * Point of this space is given by its coordinates and has Variant as value.
+	 * A new point contain a default implicit state variant, which may later be
+	 * replaced by an explicit one, if provided in the schema.
 	 */
 	public static class Point {
 		
 		private Coordinates coordinates;
 		private StateVariant variant;
 		
-		private Point(Coordinates coordinates) {
+		private Point(VariationOnStateImpl vosImpl, Coordinates coordinates) {
 			this.coordinates = coordinates;
-			this.variant = null;
+			Variation.Experience ownExp = coordinates.coordinates.get(0);
+			List<Variation.Experience> conjointExps = coordinates.coordinates.subList(1, coordinates.coordinates.size());
+			this.variant = new StateVariantImpl(vosImpl, ownExp, conjointExps);
 		}
 		
 		/**
@@ -264,14 +270,14 @@ public class VariantSpace {
 		}
 		
 		/**
-		 * A point is defined on a state if none of its coordinate experiences are declared as phantom.
+		 * A point is defined in a variant space if none of its coordinate experiences 
+		 * declared this state as phantom.In other words: if a state is phantom in some experience, 
+		 * than all state variants whose coordinates contain that experience are also undefined.
+		 * 
 		 * @return
 		 */
 		public boolean isDefinedOn(State state) {
-			for (Experience e: coordinates.coordinates) {
-				if (e.isPhantom(state)) return false;
-			}
-			return true;
+			return coordinates.coordinates.stream().allMatch(e -> !e.isPhantom(state));
 		}
 	}	
 }

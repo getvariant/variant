@@ -17,8 +17,6 @@ import static com.variant.core.schema.parser.error.SemanticError.PROPERTY_NOT_ST
 import static com.variant.core.schema.parser.error.SemanticError.PROPER_VARIANT_MISSING;
 import static com.variant.core.schema.parser.error.SemanticError.STATEREF_UNDEFINED;
 import static com.variant.core.schema.parser.error.SemanticError.UNSUPPORTED_PROPERTY;
-import static com.variant.core.schema.parser.error.SemanticError.VARIANTS_ISNONVARIANT_INCOMPATIBLE;
-import static com.variant.core.schema.parser.error.SemanticError.VARIANTS_ISNONVARIANT_XOR;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -1317,7 +1315,6 @@ public class ParserSerialVariationsErrorTest extends BaseTestCore {
 			    "        'onStates':[                                           \n" +
 			    "           {                                                  \n" +
 			    "              'stateRef':'State1',                              \n" +
-			    "              'isNonvariant': false,                           \n" +
 			    "              'variants':[                                    \n" +
 			    "                 {                                            \n" +
 			    "                    'experienceRef':'A',                      \n" +
@@ -1351,66 +1348,6 @@ public class ParserSerialVariationsErrorTest extends BaseTestCore {
 		assertMessageEqual(expected, actual);
 	}
 
-	/**
-	 * ISNONVARIANT_NOT_BOOLEAN
-	 * @throws Exception
-	 */
-	@Test
-	public void isNonvariantNotBoolean_Test() throws Exception {
-		
-		String schema = 
-				"{                                                             \n" +
-			    "  'meta':{                                                    \n" +		    	    
-			    "      'name':'schema_name',                                    \n" +
-			    "      'comment':'schema comment'                               \n" +
-			    "  },                                                           \n" +
-			    "   'states':[                                                 \n" +
-			    "     {  'name':'state1'  },                                   \n" +
-	    	    "     {  'name':'state2'  }                                    \n" +
-			    "  ],                                                          \n" +
-				"  'variations':[                                              \n" +
-			    "     {                                                        \n" +
-			    "        'NAME':'test1',                                       \n" +
-			    "        'EXPERIENCES':[                                       \n" +
-			    "           {                                                  \n" +
-			    "              'name':'A',                                     \n" +
-			    "              'weight':50                                     \n" +
-			    "           },                                                 \n" +
-			    "           {                                                  \n" +
-			    "              'NAME':'B',                                     \n" +
-			    "              'WEIGHT':50,                                    \n" +
-			    "              'ISCONTROL':true                                \n" +
-			    "           }                                                  \n" +
-			    "        ],                                                    \n" +
-			    "        'onStates':[                                           \n" +
-			    "           {                                                  \n" +
-			    "              'stateRef':'state1',                              \n" +
-			    "              'ISNonvariant': 'false',                         \n" +
-			    "              'variants':[                                    \n" +
-			    "                 {                                            \n" +
-			    "                    'experienceRef':'A'                       \n" +
-			    "                 }                                            \n" +
-			    "              ]                                               \n" +
-			    "           }                                                  \n" +
-			    "        ]                                                     \n" +
-			    "     }                                                        \n" +
-			    //----------------------------------------------------------------//	
-			    "  ]                                                           \n" +
-			    "}                                                             \n";
-		
-		SchemaParser parser = getSchemaParser();
-		ParserResponse response = parser.parse(schema);
-
-		assertTrue(response.hasMessages());
-		assertFalse(response.hasMessages(Severity.FATAL));
-		assertTrue(response.hasMessages(Severity.ERROR));
-		assertTrue(response.hasMessages(Severity.WARN));
-		assertTrue(response.hasMessages(Severity.INFO));
-		assertEquals(1, response.getMessages().size());
-		ParserMessage actual = response.getMessages().get(0);
-		ParserMessage expected = new ParserMessageImpl(new Location("/variations[0]/onStates[0]/isNonvariant"), PROPERTY_NOT_BOOLEAN, "isNonvariant");
-		assertMessageEqual(expected, actual);
-	}
 
 	/**
 	 * VARIANTS_NOT_LIST
@@ -1446,7 +1383,6 @@ public class ParserSerialVariationsErrorTest extends BaseTestCore {
 			    "        'onStates':[                                           \n" +
 			    "           {                                                  \n" +
 			    "              'stateRef':'state1',                              \n" +
-			    "              'ISNonvariant': false,                           \n" +
 			    "              'variants':                                     \n" +
 			    "                 {                                            \n" +
 			    "                    'experienceRef':'A'                       \n" +
@@ -1604,129 +1540,6 @@ public class ParserSerialVariationsErrorTest extends BaseTestCore {
 	}
 
 	/**
-	 * VARIANTS_ISNONVARIANT_INCOMPATIBLE
-	 * @throws Exception
-	 */
-	@Test
-	public void variantsIsNonvariantIncompatible_Test() throws Exception {
-		
-		String schema = 
-				"{                                                             \n" +
-			    "  'meta':{                                                    \n" +		    	    
-			    "      'name':'schema_name',                                    \n" +
-			    "      'comment':'schema comment'                               \n" +
-			    "  },                                                           \n" +
-			    "   'states':[                                                 \n" +
-			    "     {  'name':'state1'  },                                   \n" +
-	    	    "     {  'name':'state2'  }                                    \n" +
-			    "  ],                                                          \n" +
-				"  'variations':[                                              \n" +
-			    "     {                                                        \n" +
-			    "        'NAME':'test1',                                       \n" +
-			    "        'EXPERIENCES':[                                       \n" +
-			    "           {                                                  \n" +
-			    "              'name':'A',                                     \n" +
-			    "              'weight':50                                     \n" +
-			    "           },                                                 \n" +
-			    "           {                                                  \n" +
-			    "              'NAME':'B',                                     \n" +
-			    "              'WEIGHT':50,                                    \n" +
-			    "              'ISCONTROL':true                                \n" +
-			    "           }                                                  \n" +
-			    "        ],                                                    \n" +
-			    "        'onStates':[                                          \n" +
-			    "           {                                                  \n" +
-			    "              'stateRef':'state1',                            \n" +
-			    "               'ISNONVARIANT': true,                          \n" +
-			    "              'VARIANTS':[                                    \n" +
-			    "                 {                                            \n" +
-			    "                    'experienceRef':'A',                      \n" +
-	    	    "                    'parameters': [                           \n" +
-			    "                       {                                      \n" +
-			    "                          'name':'bar',                       \n" +
-			    "                          'value':'foo'                       \n" +
-			    "                       }                                      \n" +
-			    "                    ]                                         \n" +
-			    "                 }                                            \n" +
-			    "              ]                                               \n" +
-			    "           }                                                  \n" +
-			    "        ]                                                     \n" +
-			    "     }                                                        \n" +
-			    //----------------------------------------------------------------//	
-			    "  ]                                                           \n" +
-			    "}                                                             \n";
-		
-		SchemaParser parser = getSchemaParser();
-		ParserResponse response = parser.parse(schema);
-
-		assertTrue(response.hasMessages());
-		assertFalse(response.hasMessages(Severity.FATAL));
-		assertTrue(response.hasMessages(Severity.ERROR));
-		assertTrue(response.hasMessages(Severity.WARN));
-		assertTrue(response.hasMessages(Severity.INFO));
-		assertEquals(1, response.getMessages().size());
-		ParserMessage actual = response.getMessages().get(0);
-		ParserMessage expected = new ParserMessageImpl(
-				new Location("/variations[0]/onStates[0]/"), VARIANTS_ISNONVARIANT_INCOMPATIBLE);
-		assertMessageEqual(expected, actual);
-	}
-
-	/**
-	 * VARIANTS_ISNONVARIANT_XOR
-	 * @throws Exception
-	 */
-	@Test
-	public void variantsIsNonvariantXor_Test() throws Exception {
-		
-		String schema = 
-				"{                                                             \n" +
-			    "  'meta':{                                                    \n" +		    	    
-			    "      'name':'schema_name',                                    \n" +
-			    "      'comment':'schema comment'                               \n" +
-			    "  },                                                           \n" +
-			    "   'states':[                                                 \n" +
-			    "     {  'name':'state1'  },                                   \n" +
-	    	    "     {  'name':'state2'  }                                    \n" +
-			    "  ],                                                          \n" +
-				"  'variations':[                                              \n" +
-			    "     {                                                        \n" +
-			    "        'NAME':'test1',                                       \n" +
-			    "        'EXPERIENCES':[                                       \n" +
-			    "           {                                                  \n" +
-			    "              'name':'A',                                     \n" +
-			    "              'weight':50                                     \n" +
-			    "           },                                                 \n" +
-			    "           {                                                  \n" +
-			    "              'NAME':'B',                                     \n" +
-			    "              'WEIGHT':50,                                    \n" +
-			    "              'ISCONTROL':true                                \n" +
-			    "           }                                                  \n" +
-			    "        ],                                                    \n" +
-			    "        'onStates':[                                           \n" +
-			    "           {                                                  \n" +
-			    "              'stateRef':'state1'                               \n" +
-			    "           }                                                  \n" +
-			    "        ]                                                     \n" +
-			    "     }                                                        \n" +
-			    //----------------------------------------------------------------//	
-			    "  ]                                                           \n" +
-			    "}                                                             \n";
-		
-		SchemaParser parser = getSchemaParser();
-		ParserResponse response = parser.parse(schema);
-
-		assertTrue(response.hasMessages());
-		assertFalse(response.hasMessages(Severity.FATAL));
-		assertTrue(response.hasMessages(Severity.ERROR));
-		assertTrue(response.hasMessages(Severity.WARN));
-		assertTrue(response.hasMessages(Severity.INFO));
-		assertEquals(1, response.getMessages().size());
-		ParserMessage actual = response.getMessages().get(0);
-		ParserMessage expected = new ParserMessageImpl(new Location("/variations[0]/onStates[0]/"), VARIANTS_ISNONVARIANT_XOR);
-		assertMessageEqual(expected, actual);
-	}
-
-	/**
 	 * VARIANT_NOT_OBJECT + PARSER_VARIANT_MISSING
 	 * @throws Exception
 	 */
@@ -1783,6 +1596,7 @@ public class ParserSerialVariationsErrorTest extends BaseTestCore {
 		actual = response.getMessages().get(1);
 		expected = new ParserMessageImpl(new Location("/variations[0]/onStates[0]/variants[1]/"), ELEMENT_NOT_OBJECT, "variants");
 		assertMessageEqual(expected, actual);
+		assertTrue("PROPER_VARIANT_MISSING should be deleted!", false);
 		actual = response.getMessages().get(2);
 		expected = new ParserMessageImpl(new Location("/variations[0]/onStates[0]/variants/"), PROPER_VARIANT_MISSING, "A");
 		assertMessageEqual(expected, actual);

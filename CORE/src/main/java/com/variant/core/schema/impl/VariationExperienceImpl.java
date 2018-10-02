@@ -1,6 +1,7 @@
 package com.variant.core.schema.impl;
 
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 
 import com.variant.core.schema.State;
@@ -46,8 +47,8 @@ public class VariationExperienceImpl implements Variation.Experience  {
 	}
 
 	@Override
-	public Number getWeight() {
-		return weight;
+	public Optional<Number> getWeight() {
+		return Optional.ofNullable(weight);
 	}
 	
 	@Override

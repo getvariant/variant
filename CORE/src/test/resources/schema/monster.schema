@@ -1,18 +1,19 @@
-//
-// Parser Conjoint Okay Bit Test Schema.
-// All Tests:
-// Tests States
-//       1 2 3 4 5
-// test1   + + - -
-// test2 - + + +  
-// test3 - + - + 
-// test4 + +   - -
-// test5 + + - + -
-// test6 + - +   -
-// blank: not instrumented, -: phantom, +: has variants.
-// 
-// T1, T2, T3(T2), T4(T1), T5(T2,T4), T6(T1,T2,T4,T5)
- 
+/**
+ * Parser Conjoint Okay Bit Test Schema.
+ * All Tests:
+ * Tests States
+ *       1 2 3 4 5
+ * test1   + + - -
+ * test2 - + + +  
+ * test3 -   +   
+ * test4   +   - -
+ * test5 + + - - -
+ * test6 - - +   +
+ * 
+ * T1, T2, T3(T2), T4(T1), T5(T2,T4), T6(T1,T2,T4,T5)
+ * +: explicit variants with param overrides
+ * -: no or some variants with no param overrides
+ */
  
 {
    'meta':{
@@ -62,9 +63,8 @@
      }                                                                   
   ],                                                                     
   'variations':[  
-     // TEST 1 Comment.                                                            
      {                                                                   
-        'name':'test1', /// Another comment                                                  
+        'name':'test1',                    
         'experiences':[                                                  
            {                                                             
               'name':'A',                                                
@@ -82,27 +82,7 @@
         ],                                                               
         'onStates':[
            {                                                             
-              'stateRef':'state2',                                         
-              'variants':[                                               
-                 {                                                       
-                    'experienceRef':'B',
-                    'parameters': [
-                        {
-                            'name':'path',
-                            'value':'/path/to/state2/test1.B'
-                        }
-                    ]
-                 },                                                      
-                 {                                                       
-                    'experienceRef':'C',                                 
-                    'parameters': [
-                        {
-                            'name':'path',
-                            'value':'/path/to/state2/test1.C'
-                        }
-                    ]
-                 }                                                       
-              ]                                                          
+              'stateRef':'state2'                                         
            },                                                            
            {                                                             
               'stateRef':'state3',                                         
@@ -128,12 +108,10 @@
               ]                                                          
            }, 
            {                                                             
-              'stateRef':'state4',                                         
-              'isNonvariant':true                                         
+              'stateRef':'state4'                                       
            },                                                            
            {                                                             
-              'stateRef':'state5',                                         
-              'isNonvariant':true                                         
+              'stateRef':'state5'
            }                                                             
         ]                                                                
      },                                                                  
@@ -156,8 +134,7 @@
         ],                                                               
         'onStates':[                                                      
            {                                                             
-              'stateRef':'state1',                                         
-              'isNonvariant':true                                         
+              'stateRef':'state1'                                         
            },                                                            
            {                                                             
               'stateRef':'state2',                                         
@@ -249,106 +226,19 @@
            }                                                             
         ],                                                               
         'onStates':[                                                      
-           {                                                             
-              'stateRef':'state1',                                         
-              'isNonvariant':true                                         
-           },                                                            
-           {                                                             
-              'stateRef':'state2',                                         
-              'variants':[                                               
-                 {                                                       
-                    'experienceRef':'B',                                 
-                    'parameters': [
-                        {
-                            'name':'path',
-                            'value':'/path/to/state2/test3.B'
-                        }
-                    ]
-                 },                                                      
-                 {                                                       
-                    'experienceRef':'C',                                 
-                    'parameters': [
-                        {
-                            'name':'path',
-                            'value':'/path/to/state2/test3.C'
-                        }
-                    ]
-                 },                                                      
-                 {                                                       
-                    'experienceRef':'B',                                 
-                    'conjointExperienceRefs': [                         
-                       {                                                 
-                          'variationRef': 'test2',                            
-                          'experienceRef': 'B'                           
-                       }                                                 
-                     ],                                                  
-                    'parameters': [
-                        {
-                            'name':'path',
-                            'value':'/path/to/state2/test2.B+test3.B'
-                        }
-                    ]
-                 },                                                      
-                 {                                                       
-                    'experienceRef':'B',                                 
-                    'conjointExperienceRefs': [                         
-                       {                                                 
-                          'variationRef': 'test2',                            
-                          'experienceRef': 'C'                           
-                       }                                                 
-                     ],                                                  
-                    'parameters': [
-                        {
-                            'name':'path',
-                            'value':'/path/to/state2/test2.C+test3.B'
-                        }
-                    ]
-                 },                                                      
-                 {                                                       
-                    'experienceRef':'C',                                 
-                    'conjointExperienceRefs': [                         
-                       {                                                 
-                          'variationRef': 'test2',                            
-                          'experienceRef': 'B'                           
-                       }                                                 
-                     ],                                                  
-                    'parameters': [
-                        {
-                            'name':'path',
-                            'value':'/path/to/state2/test2.B+test3.C'
-                        }
-                    ]
-                 },                                                      
-                 {                                                       
-                    'experienceRef':'C',                                 
-                    'conjointExperienceRefs': [                         
-                       {                                                 
-                          'variationRef': 'test2',                            
-                          'experienceRef': 'C'                           
-                       }                                                 
-                     ],                                                  
-                    'parameters': [
-                        {
-                            'name':'path',
-                            'value':'/path/to/state2/test2.C+test3.C'
-                        }
-                    ]
-                 }                                                      
-              ]                                                          
-           },                                                            
+           {  
+              // test2 is also on t1 and also with no explicit variants.                                       
+              'stateRef':'state1'                                        
+           },                            
            {                                                             
               'stateRef':'state3',                                         
-              'isNonvariant':true                                               
-           },                                                            
-           {                                                             
-              'stateRef':'state4',                                         
               'variants':[                                               
                  {                                                       
                     'experienceRef':'B',                                 
                     'parameters': [
                         {
                             'name':'path',
-                            'value':'/path/to/state4/test3.B'
+                            'value':'/path/to/state3/test3.B'
                         }
                     ]
                  },                                                      
@@ -357,10 +247,10 @@
                     'parameters': [
                         {
                             'name':'path',
-                            'value':'/path/to/state4/test3.C'
+                            'value':'/path/to/state3/test3.C'
                         }
                     ]
-                 },
+                 },                                                      
                  {                                                       
                     'experienceRef':'B',                                 
                     'conjointExperienceRefs': [                         
@@ -372,7 +262,7 @@
                     'parameters': [
                         {
                             'name':'path',
-                            'value':'/path/to/state4/test2.B+test3.B'
+                            'value':'/path/to/state3/test2.B+test3.B'
                         }
                     ]
                  },                                                      
@@ -387,7 +277,7 @@
                     'parameters': [
                         {
                             'name':'path',
-                            'value':'/path/to/state4/test2.C+test3.B'
+                            'value':'/path/to/state3/test2.C+test3.B'
                         }
                     ]
                  },                                                      
@@ -402,7 +292,7 @@
                     'parameters': [
                         {
                             'name':'path',
-                            'value':'/path/to/state4/test2.B+test3.C'
+                            'value':'/path/to/state3/test2.B+test3.C'
                         }
                     ]
                  },                                                      
@@ -417,12 +307,12 @@
                     'parameters': [
                         {
                             'name':'path',
-                            'value':'/path/to/state4/test2.C+test3.C'
+                            'value':'/path/to/state3/test2.C+test3.C'
                         }
                     ]
                  }                                                      
               ]                                                          
-           }                                                             
+           }                                                            
         ]                                                                
      },                                                                  
      {                                                                   
@@ -444,29 +334,6 @@
            }                                                             
         ],                                                               
         'onStates':[                                                      
-           {                                                             
-              'stateRef':'state1',                                         
-              'variants':[                                               
-                 {                                                       
-                    'experienceRef':'B',                                 
-                    'parameters': [
-                        {
-                            'name':'path',
-                            'value':'/path/to/state1/test4.B'
-                        }
-                    ]
-                 },                                                      
-                 {                                                       
-                    'experienceRef':'C',                                 
-                    'parameters': [
-                        {
-                            'name':'path',
-                            'value':'/path/to/state1/test4.C'
-                        }
-                    ]
-                 }                                                       
-              ]                                                          
-           },                                                            
            {                                                             
               'stateRef':'state2',                                         
               'variants':[                                               
@@ -549,15 +416,13 @@
                     ]
                  }                                                       
               ]                                                          
-           },                                                            
+           },
            {                                                             
-              'stateRef':'state4',                                         
-              'isNonvariant':true                                         
-           },                                                            
+              'stateRef':'state4'
+           },                                        
            {                                                             
-              'stateRef':'state5',                                         
-              'isNonvariant':true                                         
-           }                                                             
+              'stateRef':'state5'
+           }                                         
         ]                                                                
      },                                                                  
      {                                                                   
@@ -581,7 +446,8 @@
         'onStates':[                                                      
            {                                                             
               'stateRef':'state1',                                         
-              'variants':[                                               
+              'variants':[
+                 /* ------- proper ------ */                                       
                  {                                                       
                     'experienceRef':'B',                                 
                     'parameters': [
@@ -599,7 +465,69 @@
                             'value':'/path/to/state1/test5.C'
                         }
                     ]
+                 },    
+                 /* ------- with test2 ------ */                                       
+                 {                                                       
+                    'experienceRef':'B',                                 
+                    'conjointExperienceRefs': [                         
+                       {                                                 
+                          'variationRef': 'test2',                            
+                          'experienceRef': 'B'                           
+                       }                                                 
+                     ],                                                  
+                    'parameters': [
+                        {
+                            'name':'path',
+                            'value':'/path/to/state1/test2.B+test5.B'
+                        }
+                    ]
                  },                                                      
+                 {                                                       
+                    'experienceRef':'B',                                 
+                    'conjointExperienceRefs': [                         
+                       {                                                 
+                          'variationRef': 'test2',                            
+                          'experienceRef': 'C'                           
+                       }                                                 
+                     ],                                                  
+                    'parameters': [
+                        {
+                            'name':'path',
+                            'value':'/path/to/state1/test2.C+test5.B'
+                        }
+                    ]
+                 },                                                      
+                 {                                                       
+                    'experienceRef':'C',                                 
+                    'conjointExperienceRefs': [                         
+                       {                                                 
+                          'variationRef': 'test2',                            
+                          'experienceRef': 'B'                           
+                       }                                                 
+                     ],                                                  
+                    'parameters': [
+                        {
+                            'name':'path',
+                            'value':'/path/to/state1/test2.B+test5.B'
+                        }
+                    ]
+                 },                                                      
+                 {                                                       
+                    'experienceRef':'C',                                 
+                    'conjointExperienceRefs': [                         
+                       {                                                 
+                          'variationRef': 'test2',                            
+                          'experienceRef': 'C'                           
+                       }                                                 
+                     ],                                                  
+                    'parameters': [
+                        {
+                            'name':'path',
+                            'value':'/path/to/state1/test2.C+test5.C'
+                        }
+                    ]
+                 },                                                      
+                 /* ------- with test 4 ------ */                                       
                  {                                                       
                     'experienceRef':'B',                                 
                     'conjointExperienceRefs': [                         
@@ -664,7 +592,8 @@
            },
            {                                                             
               'stateRef':'state2',                                         
-              'variants':[                                               
+              'variants':[                                      
+                 /* ------- proper ------ */                                       
                  {                                                       
                     'experienceRef':'B',                                 
                     'parameters': [
@@ -683,6 +612,7 @@
                         }
                     ]
                  },                                                      
+                 /* ------- test2 ------ */                                       
                  {                                                       
                     'experienceRef':'B',                                 
                     'conjointExperienceRefs': [                         
@@ -743,6 +673,7 @@
                         }
                     ]
                  },                                                      
+                 /* ------- test4 ------ */                                       
                  {                                                       
                     'experienceRef':'B',                                 
                     'conjointExperienceRefs': [                         
@@ -806,12 +737,12 @@
               ]                                                          
            },                                                            
            {                                                             
-              'stateRef':'state3',                                         
-              'isNonvariant':true                                         
+              'stateRef':'state3'                                         
            },                                                            
            {                                                             
               'stateRef':'state4',                                         
               'variants':[                                               
+                 /* ------- proper ------ */                                       
                  {                                                       
                     'experienceRef':'B',                                 
                     'parameters': [
@@ -830,6 +761,7 @@
                         }
                     ]
                  },                                                      
+                 /* ------- test2 ------ */                                       
                  {                                                       
                     'experienceRef':'B',                                 
                     'conjointExperienceRefs': [                         
@@ -889,12 +821,13 @@
                             'value':'/path/to/state4/test2.C+test5.C'
                         }
                     ]
-                 }                                                       
+                 }                              
+                 /* ------- omitting test4 ------ */                                       
               ]                                                          
            },                                                            
            {                                                             
-              'stateRef':'state5',                                         
-              'isNonvariant':true                                         
+              'stateRef':'state5'                                        
+              /* ------- omitting all tests ------ */
            }                                                             
         ]                                                                
      },                                                                  
@@ -918,307 +851,15 @@
         ],                                                               
         'onStates':[                                                      
            {                                                             
-              'stateRef':'state1',                                         
-              'variants':[                                               
-                 {                                                       
-                    'experienceRef':'B',                                 
-                    'parameters': [
-                        {
-                            'name':'path',
-                            'value':'/path/to/state1/test6.B'
-                        }
-                    ]
-                 },                                                      
-                 {                                                       
-                    'experienceRef':'C',                                 
-                    'parameters': [
-                        {
-                            'name':'path',
-                            'value':'/path/to/state1/test6.C'
-                        }
-                    ]
-                 },                                                      
-                 {                                                       
-                    'experienceRef':'B',                                 
-                    'conjointExperienceRefs': [                         
-                       {                                                 
-                          'variationRef': 'test4',                            
-                          'experienceRef': 'B'                           
-                       }                                                 
-                     ],                                                  
-                    'parameters': [
-                        {
-                            'name':'path',
-                            'value':'/path/to/state1/test4.B+test6.B'
-                        }
-                    ]
-                 },                                                      
-                 {                                                       
-                    'experienceRef':'B',                                 
-                    'conjointExperienceRefs': [                         
-                       {                                                 
-                          'variationRef': 'test4',                            
-                          'experienceRef': 'C'                           
-                       }                                                 
-                     ],                                                  
-                    'parameters': [
-                        {
-                            'name':'path',
-                            'value':'/path/to/state1/test4.C+test6.B'
-                        }
-                    ]
-                 },                                                      
-                 {                                                       
-                    'experienceRef':'C',                                 
-                    'conjointExperienceRefs': [                         
-                       {                                                 
-                          'variationRef': 'test4',                            
-                          'experienceRef': 'B'                           
-                       }                                                 
-                     ],                                                  
-                    'parameters': [
-                        {
-                            'name':'path',
-                            'value':'/path/to/state1/test4.B+test6.C'
-                        }
-                    ]
-                 },                                                      
-                 {                                                       
-                    'experienceRef':'C',                                 
-                    'conjointExperienceRefs': [                         
-                       {                                                 
-                          'variationRef': 'test4',                            
-                          'experienceRef': 'C'                           
-                       }                                                 
-                     ],                                                  
-                    'parameters': [
-                        {
-                            'name':'path',
-                            'value':'/path/to/state1/test4.C+test6.C'
-                        }
-                    ]
-                 },                                                      
-                 {                                                       
-                    'experienceRef':'B',                                 
-                    'conjointExperienceRefs': [                         
-                       {                                                 
-                          'variationRef': 'test5',                            
-                          'experienceRef': 'B'                           
-                       }                                                 
-                     ],                                                  
-                    'parameters': [
-                        {
-                            'name':'path',
-                            'value':'/path/to/state1/test5.B+test6.B'
-                        }
-                    ]
-                 },                                                      
-                 {                                                       
-                    'experienceRef':'B',                                 
-                    'conjointExperienceRefs': [                         
-                       {                                                 
-                          'variationRef': 'test5',                            
-                          'experienceRef': 'C'                           
-                       }                                                 
-                     ],                                                  
-                    'parameters': [
-                        {
-                            'name':'path',
-                            'value':'/path/to/state1/test5.C+test6.B'
-                        }
-                    ]
-                 },                                                      
-                 {                                                       
-                    'experienceRef':'C',                                 
-                    'conjointExperienceRefs': [                         
-                       {                                                 
-                          'variationRef': 'test5',                            
-                          'experienceRef': 'B'                           
-                       }                                                 
-                     ],                                                  
-                    'parameters': [
-                        {
-                            'name':'path',
-                            'value':'/path/to/state1/test5.B+test6.C'
-                        }
-                    ]
-                 },                                                      
-                 {                                                       
-                    'experienceRef':'C',                                 
-                    'conjointExperienceRefs': [                         
-                       {                                                 
-                          'variationRef': 'test5',                            
-                          'experienceRef': 'C'                           
-                       }                                                 
-                     ],                                                  
-                    'parameters': [
-                        {
-                            'name':'path',
-                            'value':'/path/to/state1/test5.C+test6.C'
-                        }
-                    ]
-                 },                                                      
-                 {                                                       
-                    'experienceRef':'B',                                 
-                    'conjointExperienceRefs': [                         
-                       {                                                 
-                          'variationRef': 'test4',                            
-                          'experienceRef': 'B'                           
-                       },                                                
-                       {                                                 
-                          'variationRef': 'test5',                            
-                          'experienceRef': 'B'                           
-                       }                                                 
-                     ],                                                  
-                    'parameters': [
-                        {
-                            'name':'path',
-                            'value':'/path/to/state1/test4.B+test5.B+test6.B'
-                        }
-                    ]
-                 },                                                      
-                 {                                                       
-                    'experienceRef':'B',                                 
-                    'conjointExperienceRefs': [                         
-                       {                                                 
-                          'variationRef': 'test4',                            
-                          'experienceRef': 'B'                           
-                       },                                                
-                       {                                                 
-                          'variationRef': 'test5',                            
-                          'experienceRef': 'C'                           
-                       }                                                 
-                     ],                                                  
-                    'parameters': [
-                        {
-                            'name':'path',
-                            'value':'/path/to/state1/test4.B+test5.C+test6.B'
-                        }
-                    ]
-                 },                                                      
-                 {                                                       
-                    'experienceRef':'B',                                 
-                    'conjointExperienceRefs': [                         
-                       {                                                 
-                          'variationRef': 'test4',                            
-                          'experienceRef': 'C'                           
-                       },                                                
-                       {                                                 
-                          'variationRef': 'test5',                            
-                          'experienceRef': 'B'                           
-                       }                                                 
-                     ],                                                  
-                    'parameters': [
-                        {
-                            'name':'path',
-                            'value':'/path/to/state1/test4.C+test5.B+test6.B'
-                        }
-                    ]
-                 },                                                      
-                 {                                                       
-                    'experienceRef':'B',                                 
-                    'conjointExperienceRefs': [                         
-                       {                                                 
-                          'variationRef': 'test4',                            
-                          'experienceRef': 'C'                           
-                       },                                                
-                       {                                                 
-                          'variationRef': 'test5',                            
-                          'experienceRef': 'C'                           
-                       }                                                 
-                     ],                                                  
-                    'parameters': [
-                        {
-                            'name':'path',
-                            'value':'/path/to/state1/test4.C+test5.C+test6.B'
-                        }
-                    ]
-                 },                                                      
-                 {                                                       
-                    'experienceRef':'C',                                 
-                    'conjointExperienceRefs': [                         
-                       {                                                 
-                          'variationRef': 'test4',                            
-                          'experienceRef': 'B'                           
-                       },                                                
-                       {                                                 
-                          'variationRef': 'test5',                            
-                          'experienceRef': 'B'                           
-                       }                                                 
-                     ],                                                  
-                    'parameters': [
-                        {
-                            'name':'path',
-                            'value':'/path/to/state1/test4.B+test5.B+test6.C'
-                        }
-                    ]
-                 },                                                      
-                 {                                                       
-                    'experienceRef':'C',                                 
-                    'conjointExperienceRefs': [                         
-                       {                                                 
-                          'variationRef': 'test4',                            
-                          'experienceRef': 'B'                           
-                       },                                                
-                       {                                                 
-                          'variationRef': 'test5',                            
-                          'experienceRef': 'C'                           
-                       }                                                 
-                     ],                                                  
-                    'parameters': [
-                        {
-                            'name':'path',
-                            'value':'/path/to/state1/test4.B+test5.C+test6.C'
-                        }
-                    ]
-                 },                                                      
-                 {                                                       
-                    'experienceRef':'C',                                 
-                    'conjointExperienceRefs': [                         
-                       {                                                 
-                          'variationRef': 'test4',                            
-                          'experienceRef': 'C'                           
-                       },                                                
-                       {                                                 
-                          'variationRef': 'test5',                            
-                          'experienceRef': 'B'                           
-                       }                                                 
-                     ],                                                  
-                    'parameters': [
-                        {
-                            'name':'path',
-                            'value':'/path/to/state1/test4.C+test5.B+test6.C'
-                        }
-                    ]
-                 },                                                      
-                 {                                                       
-                    'experienceRef':'C',                                 
-                    'conjointExperienceRefs': [                         
-                       {                                                 
-                          'variationRef': 'test4',                            
-                          'experienceRef': 'C'                           
-                       },                                                
-                       {                                                 
-                          'variationRef': 'test5',                            
-                          'experienceRef': 'C'                           
-                       }                                                 
-                     ],                                                  
-                    'parameters': [
-                        {
-                            'name':'path',
-                            'value':'/path/to/state1/test4.C+test5.C+test6.C'
-                        }
-                    ]
-                 }                                                       
-              ]                                                          
+              'stateRef':'state1'                                         
            },                                                            
            {                                                             
-              'stateRef':'state2',                                         
-              'isNonvariant':true                                         
+              'stateRef':'state2'                                         
            },                                                            
            {                                                             
               'stateRef':'state3',                                         
               'variants':[                                               
+                 /* ------- omitted both proper experiences ------                                        
                  {                                                       
                     'experienceRef':'B',                                 
                     'parameters': [
@@ -1236,7 +877,10 @@
                             'value':'/path/to/state3/test6.C'
                         }
                     ]
-                 },                                                      
+                 },
+                 ------------------------------------------------ */
+                                                                    
+                 /* ------- test1 ------ */                                       
                  {                                                       
                     'experienceRef':'B',                                 
                     'conjointExperienceRefs': [                         
@@ -1297,6 +941,7 @@
                         }
                     ]
                  },                                                      
+                 /* ------- test2 ------ */                                       
                  {                                                       
                     'experienceRef':'B',                                 
                     'conjointExperienceRefs': [                         
@@ -1361,8 +1006,372 @@
            },                                                            
            {                                                             
               'stateRef':'state5',                                         
-              'isNonvariant':true                                         
-           }                                                             
+              'variants':[                                               
+                 /* ------- proper ------ */                                       
+                 {                                                       
+                    'experienceRef':'B',                                 
+                    'parameters': [
+                        {
+                            'name':'path',
+                            'value':'/path/to/state1/test6.B'
+                        }
+                    ]
+                 },
+                 /* ----- omitted 1 proper experience -----
+                 {                                                       
+                    'experienceRef':'C',                                 
+                    'parameters': [
+                        {
+                            'name':'path',
+                            'value':'/path/to/state1/test6.C'
+                        }
+                    ]
+                 },                                                    
+                 ------------------------------------------- */
+                 
+                 /* ------- test1 ------ */                                       
+                  {                                                       
+                    'experienceRef':'B',                                 
+                    'conjointExperienceRefs': [                         
+                       {                                                 
+                          'variationRef': 'test1',                            
+                          'experienceRef': 'B'                           
+                       }                                                 
+                     ],                                                  
+                    'parameters': [
+                        {
+                            'name':'path',
+                            'value':'/path/to/state5/test1.B+test6.B'
+                        }
+                    ]
+                 },                                                      
+                 {                                                       
+                    'experienceRef':'B',                                 
+                    'conjointExperienceRefs': [                         
+                       {                                                 
+                          'variationRef': 'test1',                            
+                          'experienceRef': 'C'                           
+                       }                                                 
+                     ],                                                  
+                    'parameters': [
+                        {
+                            'name':'path',
+                            'value':'/path/to/state5/test1.C+test6.B'
+                        }
+                    ]
+                 },                                                      
+                 {                                                       
+                    'experienceRef':'C',                                 
+                    'conjointExperienceRefs': [                         
+                       {                                                 
+                          'variationRef': 'test1',                            
+                          'experienceRef': 'B'                           
+                       }                                                 
+                     ],                                                  
+                    'parameters': [
+                        {
+                            'name':'path',
+                            'value':'/path/to/state5/test1.B+test6.C'
+                        }
+                    ]
+                 },                                                      
+                 {                                                       
+                    'experienceRef':'C',                                 
+                    'conjointExperienceRefs': [                         
+                       {                                                 
+                          'variationRef': 'test1',                            
+                          'experienceRef': 'C'                           
+                       }                                                 
+                     ],                                                  
+                    'parameters': [
+                        {
+                            'name':'path',
+                            'value':'/path/to/state5/test1.C+test6.C'
+                        }
+                    ]
+                 },
+                 
+                 /* ------- test4 ------ */                                       
+                  {                                                       
+                    'experienceRef':'B',                                 
+                    'conjointExperienceRefs': [                         
+                       {                                                 
+                          'variationRef': 'test4',                            
+                          'experienceRef': 'B'                           
+                       }                                                 
+                     ],                                                  
+                    'parameters': [
+                        {
+                            'name':'path',
+                            'value':'/path/to/state5/test4.B+test6.B'
+                        }
+                    ]
+                 },                                                      
+                 {                                                       
+                    'experienceRef':'B',                                 
+                    'conjointExperienceRefs': [                         
+                       {                                                 
+                          'variationRef': 'test4',                            
+                          'experienceRef': 'C'                           
+                       }                                                 
+                     ],                                                  
+                    'parameters': [
+                        {
+                            'name':'path',
+                            'value':'/path/to/state5/test4.C+test6.B'
+                        }
+                    ]
+                 },                                                      
+                 {                                                       
+                    'experienceRef':'C',                                 
+                    'conjointExperienceRefs': [                         
+                       {                                                 
+                          'variationRef': 'test4',                            
+                          'experienceRef': 'B'                           
+                       }                                                 
+                     ],                                                  
+                    'parameters': [
+                        {
+                            'name':'path',
+                            'value':'/path/to/state5/test4.B+test6.C'
+                        }
+                    ]
+                 },                                                      
+                 {                                                       
+                    'experienceRef':'C',                                 
+                    'conjointExperienceRefs': [                         
+                       {                                                 
+                          'variationRef': 'test4',                            
+                          'experienceRef': 'C'                           
+                       }                                                 
+                     ],                                                  
+                    'parameters': [
+                        {
+                            'name':'path',
+                            'value':'/path/to/state5/test4.C+test6.C'
+                        }
+                    ]
+                 },   
+                                                                    
+                 /* ------- test5 ------ */                                       
+                 {                                                       
+                    'experienceRef':'B',                                 
+                    'conjointExperienceRefs': [                         
+                       {                                                 
+                          'variationRef': 'test5',                            
+                          'experienceRef': 'B'                           
+                       }                                                 
+                     ],                                                  
+                    'parameters': [
+                        {
+                            'name':'path',
+                            'value':'/path/to/state5/test5.B+test6.B'
+                        }
+                    ]
+                 },                                                      
+                 {                                                       
+                    'experienceRef':'B',                                 
+                    'conjointExperienceRefs': [                         
+                       {                                                 
+                          'variationRef': 'test5',                            
+                          'experienceRef': 'C'                           
+                       }                                                 
+                     ],                                                  
+                    'parameters': [
+                        {
+                            'name':'path',
+                            'value':'/path/to/state5/test5.C+test6.B'
+                        }
+                    ]
+                 },                                                      
+                 {                                                       
+                    'experienceRef':'C',                                 
+                    'conjointExperienceRefs': [                         
+                       {                                                 
+                          'variationRef': 'test5',                            
+                          'experienceRef': 'B'                           
+                       }                                                 
+                     ],                                                  
+                    'parameters': [
+                        {
+                            'name':'path',
+                            'value':'/path/to/state5/test5.B+test6.C'
+                        }
+                    ]
+                 },                                                      
+                 {                                                       
+                    'experienceRef':'C',                                 
+                    'conjointExperienceRefs': [                         
+                       {                                                 
+                          'variationRef': 'test5',                            
+                          'experienceRef': 'C'                           
+                       }                                                 
+                     ],                                                  
+                    'parameters': [
+                        {
+                            'name':'path',
+                            'value':'/path/to/state5/test5.C+test6.C'
+                        }
+                    ]
+                 },                                                    
+
+                 /* ------- test1 + test4 omitted ------ */                                       
+
+                 /* ------- test4 + test5 ------ */                                       
+                 {                                                       
+                    'experienceRef':'B',                                 
+                    'conjointExperienceRefs': [                         
+                       {                                                 
+                          'variationRef': 'test4',                            
+                          'experienceRef': 'B'                           
+                       },                                                
+                       {                                                 
+                          'variationRef': 'test5',                            
+                          'experienceRef': 'B'                           
+                       }                                                 
+                     ],                                                  
+                    'parameters': [
+                        {
+                            'name':'path',
+                            'value':'/path/to/state5/test4.B+test5.B+test6.B'
+                        }
+                    ]
+                 },                                                      
+                 {                                                       
+                    'experienceRef':'B',                                 
+                    'conjointExperienceRefs': [                         
+                       {                                                 
+                          'variationRef': 'test4',                            
+                          'experienceRef': 'B'                           
+                       },                                                
+                       {                                                 
+                          'variationRef': 'test5',                            
+                          'experienceRef': 'C'                           
+                       }                                                 
+                     ],                                                  
+                    'parameters': [
+                        {
+                            'name':'path',
+                            'value':'/path/to/state5/test4.B+test5.C+test6.B'
+                        }
+                    ]
+                 },                                                      
+                 {                                                       
+                    'experienceRef':'B',                                 
+                    'conjointExperienceRefs': [                         
+                       {                                                 
+                          'variationRef': 'test4',                            
+                          'experienceRef': 'C'                           
+                       },                                                
+                       {                                                 
+                          'variationRef': 'test5',                            
+                          'experienceRef': 'B'                           
+                       }                                                 
+                     ],                                                  
+                    'parameters': [
+                        {
+                            'name':'path',
+                            'value':'/path/to/state5/test4.C+test5.B+test6.B'
+                        }
+                    ]
+                 },                                                      
+                 {                                                       
+                    'experienceRef':'B',                                 
+                    'conjointExperienceRefs': [                         
+                       {                                                 
+                          'variationRef': 'test4',                            
+                          'experienceRef': 'C'                           
+                       },                                                
+                       {                                                 
+                          'variationRef': 'test5',                            
+                          'experienceRef': 'C'                           
+                       }                                                 
+                     ],                                                  
+                    'parameters': [
+                        {
+                            'name':'path',
+                            'value':'/path/to/state5/test4.C+test5.C+test6.B'
+                        }
+                    ]
+                 },                                                      
+                 {                                                       
+                    'experienceRef':'C',                                 
+                    'conjointExperienceRefs': [                         
+                       {                                                 
+                          'variationRef': 'test4',                            
+                          'experienceRef': 'B'                           
+                       },                                                
+                       {                                                 
+                          'variationRef': 'test5',                            
+                          'experienceRef': 'B'                           
+                       }                                                 
+                     ],                                                  
+                    'parameters': [
+                        {
+                            'name':'path',
+                            'value':'/path/to/state5/test4.B+test5.B+test6.C'
+                        }
+                    ]
+                 },                                                      
+                 {                                                       
+                    'experienceRef':'C',                                 
+                    'conjointExperienceRefs': [                         
+                       {                                                 
+                          'variationRef': 'test4',                            
+                          'experienceRef': 'B'                           
+                       },                                                
+                       {                                                 
+                          'variationRef': 'test5',                            
+                          'experienceRef': 'C'                           
+                       }                                                 
+                     ],                                                  
+                    'parameters': [
+                        {
+                            'name':'path',
+                            'value':'/path/to/state5/test4.B+test5.C+test6.C'
+                        }
+                    ]
+                 },                                                      
+                 {                                                       
+                    'experienceRef':'C',                                 
+                    'conjointExperienceRefs': [                         
+                       {                                                 
+                          'variationRef': 'test4',                            
+                          'experienceRef': 'C'                           
+                       },                                                
+                       {                                                 
+                          'variationRef': 'test5',                            
+                          'experienceRef': 'B'                           
+                       }                                                 
+                     ],                                                  
+                    'parameters': [
+                        {
+                            'name':'path',
+                            'value':'/path/to/state5/test4.C+test5.B+test6.C'
+                        }
+                    ]
+                 },                                                      
+                 {                                                       
+                    'experienceRef':'C',                                 
+                    'conjointExperienceRefs': [                         
+                       {                                                 
+                          'variationRef': 'test4',                            
+                          'experienceRef': 'C'                           
+                       },                                                
+                       {                                                 
+                          'variationRef': 'test5',                            
+                          'experienceRef': 'C'                           
+                       }                                                 
+                     ],                                                  
+                    'parameters': [
+                        {
+                            'name':'path',
+                            'value':'/path/to/state5/test4.C+test5.C+test6.C'
+                        }
+                    ]
+                 }                                                       
+              ]                                                          
+           }                                                            
         ]                                                                
      }                                                                   
   ]                                                                      

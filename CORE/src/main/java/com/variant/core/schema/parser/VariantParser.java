@@ -1,20 +1,6 @@
 package com.variant.core.schema.parser;
 
-import static com.variant.core.schema.parser.error.SemanticError.CONJOINT_EXPERIENCE_DUPE;
-import static com.variant.core.schema.parser.error.SemanticError.CONJOINT_EXPERIENCE_EXPERIENCE_REF_UNDEFINED;
-import static com.variant.core.schema.parser.error.SemanticError.CONJOINT_EXPERIENCE_REF_TESTS_NOT_CONJOINT;
-import static com.variant.core.schema.parser.error.SemanticError.CONJOINT_EXPERIENCE_TEST_REF_NONVARIANT;
-import static com.variant.core.schema.parser.error.SemanticError.CONJOINT_EXPERIENCE_TEST_REF_UNDEFINED;
-import static com.variant.core.schema.parser.error.SemanticError.CONJOINT_VARIANT_TEST_NOT_CONJOINT;
-import static com.variant.core.schema.parser.error.SemanticError.ELEMENT_NOT_OBJECT;
-import static com.variant.core.schema.parser.error.SemanticError.EXPERIENCEREF_ISCONTROL;
-import static com.variant.core.schema.parser.error.SemanticError.EXPERIENCEREF_UNDEFINED;
-import static com.variant.core.schema.parser.error.SemanticError.PROPERTY_MISSING;
-import static com.variant.core.schema.parser.error.SemanticError.PROPERTY_NOT_ALLOWED_PHANTOM_VARIANT;
-import static com.variant.core.schema.parser.error.SemanticError.PROPERTY_NOT_BOOLEAN;
-import static com.variant.core.schema.parser.error.SemanticError.PROPERTY_NOT_LIST;
-import static com.variant.core.schema.parser.error.SemanticError.PROPERTY_NOT_STRING;
-import static com.variant.core.schema.parser.error.SemanticError.UNSUPPORTED_PROPERTY;
+import static com.variant.core.schema.parser.error.SemanticError.*;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -193,18 +179,9 @@ public class VariantParser implements Keywords {
 					}
 					
 					Variation conjointVar = conjointVarOpt.get();
-					
-					// Current view cannot be nonvariant in the conjoint variation.
-					if (state.isNonvariantIn(conjointVar)) {
-						response.addMessage(
-								covarExpRefLocation.plusProp(KEYWORD_EXPERIENCE_REF),
-								CONJOINT_EXPERIENCE_TEST_REF_NONVARIANT, 
-								conjointVarRef, state.getName());
-						return null;						
-					}
-					
+										
 					// This test must declare the other test as conjoint.
-					if (test.getConjointTests() == null || !test.getConjointTests().contains(conjointVar)) {
+					if (test.getConjointVariations() == null || !test.getConjointVariations().contains(conjointVar)) {
 						response.addMessage(
 								covarExpRefLocation.plusProp(KEYWORD_EXPERIENCE_REF),
 								CONJOINT_VARIANT_TEST_NOT_CONJOINT,
@@ -275,18 +252,17 @@ public class VariantParser implements Keywords {
 			}
 		}
 
-		// Don't create a state variant if undefined.
+		// Don't create a state variant if phantom.
 		if (isPhantom) {
 			exp.addUninstrumentedState(state);
 			return null;
 		}
 		
 		// Resort covarTestExperiences in ordinal order, if present.
-		List<VariationExperienceImpl> orderedCovarTestExperiences = null; 
+		List<Variation.Experience> orderedCovarTestExperiences = new ArrayList<Variation.Experience>(); 
+		
 		if (conjointExperiences != null) {
 			
-			orderedCovarTestExperiences = new ArrayList<VariationExperienceImpl>(conjointExperiences.size());
-
 			for (Variation t: response.getSchema().getVariations()) {
 				for (Experience e: conjointExperiences) {
 					if (t.equals(e.getVariation())) {

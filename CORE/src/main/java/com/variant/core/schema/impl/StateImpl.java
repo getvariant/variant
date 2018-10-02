@@ -80,15 +80,6 @@ public class StateImpl implements State {
 		return false;
 	}		
 
-	@Override
-	public boolean isNonvariantIn(Variation test) {
-
-		for (Variation.OnState tov: test.getOnStates()) {
-			if (tov.getState().equals(this)) return tov.isNonvariant();
-		}
-		throw new CoreException.User(STATE_NOT_INSTRUMENTED_BY_TEST, name, test.getName());
-	}
-
 	/**
 	 * 
 	 */

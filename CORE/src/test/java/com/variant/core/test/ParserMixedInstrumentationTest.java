@@ -1,12 +1,12 @@
 package com.variant.core.test;
 
 import static com.variant.core.schema.parser.error.SemanticError.CONJOINT_VARIANT_CONJOINT_PHANTOM;
-import static com.variant.core.schema.parser.error.SemanticError.CONJOINT_VARIANT_MISSING;
 import static com.variant.core.schema.parser.error.SemanticError.CONJOINT_VARIANT_PROPER_PHANTOM;
 import static com.variant.core.schema.parser.error.SemanticError.EXPERIENCEREF_ISCONTROL;
 import static com.variant.core.schema.parser.error.SemanticError.PROPERTY_NOT_ALLOWED_PHANTOM_VARIANT;
 import static com.variant.core.schema.parser.error.SemanticError.PROPERTY_NOT_BOOLEAN;
 import static com.variant.core.schema.parser.error.SemanticError.PROPER_VARIANT_MISSING;
+import static com.variant.core.schema.parser.error.SemanticError.CONJOINT_VARIANT_MISSING;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -27,7 +27,8 @@ import com.variant.core.schema.parser.error.SemanticError.Location;
  *
  */
 public class ParserMixedInstrumentationTest extends BaseTestCore {
-	
+
+
 	/**
 	 * Parse time errors.
 	 */
@@ -185,6 +186,7 @@ public class ParserMixedInstrumentationTest extends BaseTestCore {
 				PROPERTY_NOT_ALLOWED_PHANTOM_VARIANT, "parameters");
 		assertMessageEqual(expected, actual);
 		actual = response.getMessages().get(1);
+		assertTrue("PROPER_VARIANT_MISSING should be deleted!", false);
 		expected = new ParserMessageImpl(
 				new Location("/variations[0]/onStates[0]/variants/"), 
 				PROPER_VARIANT_MISSING, "B");
@@ -880,6 +882,7 @@ public class ParserMixedInstrumentationTest extends BaseTestCore {
 		assertTrue(response.hasMessages(Severity.INFO));
 
 		assertEquals(1, response.getMessages().size());
+		assertTrue("CONJOINT_VARIANT_MISSING should be deleted!", false);
 		ParserMessage actual = response.getMessages().get(0);
 		ParserMessage expected = new ParserMessageImpl(
 				new Location("/variations[1]/onStates[0]/variants/"), 
