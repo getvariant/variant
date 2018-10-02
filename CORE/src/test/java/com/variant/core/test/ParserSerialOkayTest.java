@@ -973,16 +973,16 @@ public class ParserSerialOkayTest extends BaseTestCore {
 		Variation.OnState tov = actualonStates.get(0);
 		assertEquals(test, tov.getVariation());
 		assertEquals(config.getState("state1").get(), tov.getState());
-		List<StateVariant> actualVariants =  tov.getVariants();
-		assertEquals(2, actualVariants.size());
-		StateVariant variant = actualVariants.get(0);
+		StateVariant[] actualVariants =  tov.getVariants().toArray(new StateVariant[0]);
+		assertEquals(2, actualVariants.length);
+		StateVariant variant = actualVariants[0];
 		assertEquals(test.getExperience("B").get(), variant.getExperience());
-		assertNull(variant.getConjointExperiences());
+		assertTrue(variant.getConjointExperiences().isEmpty());
 		assertTrue(variant.isProper());
 		assertEquals("/path/to/state1/test1.B", variant.getParameters().get("path"));
-		variant = actualVariants.get(1);
+		variant = actualVariants[1];
 		assertEquals(test.getExperience("C").get(), variant.getExperience());
-		assertNull(variant.getConjointExperiences());
+		assertTrue(variant.getConjointExperiences().isEmpty());
 		assertTrue(variant.isProper());
 		assertEquals("/path/to/state1/test1.C", variant.getParameters().get("path"));
 		
@@ -1021,22 +1021,22 @@ public class ParserSerialOkayTest extends BaseTestCore {
 		Variation.OnState tov = actualonStates.get(0);
 		assertEquals(test, tov.getVariation());
 		assertEquals(config.getState("state3").get(), tov.getState());
-		List<StateVariant> actualVariants =  tov.getVariants();
-		assertEquals(1, actualVariants.size());
-		StateVariant variant = actualVariants.get(0);
+		StateVariant[] actualVariants =  tov.getVariants().toArray(new StateVariant[0]);
+		assertEquals(1, actualVariants.length);
+		StateVariant variant = actualVariants[0];
 		assertEquals(test.getExperience("D").get(), variant.getExperience());
-		assertNull(variant.getConjointExperiences());
+		assertTrue(variant.getConjointExperiences().isEmpty());
 		assertTrue(variant.isProper());
 		assertEquals("/path/to/state3/test2.D", variant.getParameters().get("path"));
 
 		tov = actualonStates.get(1);
 		assertEquals(test, tov.getVariation());
 		assertEquals(config.getState("state2").get(), tov.getState());
-		actualVariants =  tov.getVariants();
-		assertEquals(1, actualVariants.size());
-		variant = actualVariants.get(0);
+		actualVariants =  tov.getVariants().toArray(new StateVariant[0]);
+		assertEquals(1, actualVariants.length);
+		variant = actualVariants[0];
 		assertEquals(test.getExperience("D").get(), variant.getExperience());
-		assertNull(variant.getConjointExperiences());
+		assertTrue(variant.getConjointExperiences().isEmpty());
 		assertTrue(variant.isProper());
 		assertEquals("/path/to/state2/test2.D", variant.getParameters().get("path"));
 		
@@ -1079,11 +1079,11 @@ public class ParserSerialOkayTest extends BaseTestCore {
 		Variation.OnState tov = actualonStates.get(0);
 		assertEquals(test, tov.getVariation());
 		assertEquals(config.getState("state1").get(), tov.getState());
-		List<StateVariant> actualVariants =  tov.getVariants();
-		assertEquals(1, actualVariants.size());
-		StateVariant variant = actualVariants.get(0);
+		StateVariant[] actualVariants =  tov.getVariants().toArray(new StateVariant[0]);
+		assertEquals(1, actualVariants.length);
+		StateVariant variant = actualVariants[0];
 		assertEquals(test.getExperience("A").get(), variant.getExperience());
-		assertNull(variant.getConjointExperiences());
+		assertTrue(variant.getConjointExperiences().isEmpty());
 		assertTrue(variant.isProper());
 		assertEquals("/path/to/state1/Test1.A", variant.getParameters().get("path"));
 		

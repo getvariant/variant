@@ -495,7 +495,7 @@ public class VariationsParser implements Keywords {
 					if (variant != null) {
 						boolean dupe = false;
 						for (StateVariant v: result.getVariants()) {
-							if (!((StateVariantImpl)v).isImplicit() && v.getExperience().equals(variant.getExperience())) { 
+							if (!((StateVariantImpl)v).isInferred() && v.getExperience().equals(variant.getExperience())) { 
 								if (v.isProper() && variant.isProper()) {
 									// Dupe proper experience ref and no conjoint experiences in this view.
 									response.addMessage(variantLocation, DUPE_OBJECT, v.getExperience().getName());
@@ -519,6 +519,8 @@ public class VariationsParser implements Keywords {
 			}
 		}
 		
+		// At this point result contains only explicit variants.
+		// Adding inferred ones. 
 /* ****************
 		 * See #179. We no longer require explicit declaration of state variants =>
 		 * no consistency check.

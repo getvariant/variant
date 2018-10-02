@@ -167,13 +167,13 @@ public class SemanticError extends ParserError {
 	
 	public static final SemanticError CONJOINT_VARIANT_DUPE =
 			new SemanticError(89, Severity.ERROR, "Duplicate state variant references conjoint experience(s) [%s]"); 
-/**/	
+/*	
 	public static final SemanticError PROPER_VARIANT_MISSING =
 			new SemanticError(90, Severity.ERROR, "State variant missing for proper experience [%s]"); 
 	
 	public static final SemanticError CONJOINT_VARIANT_MISSING =
 			new SemanticError(91, Severity.ERROR, "State variant missing for proper experience [%s] and conjoint experience(s) [%s]");
-/**/	
+*/	
 	public static final SemanticError CONJOINT_VARIANT_TEST_NOT_CONJOINT =
 			new SemanticError(92, Severity.ERROR, "List element 'conjointExperienceRefs' cannot refer to non-conjoint variation [%s]"); 	
 	

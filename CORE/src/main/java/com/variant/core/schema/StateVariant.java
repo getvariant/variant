@@ -53,8 +53,8 @@ public interface StateVariant {
 	 * The list of this variant's conjointly concurrent experiences, i.e. the ones defined in the 
 	 * conjoint tests clause of the test within whose definition this variant is defined.
 	 * 
-	 * @return A list of objects of type {@link Variation.Experience} or null if this test does not have
-	 *         the <code>conjointRestRefs</code> clause;
+	 * @return A list of objects of type {@link Variation.Experience}, which will be empty
+     *         if this variation does not have the <code>conjointVariationRefs</code> clause;
 	 *         
 	 * @since 0.5
 	 */

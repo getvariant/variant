@@ -2,6 +2,7 @@ package com.variant.core.schema;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 /**
  * Representation of the <code>variation</code> schema property.
@@ -217,11 +218,12 @@ public interface Variation {
 		Variation getVariation();
 				
 		/**
-		 * A list of all state variants for this instrumentation. 
-		 * @return A list of objects of type {@link StateVariant}.
+		 * A set of all state variants for this instrumentation, both explicitly defined and inferred. 
+		 * 
+		 * @return A set of objects of type {@link StateVariant}.
 	     * @since 0.5
 		 */
-		List<StateVariant> getVariants();
+		Set<StateVariant> getVariants();
 		
 	}
 }

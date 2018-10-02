@@ -14,7 +14,6 @@ import static com.variant.core.schema.parser.error.SemanticError.PROPERTY_NOT_BO
 import static com.variant.core.schema.parser.error.SemanticError.PROPERTY_NOT_LIST;
 import static com.variant.core.schema.parser.error.SemanticError.PROPERTY_NOT_NUMBER;
 import static com.variant.core.schema.parser.error.SemanticError.PROPERTY_NOT_STRING;
-import static com.variant.core.schema.parser.error.SemanticError.PROPER_VARIANT_MISSING;
 import static com.variant.core.schema.parser.error.SemanticError.STATEREF_UNDEFINED;
 import static com.variant.core.schema.parser.error.SemanticError.UNSUPPORTED_PROPERTY;
 import static org.junit.Assert.assertEquals;
@@ -1597,9 +1596,6 @@ public class ParserSerialVariationsErrorTest extends BaseTestCore {
 		expected = new ParserMessageImpl(new Location("/variations[0]/onStates[0]/variants[1]/"), ELEMENT_NOT_OBJECT, "variants");
 		assertMessageEqual(expected, actual);
 		assertTrue("PROPER_VARIANT_MISSING should be deleted!", false);
-		actual = response.getMessages().get(2);
-		expected = new ParserMessageImpl(new Location("/variations[0]/onStates[0]/variants/"), PROPER_VARIANT_MISSING, "A");
-		assertMessageEqual(expected, actual);
 	}
 
 	/**
@@ -1666,10 +1662,6 @@ public class ParserSerialVariationsErrorTest extends BaseTestCore {
 		ParserMessage actual = response.getMessages().get(0);
 		ParserMessage expected = new ParserMessageImpl(
 				new Location("/variations[0]/onStates[0]/variants[0]/"), PROPERTY_MISSING, "experienceRef");
-		assertMessageEqual(expected, actual);
-		actual = response.getMessages().get(1);
-		expected = new ParserMessageImpl(
-				new Location("/variations[0]/onStates[0]/variants/"), PROPER_VARIANT_MISSING, "A");
 		assertMessageEqual(expected, actual);
 	}
 	
@@ -1811,10 +1803,6 @@ public class ParserSerialVariationsErrorTest extends BaseTestCore {
 		ParserMessage expected = new ParserMessageImpl(
 				new Location("/variations[0]/onStates[0]/variants[0]/experienceRef"), 
 				EXPERIENCEREF_UNDEFINED, "foo");
-		assertMessageEqual(expected, actual);
-		actual = response.getMessages().get(1);
-		expected = new ParserMessageImpl(
-				new Location("/variations[0]/onStates[0]/variants/"), PROPER_VARIANT_MISSING, "A");
 		assertMessageEqual(expected, actual);
 	}
 
@@ -2036,9 +2024,6 @@ public class ParserSerialVariationsErrorTest extends BaseTestCore {
 		ParserMessage actual = response.getMessages().get(0);
 		ParserMessage expected = new ParserMessageImpl(new Location("/variations[0]/experiences[2]/"), DUPE_OBJECT, "B");
 		assertMessageEqual(expected, actual);
-		actual = response.getMessages().get(1);
-		expected = new ParserMessageImpl(new Location("/variations[0]/onStates[0]/variants/"), PROPER_VARIANT_MISSING, "B");
-		assertMessageEqual(expected, actual);
 	}
 
 	/**
@@ -2250,74 +2235,6 @@ public class ParserSerialVariationsErrorTest extends BaseTestCore {
 		ParserMessage actual = response.getMessages().get(0);
 		ParserMessage expected = new ParserMessageImpl(
 				new Location("/variations[0]/onStates[0]/variants[1]/"), DUPE_OBJECT, "A");
-		assertMessageEqual(expected, actual);
-		actual = response.getMessages().get(1);
-		expected = new ParserMessageImpl(
-				new Location("/variations[0]/onStates[0]/variants/"), PROPER_VARIANT_MISSING, "B");
-		assertMessageEqual(expected, actual);
-	}
-
-	/**
-	 * VARIANT_MISSING
-	 * @throws Exception
-	 */
-	@Test
-	public void variantMissing_Test() throws Exception {
-		
-		String schema = 
-				"{                                                             \n" +
-			    "  'meta':{                                                    \n" +		    	    
-			    "      'name':'schema_name',                                    \n" +
-			    "      'comment':'schema comment'                               \n" +
-			    "  },                                                           \n" +
-			    "   'states':[                                                 \n" +
-			    "     {  'name':'state1'  },                                   \n" +
-	    	    "     {  'name':'state2'  }                                    \n" +
-			    "  ],                                                          \n" +
-				"  'variations':[                                              \n" +
-			    "     {                                                        \n" +
-			    "        'name':'TEST',                                        \n" +
-			    "        'experiences':[                                       \n" +
-			    "           {                                                  \n" +
-			    "              'name':'A',                                     \n" +
-			    "              'weight':50                                     \n" +
-			    "           },                                                 \n" +
-			    "           {                                                  \n" +
-			    "              'name':'B',                                     \n" +
-			    "              'weight':50                                     \n" +
-			    "           },                                                 \n" +
-			    "           {                                                  \n" +
-			    "              'name':'C',                                     \n" +
-			    "              'weight':50,                                    \n" +
-			    "              'isControl':true                                \n" +
-			    "           }                                                  \n" +
-			    "        ],                                                    \n" +
-			    "        'onStates':[                                           \n" +
-			    "           {                                                  \n" +
-			    "              'stateRef':'state1',                              \n" +
-			    "              'variants':[                                    \n" +
-			    "                 {                                            \n" +
-			    "                    'experienceRef': 'A'                      \n" +
-			    "                 }                                            \n" +
-			    "              ]                                               \n" +
-			    "           }                                                  \n" +
-			    "        ]                                                     \n" +
-			    "     }                                                        \n" +
-			    //----------------------------------------------------------------//	
-			    "  ]                                                           \n" +
-			    "}                                                             \n";
-		
-		SchemaParser parser = getSchemaParser();
-		ParserResponse response = parser.parse(schema);
-
-		assertTrue(response.hasMessages());
-		assertFalse(response.hasMessages(Severity.FATAL));
-		assertTrue(response.hasMessages(Severity.ERROR));
-		assertTrue(response.hasMessages(Severity.WARN));
-		assertTrue(response.hasMessages(Severity.INFO));
-		assertEquals(1, response.getMessages().size());
-		ParserMessage actual = response.getMessages().get(0);
-		ParserMessage expected = new ParserMessageImpl(new Location("/variations[0]/onStates[0]/variants/"), PROPER_VARIANT_MISSING, "B");
 		assertMessageEqual(expected, actual);
 	}
 

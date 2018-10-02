@@ -22,7 +22,7 @@ public class StateVariantImpl implements StateVariant {
 	private final Variation.Experience ownExp;
 	private final List<Variation.Experience> conjointExps;
 	private final Map<String,String> params;
-	private boolean isImplicit = false;
+	private boolean inferred = false;
 	
 	/**
 	 * Explicit (provided in schema)
@@ -40,7 +40,8 @@ public class StateVariantImpl implements StateVariant {
 	}
 
 	/**
-	 * Implicit (default, not provided in schema)
+	 * Inferred (default, not provided in schema)
+	 * No state parameters.
 	 */
 	public StateVariantImpl(
 			Variation.OnState onState, 
@@ -48,7 +49,7 @@ public class StateVariantImpl implements StateVariant {
 			List<Variation.Experience> conjointExps) {
 		
 		this(onState, ownExp, conjointExps, new HashMap<String,String>());
-		this.isImplicit = true;
+		this.inferred = true;
 	}
 
 	/**
@@ -116,8 +117,8 @@ public class StateVariantImpl implements StateVariant {
 	
 	/**
 	 */
-	public boolean isImplicit() {
-		return isImplicit;
+	public boolean isInferred() {
+		return inferred;
 	}
 
 	/**

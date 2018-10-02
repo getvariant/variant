@@ -190,6 +190,8 @@ public class CoreStateRequest implements Serializable {
 			jsonGen.writeEndArray();
 		}
 
+		// If we have a resolved variant, simply record  its index in the variants
+		// array. Here we rely on this index being deterministic.
 		if (resolvedStateVariant != null) {
 			jsonGen.writeObjectFieldStart(FIELD_NAME_VARIANT);
 			jsonGen.writeStringField(FIELD_NAME_TEST, resolvedStateVariant.getVariation().getName());
@@ -279,7 +281,8 @@ public class CoreStateRequest implements Serializable {
 		if (variantObj != null) {
 			String testName = (String) variantObj.get(FIELD_NAME_TEST);
 			int offset = (Integer) variantObj.get(FIELD_NAME_OFFSET);
-			result.resolvedStateVariant = schema.getVariation(testName).get().getOnState(schema.getState(stateName).get()).get().getVariants().get(offset);
+			Variation.OnState vos = schema.getVariation(testName).get().getOnState(schema.getState(stateName).get()).get();
+			result.resolvedStateVariant = vos.getVariants().toArray(new StateVariant[0])[offset];
 		}
 
 		return result;
