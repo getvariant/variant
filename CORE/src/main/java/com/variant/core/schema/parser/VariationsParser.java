@@ -218,7 +218,7 @@ public class VariationsParser implements Keywords {
 		
 		
 		// Pass 3: Parse conjointVariationRefs, isOn, hooks.
-		List<VariationImpl> covarTests = null;
+		List<VariationImpl> conjointVars = null;
 		for(Map.Entry<String, ?> entry: test.entrySet()) {
 			
 			if (entry.getKey().equalsIgnoreCase(KEYWORD_CONJOINT_VARIATION_REFS)) {
@@ -227,7 +227,7 @@ public class VariationsParser implements Keywords {
 					response.addMessage(testLocation.plusProp(KEYWORD_CONJOINT_VARIATION_REFS), PROPERTY_NOT_LIST, KEYWORD_CONJOINT_VARIATION_REFS);
 				}
 				else {
-					covarTests = new ArrayList<VariationImpl>();
+					conjointVars = new ArrayList<VariationImpl>();
 					List<?> rawCovarTestRefs = (List<?>) covarTestRefsObject;
 					int refIx = 0;
 					for (Object covarTestRefObject: rawCovarTestRefs) {
@@ -244,7 +244,7 @@ public class VariationsParser implements Keywords {
 								response.addMessage(testRefLocation, CONJOINT_TESTREF_UNDEFINED, covarTestRef);
 							}
 							else {
-								covarTests.add((VariationImpl)conjointVarOpt.get());
+								conjointVars.add((VariationImpl)conjointVarOpt.get());
 							}
 						}
 					}
@@ -266,14 +266,13 @@ public class VariationsParser implements Keywords {
 		}
 		
 		// Resort conjoint tests in ordinal order before adding to the result.
-		List<VariationImpl> covarTestsReordered = null;
-		if (covarTests != null) {
-			covarTestsReordered = new ArrayList<VariationImpl>(covarTests.size());
+		List<VariationImpl> conjointVarsReordered = new ArrayList<VariationImpl>();
+		if (conjointVars != null) {
 			for (Variation t: response.getSchema().getVariations()) {
-				if (covarTests.contains(t)) covarTestsReordered.add((VariationImpl)t);
+				if (conjointVars.contains(t)) conjointVarsReordered.add((VariationImpl)t);
 			}
 		}
-		result.setConjointTests(covarTestsReordered);
+		result.setConjointVariations(conjointVarsReordered);
 		
 		// Pass 4: Parse onStates, if we have the control variant
 		if (controlExperienceFound) {
@@ -327,9 +326,9 @@ public class VariationsParser implements Keywords {
 		result.setOnViews(onStates);
 		
 		// A conjoint test cannot be disjoint.
-		if (covarTests != null) {
+		if (conjointVars != null) {
 			int covarTestIx = 0;
-			for (Variation covarTest: covarTests) {
+			for (Variation covarTest: conjointVars) {
 				if (result.isSerialWith(covarTest)) {
 					Location tosLocation = testLocation.plusProp(KEYWORD_CONJOINT_VARIATION_REFS).plusIx(covarTestIx++);
 					response.addMessage(tosLocation, CONJOINT_TEST_SERIAL, name, covarTest.getName());
@@ -520,7 +519,15 @@ public class VariationsParser implements Keywords {
 		}
 		
 		// At this point result contains only explicit variants.
-		// Adding inferred ones. 
+		// Adding inferred variant from the variant space.
+        for (VariantSpace.Point point: result.variantSpace().getAll()) {
+        		
+        	StateVariantImpl variantImpl = (StateVariantImpl) point.getVariant();
+			if (variantImpl.isInferred()) {
+				result.addVariant(variantImpl);
+			}
+        }
+        
 /* ****************
 		 * See #179. We no longer require explicit declaration of state variants =>
 		 * no consistency check.

@@ -119,7 +119,7 @@ public class VariantSpace {
 		basis.add(vosImpl.getVariation());
 		basis.addAll(vosImpl.getVariation().getConjointVariations());
 
-		// Pass 1. Build default space, i.e. all Points with implicit state variants.
+		// Pass 1. Build default space, i.e. all Points with inferred (default) state variants.
 		for (Variation basisVar: basis) {
 			
 			// HashTable.keySet() returns a view, which will change if the table is modified.
@@ -188,7 +188,7 @@ public class VariantSpace {
 						"No point for coordinates [" + CollectionsUtils.toString(coordinateExperiences, ", ") + 
 						"] in variation [" + variant.getVariation().getName() + "] and state [" + variant.getOnState().getState().getName() + "]");
 			}
-			if (p.variant != null)
+			if (p.variant != null && !((StateVariantImpl)p.variant).isInferred())
 				throw new CoreException.Internal("Variant already added");
 			p.variant = variant;
 		}

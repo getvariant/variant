@@ -1,16 +1,12 @@
 package com.variant.core.schema.impl;
 
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Set;
 
 import com.variant.core.impl.VariantSpace;
 import com.variant.core.schema.State;
 import com.variant.core.schema.StateVariant;
 import com.variant.core.schema.Variation;
-import com.variant.core.util.immutable.ImmutableList;
 import com.variant.core.util.immutable.ImmutableSet;
 
 /**

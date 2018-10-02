@@ -408,15 +408,12 @@ public class ParserConjointOkay2Test extends BaseTestCore {
 	    	    "           },                                                            \n" +
 	    	    "           {                                                             \n" +
 	    	    "              'stateRef':'state3'                                        \n" +
-	    	    "              // formerly non-variant                                    \n" +
 	    	    "           },                                                            \n" +
 	    	    "           {                                                             \n" +
 	    	    "              'stateRef':'state4'                                        \n" +
-	    	    "              // formerly non-variant                                    \n" +
 	    	    "           },                                                            \n" +
 	    	    "           {                                                             \n" +
 	    	    "              'stateRef':'state5'                                        \n" +
-	    	    "              // formerly non-variant                                    \n" +
 	    	    "           }                                                             \n" +
 	    	    "        ]                                                                \n" +
 	    	    "     }                                                                   \n" +
@@ -465,8 +462,8 @@ public class ParserConjointOkay2Test extends BaseTestCore {
 		assertTrue(test3.isConjointWith(test1));
 		assertFalse(test3.isConjointWith(test2));
 
-		assertNull(test1.getConjointVariations());
-		assertNull(test2.getConjointVariations());
+		assertTrue(test1.getConjointVariations().isEmpty());
+		assertTrue(test2.getConjointVariations().isEmpty());
 		assertEquals(CollectionsUtils.list(test1), test3.getConjointVariations());
 
 		// 
@@ -511,7 +508,7 @@ public class ParserConjointOkay2Test extends BaseTestCore {
 		assertTrue(variant.getConjointExperiences().isEmpty());
 		assertTrue(variant.isProper());
 
-		// state4
+		// state4 (inferred)
 		onState = onStates.get(2);
 		assertEquals(schema.getState("state4").get(), onState.getState());
 		variants = onState.getVariants().toArray(new StateVariant[0]);

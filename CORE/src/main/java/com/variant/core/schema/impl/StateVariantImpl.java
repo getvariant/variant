@@ -92,7 +92,6 @@ public class StateVariantImpl implements StateVariant {
 		return Collections.unmodifiableMap(params);
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public List<Experience> getConjointExperiences() {
 		return Collections.unmodifiableList(conjointExps);
