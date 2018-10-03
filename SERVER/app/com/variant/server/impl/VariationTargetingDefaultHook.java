@@ -42,12 +42,12 @@ class VariationTargetingDefaultHook implements LifecycleHook<VariationTargetingL
 		double weightSum = 0;
 		for (Experience e: var.getExperiences()) {
 			if (e.isPhantom(state)) continue;
-			if (e.getWeight() == null ) {
+			if (!e.getWeight().isPresent()) {
 				// It's not a syntax error not to supply the weight, but if we're
 				// here it means that no targeter hook fired, and that's a runtime error.
 				throw new ServerException.Local(ServerError.EXPERIENCE_WEIGHT_MISSING, e.getVariation().getName(), e.getName());
 			}
-			weightSum += e.getWeight().doubleValue();
+			weightSum += e.getWeight().get().doubleValue();
 		}
 
 		if (weightSum == 0) {
@@ -59,7 +59,7 @@ class VariationTargetingDefaultHook implements LifecycleHook<VariationTargetingL
 		weightSum = 0;
 		for (Experience e: var.getExperiences()) {
 			if (e.isPhantom(state)) continue;
-			weightSum += e.getWeight().doubleValue();
+			weightSum += e.getWeight().get().doubleValue();
 			if (randVal < weightSum) {
 				VariationTargetingLifecycleEvent.PostResult result = PostResultFactory.mkPostResult(event);
 				result.setTargetedExperience(e);

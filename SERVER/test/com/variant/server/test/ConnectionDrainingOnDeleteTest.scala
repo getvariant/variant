@@ -8,7 +8,7 @@ import com.variant.server.schema.SchemaGen.State._
 import com.variant.server.test.spec.EmbeddedServerSpec
 import com.variant.server.test.spec.TempSchemataDir
 import com.variant.server.test.spec.TempSchemataDir._
-import com.variant.server.test.spec.BaseSpecWithServerAsync
+import com.variant.server.test.spec.EmbeddedServerAsyncSpec
 import com.variant.server.test.util.ParameterizedString
 import com.variant.server.test.controller.SessionTest
 import com.variant.core.util.IoUtils
@@ -21,7 +21,7 @@ import com.variant.server.impl.SessionImpl
 /**
  * Test session drainage.
  */
-class ConnectionDrainingOnDeleteTest extends BaseSpecWithServerAsync with TempSchemataDir {
+class ConnectionDrainingOnDeleteTest extends EmbeddedServerAsyncSpec with TempSchemataDir {
       
    private val logger = Logger(this.getClass)
    private val random = new Random(System.currentTimeMillis())

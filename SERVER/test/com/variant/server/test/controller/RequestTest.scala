@@ -527,9 +527,9 @@ class RequestTest extends EmbeddedServerSpec {
       }
    }
 
-   "Schema petclinic_experiments" should {
+   "Schema petclinic" should {
 
-      val schema = server.schemata.get("petclinic_experiments").get.liveGen.get
+      val schema = server.schemata.get("petclinic").get.liveGen.get
       val schemaId = schema.id
       val writer = schema.eventWriter
       val reader = TraceEventReader(writer)
@@ -539,12 +539,12 @@ class RequestTest extends EmbeddedServerSpec {
          
          // ssn.setAttribute("user-agent", "Safari")
 
-         assertResp(route(app, httpReq(POST, context + "/session/petclinic_experiments/" + sid).withBody(emptyTargetingTrackerBody)))
+         assertResp(route(app, httpReq(POST, context + "/session/petclinic/" + sid).withBody(emptyTargetingTrackerBody)))
             .isOk
             .withBodySession { ssn =>
                ssn.getId mustNot be (sid)
                sid = ssn.getId
-               ssn.getSchema.getMeta.getName mustBe "petclinic_experiments"
+               ssn.getSchema.getMeta.getName mustBe "petclinic"
          }
       }
 
@@ -561,7 +561,7 @@ class RequestTest extends EmbeddedServerSpec {
 
       "disqualify session from test" in {
 
-         assertResp(route(app, httpReq(POST, context + "/session/petclinic_experiments/" + sid).withBody(emptyTargetingTrackerBody)))
+         assertResp(route(app, httpReq(POST, context + "/session/petclinic/" + sid).withBody(emptyTargetingTrackerBody)))
             .isOk
             .withBodyJson { json => 
                val coreSsn = CoreSession.fromJson((json \ "session").as[String], schema)

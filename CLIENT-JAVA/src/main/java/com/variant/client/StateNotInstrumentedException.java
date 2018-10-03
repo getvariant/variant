@@ -8,7 +8,7 @@ import com.variant.core.impl.ServerError;
  * 
  * @author Igor Urisman
  * @since 0.7
- */
+ *
 @SuppressWarnings("serial")
 public class StateNotInstrumentedException extends VariantException {
 	
@@ -17,3 +17,4 @@ public class StateNotInstrumentedException extends VariantException {
 	}
 
 }
+*/

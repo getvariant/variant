@@ -53,12 +53,13 @@ public interface StateRequest {
 	 * experiences are control experiences, and the user session will be targeted for the base state. If at least one
 	 * live experience is a variant, the targeting operation will resolve to some state variant definition in the schema.
 	 * 
-	 * @return The {@link StateVariant} to which this request resolved, or null if all live experiences are control.
+	 * @return The {@link Optional} containing the {@link StateVariant} object to which this request resolved, 
+	 *         or empty if all live experiences are control.
 	 * 
 	 * @since 0.6
 	 * @see StateVariant
 	 */
-	StateVariant getResolvedStateVariant();
+	Optional<StateVariant> getResolvedStateVariant();
 		
 	/**
 	 * The resolved state parameters as an immutable map. In case of trivial resolution, 

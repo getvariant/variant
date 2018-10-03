@@ -14,7 +14,7 @@ import com.variant.server.api.ConfigKeys._
 import com.variant.server.test.spec.EmbeddedServerSpec
 import com.variant.core.schema.parser.SchemaParser
 import com.variant.server.schema.ServerSchemaParser
-import com.variant.server.test.spec.BaseSpecWithServerAsync
+import com.variant.server.test.spec.EmbeddedServerAsyncSpec
 
 /*
  * Reusable event JSON objects. 
@@ -46,7 +46,7 @@ object ConnectionTest {
 /**
  * Event Controller
  */
-class ConnectionTest extends BaseSpecWithServerAsync {
+class ConnectionTest extends EmbeddedServerAsyncSpec {
    
       
    val endpoint = context + "/connection"

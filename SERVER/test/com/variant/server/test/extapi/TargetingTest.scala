@@ -6,10 +6,10 @@ import com.variant.server.test.hooks.TestTargetingHookNil
 import com.variant.server.test.util.ParameterizedString
 import com.variant.server.api.ServerException
 import com.variant.server.schema.SchemaDeployer
-import com.variant.server.test.spec.BaseSpecWithServerAsync
+import com.variant.server.test.spec.EmbeddedServerAsyncSpec
 import com.variant.core.impl.ServerError
 
-class TargetingTest extends BaseSpecWithServerAsync {
+class TargetingTest extends EmbeddedServerAsyncSpec {
 
 	val trials = 500000
 	val deltaAsFraction = .05f

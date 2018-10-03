@@ -512,7 +512,21 @@ public class ParserConjointOkay2Test extends BaseTestCore {
 		onState = onStates.get(2);
 		assertEquals(schema.getState("state4").get(), onState.getState());
 		variants = onState.getVariants().toArray(new StateVariant[0]);
-		assertEquals(0, variants.length);
+		assertEquals(2, variants.length);
+
+		variant = variants[0];
+		assertEquals(variant.getExperience(), test1.getExperience("B").get());
+		assertTrue(variant.isProper());
+		assertTrue(variant.getParameters().isEmpty());
+		assertTrue(variant.getConjointExperiences().isEmpty());
+		assertTrue(variant.isProper());
+		
+		variant = variants[1];
+		assertEquals(variant.getExperience(), test1.getExperience("C").get());
+		assertTrue(variant.isProper());
+		assertTrue(variant.getParameters().isEmpty());
+		assertTrue(variant.getConjointExperiences().isEmpty());
+		assertTrue(variant.isProper());
 
 		// state5
 		onState = onStates.get(3);

@@ -1,8 +1,9 @@
 package com.variant.server.impl
 
-import com.variant.core.TraceEvent
+import java.util.Optional
 import com.variant.core.schema.State
 import com.variant.core.schema.impl.StateImpl
+import com.variant.core.schema.impl.StateVariantImpl
 import com.variant.core.schema.impl.VariationImpl
 import com.variant.core.session.CoreSession
 import com.variant.core.session.CoreStateRequest
@@ -10,13 +11,11 @@ import com.variant.core.session.SessionScopedTargetingStabile
 import com.variant.server.api.Session
 import com.variant.server.api.StateRequest
 import com.variant.server.event.FlushableTraceEventImpl
-import com.variant.server.schema.SchemaGen
-import com.variant.server.api.ServerException
-import com.variant.core.impl.ServerError
-import com.variant.core.schema.impl.StateVariantImpl
 import com.variant.server.event.ServerTraceEvent
+import com.variant.server.schema.SchemaGen
+import com.variant.server.util.JavaImplicits
 import play.api.Logger
-import java.util.Optional
+import com.variant.core.schema.StateVariant
 
 /**
  * Server session enriches core session with server side functionality.
@@ -104,7 +103,7 @@ class SessionImpl(val coreSession: CoreSession, val schemaGen: SchemaGen) extend
    
    def getTargetingStabile() = coreSession.getTargetingStabile()
 
-   def setStateRequest(state: StateImpl, variant: StateVariantImpl) {
+   def setStateRequest(state: StateImpl, variant: Optional[StateVariant]) {
    
       val coreReq = new CoreStateRequest(coreSession, state);
       coreReq.setResolvedStateVariant(variant)

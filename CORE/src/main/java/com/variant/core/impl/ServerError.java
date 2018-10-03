@@ -78,14 +78,15 @@ public class ServerError extends CommonError {
 			new ServerError(664, Severity.ERROR, "Life-cycle hook generated the following message: [%s]");
 
 	public final static ServerError HOOK_TARGETING_BAD_EXPERIENCE = 
-			new ServerError(665, "Targeting hook [%s] for test [%s] cannot set experience [%s]");
+			new ServerError(665, "Targeting hook [%s] for variation [%s] cannot set experience [%s]");
 
 	// 
 	// 681-700 User, Server API, Other
 	// 
-	public static final ServerError STATE_NOT_INSTRUMENTED_BY_TEST =
-			new ServerError(681, "State [%s] is not instrumented by test [%s]");
-
+/*	
+	public static final ServerError STATE_NOT_INSTRUMENTED_BY_VARIATION =
+			new ServerError(681, "State [%s] is not instrumented by variation [%s]");
+*/
 	//
 	// 701-800 User, Client API
 	//
@@ -111,7 +112,7 @@ public class ServerError extends CommonError {
 			new ServerError(707, "Currently active experience [%s] is undefined on state [%s]");
 
 	public static final ServerError EXPERIENCE_WEIGHT_MISSING = 
-			new ServerError(708, "No weight specified for Test [%s], Experience [%s] and no custom targeter found");
+			new ServerError(708, "No weight specified for variation [%s], experience [%s] and no targeting hook defined");
 
 
 	/**

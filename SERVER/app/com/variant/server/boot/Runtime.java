@@ -16,6 +16,7 @@ import com.variant.core.util.StringUtils;
 import com.variant.core.session.SessionScopedTargetingStabile;
 import com.variant.core.util.Tuples.Pair;
 import com.variant.core.schema.State;
+import com.variant.core.schema.StateVariant;
 import com.variant.core.schema.Variation;
 import com.variant.core.schema.Variation.Experience;
 import com.variant.core.schema.Variation.OnState;
@@ -221,12 +222,12 @@ public class Runtime {
 		}
 
 		// If all went well, we must be resolvable.
-		Pair<Boolean, StateVariantImpl> resolution = resolveState(state, vector);
-		if (!resolution._1()) throw new ServerException.Internal(
+		Optional<StateVariant> resolvedVariantOpt = resolveState(state, vector);
+		if (resolvedVariantOpt == null) throw new ServerException.Internal(
 				"Vector [" + CollectionsUtils.toString(vector, ",") + "] is unresolvable");
 		
 		// AOK. Create the state request object.
-		session.setStateRequest(state, resolution._2());
+		session.setStateRequest(state, resolvedVariantOpt);
 	}
 
 	/**
@@ -265,7 +266,7 @@ public class Runtime {
 		for (Experience e: vector) {
 			if (e.isControl()) continue;
 			for (OnState tos: e.getVariation().getOnStates()) {
-				if (!tos.getState().isNonvariantIn(e.getVariation()) && !e.isPhantom(tos.getState())) {
+				if (!e.isPhantom(tos.getState())) {
 					relevantStates.add(tos.getState());
 				}
 			}
@@ -279,7 +280,7 @@ public class Runtime {
 				if (!e.isControl() && state.isInstrumentedBy(e.getVariation()) && !e.isPhantom(state)) 
 					instumentedVector.add(e);
 			}
-			if (!resolveState(state, instumentedVector)._1()) return false;
+			if (resolveState(state, instumentedVector) == null) return false;
 		}
 		
 		return true;
@@ -370,15 +371,15 @@ public class Runtime {
 	}
 
 	/**
-	 * Find a view variant for a given set of experiences. It is caller's responsibility
-	 * to ensure that 
-	 *   o) all experiences are independent, i.e. the input vector does not contain
+	 * Find a state variant for a given set of experiences, or coordinates. 
+	 * It is caller's responsibility to ensure that 
+	 *   o) all coordinate experiences are independent, i.e. the given cord collection does not contain
 	 *      a pair e1,e2 such that <code>e1.getTest().equals(e2.getTest())</code>
 	 *   o) there are no control experiences
 	 *   o) each experience's test is instrumented.
 	 * 
-	 * 0. Verify that vector has at least 1 experience. 
-	 * 1. Resort the experience vector in ordinal order. 
+	 * 0. Verify that the coordinates vector has at least 1 experience. 
+	 * 1. Resort the coordinate vector in ordinal order. 
 	 * 2. As we go, remove experiences that are either control in their test, or their test
 	 *    is not instrumented on the given state.
 	 * 3. Keep track if any of the experiences in vector were discarded in step 2.
@@ -390,35 +391,32 @@ public class Runtime {
 	 * Package scope for testing
 	 * 
 	 * @param state
-	 * @param vector
-	 * @return Pair: arg1() indicates if this is resolvable and arg2() is the state variant, if resolvable.
-	 *         in the special case when it is resolvable trivially, i.e. all experiences are control or
-	 *         not instrumented on this state or the instrumentation is invariant on this state, then the second
-	 *         element will be null.
+	 * @param coord
+	 * @return An Optional, containing the resolved state variant or empty, in case of trivial resolution, which
+	 *         is resolvable, but no state variant, — or null, if not resolvable.
 	 */
-	Pair<Boolean, StateVariantImpl> resolveState(State state, Collection<Experience> vector) {
+	Optional<StateVariant> resolveState(State state, Collection<Experience> coord) {
 
-		ArrayList<Experience> sortedList = new ArrayList<Experience>(vector.size());
+		ArrayList<Experience> sortedList = new ArrayList<Experience>(coord.size());
 			
 		for (Variation var: schema.getVariations()) {
 			boolean found = false;
-			for (Experience e: vector) {
+			for (Experience e: coord) {
 				if (e.getVariation().equals(var)) {
 					if (found) {
-						throw new ServerException.Internal("Duplicate test [" + var + "] in input vector");
+						throw new ServerException.Internal("Duplicate variation [" + var + "] in coordinate vector");
 					}
 					else {
 						
 						if (!state.isInstrumentedBy(e.getVariation()))
-							throw new ServerException.Internal("Uninstrumented test [" + e + "] in input vector");
+							throw new ServerException.Internal("Uninstrumented variation [" + e + "] in coordinate vector");
 
 						if (e.isPhantom(state))
-							throw new ServerException.Internal("Undefined experience [" + e + "] in input vector");
+							throw new ServerException.Internal("Undefined experience [" + e + "] in coordinate vector");
 
 						found = true;
 
-						// Non-variant instrumentation are resolved as control: skip them and control experiences.
-						if (!state.isNonvariantIn(e.getVariation()) && !e.isControl()) { 
+						if (!e.isControl()) { 
 							sortedList.add(e);
 							// Continue down the vector, to ensure that there's no other experience for this test.
 						}
@@ -443,7 +441,7 @@ public class Runtime {
 				resolvable = resolvedStateVariant != null;
 			}
 		}
-		return new Pair<Boolean, StateVariantImpl>(resolvable, resolvedStateVariant);
+		return resolvable ? Optional.ofNullable(resolvedStateVariant) : null;
 	}
 	
 	
@@ -458,7 +456,7 @@ public class Runtime {
 	/**
 	 * Implementation of {@link Variant#targetForState(VariantCoreSession, State, Object...)}
 	 * @param ssn
-	 * @param view
+	 * @param state
 	 * @return
 	 */
 	public void targetForState(Session session, State state) {

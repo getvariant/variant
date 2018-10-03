@@ -1,12 +1,15 @@
 package com.variant.server.boot
 
 import java.util.ArrayList
+
 import scala.collection.JavaConversions.seqAsJavaList
+
 import com.variant.core.schema.State
+import com.variant.core.schema.StateVariant
 import com.variant.core.schema.Variation
 import com.variant.core.schema.Variation.Experience
-import com.variant.core.schema.impl.StateVariantImpl
 import com.variant.server.schema.SchemaGen
+import com.variant.server.util.JavaImplicits._
 
 /**
  * Test facade extends scope of non-public methods to public for testability.
@@ -20,9 +23,8 @@ class RuntimeTestFacade(schemaGen: SchemaGen)  extends Runtime(schemaGen) {
    /**
     * 
     */
-   def resolveState(state: State, vector: Array[Experience]): (Boolean, StateVariantImpl) = {
-      val result = super.resolveState(state, vector.toSeq)
-      (result._1(), result._2())
+   def resolveState(state: State, vector: Array[Experience]): Option[StateVariant] = {
+      super.resolveState(state, vector.toSeq)
    }
    
    /**

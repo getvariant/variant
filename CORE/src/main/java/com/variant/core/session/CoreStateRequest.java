@@ -25,7 +25,6 @@ import com.variant.core.schema.StateVariant;
 import com.variant.core.schema.Variation;
 import com.variant.core.schema.Variation.Experience;
 import com.variant.core.schema.impl.StateImpl;
-import com.variant.core.schema.impl.StateVariantImpl;
 import com.variant.core.util.CaseInsensitiveMap;
 import com.variant.core.util.CollectionsUtils;
 import com.variant.core.util.immutable.CaseInsensitiveImmutableMap;
@@ -44,7 +43,7 @@ public class CoreStateRequest implements Serializable {
 	
 	private final CoreSession session;
 	private final StateImpl state;
-	private StateVariant resolvedStateVariant;
+	private Optional<StateVariant> resolvedStateVariant;
 	private Map<String,String> resolvedParameterMap;
 	
 	// Active
@@ -60,6 +59,7 @@ public class CoreStateRequest implements Serializable {
 		this.session = session;
 		this.state = (StateImpl) state;
 		session.setStateRequest(this);
+		resolvedStateVariant = Optional.empty();
 	}
 	
 	//---------------------------------------------------------------------------------------------//
@@ -97,7 +97,7 @@ public class CoreStateRequest implements Serializable {
 		return status;
 	}
 
-	public StateVariant getResolvedStateVariant() {
+	public Optional<StateVariant> getResolvedStateVariant() {
 		return resolvedStateVariant;
 	}
 	
@@ -141,14 +141,14 @@ public class CoreStateRequest implements Serializable {
 	/**
 	 * @param path
 	 */
-	public void setResolvedStateVariant(StateVariantImpl variant) {
+	public void setResolvedStateVariant(Optional<StateVariant> variant) {
 		this.resolvedStateVariant = variant;
-		if (variant == null) {
-			resolvedParameterMap = state.getParameters();
+		if (variant.isPresent()) {
+			resolvedParameterMap = new CaseInsensitiveMap<String>();
+			CollectionsUtils.mapMerge(resolvedParameterMap, state.getParameters(), variant.get().getParameters());
 		}
 		else {
-			resolvedParameterMap = new CaseInsensitiveMap<String>();
-			CollectionsUtils.mapMerge(resolvedParameterMap, state.getParameters(), variant.getParameters());
+			resolvedParameterMap = state.getParameters();
 		}
 	}
 		
@@ -192,12 +192,13 @@ public class CoreStateRequest implements Serializable {
 
 		// If we have a resolved variant, simply record  its index in the variants
 		// array. Here we rely on this index being deterministic.
-		if (resolvedStateVariant != null) {
+		if (resolvedStateVariant.isPresent()) {
+			StateVariant variant = resolvedStateVariant.get();
 			jsonGen.writeObjectFieldStart(FIELD_NAME_VARIANT);
-			jsonGen.writeStringField(FIELD_NAME_TEST, resolvedStateVariant.getVariation().getName());
+			jsonGen.writeStringField(FIELD_NAME_TEST, variant.getVariation().getName());
 			int offset = 0;
-			for (StateVariant var: resolvedStateVariant.getOnState().getVariants()) {
-				if (var == resolvedStateVariant) break;
+			for (StateVariant var: variant.getOnState().getVariants()) {
+				if (var == variant) break;
 				offset++;
 			}
 			jsonGen.writeNumberField(FIELD_NAME_OFFSET, offset);
@@ -282,7 +283,7 @@ public class CoreStateRequest implements Serializable {
 			String testName = (String) variantObj.get(FIELD_NAME_TEST);
 			int offset = (Integer) variantObj.get(FIELD_NAME_OFFSET);
 			Variation.OnState vos = schema.getVariation(testName).get().getOnState(schema.getState(stateName).get()).get();
-			result.resolvedStateVariant = vos.getVariants().toArray(new StateVariant[0])[offset];
+			result.resolvedStateVariant = Optional.of(vos.getVariants().toArray(new StateVariant[0])[offset]);
 		}
 
 		return result;

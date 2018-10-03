@@ -53,7 +53,7 @@ class StateRequestImpl(private val session: Session, private val coreReq:CoreSta
 
 	/**
     */
-	override def getResolvedStateVariant: StateVariant = coreReq.getResolvedStateVariant
+	override def getResolvedStateVariant: java.util.Optional[StateVariant] = coreReq.getResolvedStateVariant
 	
 	/**
 	 */	
@@ -63,7 +63,7 @@ class StateRequestImpl(private val session: Session, private val coreReq:CoreSta
    /*                                     PUBLIC EXT                                         */
    /*----------------------------------------------------------------------------------------*/
 	
-   def setResolvedStateVariant(variant: StateVariantImpl): Unit = coreReq.setResolvedStateVariant(variant)
+   def setResolvedStateVariant(variant: java.util.Optional[StateVariant]): Unit = coreReq.setResolvedStateVariant(variant)
          
    def setStatus(status: StateRequestStatus): Unit = coreReq.setStatus(status)
 

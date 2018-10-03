@@ -71,14 +71,18 @@ public interface StateRequest {
 	Optional<Experience> getLiveExperience(Variation variation);
 
 	/**
-	 * The {@link StateVariant} to which this state request resolved.
+	 * The state variant to which this state request resolved at run time. A state request can 
+	 * have either trivial resolution, or resolve to a {@link StateVariant}. Trivial resolution means that all live
+	 * experiences are control experiences, and the user session will be targeted for the base state. If at least one
+	 * live experience is a variant, the targeting operation will resolve to some state variant definition in the schema.
 	 * 
-	 * @return The {@link StateVariant} to which this request resolved.
+	 * @return The {@link Optional} containing the {@link StateVariant} object to which this request resolved, 
+	 *         or empty if all live experiences are control.
 	 * 
 	 * @since 0.7
 	 * @see StateVariant
-     */
-	public StateVariant getResolvedStateVariant();
+	 */
+	Optional<StateVariant> getResolvedStateVariant();
 	
 	/**
 	 * The resolved state parameters as an immutable map, containing the merged maps of the state
@@ -88,6 +92,6 @@ public interface StateRequest {
 	 * @return Immutable map keyed by parameter names.
 	 * @since 0.7
 	 */	
-	public  Map<String,String> getResolvedParameters();
+	Map<String,String> getResolvedParameters();
 
 }

@@ -16,7 +16,7 @@
 {                                                                                
    'meta':{
       'name':'big_conjoint_schema',
-      'comment':'Schema for big tests with a warning'
+      'comment':'Schema for big tests with a warning on line 61'
    },
    'states':[                                                             
      {  'name':'state1',
@@ -58,7 +58,7 @@
                'value':'/path/to/state5'
             }
         ],
-        'unsupported': 23          // <- unsupported element
+        'unsupported': 23         // This will give the unsupported element warning.
      }                                                                   
   ],                                                                     
   'variations':[  
@@ -128,12 +128,10 @@
               ]                                                          
            }, 
            {                                                             
-              'stateRef':'state4',                                         
-              'isNonvariant':true                                         
+              'stateRef':'state4'
            },                                                            
            {                                                             
-              'stateRef':'state5',                                         
-              'isNonvariant':true                                         
+              'stateRef':'state5'
            }                                                             
         ]                                                                
      },                                                                  
@@ -156,8 +154,7 @@
         ],                                                               
         'onStates':[                                                      
            {                                                             
-              'stateRef':'state1',                                         
-              'isNonvariant':true                                         
+              'stateRef':'state1'
            },                                                            
            {                                                             
               'stateRef':'state2',                                         
@@ -250,8 +247,7 @@
         ],                                                               
         'onStates':[                                                      
            {                                                             
-              'stateRef':'state1',                                         
-              'isNonvariant':true                                         
+              'stateRef':'state1'
            },                                                            
            {                                                             
               'stateRef':'state2',                                         
@@ -337,8 +333,7 @@
               ]                                                          
            },                                                            
            {                                                             
-              'stateRef':'state3',                                         
-              'isNonvariant':true                                               
+              'stateRef':'state3'
            },                                                            
            {                                                             
               'stateRef':'state4',                                         
@@ -551,12 +546,10 @@
               ]                                                          
            },                                                            
            {                                                             
-              'stateRef':'state4',                                         
-              'isNonvariant':true                                         
+              'stateRef':'state4'
            },                                                            
            {                                                             
-              'stateRef':'state5',                                         
-              'isNonvariant':true                                         
+              'stateRef':'state5'
            }                                                             
         ]                                                                
      },                                                                  
@@ -806,8 +799,7 @@
               ]                                                          
            },                                                            
            {                                                             
-              'stateRef':'state3',                                         
-              'isNonvariant':true                                         
+              'stateRef':'state3'
            },                                                            
            {                                                             
               'stateRef':'state4',                                         
@@ -893,8 +885,7 @@
               ]                                                          
            },                                                            
            {                                                             
-              'stateRef':'state5',                                         
-              'isNonvariant':true                                         
+              'stateRef':'state5'
            }                                                             
         ]                                                                
      },                                                                  
@@ -1213,8 +1204,7 @@
               ]                                                          
            },                                                            
            {                                                             
-              'stateRef':'state2',                                         
-              'isNonvariant':true                                         
+              'stateRef':'state2'
            },                                                            
            {                                                             
               'stateRef':'state3',                                         
@@ -1360,8 +1350,7 @@
               ]                                                          
            },                                                            
            {                                                             
-              'stateRef':'state5',                                         
-              'isNonvariant':true                                         
+              'stateRef':'state5'
            }                                                             
         ]                                                                
      }                                                                   

@@ -8,7 +8,7 @@ import java.util.concurrent.atomic.AtomicInteger
 import org.scalatest.concurrent.ScalaFutures
 
 
-class BaseSpecWithServerAsync extends EmbeddedServerSpec {
+class EmbeddedServerAsyncSpec extends EmbeddedServerSpec {
   
    implicit val ec = ExecutionContext.fromExecutor(Executors.newFixedThreadPool(4))
    val taskCount = new AtomicInteger(0)

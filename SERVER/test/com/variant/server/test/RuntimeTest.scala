@@ -15,6 +15,7 @@ import scala.collection.mutable.ArrayBuffer
 import com.variant.server.schema.SchemaDeployerClasspath
 import com.variant.server.schema.SchemaDeployer
 import com.variant.server.test.spec.EmbeddedServerSpec
+import com.variant.core.schema.StateVariant
 
 /**
  * TODO: Need to also test annotations.
@@ -65,27 +66,27 @@ class RuntimeTest extends EmbeddedServerSpec {
          }
          assert(
             caughtEx.getMessage.equals(
-               new ServerException.Internal("Uninstrumented test [test1.B] in input vector").getMessage)
+               new ServerException.Internal("Uninstrumented variation [test1.B] in coordinate vector").getMessage)
          )
          
-         var resolution = runtime.resolveState(state1, Array(experience("test2.B", schema)))   // nonvariant.
-         resolution mustBe (true, null)
+         var resolvedVariant = runtime.resolveState(state1, Array(experience("test2.B", schema))) 
+         resolvedVariant mustBe Option.empty
 
          caughtEx = intercept[ServerException.Internal] {
              runtime.resolveState(state1, Array(experience("test1.A", schema), experience("test2.B", schema)))
          }
          assert(
             caughtEx.getMessage.equals(
-               new ServerException.Internal("Uninstrumented test [test1.A] in input vector").getMessage)
+               new ServerException.Internal("Uninstrumented variation [test1.A] in coordinate vector").getMessage)
          )
 
-         resolution = runtime.resolveState(
+         resolvedVariant = runtime.resolveState(
 			   state1, 
 				Array(experience("test2.B", schema),  // nonvariant
 						experience("test3.C", schema)   // nonvariant
 				)
 		   )
-		   resolution mustBe (true, null)
+		   resolvedVariant mustBe Option.empty
 
 		   caughtEx = intercept[ServerException.Internal] {
 				runtime.resolveState(
@@ -102,7 +103,7 @@ class RuntimeTest extends EmbeddedServerSpec {
                new ServerException.Internal("Duplicate test [test2] in input vector").getMessage)
          )
          
-         resolution = runtime.resolveState(
+         resolvedVariant = runtime.resolveState(
 				   state1, 
 				   Array(
 				   	experience("test2.B", schema),  // nonvariant
@@ -110,8 +111,8 @@ class RuntimeTest extends EmbeddedServerSpec {
 						experience("test4.B", schema)   // variant
 				)
 		   )
-		   resolution._1 mustBe true
-		   resolution._2.getParameters.get("path") mustBe "/path/to/state1/test4.B"
+		   resolvedVariant mustBe Some
+		   resolvedVariant.get.getParameters.get("path") mustBe "/path/to/state1/test4.B"
 
          caughtEx = intercept[ServerException.Internal] {
 				runtime.resolveState(
@@ -126,10 +127,10 @@ class RuntimeTest extends EmbeddedServerSpec {
 			}
 		   assert(
 		         caughtEx.getMessage.equals(
-               new ServerException.Internal("Uninstrumented test [test1.C] in input vector").getMessage)
+               new ServerException.Internal("Uninstrumented variation [test1.C] in coordinate vector").getMessage)
          )
 
-		   resolution = runtime.resolveState(
+		   resolvedVariant = runtime.resolveState(
 				state1,
 				Array(
 						experience("test4.B", schema),  // variant
@@ -138,10 +139,10 @@ class RuntimeTest extends EmbeddedServerSpec {
 						experience("test3.B", schema)   // nonvariant
 				)
    		);
-   		resolution._1 mustBe true
-   		resolution._2.getParameters().get("path") mustBe "/path/to/state1/test4.B+test6.C"
+   		resolvedVariant mustBe Some
+   		resolvedVariant.get.getParameters().get("path") mustBe "/path/to/state1/test4.B+test6.C"
             
-   		resolution = runtime.resolveState(
+   		resolvedVariant = runtime.resolveState(
    				state1, 
    				Array(
    						experience("test4.B", schema),  // variant
@@ -150,10 +151,10 @@ class RuntimeTest extends EmbeddedServerSpec {
    						experience("test3.B", schema)   // nonvariant
    				)
    		);
-   		resolution._1 mustBe true
-   		resolution._2.getParameters().get("path") mustBe "/path/to/state1/test4.B+test6.B"
+   		resolvedVariant mustBe Some
+   		resolvedVariant.get.getParameters().get("path") mustBe "/path/to/state1/test4.B+test6.B"
    
-   		resolution = runtime.resolveState(
+   		resolvedVariant = runtime.resolveState(
    				state1, 
    				Array(
    						experience("test4.C", schema),  // variant
@@ -162,10 +163,10 @@ class RuntimeTest extends EmbeddedServerSpec {
    						experience("test3.B", schema)   // nonvariant
    				)
    		);
-   		resolution._1 mustBe true
-   		resolution._2.getParameters().get("path") mustBe "/path/to/state1/test4.C+test5.C"
+   		resolvedVariant mustBe Some
+   		resolvedVariant.get.getParameters().get("path") mustBe "/path/to/state1/test4.C+test5.C"
    
-   		resolution = runtime.resolveState(
+   		resolvedVariant = runtime.resolveState(
    				state1, 
    				Array(
    						experience("test4.C", schema),  // variant
@@ -175,8 +176,8 @@ class RuntimeTest extends EmbeddedServerSpec {
    						experience("test3.B", schema)   // nonvariant
    				)
    		);
-   		resolution._1 mustBe true
-   		resolution._2.getParameters().get("path") mustBe "/path/to/state1/test4.C+test5.C+test6.B"
+   		resolvedVariant mustBe Some
+   		resolvedVariant.get.getParameters().get("path") mustBe "/path/to/state1/test4.C+test5.C+test6.B"
    		
 	   }
 	   
@@ -195,45 +196,44 @@ class RuntimeTest extends EmbeddedServerSpec {
    	   val test5 = schema.getVariation("test5").get
    	   val test6 = schema.getVariation("test6").get
 
-	      var resolution = runtime.resolveState(
+	      var resolvedVariant = runtime.resolveState(
 				   state2, 
 				   Array(
 						experience("test1.A", schema)   // control
 				   )
 		   );
-		   resolution._1 mustBe true
-		   resolution._2 mustBe null
+		   resolvedVariant mustBe None
 
-   		resolution = runtime.resolveState(
+   		resolvedVariant = runtime.resolveState(
    				state2, 
 	   			Array(
 						experience("test1.A", schema),  // control
 						experience("test2.B", schema)   // variant
 				)
    		);
-   		resolution._1 mustBe true
-   		resolution._2.getParameters().get("path") mustBe "/path/to/state2/test2.B"
-   		resolution._2.getParameters().get("PATH") mustBe null // path is case sensitive.
+   		resolvedVariant mustBe Some
+   		resolvedVariant.get.getParameters().get("path") mustBe "/path/to/state2/test2.B"
+   		resolvedVariant.get.getParameters().get("PATH") mustBe null // path is case sensitive.
 
-       	resolution = runtime.resolveState(
+       	resolvedVariant = runtime.resolveState(
    				state2, 
    				Array(
    						experience("test1.B", schema)   // variant
    				)
    		);
-   		resolution._1 mustBe true
-   		resolution._2.getParameters().get("path") mustBe "/path/to/state2/test1.B"
-   		resolution._2.getParameters().get("PaTh") mustBe null // path is case sensitive.
+   		resolvedVariant mustBe Some
+   		resolvedVariant.get.getParameters().get("path") mustBe "/path/to/state2/test1.B"
+   		resolvedVariant.get.getParameters().get("PaTh") mustBe null // path is case sensitive.
    
-   		resolution = runtime.resolveState(
+   		resolvedVariant = runtime.resolveState(
    				state2, 
    				Array(
    						experience("test6.C", schema),  // nonvariant
    						experience("test2.B", schema)   // variant
    				)
    		);
-   		resolution._1 mustBe true
-   		resolution._2.getParameters().get("path") mustBe "/path/to/state2/test2.B"
+   		resolvedVariant mustBe Some
+   		resolvedVariant.get.getParameters().get("path") mustBe "/path/to/state2/test2.B"
    		
          var caughtEx = intercept[ServerException.Internal] {
  				runtime.resolveState(
@@ -250,7 +250,7 @@ class RuntimeTest extends EmbeddedServerSpec {
                new ServerException.Internal("Duplicate test [test2] in input vector").getMessage)
          )
 
-        resolution = runtime.resolveState(
+        resolvedVariant = runtime.resolveState(
    				state2, 
    				Array(
    						experience("test4.B", schema),  // variant
@@ -258,10 +258,10 @@ class RuntimeTest extends EmbeddedServerSpec {
    						experience("test6.C", schema)   // nonvariant
    				)
    		);
-   		resolution._1 mustBe true
-   		resolution._2.getParameters().get("path") mustBe "/path/to/state2/test1.C+test4.B"
+   		resolvedVariant mustBe Some
+   		resolvedVariant.get.getParameters().get("path") mustBe "/path/to/state2/test1.C+test4.B"
    
-   		resolution = runtime.resolveState(
+   		resolvedVariant = runtime.resolveState(
    				state2, 
    				Array(
    						experience("test1.B", schema),  // variant
@@ -270,18 +270,18 @@ class RuntimeTest extends EmbeddedServerSpec {
    						experience("test4.B", schema)   // variant, unsupported
    				)
    		);
-   		resolution._1 mustBe false
+   		resolvedVariant mustBe null
    		
-   		resolution = runtime.resolveState(
+   		resolvedVariant = runtime.resolveState(
    				state2, 
    				Array(
    						experience("test4.B", schema),  // variant, unsupported
    						experience("test2.B", schema)   // variant
    				)
    		);
-   		resolution._1 mustBe false
+   		resolvedVariant mustBe null
    
-   		resolution = runtime.resolveState(
+   		resolvedVariant = runtime.resolveState(
    				state2, 
    				Array(
    						experience("test2.B", schema),  // variant
@@ -289,19 +289,19 @@ class RuntimeTest extends EmbeddedServerSpec {
    						experience("test3.B", schema)   // variant, unsupported.
    				)
    		);
-   		resolution._1 mustBe false
+   		resolvedVariant mustBe null
    
-   		resolution = runtime.resolveState(
+   		resolvedVariant = runtime.resolveState(
    				state2, 
    				Array(
    						experience("test4.C", schema),  // variant
    						experience("test5.C", schema)   // variant
    				)
    		);
-   		resolution._1 mustBe true
-   		resolution._2.getParameters().get("path") mustBe "/path/to/state2/test4.C+test5.C"
+   		resolvedVariant mustBe Some
+   		resolvedVariant.get.getParameters().get("path") mustBe "/path/to/state2/test4.C+test5.C"
    
-   		resolution = runtime.resolveState(
+   		resolvedVariant = runtime.resolveState(
    				state2, 
    				Array(
    						experience("test4.C", schema),  // variant
@@ -309,9 +309,9 @@ class RuntimeTest extends EmbeddedServerSpec {
    						experience("test5.C", schema)   // variant, unsupported
    				)
    		);
-   		resolution._1 mustBe false
+   		resolvedVariant mustBe null
    
-   		resolution = runtime.resolveState(
+   		resolvedVariant = runtime.resolveState(
    				state2, 
    				Array(
    						experience("test4.C", schema),  // variant unsupported
@@ -320,9 +320,9 @@ class RuntimeTest extends EmbeddedServerSpec {
    						experience("test3.B", schema)   // variant
    				)
    		);
-   		resolution._1 mustBe false
+   		resolvedVariant mustBe null
    
-   		resolution = runtime.resolveState(
+   		resolvedVariant = runtime.resolveState(
    				state2, 
    				Array(
    						experience("test4.C", schema),  // variant unsupported
@@ -331,7 +331,7 @@ class RuntimeTest extends EmbeddedServerSpec {
    						experience("test5.C", schema)   // variant
    				)
    		);
-   		resolution._1 mustBe false
+   		resolvedVariant mustBe null
 	   }
 	   
 	   "resolve for state3" in {
@@ -349,23 +349,22 @@ class RuntimeTest extends EmbeddedServerSpec {
    	   val test5 = schema.getVariation("test5").get
    	   val test6 = schema.getVariation("test6").get
 
-   	   var resolution = runtime.resolveState(
+   	   var resolvedVariant = runtime.resolveState(
    				state3, 
    				Array(
    						experience("test2.A", schema)   // control
    				)
    		);
-   		resolution._1 mustBe true
-   		resolution._2 mustBe null
+   		resolvedVariant mustBe None
    		
-   		resolution = runtime.resolveState(
+   		resolvedVariant = runtime.resolveState(
    				state3, 
    				Array(
    						experience("test2.B", schema) 
    				)
    		);
-   		resolution._1 mustBe true
-   		resolution._2.getParameters().get("path") mustBe "/path/to/state3/test2.B"
+   		resolvedVariant mustBe Some
+   		resolvedVariant.get.getParameters().get("path") mustBe "/path/to/state3/test2.B"
       
          var caughtEx = intercept[ServerException.Internal] {
    				runtime.resolveState(
@@ -377,46 +376,44 @@ class RuntimeTest extends EmbeddedServerSpec {
   			}
 		   assert(
 		         caughtEx.getMessage.equals(
-               new ServerException.Internal("Uninstrumented test [test4.B] in input vector").getMessage)
+               new ServerException.Internal("Uninstrumented variation [test4.B] in coordinate vector").getMessage)
          )
 
-         resolution = runtime.resolveState(
+         resolvedVariant = runtime.resolveState(
    				state3, 
    				Array(
    						experience("test3.B", schema)   // nonvariant
    				)
    		);
-   		resolution._1 mustBe true
-   		resolution._2 mustBe null
+   		resolvedVariant mustBe None
    
-   		resolution = runtime.resolveState(
+   		resolvedVariant = runtime.resolveState(
    				state3, 
    				Array(
    						experience("test2.B", schema)   // variant
    				)
    		);
-   		resolution._1 mustBe true
-   		resolution._2.getParameters().get("path") mustBe "/path/to/state3/test2.B"
+   		resolvedVariant mustBe Some
+   		resolvedVariant.get.getParameters().get("path") mustBe "/path/to/state3/test2.B"
    
-   		resolution = runtime.resolveState(
+   		resolvedVariant = runtime.resolveState(
    				state3, 
    				Array(
    						experience("test3.B", schema),  // nonvariant
    						experience("test5.C", schema)   // nonvariant
    				)
    		);
-   		resolution._1 mustBe true
-   		resolution._2 mustBe null
+   		resolvedVariant mustBe None
    
-   		resolution = runtime.resolveState(
+   		resolvedVariant = runtime.resolveState(
    				state3, 
    				Array(
    						experience("test2.B", schema),  // variant
    						experience("test3.C", schema)   // nonvariant
    				)
    		);
-   		resolution._1 mustBe true
-   		resolution._2.getParameters().get("path") mustBe "/path/to/state3/test2.B"
+   		resolvedVariant mustBe Some
+   		resolvedVariant.get.getParameters().get("path") mustBe "/path/to/state3/test2.B"
    
          caughtEx = intercept[ServerException.Internal] {
    					runtime.resolveState(
@@ -446,10 +443,10 @@ class RuntimeTest extends EmbeddedServerSpec {
   			}
 		   assert(
 		         caughtEx.getMessage.equals(
-               new ServerException.Internal("Uninstrumented test [test4.B] in input vector").getMessage)
+               new ServerException.Internal("Uninstrumented variation [test4.B] in coordinate vector").getMessage)
          )
 
-         resolution = runtime.resolveState(
+         resolvedVariant = runtime.resolveState(
    				state3, 
    				Array(
    						experience("test1.C", schema),  // variant
@@ -457,17 +454,17 @@ class RuntimeTest extends EmbeddedServerSpec {
    						experience("test3.B", schema)   // nonvariant
    				)
    		);
-   		resolution._1 mustBe false
+   		resolvedVariant mustBe null
    		
-   		resolution = runtime.resolveState(
+   		resolvedVariant = runtime.resolveState(
    				state3, 
    				Array(
    						experience("test2.B", schema),  // variant
    						experience("test3.C", schema)   // nonvariant
    				)
    		);
-   		resolution._1 mustBe true
-   		resolution._2.getParameters().get("path") mustBe "/path/to/state3/test2.B"
+   		resolvedVariant mustBe Some
+   		resolvedVariant.get.getParameters().get("path") mustBe "/path/to/state3/test2.B"
       		
          caughtEx = intercept[ServerException.Internal] {
    				runtime.resolveState(
@@ -482,10 +479,10 @@ class RuntimeTest extends EmbeddedServerSpec {
   			}
 		   assert(
 		         caughtEx.getMessage.equals(
-               new ServerException.Internal("Uninstrumented test [test4.B] in input vector").getMessage)
+               new ServerException.Internal("Uninstrumented variation [test4.B] in coordinate vector").getMessage)
          )
 
-   		resolution = runtime.resolveState(
+   		resolvedVariant = runtime.resolveState(
    				state3, 
    				Array(
    						experience("test2.B", schema),  // variant unsupported
@@ -494,9 +491,9 @@ class RuntimeTest extends EmbeddedServerSpec {
    						experience("test3.C", schema)   // nonvariant
    				)
    		);
-   		resolution._1 mustBe false
+   		resolvedVariant mustBe null
    
-   		resolution = runtime.resolveState(
+   		resolvedVariant = runtime.resolveState(
    				state3, 
    				Array(
    						experience("test2.B", schema),  // variant
@@ -504,10 +501,10 @@ class RuntimeTest extends EmbeddedServerSpec {
    						experience("test3.B", schema)   // nonvariant
    				)
    		)
-   		resolution._1 mustBe true
-   		resolution._2.getParameters().get("path") mustBe "/path/to/state3/test2.B"
+   		resolvedVariant mustBe Some
+   		resolvedVariant.get.getParameters().get("path") mustBe "/path/to/state3/test2.B"
    
-   		resolution = runtime.resolveState(
+   		resolvedVariant = runtime.resolveState(
    				state3, 
    				Array(
    						experience("test6.C", schema),  // control
@@ -516,9 +513,9 @@ class RuntimeTest extends EmbeddedServerSpec {
    						experience("test1.B", schema)   // variant
    				)
    		);
-   		resolution._1 mustBe false
+   		resolvedVariant mustBe null
    
-   		resolution = runtime.resolveState(
+   		resolvedVariant = runtime.resolveState(
    				state3, 
    				Array(
    						experience("test6.B", schema),  // variant
@@ -526,8 +523,8 @@ class RuntimeTest extends EmbeddedServerSpec {
    						experience("test5.C", schema)   // nonvariant
    				)
    		);
-   		resolution._1 mustBe true
-   		resolution._2.getParameters().get("path") mustBe "/path/to/state3/test2.B+test6.B"   
+   		resolvedVariant mustBe Some
+   		resolvedVariant.get.getParameters().get("path") mustBe "/path/to/state3/test2.B+test6.B"   
 	   }
 
 	   "resolve these coordinate vectors" in {

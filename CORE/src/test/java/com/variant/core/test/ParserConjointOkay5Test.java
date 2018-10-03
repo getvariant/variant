@@ -526,7 +526,7 @@ public class ParserConjointOkay5Test extends BaseTestCore {
 		assertTrue(test3.isConjointWith(test1));
 		assertTrue(test3.isConjointWith(test2));
 
-		assertNull(test1.getConjointVariations());
+		assertTrue(test1.getConjointVariations().isEmpty());
 		assertNull(test2.getConjointVariations());
 		assertEquals(CollectionsUtils.list(test1, test2), test3.getConjointVariations());
 

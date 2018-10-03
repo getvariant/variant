@@ -53,7 +53,7 @@ public class StateRequestImpl implements StateRequest {
 	}
 
 	@Override
-	public StateVariant getResolvedStateVariant() {
+	public Optional<StateVariant> getResolvedStateVariant() {
 		checkState();
 		return coreRequest.getResolvedStateVariant();
 	}

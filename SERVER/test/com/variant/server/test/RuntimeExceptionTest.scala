@@ -85,8 +85,7 @@ class RuntimeExceptionTest extends EmbeddedServerSpec {
    			   ] 
    			},  
    			{
-   			   'stateRef':'state3',
-   			   'isNonvariant':true
+   			   'stateRef':'state3'
    		   }
          ] 
       }
@@ -96,28 +95,6 @@ class RuntimeExceptionTest extends EmbeddedServerSpec {
 """
 	
    "Runtime" should {
-
-      "throw STATE_NOT_INSTRUMENTED_BY_TEST" in  {
-
-         val schemaDeployer = SchemaDeployer.fromString(schemaSrc)
-         server.useSchemaDeployer(schemaDeployer)
-         val response = schemaDeployer.parserResponses(0)
-         server.schemata.get(schemaName).isDefined mustBe true
-         val schema = server.schemata.get(schemaName).get.liveGen.get
-         val state2 = schema.getState("state2").get
-
-			schema.getVariation("non-existent").isPresent() mustBe false
-         
-         try {
-			   state2.isNonvariantIn(schema.getVariation("test1").get)
-			   fail("Expected exception not thrown")
-   		}
-	   	catch {
-	   	   case uex: CoreException.User =>  uex.getMessage() mustEqual
-      			new CoreException.User(STATE_NOT_INSTRUMENTED_BY_TEST, "state2", "test1").getMessage()
-		   }
-	   	
-      }
 
       "throw WEIGHT_MISSING" in {
 

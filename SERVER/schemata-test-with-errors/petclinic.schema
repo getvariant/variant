@@ -53,7 +53,7 @@
             }                                               
          ],                                                  
          'onStates':[                                         
-            {                                                
+            {                                  
                'stateRef':'newOwner',                    
                'variants':[                                  
                   {                                          
@@ -77,8 +77,7 @@
                ]                                             
             },
             {                                                
-               'stateRef':'ownerDetail',                            
-               'isNonvariant': true
+               'stateRef':'ownerDetail'
             }                                                
          ],
          'hooks':[

@@ -37,7 +37,7 @@ trait TempSchemataDir extends PlaySpec with OneAppPerSuite with BeforeAndAfterAl
          "distr/schemata/petclinic.schema")
    
    // Custom application builder.  
-   // var references must be static because this is an implicit method.
+   // val references must be static because this is an implicit method.
    implicit override lazy val app: Application = {
 
       s"rm -rf ${TempSchemataDir.schemataDir}".!!

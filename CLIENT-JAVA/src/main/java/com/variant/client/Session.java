@@ -82,7 +82,6 @@ public interface Session {
 	 * 
 	 * @throws SessionExpiredException
 	 * @throws UnknownSchemaException
-	 * @throws StateNotInstrumentedException 
 	 * 
 	 * @since 0.5
 	 */

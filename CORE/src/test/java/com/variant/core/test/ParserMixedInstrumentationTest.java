@@ -177,25 +177,23 @@ public class ParserMixedInstrumentationTest extends BaseTestCore {
 		assertTrue(response.hasMessages(Severity.WARN));
 		assertTrue(response.hasMessages(Severity.INFO));
 
-		assertEquals(6, response.getMessages().size());
+		assertEquals(4, response.getMessages().size());
 		ParserMessage actual = response.getMessages().get(0);
 		ParserMessage expected = new ParserMessageImpl(
 				new Location("/variations[0]/onStates[0]/variants[0]/parameters/"), 
 				PROPERTY_NOT_ALLOWED_PHANTOM_VARIANT, "parameters");
 		assertMessageEqual(expected, actual);
 		actual = response.getMessages().get(1);
-		assertTrue("PROPER_VARIANT_MISSING should be deleted!", false);
-		actual = response.getMessages().get(3);
 		expected = new ParserMessageImpl(
 				new Location("/variations[2]/onStates[0]/variants[0]/isPhantom"), 
 				PROPERTY_NOT_BOOLEAN, "isPhantom");
 		assertMessageEqual(expected, actual);
-		actual = response.getMessages().get(4);
+		actual = response.getMessages().get(2);
 		expected = new ParserMessageImpl(
 				new Location("/variations[3]/onStates[0]/variants[0]/isPhantom"), 
 				PROPERTY_NOT_BOOLEAN, "isPhantom");
 		assertMessageEqual(expected, actual);
-		actual = response.getMessages().get(5);
+		actual = response.getMessages().get(3);
 		expected = new ParserMessageImpl(
 				new Location("/variations[3]/onStates[0]/variants[1]/experienceRef"), 
 				EXPERIENCEREF_ISCONTROL, "A");
@@ -298,7 +296,7 @@ public class ParserMixedInstrumentationTest extends BaseTestCore {
 						"                       }                                                 \n" +
 						"                    ]                                                    \n" +
 			    	    "                 },                                                      \n" +
-				        "                 // Error: covar A is off => the entire slice is too    \n" +
+				        "                 // Error: conjoint A is undef => the entire slice is too    \n" +
 			    	    "                 {                                                       \n" +
 			    	    "                    'experienceRef':'B',                                 \n" +
 			    	    "                    'conjointExperienceRefs': [                         \n" +
