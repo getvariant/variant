@@ -131,10 +131,15 @@ public class CoreStateRequest implements Serializable {
 		return liveExperiences;
 	}
 
-	public Optional<Experience> getLiveExperience(Variation test) {
+	/**
+	 * Get live experience in a given Variation, if any.
+	 * @param test
+	 * @return
+	 */
+	public Optional<Experience> getLiveExperience(Variation var) {
 		
 		for (Experience e: getLiveExperiences())
-			if  (e.getVariation().getName().equals(test.getName())) return Optional.of(e);
+			if  (e.getVariation().getName().equals(var.getName())) return Optional.of(e);
 		return Optional.empty();
 	}
 	
