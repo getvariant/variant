@@ -54,7 +54,7 @@ public interface StateRequest {
 	 * live experience is a variant, the targeting operation will resolve to some state variant definition in the schema.
 	 * 
 	 * @return The {@link Optional} containing the {@link StateVariant} object to which this request resolved, 
-	 *         or empty if all live experiences are control.
+	 *         or empty if all live experiences on this state are control.
 	 * 
 	 * @since 0.6
 	 * @see StateVariant
