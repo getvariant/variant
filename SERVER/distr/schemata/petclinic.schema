@@ -15,8 +15,7 @@
           1. Uncomment below and specify the appropriate database credentials. 
           2. Place the Postres JDVC driver JAR file (release 9.1-901-1 or higher) 
              in the server's ext/ directory.
-      */
-      /*
+      *//*
       ,'flusher': {
          'class':'com.variant.server.api.EventFlusherPostgres',
          'init': {
@@ -76,17 +75,17 @@
             }
          ],
          'hooks':[
-               {
-                  // Assigns all Chrome traffic to the control experience
-                  'name':'ChromeTargeter',
-                  'class':'com.variant.server.ext.demo.ChromeTargetingHook'
-               },
-               {
-                   // Disqualifies all Safari traffic.
-                   'name':'SafariDisqualifier',
-                   'class':'com.variant.server.ext.demo.SafariDisqualHook'
-                }
-          ]
+            {
+               // Assigns all Chrome traffic to the control experience
+               'name':'ChromeTargeter',
+               'class':'com.variant.server.ext.demo.ChromeTargetingHook'
+            },
+            {
+               // Disqualifies all Safari traffic.
+               'name':'SafariDisqualifier',
+               'class':'com.variant.server.ext.demo.SafariDisqualHook'
+            }
+         ]
       },
 
       /*
@@ -95,7 +94,7 @@
       
       {                                                      
          'name':'ScheduleVisitTest',
-         'conjointVariationRefs':['VetsHourlyRateFeature'],
+         'conjointVariationRefs':['VetsHourlyRateFeature'], 
          'experiences':[                              
             {                                                
                'name':'noLink',                                   
@@ -127,7 +126,7 @@
                      'experienceRef': 'withLink',
                      'conjointExperienceRefs': [                         
                         {                                                 
-                           'variationRef': 'VetsHourlyRateFeature',                            
+                           'variationRef': 'VetsHourlyRateFeature',
                            'experienceRef': 'rateColumn'                           
                         }                                                 
                      ],                                                  
@@ -135,7 +134,7 @@
                         {
                            'name':'path',
                            'value':'/vets__ScheduleVisit_withLink.html'
-                        }                                         
+                        }
                      ]                                             
                   }
                ]                                             
