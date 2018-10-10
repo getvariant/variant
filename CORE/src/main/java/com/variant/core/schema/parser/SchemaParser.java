@@ -84,7 +84,9 @@ public abstract class SchemaParser implements Keywords {
 
 		for (char c: annotatedJsonString.toCharArray()) {
 
-			if (!quoted && !comment && (prev == '/' || prev == '*' && c != '/')) pass1.append(prev);
+			// If we're not in a comment and holing a '/' but it wasn't followed by '*', 
+			// echo it.
+			if (!quoted && !comment && prev == '/' && c != '*') pass1.append(prev);
 
 			switch (c) {
 
@@ -101,6 +103,9 @@ public abstract class SchemaParser implements Keywords {
 					if (quoted) pass1.append(c);
 					else if (comment && prev == '*') {
 						comment = false;
+						// This is special case: we don't want this echoed
+						// at the top of next iteration.
+						c = '\0';  
 					}
 					break;
 					
@@ -110,8 +115,14 @@ public abstract class SchemaParser implements Keywords {
 					else if (prev == '/') {
 						comment = true;
 					}
-				break;
+					break;
 				
+				case '\n':
+					// Don't loose line breaks, even inside of a multi-line comment,
+					// so that the json parser's sytax error refers to the right line number in the source.
+					pass1.append(c);
+					break;
+					
 				default:
 					if (!comment) pass1.append(c);
 
@@ -221,27 +232,27 @@ public abstract class SchemaParser implements Keywords {
 	 * @throws VariantRuntimeException
 	 */
 	@SuppressWarnings("unchecked")
-	public ParserResponse parse(String annotatedJsonString) {
+	public ParserResponse parse(String schemaSrc) {
 		
 		// 1. Pre-parser phase
-		String cleanJsonString = preParse(annotatedJsonString);
+		String schemaPreParsed = preParse(schemaSrc);
 		
 		// 2. Syntactical phase.
 		response = new ParserResponse(this);
 		
-		response.setSchemaSrc(annotatedJsonString);
+		response.setSchemaSrc(schemaSrc);
 		
-		ObjectMapper jacksonDataMapper = new ObjectMapper();
-		jacksonDataMapper.configure(JsonParser.Feature.ALLOW_SINGLE_QUOTES, true);
+		ObjectMapper JacksonParser = new ObjectMapper();
+		JacksonParser.configure(JsonParser.Feature.ALLOW_SINGLE_QUOTES, true);
 		
 		Map<String, ?> mappedJson = null;
 		
 		try {
 			//cbb = jacksonDataMapper.readValue(configAsJsonString, ConfigBinderBean.class);
-			mappedJson = jacksonDataMapper.readValue(cleanJsonString, Map.class);
+			mappedJson = JacksonParser.readValue(schemaPreParsed, Map.class);
 		}
 		catch(JsonParseException parseException) {
-			toParserError(parseException, cleanJsonString, response);
+			toParserError(parseException, schemaSrc, response);
 		} 
 		catch (Exception e) {
 			throw new CoreException.Internal(e);

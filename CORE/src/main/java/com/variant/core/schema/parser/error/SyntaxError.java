@@ -45,28 +45,28 @@ public class SyntaxError extends ParserError {
 		private String getSourceFragment() {
 			
 			String lines[] = schemaSrc.split("\n");
-			
+			String format = "\n%" + String.valueOf(line + 1).length() + "d:%s";
 			StringBuilder result = new StringBuilder(); 
 			
 			if (line > 3) {
-				result.append("\n     ...");
+				result.append("\n...");
 			}
 			if (line > 2) {
-				result.append("\n     >").append(lines[line - 3]);
+				result.append(String.format(format, line-2, lines[line - 3]));
 			}
 			if (line > 1) {
-				result.append("\n     >").append(lines[line - 2]);
+				result.append(String.format(format, line-1, lines[line - 2]));
 			}
-			result.append("\n     >").append(lines[line - 1]);
-			result.append("\n      ").append(StringUtils.repeat(" ", column - 2)).append("^");
+			result.append(String.format(format, line, lines[line - 1]));
+			result.append("\n").append(StringUtils.repeat(" ", String.valueOf(line + 1).length() + column - 1)).append("^");
 			if (line < lines.length) {
-				result.append("\n     >").append(lines[line]);
+				result.append(String.format(format, line+1, lines[line]));
 			}
 			if (line < lines.length - 1) {
-				result.append("\n     >").append(lines[line + 1]);
+				result.append(String.format(format, line+2, lines[line + 1]));
 			}
 			if (line < lines.length - 2) {
-				result.append("\n     ...");
+				result.append("\n...");
 			}
 			
 			return result.toString();
