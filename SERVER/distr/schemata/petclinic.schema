@@ -10,21 +10,6 @@
    'meta':{
       'name':'petclinic',
       'comment':'Variation schema for experiments on the Pet Clinic demo application'
-      /* The default flusher appends to the server log file log/variant.log
-         To have trace events written off to a PostgreSQL database: 
-          1. Uncomment below and specify the appropriate database credentials. 
-          2. Place the Postres JDVC driver JAR file (release 9.1-901-1 or higher) 
-             in the server's ext/ directory.
-      *//*
-      ,'flusher': {
-         'class':'com.variant.server.api.EventFlusherPostgres',
-         'init': {
-            'url':'jdbc:postgresql://localhost/variant',
-            'user':'variant',
-             'password':'variant'
-         }
-      }
-      */
    },
 
    'states':[
@@ -79,11 +64,6 @@
                // Assigns all Chrome traffic to the control experience
                'name':'ChromeTargeter',
                'class':'com.variant.server.ext.demo.ChromeTargetingHook'
-            },
-            {
-               // Disqualifies all Safari traffic.
-               'name':'SafariDisqualifier',
-               'class':'com.variant.server.ext.demo.SafariDisqualHook'
             }
          ]
       },
