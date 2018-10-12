@@ -130,7 +130,17 @@ public class StateVariantImpl implements StateVariant {
 			jsonGen.writeStartObject();
 			jsonGen.writeStringField("state", onState.getState().getName());
 			jsonGen.writeStringField("test", onState.getVariation().getName());
-			jsonGen.writeStringField("params", params.toString());
+			jsonGen.writeStringField("properExperience", getExperience().toString());
+			jsonGen.writeArrayFieldStart("conjointExperiences");
+			for(Experience exp: getConjointExperiences()) {
+				jsonGen.writeString(exp.toString());
+			}
+			jsonGen.writeEndArray();
+			jsonGen.writeArrayFieldStart("params");
+			for (Map.Entry<String, String> e: getParameters().entrySet()) {
+				jsonGen.writeObjectField(e.getKey(), e.getValue());
+			}
+			jsonGen.writeEndArray();
 			jsonGen.writeEndObject();
 			jsonGen.flush();
 			return result.toString();

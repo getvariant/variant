@@ -1539,7 +1539,7 @@ public class ParserSerialVariationsErrorTest extends BaseTestCore {
 	}
 
 	/**
-	 * VARIANT_NOT_OBJECT + PARSER_VARIANT_MISSING
+	 * VARIANT_NOT_OBJECT
 	 * @throws Exception
 	 */
 	@Test
@@ -1588,18 +1588,17 @@ public class ParserSerialVariationsErrorTest extends BaseTestCore {
 		assertTrue(response.hasMessages(Severity.ERROR));
 		assertTrue(response.hasMessages(Severity.WARN));
 		assertTrue(response.hasMessages(Severity.INFO));
-		assertEquals(3, response.getMessages().size());
+		assertEquals(2, response.getMessages().size());
 		ParserMessage actual = response.getMessages().get(0);
 		ParserMessage expected = new ParserMessageImpl(new Location("/variations[0]/onStates[0]/variants[0]/"), ELEMENT_NOT_OBJECT, "variants");
 		assertMessageEqual(expected, actual);
 		actual = response.getMessages().get(1);
 		expected = new ParserMessageImpl(new Location("/variations[0]/onStates[0]/variants[1]/"), ELEMENT_NOT_OBJECT, "variants");
 		assertMessageEqual(expected, actual);
-		assertTrue("PROPER_VARIANT_MISSING should be deleted!", false);
 	}
 
 	/**
-	 * EXPERIENCEREF_MISSING + PARSER_VARIANT_MISSING
+	 * EXPERIENCEREF_MISSING 
 	 * @throws Exception
 	 */
 	@Test
@@ -1658,7 +1657,7 @@ public class ParserSerialVariationsErrorTest extends BaseTestCore {
 		assertTrue(response.hasMessages(Severity.ERROR));
 		assertTrue(response.hasMessages(Severity.WARN));
 		assertTrue(response.hasMessages(Severity.INFO));
-		assertEquals(2, response.getMessages().size());
+		assertEquals(1, response.getMessages().size());
 		ParserMessage actual = response.getMessages().get(0);
 		ParserMessage expected = new ParserMessageImpl(
 				new Location("/variations[0]/onStates[0]/variants[0]/"), PROPERTY_MISSING, "experienceRef");
@@ -1739,7 +1738,7 @@ public class ParserSerialVariationsErrorTest extends BaseTestCore {
 	}
 
 	/**
-	 * EXPERIENCEREF_UNDEFINED + PARSER_VARIANT_MISSING
+	 * EXPERIENCEREF_UNDEFINED 
 	 * @throws Exception
 	 */
 	@Test
@@ -1798,7 +1797,7 @@ public class ParserSerialVariationsErrorTest extends BaseTestCore {
 		assertTrue(response.hasMessages(Severity.ERROR));
 		assertTrue(response.hasMessages(Severity.WARN));
 		assertTrue(response.hasMessages(Severity.INFO));
-		assertEquals(2, response.getMessages().size());
+		assertEquals(1, response.getMessages().size());
 		ParserMessage actual = response.getMessages().get(0);
 		ParserMessage expected = new ParserMessageImpl(
 				new Location("/variations[0]/onStates[0]/variants[0]/experienceRef"), 
@@ -1953,7 +1952,7 @@ public class ParserSerialVariationsErrorTest extends BaseTestCore {
 	}
 
 	/**
-	 * EXPERIENCE_NAME_DUPE + PARSER_VARIANT_MISSING
+	 * EXPERIENCE_NAME_DUPE
 	 * @throws Exception
 	 */
 	@Test
@@ -2020,7 +2019,7 @@ public class ParserSerialVariationsErrorTest extends BaseTestCore {
 		assertTrue(response.hasMessages(Severity.ERROR));
 		assertTrue(response.hasMessages(Severity.WARN));
 		assertTrue(response.hasMessages(Severity.INFO));
-		assertEquals(2, response.getMessages().size());
+		assertEquals(1, response.getMessages().size());
 		ParserMessage actual = response.getMessages().get(0);
 		ParserMessage expected = new ParserMessageImpl(new Location("/variations[0]/experiences[2]/"), DUPE_OBJECT, "B");
 		assertMessageEqual(expected, actual);
@@ -2231,7 +2230,7 @@ public class ParserSerialVariationsErrorTest extends BaseTestCore {
 		assertTrue(response.hasMessages(Severity.ERROR));
 		assertTrue(response.hasMessages(Severity.WARN));
 		assertTrue(response.hasMessages(Severity.INFO));
-		assertEquals(2, response.getMessages().size());
+		assertEquals(1, response.getMessages().size());
 		ParserMessage actual = response.getMessages().get(0);
 		ParserMessage expected = new ParserMessageImpl(
 				new Location("/variations[0]/onStates[0]/variants[1]/"), DUPE_OBJECT, "A");

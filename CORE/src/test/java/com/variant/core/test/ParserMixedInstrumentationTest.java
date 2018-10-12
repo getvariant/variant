@@ -296,7 +296,7 @@ public class ParserMixedInstrumentationTest extends BaseTestCore {
 						"                       }                                                 \n" +
 						"                    ]                                                    \n" +
 			    	    "                 },                                                      \n" +
-				        "                 // Error: conjoint A is undef => the entire slice is too    \n" +
+				        "                 // Error: conjoint B is undef => the entire slice is too    \n" +
 			    	    "                 {                                                       \n" +
 			    	    "                    'experienceRef':'B',                                 \n" +
 			    	    "                    'conjointExperienceRefs': [                         \n" +

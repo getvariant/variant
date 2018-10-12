@@ -8,7 +8,6 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.NoSuchElementException;
 
 import com.variant.core.schema.Flusher;
 import com.variant.core.schema.Hook;
@@ -1018,10 +1017,10 @@ public class ParserSerialOkayTest extends BaseTestCore {
 		List<Variation.OnState> actualonStates = test.getOnStates();
 		assertEquals(3, actualonStates.size());
 
-		Variation.OnState tov = actualonStates.get(0);
-		assertEquals(test, tov.getVariation());
-		assertEquals(config.getState("state3").get(), tov.getState());
-		StateVariant[] actualVariants =  tov.getVariants().toArray(new StateVariant[0]);
+		Variation.OnState onState = actualonStates.get(0);
+		assertEquals(test, onState.getVariation());
+		assertEquals(config.getState("state3").get(), onState.getState());
+		StateVariant[] actualVariants =  onState.getVariants().toArray(new StateVariant[0]);
 		assertEquals(1, actualVariants.length);
 		StateVariant variant = actualVariants[0];
 		assertEquals(test.getExperience("D").get(), variant.getExperience());
@@ -1029,10 +1028,10 @@ public class ParserSerialOkayTest extends BaseTestCore {
 		assertTrue(variant.isProper());
 		assertEquals("/path/to/state3/test2.D", variant.getParameters().get("path"));
 
-		tov = actualonStates.get(1);
-		assertEquals(test, tov.getVariation());
-		assertEquals(config.getState("state2").get(), tov.getState());
-		actualVariants =  tov.getVariants().toArray(new StateVariant[0]);
+		onState = actualonStates.get(1);
+		assertEquals(test, onState.getVariation());
+		assertEquals(config.getState("state2").get(), onState.getState());
+		actualVariants =  onState.getVariants().toArray(new StateVariant[0]);
 		assertEquals(1, actualVariants.length);
 		variant = actualVariants[0];
 		assertEquals(test.getExperience("D").get(), variant.getExperience());
@@ -1040,10 +1039,16 @@ public class ParserSerialOkayTest extends BaseTestCore {
 		assertTrue(variant.isProper());
 		assertEquals("/path/to/state2/test2.D", variant.getParameters().get("path"));
 		
-		tov = actualonStates.get(2);
-		assertEquals(test, tov.getVariation());
-		assertEquals(config.getState("state4").get(), tov.getState());
-		assertTrue(tov.getVariants().isEmpty());
+		onState = actualonStates.get(2);
+		assertEquals(test, onState.getVariation());
+		assertEquals(config.getState("state4").get(), onState.getState());
+		actualVariants =  onState.getVariants().toArray(new StateVariant[0]);
+		assertEquals(1, actualVariants.length);
+		variant = actualVariants[0];
+		assertEquals(test.getExperience("D").get(), variant.getExperience());
+		assertTrue(variant.getConjointExperiences().isEmpty());
+		assertTrue(variant.isProper());
+		assertEquals(0, variant.getParameters().size());
 
 	}
 

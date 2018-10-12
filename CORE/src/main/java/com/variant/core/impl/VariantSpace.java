@@ -113,8 +113,8 @@ public class VariantSpace {
 	 */
 	public VariantSpace(VariationOnStateImpl vosImpl)  {
 				
-		// Build the basis -- list of variations starting with the one where this VoS is defined,
-		// followed by the conjoint variations, sorted in ordinal order.
+		// Build the basis -- list of variations starting with the one containing this VoS,
+		// followed by the conjoint variations, in ordinal order.
 		basis = new LinkedHashSet<Variation>();
 		basis.add(vosImpl.getVariation());
 		basis.addAll(vosImpl.getVariation().getConjointVariations());
@@ -128,7 +128,7 @@ public class VariantSpace {
 			
 			if (oldKeys.size() == 0) {
 				
-				// Empty space map => the first variaiton in basis is the enclosing one.
+				// Empty space map => the first variation in basis is the enclosing one.
 				// Add proper variant experiences.
 				for (Experience exp: basisVar.getExperiences()) {
 					if (exp.isControl()) continue;
