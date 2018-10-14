@@ -1,8 +1,11 @@
 package com.variant.core.schema.parser;
 
+import static com.variant.core.schema.parser.error.SemanticError.CONJOINT_EXPERIENCE_TEST_NOT_INSTRUMENTED;
 import static com.variant.core.schema.parser.error.SemanticError.CONJOINT_TESTREF_UNDEFINED;
 import static com.variant.core.schema.parser.error.SemanticError.CONJOINT_TEST_SERIAL;
+import static com.variant.core.schema.parser.error.SemanticError.CONJOINT_VARIANT_CONJOINT_PHANTOM;
 import static com.variant.core.schema.parser.error.SemanticError.CONJOINT_VARIANT_DUPE;
+import static com.variant.core.schema.parser.error.SemanticError.CONJOINT_VARIANT_PROPER_PHANTOM;
 import static com.variant.core.schema.parser.error.SemanticError.CONTROL_EXPERIENCE_DUPE;
 import static com.variant.core.schema.parser.error.SemanticError.CONTROL_EXPERIENCE_MISSING;
 import static com.variant.core.schema.parser.error.SemanticError.DUPE_OBJECT;
@@ -30,12 +33,12 @@ import org.slf4j.LoggerFactory;
 import com.variant.core.UserError.Severity;
 import com.variant.core.impl.CoreException;
 import com.variant.core.impl.ServerError;
-import com.variant.core.impl.VariantSpace;
 import com.variant.core.schema.Hook;
 import com.variant.core.schema.ParserMessage;
 import com.variant.core.schema.State;
 import com.variant.core.schema.StateVariant;
 import com.variant.core.schema.Variation;
+import com.variant.core.schema.Variation.Experience;
 import com.variant.core.schema.impl.SchemaImpl;
 import com.variant.core.schema.impl.StateImpl;
 import com.variant.core.schema.impl.StateVariantImpl;
@@ -91,7 +94,7 @@ public class VariationsParser implements Keywords {
 			Location varLocation = varsLocation.plusIx(index++);
 			
 			// Parse individual test
-			Variation var = parseTest(rawTest, varLocation, response);
+			Variation var = parseVariation(rawTest, varLocation, response);
 			if (var != null && !((SchemaImpl) response.getSchema()).addVariation(var)) {
 				response.addMessage(varLocation, DUPE_OBJECT, var.getName());
 			}
@@ -120,7 +123,7 @@ public class VariationsParser implements Keywords {
 	 * @param response
 	 * @throws VariantRuntimeException 
 	 */
-	private static Variation parseTest(Map<String, ?> test, Location testLocation, ParserResponse response){
+	private static Variation parseVariation(Map<String, ?> test, Location testLocation, ParserResponse response){
 		
 		List<VariationExperienceImpl> experiences = new ArrayList<VariationExperienceImpl>();
 		List<VariationOnStateImpl> onStates = new ArrayList<VariationOnStateImpl>();
@@ -274,7 +277,8 @@ public class VariationsParser implements Keywords {
 		}
 		result.setConjointVariations(conjointVarsReordered);
 		
-		// Pass 4: Parse onStates, if we have the control variant
+		// Pass 4: Parse onStates, if we have the control experience
+		
 		if (controlExperienceFound) {
 			for(Map.Entry<String, ?> entry: test.entrySet()) {
 				
@@ -285,31 +289,30 @@ public class VariationsParser implements Keywords {
 					
 					Location onStatesLocation = testLocation.plusObj(KEYWORD_ON_STATES);
 					
-					Object onViewsObject = entry.getValue();
-					if (! (onViewsObject instanceof List)) {
+					Object onStatesObject = entry.getValue();
+					if (! (onStatesObject instanceof List)) {
 						response.addMessage(onStatesLocation, PROPERTY_NOT_LIST, KEYWORD_ON_STATES);
 					}
 					else {
-						List<?> rawOnViews = (List<?>) onViewsObject;
-						if (rawOnViews.size() == 0) {
+						List<?> rawOnStates = (List<?>) onStatesObject;
+						if (rawOnStates.size() == 0) {
 							response.addMessage(onStatesLocation, PROPERTY_EMPTY_LIST, KEYWORD_ON_STATES);						
 						}
 						else {
 							int tosIx = 0;
-							for (Object testOnViewObject: rawOnViews) {
-								Location tosLocation = testLocation.plusObj(KEYWORD_ON_STATES).plusIx(tosIx++);
-								VariationOnStateImpl tos = parseTestOnState(testOnViewObject, result, tosLocation, response);
-								if (tos != null) {
+							for (Object vosObject: rawOnStates) {
+								Location vosLocation = testLocation.plusObj(KEYWORD_ON_STATES).plusIx(tosIx++);
+								VariationOnStateImpl vos = parseVariationOnState(vosObject, result, vosLocation, response);
+								if (vos != null) {
 									boolean dupe = false;
 									for (Variation.OnState newTos: onStates) {
-										if (tos.getState().equals(newTos.getState())) {
-											response.addMessage(tosLocation, DUPE_OBJECT, newTos.getState().getName());
+										if (vos.getState().equals(newTos.getState())) {
+											response.addMessage(vosLocation, DUPE_OBJECT, newTos.getState().getName());
 											dupe = true;
 											break;
 										}
 									}
-	
-									if (!dupe) onStates.add(tos);
+									if (!dupe) onStates.add(vos);
 								}
 							}
 						}
@@ -322,20 +325,18 @@ public class VariationsParser implements Keywords {
 		}
 		
 		if (onStates.isEmpty()) return null;
+		result.addOnStates(onStates);
 		
-		result.setOnViews(onStates);
-		
-		// A conjoint test cannot be disjoint.
+		// A conjoint test cannot be serial.
 		if (conjointVars != null) {
-			int covarTestIx = 0;
+			int conjointVarsIx = 0;
 			for (Variation covarTest: conjointVars) {
 				if (result.isSerialWith(covarTest)) {
-					Location tosLocation = testLocation.plusProp(KEYWORD_CONJOINT_VARIATION_REFS).plusIx(covarTestIx++);
+					Location tosLocation = testLocation.plusProp(KEYWORD_CONJOINT_VARIATION_REFS).plusIx(conjointVarsIx++);
 					response.addMessage(tosLocation, CONJOINT_TEST_SERIAL, name, covarTest.getName());
 				}
 			}
-		}
-		
+		}		
 		return result;
 	}
 	
@@ -423,7 +424,7 @@ public class VariationsParser implements Keywords {
 	 * @throws VariantRuntimeException 
 	 */
 	@SuppressWarnings("unchecked")
-	private static VariationOnStateImpl parseTestOnState(Object testOnStateObject, VariationImpl varImpl, Location tosLocation, ParserResponse response) {
+	private static VariationOnStateImpl parseVariationOnState(Object testOnStateObject, VariationImpl varImpl, Location vosLocation, ParserResponse response) {
 
 		Map<String, Object> rawTestOnState = null;
 		
@@ -431,7 +432,7 @@ public class VariationsParser implements Keywords {
 			rawTestOnState = (Map<String, Object>) testOnStateObject;
 		}
 		catch (Exception e) {
-			response.addMessage(tosLocation, ELEMENT_NOT_OBJECT, KEYWORD_ON_STATES);
+			response.addMessage(vosLocation, ELEMENT_NOT_OBJECT, KEYWORD_ON_STATES);
 			return null;
 		}
 		
@@ -443,21 +444,21 @@ public class VariationsParser implements Keywords {
 					stateRef = (String) entry.getValue();
 				}
 				catch (Exception e) {
-					response.addMessage(tosLocation.plusProp(KEYWORD_STATE_REF), PROPERTY_NOT_STRING, KEYWORD_STATE_REF);
+					response.addMessage(vosLocation.plusProp(KEYWORD_STATE_REF), PROPERTY_NOT_STRING, KEYWORD_STATE_REF);
 					return null;
 				}
 			}
 		}
 		
 		if (stateRef == null) {
-			response.addMessage(tosLocation, PROPERTY_MISSING, KEYWORD_STATE_REF);
+			response.addMessage(vosLocation, PROPERTY_MISSING, KEYWORD_STATE_REF);
 			return null;
 		}
 		
 		// The state must exist.
 		Optional<State> stateOpt = response.getSchema().getState(stateRef);
 		if (!stateOpt.isPresent()) {
-			response.addMessage(tosLocation.plusProp(KEYWORD_STATE_REF), STATEREF_UNDEFINED, stateRef);
+			response.addMessage(vosLocation.plusProp(KEYWORD_STATE_REF), STATEREF_UNDEFINED, stateRef);
 			return null;
 		}
 		
@@ -475,18 +476,18 @@ public class VariationsParser implements Keywords {
 					rawVariants = (List<Object>) entry.getValue();
 				}
 				catch (Exception e) {
-					response.addMessage(tosLocation.plusProp(KEYWORD_VARIANTS), PROPERTY_NOT_LIST, KEYWORD_VARIANTS);
+					response.addMessage(vosLocation.plusProp(KEYWORD_VARIANTS), PROPERTY_NOT_LIST, KEYWORD_VARIANTS);
 					return null;
 				}
 				if (rawVariants.isEmpty()) {
-					response.addMessage(tosLocation.plusProp(KEYWORD_VARIANTS), PROPERTY_EMPTY_LIST, KEYWORD_VARIANTS);
+					response.addMessage(vosLocation.plusProp(KEYWORD_VARIANTS), PROPERTY_EMPTY_LIST, KEYWORD_VARIANTS);
 					return null;					
 				}
 				
 				int index = 0;
 				for (Object variantObject: rawVariants) {
 					
-					Location variantLocation = tosLocation.plusObj(KEYWORD_VARIANTS).plusIx(index++);
+					Location variantLocation = vosLocation.plusObj(KEYWORD_VARIANTS).plusIx(index++);
 					
 					StateVariantImpl variant = VariantParser.parseVariant(variantObject, variantLocation, result, response);					
 					
@@ -509,8 +510,48 @@ public class VariationsParser implements Keywords {
 								}
 							}
 						}
-					    // Don't add a dupe.
+					    // Add, if not a dupe. 
 						if (!dupe) {
+
+							// Conjoint experience ref cannot reference a test that does not instrument this state.
+							for (Experience e: variant.getConjointExperiences()) {
+								
+								if (!e.getVariation().getOnState(result.getState()).isPresent()) {
+								
+									response.addMessage(
+											variantLocation,
+											CONJOINT_EXPERIENCE_TEST_NOT_INSTRUMENTED,  
+											e.getVariation().getName(), result.getState().getName());
+								
+									return null;
+								}
+							}
+							
+							
+							// Proper experience must not be phantom on this state.
+							if (variant.getExperience().isPhantom(result.getState())) {
+								
+								response.addMessage(
+										variantLocation,
+										CONJOINT_VARIANT_PROPER_PHANTOM, 
+										variant.getExperience().toString(), result.getState().getName());
+							
+								return null;
+							}
+							
+							// None of the conjoint experiences, if any, can be phantom on this state.
+							for (Experience e: variant.getConjointExperiences()) {
+								
+								if (!e.isPhantom(result.getState())) continue;
+								
+								response.addMessage(
+										vosLocation.plusObj(KEYWORD_VARIANTS),
+										CONJOINT_VARIANT_CONJOINT_PHANTOM,  
+										e.toString(), result.getState().getName());
+
+								return null;
+							}
+							
 							result.addVariant(variant);
 						}
 					}
@@ -518,24 +559,23 @@ public class VariationsParser implements Keywords {
 			}
 		}
 		
+/* *****.
 		// At this point result contains only explicit variants.
-		// Adding inferred variant from the variant space.
-        for (VariantSpace.Point point: result.variantSpace().getAll()) {
+		// Adding inferred variants from the variant space.
+        for (StateVariant var: result.variantSpace().getAll()) {
         		
         	StateVariantImpl variantImpl = (StateVariantImpl) point.getVariant();
 			if (variantImpl.isInferred()) {
 				result.addVariant(variantImpl);
 			}
         }
-        
+***/
+
 /* ****************
-		 * See #179. We no longer require explicit declaration of state variants =>
-		 * no consistency check.
-		 *
 		
 		// At least one proper variant required.
 		boolean allProperVariantsUndefined = true;
-		for (Experience properExperience: test.getExperiences()) {
+		for (Experience properExperience: varImpl.getExperiences()) {
 			if (!properExperience.isPhantom(result.getState())) { 
 				allProperVariantsUndefined = false;
 				break;
@@ -548,10 +588,10 @@ public class VariationsParser implements Keywords {
 
 		// Confirm we have a variant for each point in the variant space,
 		// defined by the proper and conjoint experiences, unless one of them
-		// undefined, no matter which one. 
-		for (VariantSpace.Point point: result.variantSpace().getAll()) {
+		// is undefined, no matter which one. 
+		for (StateVariant var: result.getVariants()) {
 			
-			if (point.getVariant() == null && point.isDefinedOn(result.getState())) {
+			if (var.isDefinedOn(result.getState())) {
 				
 				// We don't have a point and none of the coordinate experiences were declared as undefined.
 				if (point.getConjointExperiences().size() == 0) {

@@ -1,12 +1,11 @@
 package com.variant.core.impl;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
-import com.variant.core.schema.State;
 import com.variant.core.schema.StateVariant;
 import com.variant.core.schema.Variation;
 import com.variant.core.schema.Variation.Experience;
@@ -65,7 +64,7 @@ public class VariantSpace {
 		}
 		
 		/**
-		 * Can this coordinate vector be combined with a new dimension, i.e. a new test?
+		 * Can this coordinate vector be combined with a new dimension (a new variation) ?
 		 * A new dimension can only be added to a vector whose all existing dimensions are
 		 * conjoint with the given test.
 		 * 
@@ -103,11 +102,9 @@ public class VariantSpace {
 	}
 
 	/**
-	 * Crate the variant space for a particular Variation.OnState object. 
-	 * Assumes that the VariationOnStateImpl object is fully formed, but does not
-	 * assume anything else of the schema.  This is critical because this is called
-	 * in the middle of the new schema construction, where the existing publicly visible
-	 * schema is, potentially, obsolete, but the new schema doesn't yet exist.
+	 * Crate the variant space for a particular Variation.OnState object,
+	 * filled with inferred (default) state variants. Real ones are added
+	 * as they are being parsed.
 	 * 
 	 * @param vosImpl
 	 */
@@ -119,7 +116,7 @@ public class VariantSpace {
 		basis.add(vosImpl.getVariation());
 		basis.addAll(vosImpl.getVariation().getConjointVariations());
 
-		// Pass 1. Build default space, i.e. all Points with inferred (default) state variants.
+		// Build the space.
 		for (Variation basisVar: basis) {
 			
 			// HashTable.keySet() returns a view, which will change if the table is modified.
@@ -157,49 +154,61 @@ public class VariantSpace {
 			}
 		}
 		
-		// Pass 2. Add variants.
-		for (StateVariant variant: vosImpl.getVariants()) {
-
-			// Build coordinate experience list. Must be concurrent with the basis.
-			List<Experience> coordinateExperiences = new ArrayList<Experience>(basis.size());
-			
-			// Local experience must be first.
-			coordinateExperiences.add(variant.getExperience());
-			
-			// Conjoint experiences are not concurrent to basis, so we have to reorder.
-			for (Variation basisTest: basis) {
-			
-				// Skip first test in basis because it refers to the local test and we already have that.
-				if (basisTest.equals(variant.getVariation())) continue;
-				
-				if (!variant.isProper()) {
-					for (Experience conjointExp: variant.getConjointExperiences()) {
-						if (conjointExp.getVariation().equals(basisTest)) {
-							coordinateExperiences.add(conjointExp);
-							break;
-						}
-					}
-				}				
-			}
-			Coordinates coordinates = new Coordinates(coordinateExperiences);
-			Point p = spaceMap.get(coordinates);
-			if (p == null) {
-				throw new CoreException.Internal(
-						"No point for coordinates [" + CollectionsUtils.toString(coordinateExperiences, ", ") + 
-						"] in variation [" + variant.getVariation().getName() + "] and state [" + variant.getOnState().getState().getName() + "]");
-			}
-			if (p.variant != null && !((StateVariantImpl)p.variant).isInferred())
-				throw new CoreException.Internal("Variant already added");
-			p.variant = variant;
-		}
 	}
-	
+
 	/**
-	 * Get all vectors in this variant space for a particula view.
+	 * Add a state variant to this space. This may throw a parse error.
+	 * @param variant
+	 */
+	public void addVariant(StateVariant variant) {
+		
+		// Build coordinate experience list. Must be concurrent with the basis.
+		List<Experience> coordinateExperiences = new ArrayList<Experience>(basis.size());
+		
+		// Local experience must be first.
+		coordinateExperiences.add(variant.getExperience());
+		
+		// Conjoint experiences may not be ordered same as the basis, so we have to reorder.
+		for (Variation basisTest: basis) {
+		
+			// Skip first test in basis because it refers to the local test and we already have that.
+			if (basisTest.equals(variant.getVariation())) continue;
+			
+			if (!variant.isProper()) {
+				for (Experience conjointExp: variant.getConjointExperiences()) {
+					if (conjointExp.getVariation().equals(basisTest)) {
+						coordinateExperiences.add(conjointExp);
+						break;
+					}
+				}
+			}				
+		}
+		
+		Coordinates coordinates = new Coordinates(coordinateExperiences);
+		
+		// This point must already exist, unless it's undefined. 
+		Point p = spaceMap.get(coordinates);
+		if (p == null) {
+			throw new CoreException.Internal(
+					"No point for coordinates [" + CollectionsUtils.toString(coordinateExperiences, ", ") + 
+					"] in variation [" + variant.getVariation().getName() + "] and state [" + variant.getOnState().getState().getName() + "]");
+		}
+		if (p.variant != null && !((StateVariantImpl)p.variant).isInferred())
+			throw new CoreException.Internal("Variant already added");
+
+		p.variant = variant;
+		
+	}
+		
+	/**
+	 * Get all non-phantom state variants.
+	 * Keep the ordinal order so tests can expect repeatable results.
 	 * @return
 	 */
-	public Collection<Point> getAll() {
-		return spaceMap.values();
+	public Set<StateVariant> getAll() {
+		LinkedHashSet<StateVariant> result = new LinkedHashSet<StateVariant>();
+		spaceMap.values().forEach(p -> result.add(p.variant));
+		return result;
 	}
 	
 	/**
@@ -227,28 +236,27 @@ public class VariantSpace {
 		return result == null? null : result.variant;
 	}
 
-	
 	/**
 	 * Point of this space is given by its coordinates and has Variant as value.
 	 * A new point contain a default implicit state variant, which may later be
 	 * replaced by an explicit one, if provided in the schema.
 	 */
-	public static class Point {
+	private static class Point {
 		
-		private Coordinates coordinates;
+		//private Coordinates coordinates;
 		private StateVariant variant;
 		
 		private Point(VariationOnStateImpl vosImpl, Coordinates coordinates) {
-			this.coordinates = coordinates;
+			//this.coordinates = coordinates;
 			Variation.Experience ownExp = coordinates.coordinates.get(0);
 			List<Variation.Experience> conjointExps = coordinates.coordinates.subList(1, coordinates.coordinates.size());
 			this.variant = new StateVariantImpl(vosImpl, ownExp, conjointExps);
 		}
 		
-		/**
+		/** PROBABLY NO LONGER NEEDED
 		 * The own experience
 		 * @return
-		 */
+		 *
 		public Experience getExperience() {
 			return coordinates.coordinates.get(0);
 		}
@@ -256,7 +264,7 @@ public class VariantSpace {
 		/**
 		 * Conjoint experiences, if any.
 		 * @return
-		 */
+		 *
 		public List<Experience> getConjointExperiences() {
 			return coordinates.coordinates.subList(1, coordinates.coordinates.size());
 		}
@@ -264,7 +272,7 @@ public class VariantSpace {
 		/**
 		 * Variant defined in this point, if any.
 		 * @return
-		 */
+		 *
 		public StateVariant getVariant() {
 			return variant;
 		}
@@ -275,9 +283,10 @@ public class VariantSpace {
 		 * than all state variants whose coordinates contain that experience are also undefined.
 		 * 
 		 * @return
-		 */
+		 *
 		public boolean isDefinedOn(State state) {
 			return coordinates.coordinates.stream().allMatch(e -> !e.isPhantom(state));
 		}
+		*/
 	}	
 }

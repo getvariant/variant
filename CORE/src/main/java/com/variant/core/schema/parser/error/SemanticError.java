@@ -100,7 +100,7 @@ public class SemanticError extends ParserError {
 			new SemanticError(66, Severity.ERROR, "Property 'conjointVariationRefs' references non-existent variation [%s]"); 
 	
 	public static final SemanticError CONJOINT_TEST_SERIAL =
-			new SemanticError(67, Severity.ERROR, "Variation [%s] cannot declar variation [%s] as conjoint because they are serial."); 
+			new SemanticError(67, Severity.ERROR, "Variation [%s] cannot declare variation [%s] as conjoint because they are serial."); 
 /*	
 	public static final SemanticError ISCONTROL_NOT_BOOLEAN =
 			new SemanticError(68, Severity.ERROR, "'tests/experience/isControl' property must be a boolean (Test [%s], Experience [%s])"); 
@@ -137,10 +137,10 @@ public class SemanticError extends ParserError {
 */	
 	public static final SemanticError STATEREF_UNDEFINED =
 			new SemanticError(79, Severity.ERROR, "Property 'stateRef' references non-existent state [%s]"); 
-/*	
+	
 	public static final SemanticError ALL_PROPER_EXPERIENCES_UNDEFINED =
 			new SemanticError(80, Severity.ERROR, "At least one proper state variant must be defined"); 
-
+/*
 	public static final SemanticError ISNONVARIANT_NOT_BOOLEAN =
 			new SemanticError(81, Severity.ERROR, "'tests/onStates/isNonvariant' property must be a boolean (Test [%s], StateRef [%s])"); 
 	
@@ -191,10 +191,10 @@ public class SemanticError extends ParserError {
 
 	public static final SemanticError CONJOINT_EXPERIENCE_TEST_REF_UNDEFINED =
 			new SemanticError(102, Severity.ERROR, "Property 'variationRef' references non-existent variation [%s]"); 
-/*
-	public static final SemanticError CONJOINT_EXPERIENCE_TEST_REF_NONVARIANT =
-			new SemanticError(103, Severity.ERROR, "Property 'variationRef' cannot reference variation [%s] because it is nonvariant on the enclosing variation [%s]"); 
-*/
+
+	public static final SemanticError CONJOINT_EXPERIENCE_TEST_NOT_INSTRUMENTED =
+			new SemanticError(103, Severity.ERROR, "Property 'variationRef' cannot reference conjoint variation [%s] because it is not instrumented on state [%s]"); 
+
 	public static final SemanticError CONJOINT_EXPERIENCE_EXPERIENCE_REF_UNDEFINED =
 			new SemanticError(104, Severity.ERROR, "Property 'experienceRef' references a non-existent experience [%s.%s]"); 
 	

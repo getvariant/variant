@@ -114,12 +114,10 @@ public class StateVariantImpl implements StateVariant {
 	//                                        PUBLIC EXT                                           //
 	//---------------------------------------------------------------------------------------------//
 	
-	/**
-	 */
 	public boolean isInferred() {
 		return inferred;
 	}
-
+	
 	/**
 	 */
 	@Override

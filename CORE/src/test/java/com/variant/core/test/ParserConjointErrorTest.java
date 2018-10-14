@@ -1,14 +1,6 @@
 package com.variant.core.test;
 
-import static com.variant.core.schema.parser.error.SemanticError.CONJOINT_EXPERIENCE_EXPERIENCE_REF_UNDEFINED;
-import static com.variant.core.schema.parser.error.SemanticError.CONJOINT_EXPERIENCE_TEST_REF_UNDEFINED;
-import static com.variant.core.schema.parser.error.SemanticError.CONJOINT_TESTREF_UNDEFINED;
-import static com.variant.core.schema.parser.error.SemanticError.CONJOINT_TEST_SERIAL;
-import static com.variant.core.schema.parser.error.SemanticError.CONJOINT_VARIANT_TEST_NOT_CONJOINT;
-import static com.variant.core.schema.parser.error.SemanticError.ELEMENT_NOT_OBJECT;
-import static com.variant.core.schema.parser.error.SemanticError.ELEMENT_NOT_STRING;
-import static com.variant.core.schema.parser.error.SemanticError.PROPERTY_NOT_LIST;
-import static com.variant.core.schema.parser.error.SemanticError.PROPERTY_NOT_STRING;
+import static com.variant.core.schema.parser.error.SemanticError.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
@@ -1375,7 +1367,8 @@ public class ParserConjointErrorTest extends BaseTestCore {
 	    	    "                    'experienceRef':'B',                      \n" +
 	    	    "                    'conjointExperienceRefs': [              \n" +
 	    	    "                       {                                      \n" +
-	    	    "                          'variationRef': 'test1',                 \n" +
+	    	    "                       /* test2 is not conjoint with test1 */ \n" +
+	    	    "                          'variationRef': 'test1',            \n" +
 	    	    "                          'experienceRef': 'B'                \n" +
 	    	    "                       }                                      \n" +
 	    	    "                     ]                                        \n" +
@@ -1410,6 +1403,140 @@ public class ParserConjointErrorTest extends BaseTestCore {
 		ParserMessage expected = new ParserMessageImpl(
 				new Location("/variations[1]/onStates[1]/variants[1]/conjointExperienceRefs[0]/experienceRef"), 
 				CONJOINT_VARIANT_TEST_NOT_CONJOINT, "test1");
+		assertMessageEqual(expected, actual);
+
+	}
+
+	/**
+	 * @throws Exception
+	 */
+	@Test
+	public void conjointExperienceTestNotInsrumented_Test() throws Exception {
+		
+		String schema = 
+				"{                                                             \n" +
+			    "  'meta':{                                                    \n" +		    	    
+			    "      'name':'schema_name',                                    \n" +
+			    "      'comment':'schema comment'                               \n" +
+			    "  },                                                           \n" +
+				"   'states':[                                                  \n" +
+				"     {  'name':'state1'                                        \n" +
+				"     },                                                        \n" +
+				"     {                                                         \n" +
+				"        'name':'state2'                                        \n" +
+				"     },                                                       \n" +
+				"     {  'name':'state3'                                        \n" +
+				"     }                                                        \n" +
+				"  ],                                                          \n" +
+				"  'variations':[                                              \n" +
+			    "     {                                                        \n" +
+			    "        'name':'test1',                                       \n" +
+			    "        'experiences':[                                       \n" +
+			    "           {                                                  \n" +
+			    "              'name':'A',                                     \n" +
+			    "              'weight':10,                                    \n" +
+			    "              'isControl':true                                \n" +
+			    "           },                                                 \n" +
+			    "           {                                                  \n" +
+			    "              'name':'B',                                     \n" +
+			    "              'weight':20                                     \n" +
+			    "           },                                                 \n" +
+			    "           {                                                  \n" +
+			    "              'name':'C',                                     \n" +
+			    "              'weight':30                                     \n" +
+			    "           }                                                  \n" +
+			    "        ],                                                    \n" +
+			    "        'onStates':[                                           \n" +
+			    "           {                                                  \n" +
+			    "              'stateRef':'state1',                              \n" +
+			    "              'isNonvariant':true                              \n" +
+			    "           },                                                 \n" +
+			    "           {                                                  \n" +
+			    "              'stateRef':'state2'                              \n" +
+			    "           }                                                  \n" +
+			    "        ]                                                     \n" +
+			    "     },                                                       \n" +
+			    //----------------------------------------------------------------//	
+			    "     {                                                        \n" +
+			    "        'name':'test2',                                       \n" +
+			    "        'conjointVariationRefs':['test1'],                    \n" +
+			    "        'experiences':[                                       \n" +
+			    "           {                                                  \n" +
+			    "              'name':'A',                                     \n" +
+			    "              'weight':10,                                    \n" +
+			    "              'isControl':true                                \n" +
+			    "           },                                                 \n" +
+			    "           {                                                  \n" +
+			    "              'name':'B',                                     \n" +
+			    "              'weight':20                                     \n" +
+			    "           },                                                 \n" +
+			    "           {                                                  \n" +
+			    "              'name':'C',                                     \n" +
+			    "              'weight':30                                     \n" +
+			    "           }                                                  \n" +
+			    "        ],                                                    \n" +
+			    "        'onStates':[                                           \n" +
+			    "           {                                                  \n" +
+			    "              'stateRef':'state1'                              \n" +
+			    "           },                                                 \n" +
+			    "           {                                                  \n" +
+			    "              'stateRef':'state2',                              \n" +
+			    "              'variants':[                                    \n" +
+			    "                 {                                            \n" +
+			    "                    'experienceRef': 'B'                      \n" +
+			    "                 },                                           \n" +
+	    	    "                 {                                            \n" +
+	    	    "                    'experienceRef':'B',                      \n" +
+	    	    "                    'conjointExperienceRefs': [              \n" +
+	    	    "                       {                                      \n" +
+	    	    "                          'variationRef': 'test1',            \n" +
+	    	    "                          'experienceRef': 'B'                \n" +
+	    	    "                       }                                      \n" +
+	    	    "                     ]                                        \n" +
+	    	    "                 },                                           \n" +
+			    "                 {                                            \n" +
+			    "                    'experienceRef': 'C'                      \n" +
+			    "                 }                                            \n" +
+			    "              ]                                               \n" +
+			    "           },                                                 \n" +
+			    "           {                                                  \n" +
+			    "              'stateRef':'state3',                              \n" +
+			    "              'variants':[                                    \n" +
+			    "                 {                                            \n" +
+			    "                    'experienceRef': 'B'                      \n" +
+			    "                 },                                           \n" +
+	    	    "                 {                                            \n" +
+	    	    "                    'experienceRef':'B',                      \n" +
+	    	    "                    'conjointExperienceRefs': [              \n" +
+	    	    "                       {                                      \n" +
+	    	    "                          'variationRef': 'test1',            \n" +
+	    	    "                          'experienceRef': 'B'                \n" +
+	    	    "                       }                                      \n" +
+	    	    "                     ]                                        \n" +
+	    	    "                 }                                            \n" +
+	    	    "              ]                                               \n" +
+			    "           }                                                  \n" +
+			    "        ]                                                     \n" +
+			    "     }                                                        \n" +
+			    //----------------------------------------------------------------//	
+			    "  ]                                                           \n" +
+			    "}                                                             \n";
+		
+		SchemaParser parser = getSchemaParser();
+		ParserResponse response = (ParserResponse) parser.parse(schema);
+
+		assertTrue(response.hasMessages());
+		assertNull(response.getSchema());
+		assertNull(response.getSchemaSrc());
+		assertFalse(response.hasMessages(Severity.FATAL));
+		assertTrue(response.hasMessages(Severity.ERROR));
+		assertTrue(response.hasMessages(Severity.WARN));
+		assertTrue(response.hasMessages(Severity.INFO));
+		assertEquals(1, response.getMessages().size());
+		ParserMessage actual = response.getMessages().get(0);
+		ParserMessage expected = new ParserMessageImpl(
+				new Location("/variations[1]/onStates[2]/variants[1]/"), 
+				CONJOINT_EXPERIENCE_TEST_NOT_INSTRUMENTED, "test1", "state3");
 		assertMessageEqual(expected, actual);
 
 	}

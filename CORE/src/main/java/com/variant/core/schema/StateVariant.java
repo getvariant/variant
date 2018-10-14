@@ -9,7 +9,7 @@ import com.variant.core.schema.Variation.OnState;
 
 /**
  * Representation of a single cell of the variant matrix.
- * Corresponds to an element of the test/onStates/variants schema list.
+ * Corresponds to an element of the variation/onStates/variants schema list.
  *
  * @author Igor Urisman
  * @since 0.5
@@ -41,8 +41,7 @@ public interface StateVariant {
 	public Variation getVariation();
 		
 	/**
-	 * This variant's own test experience, i.e. for the test within whose definition this variant
-	 * is defined.
+	 * This variant's proper experience, i.e. the one from the containing variation.
 	 * 
 	 * @return An object of type {@link Variation.Experience}.
 	 * @since 0.5
@@ -51,7 +50,7 @@ public interface StateVariant {
 	
 	/**
 	 * The list of this variant's conjointly concurrent experiences, i.e. the ones defined in the 
-	 * conjoint tests clause of the test within whose definition this variant is defined.
+	 * {@code conjointVariationRefs} clause of the containing variation.
 	 * 
 	 * @return A list of objects of type {@link Variation.Experience}, which will be empty
      *         if this variation does not have the <code>conjointVariationRefs</code> clause;
@@ -61,12 +60,10 @@ public interface StateVariant {
 	public List<Experience> getConjointExperiences();
 				
 	/**
-	 * Is this a proper variant? In a non-coaviantly concurrent test, all variants are proper. If this test
-	 * is conjointly-concurrent, i.e. has the <code>conjointTestRefs</code> clause, proper variants are those which
-	 * do not have the <code>conjointExperienceRefs</code> clause. Same as <code>getConjointExperiences() == null</code>.
+	 * Is this a proper variant? A shorthand for <code>getConjointExperiences().isEmpty()</code>.
 	 * 
-	 * @return true if this state variant does not have a <code>conjointTestRefs</code>, i.e. refers to
-	 *         the containing test only.
+	 * @return true if this state variant does not have a <code>conjointVariationRefs</code>, i.e. refers to
+	 *         the containing variation only.
 	 *         
 	 * @since 0.6
 	 */

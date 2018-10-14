@@ -396,7 +396,7 @@
                     'parameters': [
                         {
                             'name':'path',
-                            'value':'/path/to/state2/test1.B+test4.C'
+                            'value':'/path/to/state2/test2.B+test4.C'
                         }
                     ]
                  },                                                      
@@ -411,7 +411,7 @@
                     'parameters': [
                         {
                             'name':'path',
-                            'value':'/path/to/state2/test1.C+test4.C'
+                            'value':'/path/to/state2/test2.C+test4.C'
                         }
                     ]
                  }                                                       

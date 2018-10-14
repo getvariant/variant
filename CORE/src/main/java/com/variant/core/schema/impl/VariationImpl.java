@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Optional;
 
 import com.variant.core.impl.VariantException;
-import com.variant.core.impl.VariantSpace;
 import com.variant.core.schema.Hook;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.State;
@@ -27,7 +26,7 @@ public class VariationImpl implements Variation {
 	private boolean isOn = true;
 	private List<VariationImpl> conjointVariations = new ArrayList<VariationImpl>();
 	private List<VariationExperienceImpl> experiences;
-	private VariantSpace variantSpace;
+	//private VariantSpace variantSpace;
 	private List<VariationOnStateImpl> onStates;
 	
 	// Hooks are keyed by name.
@@ -116,7 +115,7 @@ public class VariationImpl implements Variation {
 	 */
 	@Override
 	public boolean isConcurrentWith(Variation other) {
-				
+			
 		for (OnState thisOnState: getOnStates()) {
 			for (OnState otherOnState: other.getOnStates()) 
 				if (thisOnState.getState().equals(otherOnState.getState())) 
@@ -165,10 +164,10 @@ public class VariationImpl implements Variation {
 	
 	/**
 	 * 
-	 * @param onViews
+	 * @param add the onStates list.
 	 */
-	public void setOnViews(List<VariationOnStateImpl> onViews) {
-		this.onStates = onViews;
+	public void addOnStates(List<VariationOnStateImpl> onStates) {
+		this.onStates = onStates;
 	}
 	
 	/**
@@ -190,7 +189,7 @@ public class VariationImpl implements Variation {
 	/**
 	 * 
 	 * @return
-	 */
+	 *
 	public VariantSpace getVariantSpace() {
 		return variantSpace;
 	}

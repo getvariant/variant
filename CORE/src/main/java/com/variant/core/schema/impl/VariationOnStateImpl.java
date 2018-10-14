@@ -1,6 +1,5 @@
 package com.variant.core.schema.impl;
 
-import java.util.LinkedHashSet;
 import java.util.Set;
 
 import com.variant.core.impl.VariantSpace;
@@ -15,16 +14,17 @@ import com.variant.core.util.immutable.ImmutableSet;
  */
 public class VariationOnStateImpl implements Variation.OnState {
 
-	private StateImpl state;
-	private VariationImpl var;
-	private Set<StateVariant> variants = new LinkedHashSet<StateVariant>();
-	private VariantSpace variantSpace;
+	private final StateImpl state;
+	private final VariationImpl var;
+	//private Set<StateVariant> variants = new LinkedHashSet<StateVariant>();
+	private final VariantSpace variantSpace;
 
 	/**
 	 */
 	public VariationOnStateImpl(VariationImpl var, StateImpl state) {
 		this.state = state;
 		this.var = var;
+		variantSpace = new VariantSpace(this);
 	}
 			
 	//---------------------------------------------------------------------------------------------//
@@ -51,7 +51,7 @@ public class VariationOnStateImpl implements Variation.OnState {
 	 */
 	@Override
 	public Set<StateVariant> getVariants() {
-		return variants == null ? null : new ImmutableSet<StateVariant>(variants);
+		return new ImmutableSet<StateVariant>(variantSpace.getAll());
 	}
 	
 	//---------------------------------------------------------------------------------------------//
@@ -59,24 +59,18 @@ public class VariationOnStateImpl implements Variation.OnState {
 	//---------------------------------------------------------------------------------------------//
 		
 	/**
+	 * 
 	 * @param variant
 	 */
 	public void addVariant(StateVariant variant) {
-		variants.add(variant);
+		variantSpace.addVariant(variant);
 	}
 
 	/**
-	 * Get (and, if not yet, build) his object's variant space. 
-	 * Note that we have the variation and its conjoint set at the time of construction, 
-	 * but variants are added one by one later. Caller must only call this when last 
-	 * variant was added.
-	 * 
-	 * @return
-	 * @throws VariantRuntimeException 
+	  *
 	 */
-	public VariantSpace variantSpace() {
-		if (variantSpace == null) variantSpace = new VariantSpace(this);
-		return variantSpace;
+	@Override
+	public String toString() {
+		return state.getName();
 	}
-
 }

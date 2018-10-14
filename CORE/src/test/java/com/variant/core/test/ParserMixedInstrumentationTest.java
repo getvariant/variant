@@ -100,7 +100,7 @@ public class ParserMixedInstrumentationTest extends BaseTestCore {
 			    	    "                    'experienceRef':'A',                                 \n" + 
 			    	    "                    'isPhantom':true                                     \n" +
 			    	    "                 }                                                       \n" +
-			    	    "                 // B is missing.                                        \n" +
+			    	    "                 // B is inferred.                                       \n" +
 			    	    "              ]                                                          \n" +
 			    	    "           }                                                             \n" +
 			    	    "        ]                                                                \n" +
