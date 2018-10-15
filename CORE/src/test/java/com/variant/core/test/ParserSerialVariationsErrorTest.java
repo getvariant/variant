@@ -1,21 +1,6 @@
 package com.variant.core.test;
 
-import static com.variant.core.schema.parser.error.SemanticError.CONTROL_EXPERIENCE_DUPE;
-import static com.variant.core.schema.parser.error.SemanticError.CONTROL_EXPERIENCE_MISSING;
-import static com.variant.core.schema.parser.error.SemanticError.DUPE_OBJECT;
-import static com.variant.core.schema.parser.error.SemanticError.ELEMENT_NOT_OBJECT;
-import static com.variant.core.schema.parser.error.SemanticError.EXPERIENCEREF_ISCONTROL;
-import static com.variant.core.schema.parser.error.SemanticError.EXPERIENCEREF_UNDEFINED;
-import static com.variant.core.schema.parser.error.SemanticError.NAME_INVALID;
-import static com.variant.core.schema.parser.error.SemanticError.NAME_MISSING;
-import static com.variant.core.schema.parser.error.SemanticError.PROPERTY_EMPTY_LIST;
-import static com.variant.core.schema.parser.error.SemanticError.PROPERTY_MISSING;
-import static com.variant.core.schema.parser.error.SemanticError.PROPERTY_NOT_BOOLEAN;
-import static com.variant.core.schema.parser.error.SemanticError.PROPERTY_NOT_LIST;
-import static com.variant.core.schema.parser.error.SemanticError.PROPERTY_NOT_NUMBER;
-import static com.variant.core.schema.parser.error.SemanticError.PROPERTY_NOT_STRING;
-import static com.variant.core.schema.parser.error.SemanticError.STATEREF_UNDEFINED;
-import static com.variant.core.schema.parser.error.SemanticError.UNSUPPORTED_PROPERTY;
+import static com.variant.core.schema.parser.error.SemanticError.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -1027,11 +1012,11 @@ public class ParserSerialVariationsErrorTest extends BaseTestCore {
 	
 
 	/**
-	 * ONSTATES_NOT_OBJECT
+	 * ONSTATE_NOT_OBJECT
 	 * @throws Exception
 	 */
 	@Test
-	public void onViewNotObject_Test() throws Exception {
+	public void onStateNotObject_Test() throws Exception {
 		
 		String schema = 
 				"{                                                             \n" +
@@ -2158,7 +2143,7 @@ public class ParserSerialVariationsErrorTest extends BaseTestCore {
 	}
 
 	/**
-	 * VARIANT_DUPE + VARIANT_MISSING
+	 * VARIANT_DUPE
 	 * @throws Exception
 	 */
 	@Test
@@ -2234,6 +2219,70 @@ public class ParserSerialVariationsErrorTest extends BaseTestCore {
 		ParserMessage actual = response.getMessages().get(0);
 		ParserMessage expected = new ParserMessageImpl(
 				new Location("/variations[0]/onStates[0]/variants[1]/"), DUPE_OBJECT, "A");
+		assertMessageEqual(expected, actual);
+	}
+
+	/**
+	 * UNSUPPORTED_PROPERTY
+	 * @throws Exception
+	 */
+	@Test
+	public void onStateUnsupportedProperty_Test() throws Exception {
+		
+		String schema = 
+				"{                                                             \n" +
+			    "  'meta':{                                                    \n" +		    	    
+			    "      'name':'schema_name',                                    \n" +
+			    "      'comment':'schema comment'                               \n" +
+			    "  },                                                           \n" +
+			    "   'states':[                                                 \n" +
+			    "     {  'name':'state1'  },                                   \n" +
+	    	    "     {  'name':'state2'  }                                    \n" +
+			    "  ],                                                          \n" +
+				"  'variations':[                                              \n" +
+			    "     {                                                        \n" +
+			    "        'name':'Test1',                                       \n" +
+			    "        'experiences':[                                       \n" +
+			    "           {                                                  \n" +
+			    "              'name':'A',                                     \n" +
+			    "              'weight':50                                     \n" +
+			    "           },                                                 \n" +
+			    "           {                                                  \n" +
+			    "              'name':'B',                                     \n" +
+			    "              'weight':50,                                    \n" +
+			    "              'isControl':true                                \n" +
+			    "           }                                                  \n" +
+			    "        ],                                                    \n" +
+			    "        'onStates':[                                          \n" +
+			    "           {                                                  \n" +
+			    "              'stateRef':'state1',                            \n" +
+			    "              'variants':[                                    \n" +
+			    "                 {                                            \n" +
+			    "                    'experienceRef':'A',                      \n" +
+	    	    "                    'parameters': [                           \n" +
+			    "                       {                                      \n" +
+			    "                          'name':'foo',                       \n" +
+			    "                          'value':'bar'                       \n" +
+			    "                       }                                      \n" +
+			    "                    ]                                         \n" +
+			    "                 }                                            \n" +
+			    "              ],                                              \n" +
+			    "              /*  no longer supported */                     \n" +
+			    "              'isNonvariant':false                            \n" +
+			    "           }                                                  \n" +
+			    "        ]                                                     \n" +
+			    "     }                                                        \n" +
+			    //----------------------------------------------------------------//	
+			    "  ]                                                           \n" +
+			    "}                                                             \n";
+		
+		SchemaParser parser = getSchemaParser();
+		ParserResponse response = parser.parse(schema);
+
+		assertTrue(response.hasMessages());
+		assertEquals(1, response.getMessages().size());
+		ParserMessage actual = response.getMessages().get(0);
+		ParserMessage expected = new ParserMessageImpl(new Location("/variations[0]/onStates[0]/"), UNSUPPORTED_PROPERTY, "isNonvariant");
 		assertMessageEqual(expected, actual);
 	}
 

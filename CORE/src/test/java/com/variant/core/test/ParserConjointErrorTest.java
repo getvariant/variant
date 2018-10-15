@@ -494,8 +494,7 @@ public class ParserConjointErrorTest extends BaseTestCore {
 			    "        ],                                                    \n" +
 			    "        'onStates':[                                          \n" +
 			    "           {                                                  \n" +
-			    "              'stateRef':'state1',                            \n" +
-			    "              'isNonvariant':true                             \n" +
+			    "              'stateRef':'state1'                            \n" +
 			    "           },                                                 \n" +
 			    "           {                                                  \n" +
 			    "              'stateRef':'state2',                            \n" +
@@ -584,8 +583,7 @@ public class ParserConjointErrorTest extends BaseTestCore {
 			    "              ]                                               \n" +
 			    "           },                                                 \n" +
 			    "           {                                                  \n" +
-			    "              'stateRef':'state3',                              \n" +
-			    "              'isNonvariant':true                              \n" +
+			    "              'stateRef':'state3'                             \n" +
 			    "           }                                                  \n" +
 			    "        ]                                                     \n" +
 			    "     }                                                        \n" +
@@ -653,8 +651,7 @@ public class ParserConjointErrorTest extends BaseTestCore {
 			    "        ],                                                    \n" +
 			    "        'onStates':[                                          \n" +
 			    "           {                                                  \n" +
-			    "              'stateRef':'state1',                            \n" +
-			    "              'isNonvariant':true                             \n" +
+			    "              'stateRef':'state1'                             \n" +
 			    "           },                                                 \n" +
 			    "           {                                                  \n" +
 			    "              'stateRef':'state2',                            \n" +
@@ -743,8 +740,7 @@ public class ParserConjointErrorTest extends BaseTestCore {
 			    "              ]                                               \n" +
 			    "           },                                                 \n" +
 			    "           {                                                  \n" +
-			    "              'stateRef':'state3',                              \n" +
-			    "              'isNonvariant':true                              \n" +
+			    "              'stateRef':'state3'                             \n" +
 			    "           }                                                  \n" +
 			    "        ]                                                     \n" +
 			    "     }                                                        \n" +
@@ -811,10 +807,9 @@ public class ParserConjointErrorTest extends BaseTestCore {
 			    "              'weight':30                                     \n" +
 			    "           }                                                  \n" +
 			    "        ],                                                    \n" +
-			    "        'onStates':[                                           \n" +
+			    "        'onStates':[                                          \n" +
 			    "           {                                                  \n" +
-			    "              'stateRef':'state1',                              \n" +
-			    "              'isNonvariant':true                              \n" +
+			    "              'stateRef':'state1'                             \n" +
 			    "           },                                                 \n" +
 			    "           {                                                  \n" +
 			    "              'stateRef':'state2',                              \n" +
@@ -908,8 +903,7 @@ public class ParserConjointErrorTest extends BaseTestCore {
 			    "              ]                                               \n" +
 			    "           },                                                 \n" +
 			    "           {                                                  \n" +
-			    "              'stateRef':'state3',                              \n" +
-			    "              'isNonvariant':true                              \n" +
+			    "              'stateRef':'state3'                             \n" +
 			    "           }                                                  \n" +
 			    "        ]                                                     \n" +
 			    "     }                                                        \n" +
@@ -982,8 +976,7 @@ public class ParserConjointErrorTest extends BaseTestCore {
 			    "        ],                                                    \n" +
 			    "        'onStates':[                                           \n" +
 			    "           {                                                  \n" +
-			    "              'stateRef':'state1',                              \n" +
-			    "              'isNonvariant':true                              \n" +
+			    "              'stateRef':'state1'                             \n" +
 			    "           },                                                 \n" +
 			    "           {                                                  \n" +
 			    "              'stateRef':'state2',                              \n" +
@@ -1077,8 +1070,7 @@ public class ParserConjointErrorTest extends BaseTestCore {
 			    "              ]                                               \n" +
 			    "           },                                                 \n" +
 			    "           {                                                  \n" +
-			    "              'stateRef':'state3',                              \n" +
-			    "              'isNonvariant':true                              \n" +
+			    "              'stateRef':'state3'                             \n" +
 			    "           }                                                  \n" +
 			    "        ]                                                     \n" +
 			    "     }                                                        \n" +
@@ -1147,8 +1139,7 @@ public class ParserConjointErrorTest extends BaseTestCore {
 			    "        ],                                                    \n" +
 			    "        'onStates':[                                          \n" +
 			    "           {                                                  \n" +
-			    "              'stateRef':'state1',                            \n" +
-			    "              'isNonvariant':true                             \n" +
+			    "              'stateRef':'state1'                             \n" +
 			    "           },                                                 \n" +
 			    "           {                                                  \n" +
 			    "              'stateRef':'state2',                            \n" +
@@ -1242,8 +1233,7 @@ public class ParserConjointErrorTest extends BaseTestCore {
 			    "              ]                                               \n" +
 			    "           },                                                 \n" +
 			    "           {                                                  \n" +
-			    "              'stateRef':'state3',                              \n" +
-			    "              'isNonvariant':true                              \n" +
+			    "              'stateRef':'state3'                             \n" +
 			    "           }                                                  \n" +
 			    "        ]                                                     \n" +
 			    "     }                                                        \n" +
@@ -1311,8 +1301,7 @@ public class ParserConjointErrorTest extends BaseTestCore {
 			    "        ],                                                    \n" +
 			    "        'onStates':[                                           \n" +
 			    "           {                                                  \n" +
-			    "              'stateRef':'state1',                              \n" +
-			    "              'isNonvariant':true                              \n" +
+			    "              'stateRef':'state1'                             \n" +
 			    "           },                                                 \n" +
 			    "           {                                                  \n" +
 			    "              'stateRef':'state2',                              \n" +
@@ -1379,8 +1368,7 @@ public class ParserConjointErrorTest extends BaseTestCore {
 			    "              ]                                               \n" +
 			    "           },                                                 \n" +
 			    "           {                                                  \n" +
-			    "              'stateRef':'state3',                              \n" +
-			    "              'isNonvariant':true                              \n" +
+			    "              'stateRef':'state3'                             \n" +
 			    "           }                                                  \n" +
 			    "        ]                                                     \n" +
 			    "     }                                                        \n" +
@@ -1448,8 +1436,7 @@ public class ParserConjointErrorTest extends BaseTestCore {
 			    "        ],                                                    \n" +
 			    "        'onStates':[                                           \n" +
 			    "           {                                                  \n" +
-			    "              'stateRef':'state1',                              \n" +
-			    "              'isNonvariant':true                              \n" +
+			    "              'stateRef':'state1'                             \n" +
 			    "           },                                                 \n" +
 			    "           {                                                  \n" +
 			    "              'stateRef':'state2'                              \n" +

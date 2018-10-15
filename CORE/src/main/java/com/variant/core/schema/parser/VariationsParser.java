@@ -532,8 +532,7 @@ public class VariationsParser implements Keywords {
 							if (variant.getExperience().isPhantom(result.getState())) {
 								
 								response.addMessage(
-										variantLocation,
-										CONJOINT_VARIANT_PROPER_PHANTOM, 
+										variantLocation, CONJOINT_VARIANT_PROPER_PHANTOM, 
 										variant.getExperience().toString(), result.getState().getName());
 							
 								return null;
@@ -545,8 +544,7 @@ public class VariationsParser implements Keywords {
 								if (!e.isPhantom(result.getState())) continue;
 								
 								response.addMessage(
-										vosLocation.plusObj(KEYWORD_VARIANTS),
-										CONJOINT_VARIANT_CONJOINT_PHANTOM,  
+										variantLocation, CONJOINT_VARIANT_CONJOINT_PHANTOM,  
 										e.toString(), result.getState().getName());
 
 								return null;
@@ -556,6 +554,10 @@ public class VariationsParser implements Keywords {
 						}
 					}
 				}
+			}
+			else {
+
+				response.addMessage(vosLocation, UNSUPPORTED_PROPERTY, entry.getKey());
 			}
 		}
 		

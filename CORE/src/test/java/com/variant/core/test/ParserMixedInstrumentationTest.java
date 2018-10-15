@@ -296,12 +296,12 @@ public class ParserMixedInstrumentationTest extends BaseTestCore {
 						"                       }                                                 \n" +
 						"                    ]                                                    \n" +
 			    	    "                 },                                                      \n" +
-				        "                 // Error: conjoint B is undef => the entire slice is too    \n" +
+				        "                 // Error: Error: test1.B is phantom on state1           \n" +
 			    	    "                 {                                                       \n" +
 			    	    "                    'experienceRef':'B',                                 \n" +
-			    	    "                    'conjointExperienceRefs': [                         \n" +
+			    	    "                    'conjointExperienceRefs': [                          \n" +
 			    	    "                       {                                                 \n" +
-			    	    "                          'variationRef': 'test1',                            \n" +
+			    	    "                          'variationRef': 'test1',                       \n" +
 			    	    "                          'experienceRef': 'B'                           \n" +
 			    	    "                       }                                                 \n" +
 			    	    "                     ],                                                  \n" +
@@ -321,12 +321,12 @@ public class ParserMixedInstrumentationTest extends BaseTestCore {
 			    	    "                    'experienceRef':'B',                                 \n" +
 			    	    "                    'isPhantom':true                                     \n" +
 			    	    "                 },                                                      \n" +
-				        "                 // Error: proper B is off => the entire slice is too    \n" +
+				        "                 // Error: test2.B is phantom on state2                  \n" +
 			    	    "                 {                                                       \n" +
 			    	    "                    'experienceRef':'B',                                 \n" +
-			    	    "                    'conjointExperienceRefs': [                         \n" +
+			    	    "                    'conjointExperienceRefs': [                          \n" +
 			    	    "                       {                                                 \n" +
-			    	    "                          'variationRef': 'test1',                            \n" +
+			    	    "                          'variationRef': 'test1',                       \n" +
 			    	    "                          'experienceRef': 'B'                           \n" +
 			    	    "                       }                                                 \n" +
 			    	    "                     ],                                                  \n" +
@@ -357,12 +357,12 @@ public class ParserMixedInstrumentationTest extends BaseTestCore {
 		assertEquals(2, response.getMessages().size());
 		ParserMessage actual = response.getMessages().get(0);
 		ParserMessage expected = new ParserMessageImpl(
-				new Location("/variations[1]/onStates[0]/variants/"), 
+				new Location("/variations[1]/onStates[0]/variants[2]/"), 
 				CONJOINT_VARIANT_CONJOINT_PHANTOM, "test1.B", "state1");
 		assertMessageEqual(expected, actual);
 		actual = response.getMessages().get(1);
 		expected = new ParserMessageImpl(
-				new Location("/variations[1]/onStates[1]/variants/"), 
+				new Location("/variations[1]/onStates[1]/variants[1]/"), 
 				CONJOINT_VARIANT_PROPER_PHANTOM, "test2.B", "state2");
 		assertMessageEqual(expected, actual);
 	}
@@ -524,12 +524,12 @@ public class ParserMixedInstrumentationTest extends BaseTestCore {
 		assertEquals(2, response.getMessages().size());
 		ParserMessage actual = response.getMessages().get(0);
 		ParserMessage expected = new ParserMessageImpl(
-				new Location("/variations[1]/onStates[0]/variants/"), 
+				new Location("/variations[1]/onStates[0]/variants[2]/"), 
 				CONJOINT_VARIANT_CONJOINT_PHANTOM, "test1.B", "state1");
 		assertMessageEqual(expected, actual);
 		actual = response.getMessages().get(1);
 		expected = new ParserMessageImpl(
-				new Location("/variations[1]/onStates[1]/variants/"), 
+				new Location("/variations[1]/onStates[1]/variants[1]/"), 
 				CONJOINT_VARIANT_PROPER_PHANTOM, "test2.B", "state2");
 		assertMessageEqual(expected, actual);
 	}
@@ -642,8 +642,7 @@ public class ParserMixedInstrumentationTest extends BaseTestCore {
 			    	    "              ]                                                          \n" +
 			    	    "           },                                                            \n" +
 			    	    "           {                                                             \n" +
-			    	    "              'stateRef':'state3',                                       \n" +
-			    	    "              'isNonvariant':true                                        \n" +
+			    	    "              'stateRef':'state3'                                        \n" +
 			    	    "           }                                                            \n" +
 			    	    "        ]                                                                \n" +
 			    	    "     },                                                                  \n" +
@@ -892,7 +891,7 @@ public class ParserMixedInstrumentationTest extends BaseTestCore {
 
 		SchemaParser parser = getSchemaParser();
 		ParserResponse response = parser.parse(SCHEMA);
-
+printMessages(response);
 		assertFalse(response.hasMessages());
 	}
 }

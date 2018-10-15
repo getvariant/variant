@@ -264,8 +264,7 @@ public class ParserConjointErrorMultiTest extends BaseTestCore {
 			    "              ]                                               \n" +
 			    "           },                                                 \n" +
 			    "           {                                                  \n" +
-			    "              'stateRef':'state3',                              \n" +
-			    "              'isNonvariant':true                              \n" +
+			    "              'stateRef':'state3'                             \n" +
 			    "           }                                                  \n" +
 			    "        ]                                                     \n" +
 			    "     }                                                        \n" +
