@@ -1,11 +1,13 @@
 package com.variant.core.schema.impl;
 
+import java.util.Optional;
 import java.util.Set;
 
 import com.variant.core.impl.VariantSpace;
 import com.variant.core.schema.State;
 import com.variant.core.schema.StateVariant;
 import com.variant.core.schema.Variation;
+import com.variant.core.schema.Variation.Experience;
 import com.variant.core.util.immutable.ImmutableSet;
 
 /**
@@ -45,15 +47,16 @@ public class VariationOnStateImpl implements Variation.OnState {
 		return var;
 	}
 		
-	/**
-	 * 
-	 * @return
-	 */
 	@Override
 	public Set<StateVariant> getVariants() {
 		return new ImmutableSet<StateVariant>(variantSpace.getAll());
 	}
 	
+	@Override
+	public Optional<StateVariant> getVariant(Set<Experience> experiences) {
+		return Optional.ofNullable(variantSpace.get(experiences));
+	}
+
 	//---------------------------------------------------------------------------------------------//
 	//                                       PUBLIC EXT                                            //
 	//---------------------------------------------------------------------------------------------//

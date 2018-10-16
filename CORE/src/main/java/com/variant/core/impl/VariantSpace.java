@@ -215,12 +215,12 @@ public class VariantSpace {
 	 * Lookup a variant for an experience vector
 	 * Caller insures that all experiences are not control.
 	 */
-	public StateVariant get(List<Experience> vector) {
+	public StateVariant get(Set<Experience> coordinates) {
 		
 		// resort vector in basis order.
-		ArrayList<Experience> sortedVector = new ArrayList<Experience>(vector.size());
+		ArrayList<Experience> sortedVector = new ArrayList<Experience>(coordinates.size());
 		for (Variation basisTest: basis) {
-			for (Experience e: vector) {
+			for (Experience e: coordinates) {
 				if (basisTest.equals(e.getVariation())) {
 					sortedVector.add(e);
 					break;
@@ -230,7 +230,7 @@ public class VariantSpace {
 
 		// If there are expereinces in the input vector whose tests
 		// were not found in basis, the input vector is not in this space.
-		if (vector.size() > sortedVector.size()) return null;
+		if (coordinates.size() > sortedVector.size()) return null;
 		
 		Point result = spaceMap.get(new Coordinates(sortedVector));
 		return result == null? null : result.variant;

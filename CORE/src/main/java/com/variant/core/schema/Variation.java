@@ -224,6 +224,17 @@ public interface Variation {
 	     * @since 0.5
 		 */
 		Set<StateVariant> getVariants();
-		
+
+		/**
+		 * The state variant by a set of experiences. 
+		 * 
+		 * @return The {@link Optional} container, holding the state variant given by the set
+		 *         of experiences if exists, or empty if no state variant corresponds to the 
+		 *         given set of experiences.
+		 *
+	     * @since 0.9
+		 */
+		Optional<StateVariant> getVariant(Set<Experience> experiences);
+
 	}
 }
