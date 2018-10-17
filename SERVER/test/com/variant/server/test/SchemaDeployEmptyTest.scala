@@ -73,7 +73,7 @@ class SchemaDeployEmptyTest extends PlaySpec with OneAppPerSuite with BeforeAndA
 
 	   "refuse deploy schema with errors" in {
 
-         IoUtils.fileCopy("schemata-test-with-errors/big-conjoint-schema-error.json", s"${schemataDir}/big-conjoint-schema-error.json");
+         IoUtils.fileCopy("schemata-test-with-errors/monster-error.schema", s"${schemataDir}/monster-error.schema");
 
 	      // Sleep awhile to let WatcherService.take() have a chance to detect.
 	      Thread.sleep(dirWatcherLatencyMsecs);
@@ -90,7 +90,7 @@ class SchemaDeployEmptyTest extends PlaySpec with OneAppPerSuite with BeforeAndA
 	   
 	   "process deletion of a faulty schema file" in {
 
-         IoUtils.delete( s"${schemataDir}/big-conjoint-schema-error.json");
+         IoUtils.delete( s"${schemataDir}/monster-error.schema");
          Thread.sleep(dirWatcherLatencyMsecs);
          server.schemata.size mustBe 0
 

@@ -66,7 +66,7 @@ class ConnectionTest extends EmbeddedServerAsyncSpec {
       
       "open connection on POST with valid schema name" in {
          
-         assertResp(route(app, httpReq(GET, endpoint + "/big_conjoint_schema")))
+         assertResp(route(app, httpReq(GET, endpoint + "/monstrosity")))
             .isOk
             .withBodyJson { json =>
                (json \ "ssnto").as[Long] mustBe server.config.getInt(SESSION_TIMEOUT)

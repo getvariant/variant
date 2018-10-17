@@ -44,7 +44,7 @@ public class ParserConjointOkayMonsterTest extends BaseTestCore {
 		assertNotNull(response.getSchemaSrc());
 		Schema schema = response.getSchema();
 
-		assertEquals(schema.getMeta().getName(), "OkayBigTest");
+		assertEquals(schema.getMeta().getName(), "monstrocity");
 		assertEquals(schema.getMeta().getComment(), "Schema for okay big test!");
 		
 		final Variation test1 = schema.getVariation("test1").get();

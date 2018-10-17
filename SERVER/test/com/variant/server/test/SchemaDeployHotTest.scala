@@ -51,7 +51,7 @@ class SchemaDeployHotTest extends EmbeddedServerSpec with TempSchemataDir {
       
       "deploy a third schema" in {
 
-	      IoUtils.fileCopy("schemata-test/big-conjoint-schema.json", s"${schemataDir}/another-big-test-schema.json");
+	      IoUtils.fileCopy("schemata-test/monster.schema", s"${schemataDir}/monster.schema");
 
 	      // Sleep awhile to let WatcherService.take() have a chance to detect.
 	      Thread.sleep(dirWatcherLatencyMsecs);
@@ -61,8 +61,8 @@ class SchemaDeployHotTest extends EmbeddedServerSpec with TempSchemataDir {
          bigGen.getMeta.getName mustEqual "ParserConjointOkayBigTestNoHooks"
          val petGen = server.schemata.get("petclinic").get.liveGen.get
          petGen.getMeta.getName mustEqual "petclinic" 
-         val bgsGen = server.schemata.get("big_conjoint_schema").get.liveGen.get
-         petGen.getMeta.getName mustEqual "petclinic" 
+         val monstrGen = server.schemata.get("monstrosity").get.liveGen.get
+         monstrGen.getMeta.getName mustEqual "monstrosity" 
 	   }
 	   
 	   "replace petclinic from same origin" in {
@@ -82,8 +82,8 @@ class SchemaDeployHotTest extends EmbeddedServerSpec with TempSchemataDir {
          bigGen.getMeta.getName mustEqual "ParserConjointOkayBigTestNoHooks"
          val petGen = server.schemata.get("petclinic").get.liveGen.get
          petGen.getMeta.getName mustEqual "petclinic" 
-         val bgsGen = server.schemata.get("big_conjoint_schema").get.liveGen.get
-         petGen.getMeta.getName mustEqual "petclinic" 
+         val monstrGen = server.schemata.get("monstrosity").get.liveGen.get
+         monstrGen.getMeta.getName mustEqual "monstrosity" 
 
 	   }
 
@@ -103,8 +103,8 @@ class SchemaDeployHotTest extends EmbeddedServerSpec with TempSchemataDir {
          bigGen.getMeta.getName mustEqual "ParserConjointOkayBigTestNoHooks"
          val petGen = server.schemata.get("petclinic").get.liveGen.get
          petGen.getMeta.getName mustEqual "petclinic" 
-         val bgsGen = server.schemata.get("big_conjoint_schema").get.liveGen.get
-         petGen.getMeta.getName mustEqual "petclinic" 
+         val monstrGen = server.schemata.get("monstrosity").get.liveGen.get
+         monstrGen.getMeta.getName mustEqual "monstrosity" 
 
          val logLines = ServerLogTailer.last(2)
          logLines(0).severity mustBe Severity.ERROR
@@ -116,12 +116,12 @@ class SchemaDeployHotTest extends EmbeddedServerSpec with TempSchemataDir {
 
    	"re-deploy a schema with parse warnings" in {
 
-	      val currentGen = server.schemata.get("big_conjoint_schema").get.liveGen.get
+	      val currentGen = server.schemata.get("monstrosity").get.liveGen.get
 
-	      IoUtils.fileCopy("schemata-test-with-errors/big-conjoint-schema-warning.json", s"${schemataDir}/another-big-test-schema.json")
+	      IoUtils.fileCopy("schemata-test-with-errors/monster-warning.schema", s"${schemataDir}/monster.schema")
          Thread.sleep(dirWatcherLatencyMsecs)
              
-         val newGen =  server.schemata.get("big_conjoint_schema").get.liveGen.get
+         val newGen =  server.schemata.get("monstrosity").get.liveGen.get
          newGen.id mustNot be (currentGen.id)
          currentGen.state mustBe Dead
          newGen.state mustBe Live
@@ -131,27 +131,27 @@ class SchemaDeployHotTest extends EmbeddedServerSpec with TempSchemataDir {
          bigGen.getMeta.getName mustEqual "ParserConjointOkayBigTestNoHooks"
          val petGen = server.schemata.get("petclinic").get.liveGen.get
          petGen.getMeta.getName mustEqual "petclinic" 
-         val bgsGen = server.schemata.get("big_conjoint_schema").get.liveGen.get
-         bgsGen.getMeta.getName mustEqual "big_conjoint_schema" 
+         val bgsGen = server.schemata.get("monstrosity").get.liveGen.get
+         bgsGen.getMeta.getName mustEqual "monstrosity" 
 	   }
 
-   	"undeploy deleted another-big-test-schema.json" in {
+   	"undeploy deleted monster.schema" in {
 	      
-	      server.schemata.get("big_conjoint_schema").get.liveGen.isDefined
+	      server.schemata.get("monstrosity").get.liveGen.isDefined
 
 	      // Create a session to keep the schema from being vacuumed after undeployment.
 	      val sid = newSid
-         assertResp(route(app, httpReq(POST, context + "/session/big_conjoint_schema/" + sid).withBody(emptyTargetingTrackerBody)))
+         assertResp(route(app, httpReq(POST, context + "/session/monstrosity/" + sid).withBody(emptyTargetingTrackerBody)))
             .isOk
             .withBodySession { ssn =>
                ssn.getId mustNot be (sid)
-               ssn.getSchema().getMeta().getName mustBe "big_conjoint_schema"
+               ssn.getSchema().getMeta().getName mustBe "monstrosity"
          }
 
-	      IoUtils.delete(s"${schemataDir}/another-big-test-schema.json");
+	      IoUtils.delete(s"${schemataDir}/monster.schema");
          Thread.sleep(dirWatcherLatencyMsecs)
              
-         server.schemata.get("big_conjoint_schema").get.liveGen.isDefined mustBe false
+         server.schemata.get("monstrosity").get.liveGen.isDefined mustBe false
          
 	      server.schemata.size mustBe 2
 	      val bigGen = server.schemata.get("ParserConjointOkayBigTestNoHooks").get.liveGen.get
@@ -162,7 +162,7 @@ class SchemaDeployHotTest extends EmbeddedServerSpec with TempSchemataDir {
 
 	   "refuse to deploy a schema with syntax errors" in {
 	      
-	      IoUtils.fileCopy("schemata-test-with-errors/big-conjoint-schema-error.json", s"${schemataDir}/another-big-test-schema.json")
+	      IoUtils.fileCopy("schemata-test-with-errors/monster-error.schema", s"${schemataDir}/monster.schema")
          Thread.sleep(dirWatcherLatencyMsecs)
              
          val logLines = ServerLogTailer.last(2)
@@ -171,6 +171,19 @@ class SchemaDeployHotTest extends EmbeddedServerSpec with TempSchemataDir {
          logLines(1).severity mustBe Severity.WARN
          logLines(1).message must startWith (s"[${ServerErrorLocal.SCHEMA_FAILED.getCode}]")
 
+	      server.schemata.size mustBe 2
+	      val bigGen = server.schemata.get("ParserConjointOkayBigTestNoHooks").get.liveGen.get
+         bigGen.getMeta.getName mustEqual "ParserConjointOkayBigTestNoHooks"
+         val petGen = server.schemata.get("petclinic").get.liveGen.get
+         petGen.getMeta.getName mustEqual "petclinic" 
+
+	   }
+
+	   "ignore deletion of an orphan file unbounded to a live schema" in {
+	      
+	      IoUtils.delete(s"${schemataDir}/monster.schema")
+         Thread.sleep(dirWatcherLatencyMsecs)
+             
 	      server.schemata.size mustBe 2
 	      val bigGen = server.schemata.get("ParserConjointOkayBigTestNoHooks").get.liveGen.get
          bigGen.getMeta.getName mustEqual "ParserConjointOkayBigTestNoHooks"
@@ -200,7 +213,7 @@ class SchemaDeployHotTest extends EmbeddedServerSpec with TempSchemataDir {
       
       "redeploy the third schema" in {
 
-	      IoUtils.fileCopy("schemata-test/big-conjoint-schema.json", s"${schemataDir}/another-big-test-schema.json");
+	      IoUtils.fileCopy("schemata-test/monster.schema", s"${schemataDir}/monster2.schema");
 
 	      // Sleep awhile to let WatcherService.take() have a chance to detect.
 	      Thread.sleep(dirWatcherLatencyMsecs)
@@ -210,8 +223,8 @@ class SchemaDeployHotTest extends EmbeddedServerSpec with TempSchemataDir {
          bigGen.getMeta.getName mustEqual "ParserConjointOkayBigTestNoHooks"
          val petGen = server.schemata.get("petclinic").get.liveGen.get
          petGen.getMeta.getName mustEqual "petclinic" 
-         val bgsGen = server.schemata.get("big_conjoint_schema").get.liveGen.get
-         bgsGen.getMeta.getName mustEqual "big_conjoint_schema" 
+         val monstrGen = server.schemata.get("monstrosity").get.liveGen.get
+         monstrGen.getMeta.getName mustEqual "monstrosity" 
 
 	   }
 	   	   
@@ -286,8 +299,8 @@ class SchemaDeployHotTest extends EmbeddedServerSpec with TempSchemataDir {
          bigGen.getMeta.getName mustEqual "ParserConjointOkayBigTestNoHooks"
          val petGen = server.schemata.get("petclinic").get.liveGen.get
          petGen.getMeta.getName mustEqual "petclinic" 
-         val bgsGen = server.schemata.get("big_conjoint_schema").get.liveGen.get
-         bgsGen.getMeta.getName mustEqual "big_conjoint_schema" 
+         val bgsGen = server.schemata.get("monstrosity").get.liveGen.get
+         bgsGen.getMeta.getName mustEqual "monstrosity" 
          
 	   }
 
@@ -310,7 +323,7 @@ class SchemaDeployHotTest extends EmbeddedServerSpec with TempSchemataDir {
 	      // Override
 	      IoUtils.fileCopy("conf-test/ParserConjointOkayBigTestNoHooks.json", s"${schemataDir}/ParserConjointOkayBigTestNoHooks.json");
 	      // New file
-	      IoUtils.fileCopy("schemata-test/big-conjoint-schema.json", s"${schemataDir}/another-big-test-schema.json");
+	      IoUtils.fileCopy("schemata-test/monster.schema", s"${schemataDir}/another-monster.schema");
 
 	      // While we wait for the FS system to notify directory watcher, make sure
 	      // the existing session is kept alive
@@ -332,8 +345,8 @@ class SchemaDeployHotTest extends EmbeddedServerSpec with TempSchemataDir {
          bigGen.getMeta.getName mustEqual "ParserConjointOkayBigTestNoHooks"
          val petGen = server.schemata.get("petclinic").get.liveGen.get
          petGen.getMeta.getName mustEqual "petclinic" 
-         val bgsGen = server.schemata.get("big_conjoint_schema").get.liveGen.get
-         bgsGen.getMeta.getName mustEqual "big_conjoint_schema" 
+         val monstrGen = server.schemata.get("monstrosity").get.liveGen.get
+         monstrGen.getMeta.getName mustEqual "monstrosity" 
 
 	   }
 	   
@@ -345,7 +358,7 @@ class SchemaDeployHotTest extends EmbeddedServerSpec with TempSchemataDir {
 	   
 	   "create new session in the new schema" in {
          
-         assertResp(route(app, httpReq(POST, context + "/session/big_conjoint_schema/" + newSid).withBody(emptyTargetingTrackerBody)))
+         assertResp(route(app, httpReq(POST, context + "/session/monstrosity/" + newSid).withBody(emptyTargetingTrackerBody)))
             .isOk
       }
    }

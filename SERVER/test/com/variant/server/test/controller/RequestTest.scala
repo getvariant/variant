@@ -31,9 +31,9 @@ class RequestTest extends EmbeddedServerSpec {
    val emptyTargetingTrackerBody = "{\"tt\":[]}"
 
    
-   "Schema big_conjoint_schema" should {
+   "Schema monstrosity" should {
 
-      val schema = server.schemata.get("big_conjoint_schema").get.liveGen.get
+      val schema = server.schemata.get("monstrosity").get.liveGen.get
       val schemaId = schema.id
       val writer = schema.eventWriter
       val reader = TraceEventReader(writer)
@@ -49,19 +49,19 @@ class RequestTest extends EmbeddedServerSpec {
       "create new session" in {
          
          // create a new session.
-         assertResp(route(app, httpReq(POST, context + "/session/big_conjoint_schema/" + sid).withBody(emptyTargetingTrackerBody)))
+         assertResp(route(app, httpReq(POST, context + "/session/monstrosity/" + sid).withBody(emptyTargetingTrackerBody)))
             .isOk         
             .withBodySession { ssn =>
                ssn.getId mustNot be (sid)
                sid = ssn.getId
-               ssn.getSchema.getMeta.getName mustBe "big_conjoint_schema"
+               ssn.getSchema.getMeta.getName mustBe "monstrosity"
          }
       }
       
       "create and commit new state request without SVE attributes" in {
 
          // Get existing session.
-         assertResp(route(app, httpReq(GET, context + "/session/big_conjoint_schema/" + sid)))
+         assertResp(route(app, httpReq(GET, context + "/session/monstrosity/" + sid)))
             .isOk
             .withBodyJson { json => 
                val coreSsn = CoreSession.fromJson((json \ "session").as[String], schema)
@@ -82,7 +82,7 @@ class RequestTest extends EmbeddedServerSpec {
                val stateReq = coreSsn.getStateRequest.get
                stateReq mustNot be (null)
                stateReq.getStatus mustBe InProgress
-               stateReq.getLiveExperiences.size mustBe 6
+               stateReq.getLiveExperiences.size mustBe 5
                stateReq.getResolvedParameters.size mustBe 1
                stateReq.getSession.getId mustBe sid
                stateReq.getState mustBe schema.getState("state2").get
@@ -106,7 +106,7 @@ class RequestTest extends EmbeddedServerSpec {
                stateReq = coreSsn.getStateRequest.get
                stateReq mustNot be (null)
                stateReq.getStatus mustBe Committed
-               stateReq.getLiveExperiences.size mustBe 6
+               stateReq.getLiveExperiences.size mustBe 5
                stateReq.getResolvedParameters.size mustBe 1
                stateReq.getSession.getId mustBe sid
                stateReq.getState mustBe schema.getState("state2").get
@@ -140,12 +140,12 @@ class RequestTest extends EmbeddedServerSpec {
          var sid = newSid
          
          // Recreate session because the old one expired while we waited for the event writer.
-         assertResp(route(app, httpReq(POST, context + "/session/big_conjoint_schema/" + sid).withBody(emptyTargetingTrackerBody)))
+         assertResp(route(app, httpReq(POST, context + "/session/monstrosity/" + sid).withBody(emptyTargetingTrackerBody)))
             .isOk
             .withBodySession { ssn =>
                ssn.getId mustNot be (sid)
                sid = ssn.getId
-               ssn.getSchema.getMeta.getName mustBe "big_conjoint_schema"
+               ssn.getSchema.getMeta.getName mustBe "monstrosity"
                ssn.getStateRequest() mustBe Optional.empty
          }
  
@@ -219,12 +219,12 @@ class RequestTest extends EmbeddedServerSpec {
 
          var sid = newSid
          
-         assertResp(route(app, httpReq(POST, context + "/session/big_conjoint_schema/" + sid).withBody(emptyTargetingTrackerBody)))
+         assertResp(route(app, httpReq(POST, context + "/session/monstrosity/" + sid).withBody(emptyTargetingTrackerBody)))
             .isOk
             .withBodySession { ssn =>
                ssn.getId mustNot be (sid)
                sid = ssn.getId
-               ssn.getSchema.getMeta.getName mustBe "big_conjoint_schema"
+               ssn.getSchema.getMeta.getName mustBe "monstrosity"
          }
  
          // Target sesion for "state4"
@@ -240,7 +240,7 @@ class RequestTest extends EmbeddedServerSpec {
                val stateReq = coreSsn.getStateRequest.get
                stateReq mustNot be (null)
                stateReq.getStatus mustBe InProgress
-               stateReq.getLiveExperiences.size mustBe 5
+               stateReq.getLiveExperiences.size mustBe 4
                stateReq.getResolvedParameters.size mustBe 1
                stateReq.getSession.getId mustBe sid
                stateReq.getState mustBe schema.getState("state4").get
@@ -264,7 +264,7 @@ class RequestTest extends EmbeddedServerSpec {
                val stateReq = coreSsn.getStateRequest.get
                stateReq mustNot be (null)
                stateReq.getStatus mustBe Committed
-               stateReq.getLiveExperiences.size mustBe 5
+               stateReq.getLiveExperiences.size mustBe 4
                stateReq.getResolvedParameters.size mustBe 1
                stateReq.getSession.getId mustBe sid
                stateReq.getState mustBe schema.getState("state4").get
@@ -298,12 +298,12 @@ class RequestTest extends EmbeddedServerSpec {
 
          var sid = newSid
          
-         assertResp(route(app, httpReq(POST, context + "/session/big_conjoint_schema/" + sid).withBody(emptyTargetingTrackerBody)))
+         assertResp(route(app, httpReq(POST, context + "/session/monstrosity/" + sid).withBody(emptyTargetingTrackerBody)))
             .isOk
             .withBodySession { ssn =>
                ssn.getId mustNot be (sid)
                sid = ssn.getId
-               ssn.getSchema.getMeta.getName mustBe "big_conjoint_schema"
+               ssn.getSchema.getMeta.getName mustBe "monstrosity"
          }
  
          // Target sesion for "state4"
@@ -375,12 +375,12 @@ class RequestTest extends EmbeddedServerSpec {
 
          var sid = newSid
          
-         assertResp(route(app, httpReq(POST, context + "/session/big_conjoint_schema/" + sid).withBody(emptyTargetingTrackerBody)))
+         assertResp(route(app, httpReq(POST, context + "/session/monstrosity/" + sid).withBody(emptyTargetingTrackerBody)))
             .isOk
             .withBodySession { ssn =>
                ssn.getId mustNot be (sid)
                sid = ssn.getId
-               ssn.getSchema.getMeta.getName mustBe "big_conjoint_schema"
+               ssn.getSchema.getMeta.getName mustBe "monstrosity"
          }
  
          // Target sesion for "state5"
@@ -453,12 +453,12 @@ class RequestTest extends EmbeddedServerSpec {
          var sid = newSid
          
          // create a new session.
-         assertResp(route(app, httpReq(POST, context + "/session/big_conjoint_schema/" + sid).withBody(emptyTargetingTrackerBody)))
+         assertResp(route(app, httpReq(POST, context + "/session/monstrosity/" + sid).withBody(emptyTargetingTrackerBody)))
             .isOk
             .withBodySession { ssn =>
                ssn.getId mustNot be (sid)
                sid = ssn.getId
-               ssn.getSchema.getMeta.getName mustBe "big_conjoint_schema"
+               ssn.getSchema.getMeta.getName mustBe "monstrosity"
          }
    
          // Target sesion for "state2"
@@ -474,7 +474,7 @@ class RequestTest extends EmbeddedServerSpec {
                val stateReq = ssn.getStateRequest.get
                stateReq mustNot be (null)
                stateReq.getStatus mustBe InProgress
-               stateReq.getLiveExperiences.size mustBe 6
+               stateReq.getLiveExperiences.size mustBe 5
                stateReq.getResolvedParameters.size mustBe 1
                stateReq.getSession.getId mustBe sid
                stateReq.getState mustBe schema.getState("state2").get
@@ -494,11 +494,11 @@ class RequestTest extends EmbeddedServerSpec {
             .isOk
             .withBodySession { ssn =>
                ssn.getId must be (sid)
-               ssn.getSchema.getMeta.getName mustBe "big_conjoint_schema"
+               ssn.getSchema.getMeta.getName mustBe "monstrosity"
                val stateReq = ssn.getStateRequest.get
                stateReq mustNot be (null)
                stateReq.getStatus mustBe Committed
-               stateReq.getLiveExperiences.size mustBe 6
+               stateReq.getLiveExperiences.size mustBe 5
                stateReq.getResolvedParameters.size mustBe 1
                stateReq.getSession.getId mustBe sid
                stateReq.getState mustBe schema.getState("state2").get
@@ -552,8 +552,8 @@ class RequestTest extends EmbeddedServerSpec {
          
          val body: JsValue = Json.obj(
             "sid" -> sid,
-            "name" -> "user-agent",
-            "value" -> "Safari"     // this will cause disqualification
+            "name" -> "disqual",
+            "value" -> "true"     // this will cause disqualification
          )
          assertResp(route(app, httpReq(PUT, context + "/session/attr").withBody(body.toString())))
             .isOk
@@ -565,14 +565,13 @@ class RequestTest extends EmbeddedServerSpec {
             .isOk
             .withBodyJson { json => 
                val coreSsn = CoreSession.fromJson((json \ "session").as[String], schema)
-               coreSsn.getAttributes.get("user-agent") mustBe "Safari"
                coreSsn.getStateRequest mustBe Optional.empty
              } 
          
          // State request object.
          val reqBody1 = Json.obj(
             "sid" -> sid,
-            "state" -> "newOwner"
+            "state" -> "newVisit"
             ).toString
 
          // Target and get the request.
@@ -583,14 +582,13 @@ class RequestTest extends EmbeddedServerSpec {
                val stateReq = coreSsn.getStateRequest.get
                stateReq mustNot be (null)
                stateReq.getStatus mustBe InProgress
-               stateReq.getLiveExperiences.size mustBe 0  // We were disqualified by SafariDisqualHook
+               stateReq.getLiveExperiences.size mustBe 0
                coreSsn.getDisqualifiedVariations.size mustBe 1
-               coreSsn.getDisqualifiedVariations.toSeq(0).getName mustBe "NewOwnerTest"         
-               // Resolved parameter must always be from the state def because we're disqualified
                stateReq.getResolvedParameters.size mustBe 1
-               stateReq.getResolvedParameters.get("path") mustBe schema.getState("newOwner").get.getParameters.get("path")
+               // Resolved parameter must always be from the state def because we're disqualified
+               stateReq.getResolvedParameters.get("path") mustBe schema.getState("newVisit").get.getParameters.get("path")
                stateReq.getSession.getId mustBe sid
-               stateReq.getState mustBe schema.getState("newOwner").get
+               stateReq.getState mustBe schema.getState("newVisit").get
          }
          
          val serverSsn = server.ssnStore.get(sid).get.asInstanceOf[SessionImpl]
@@ -610,13 +608,12 @@ class RequestTest extends EmbeddedServerSpec {
                stateReq mustNot be (null)
                stateReq.getStatus mustBe Committed
                stateReq.getLiveExperiences.size mustBe 0
-               coreSsn.getDisqualifiedVariations.size mustBe 1
-               coreSsn.getDisqualifiedVariations.toSeq(0).getName mustBe "NewOwnerTest"         
+               coreSsn.getDisqualifiedVariations.size mustBe 1         
                // Resolved parameter must always be from the state def because we're disqualified
                stateReq.getResolvedParameters.size mustBe 1
-               stateReq.getResolvedParameters.get("path") mustBe schema.getState("newOwner").get.getParameters.get("path")
+               stateReq.getResolvedParameters.get("path") mustBe schema.getState("newVisit").get.getParameters.get("path")
                stateReq.getSession.getId mustBe sid
-               stateReq.getState mustBe schema.getState("newOwner").get
+               stateReq.getState mustBe schema.getState("newVisit").get
             }
          
          // Send custom event.

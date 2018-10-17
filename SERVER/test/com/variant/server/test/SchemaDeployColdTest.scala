@@ -51,8 +51,8 @@ class SchemaDeployColdTest extends PlaySpec with OneAppPerTest {
       val server = app.injector.instanceOf[VariantServer]
       server.startupErrorLog.size mustEqual 0
       server.schemata.size mustBe 2
-      server.schemata.get("big_conjoint_schema").isDefined mustBe true
-      server.schemata.get("big_conjoint_schema").get.liveGen.get.getMeta.getName mustEqual "big_conjoint_schema"
+      server.schemata.get("monstrosity").isDefined mustBe true
+      server.schemata.get("monstrosity").get.liveGen.get.getMeta.getName mustEqual "monstrosity"
       server.schemata.get("petclinic").isDefined mustBe true
       server.schemata.get("petclinic").get.liveGen.get.getMeta.getName mustEqual "petclinic"
    }
@@ -62,8 +62,8 @@ class SchemaDeployColdTest extends PlaySpec with OneAppPerTest {
       val server = app.injector.instanceOf[VariantServer]
       server.startupErrorLog.size mustEqual 0
       server.schemata.size mustBe 1
-      server.schemata.get("big_conjoint_schema").isDefined mustBe true
-      server.schemata.get("big_conjoint_schema").get.liveGen.get.getMeta.getName mustEqual "big_conjoint_schema"
+      server.schemata.get("monstrosity").isDefined mustBe true
+      server.schemata.get("monstrosity").get.liveGen.get.getMeta.getName mustEqual "monstrosity"
    }
 
 }

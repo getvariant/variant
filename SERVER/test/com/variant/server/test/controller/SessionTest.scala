@@ -33,9 +33,9 @@ object SessionTest {
    val sessionJsonPetclinicPrototype = """
       {"sid":"${sid:SID}",
        "ts": ${ts:%d}, 
-       "request": {"state": "newOwner", "status": 0,
+       "request": {"state": "newVisit", "status": 0,
                   "params": [{"name": "PARAM ONE", "value": "Param One Value"},{"name": "PARAM TWO", "value": "Param Two Value"}],
-                  "exps": ["NewOwnerTest.tosCheckbox.false"]},
+                  "exps": ["ScheduleVisitTest.withLink.false"]},
         "attrs": {"NAME1": "VALUE1", "NAME2": "VALUE2"}
       }
    """
@@ -67,21 +67,21 @@ class SessionTest extends EmbeddedServerSpec {
       
       "return 404 on GET with no sid" in {  
                   
-         assertResp(route(app, httpReq(GET, endpoint + "/petclinic_experiments")))
+         assertResp(route(app, httpReq(GET, endpoint + "/petclinic")))
             .is(NOT_FOUND)
             .withNoBody
       }
 
-      "return SessionExpired on GET non-existent session on valid CID" in {  
+      "return SessionExpired on GET non-existent session on valid schema" in {  
          
-         assertResp(route(app, httpReq(GET, endpoint + "/petclinic_experiments/foo")))
+         assertResp(route(app, httpReq(GET, endpoint + "/petclinic/foo")))
             .isError(SESSION_EXPIRED, "foo")
       }
 
       "return OK on PUT non-existent session with valid conn ID" in {
          
          val body = sessionJsonBigCovar.expand("sid" -> "foo")
-         assertResp(route(app, httpReq(PUT, endpoint + "/big_conjoint_schema").withBody(body)))
+         assertResp(route(app, httpReq(PUT, endpoint + "/monstrosity").withBody(body)))
             .isOk
             .withNoBody
       }
@@ -90,7 +90,7 @@ class SessionTest extends EmbeddedServerSpec {
        
          val body = "just some junk that should be ignored"
 
-         assertResp(route(app, httpReq(GET, endpoint + "/big_conjoint_schema/foo").withBody(body)))
+         assertResp(route(app, httpReq(GET, endpoint + "/monstrosity/foo").withBody(body)))
             .isOk
             .withBodyJson { json => 
                StringUtils.digest((json \ "session").as[String]) mustBe 
@@ -101,11 +101,11 @@ class SessionTest extends EmbeddedServerSpec {
       "return OK and replace existing session on PUT" in {
        
          val reqBody = sessionJsonBigCovar.expand("sid" -> "foo")
-         assertResp(route(app, httpReq(PUT, endpoint + "/big_conjoint_schema").withBody(reqBody)))
+         assertResp(route(app, httpReq(PUT, endpoint + "/monstrosity").withBody(reqBody)))
             .isOk
             .withNoBody
          
-         assertResp(route(app, httpReq(GET, endpoint + "/big_conjoint_schema/foo")))
+         assertResp(route(app, httpReq(GET, endpoint + "/monstrosity/foo")))
             .isOk
             .withBodyJson { json =>
                StringUtils.digest((json \ "session").as[String]) mustBe 
@@ -118,25 +118,25 @@ class SessionTest extends EmbeddedServerSpec {
          val sid = "bar"
          var actualSid: String = null
          
-         assertResp(route(app, httpReq(POST, endpoint + "/big_conjoint_schema/" + sid).withBody(emptyTargetingTrackerBody)))
+         assertResp(route(app, httpReq(POST, endpoint + "/monstrosity/" + sid).withBody(emptyTargetingTrackerBody)))
             .isOk
             .withBodySession { ssn =>
                ssn.getId mustNot be (sid)
                actualSid = ssn.getId
-               ssn.getSchema().getMeta().getName mustBe "big_conjoint_schema"
+               ssn.getSchema().getMeta().getName mustBe "monstrosity"
          }
          
-         assertResp(route(app, httpReq(GET, endpoint + "/big_conjoint_schema/" + actualSid)))
+         assertResp(route(app, httpReq(GET, endpoint + "/monstrosity/" + actualSid)))
             .isOk
             .withBodySession { ssn =>
                ssn.getId mustBe actualSid
-               ssn.getSchema().getMeta().getName mustBe "big_conjoint_schema"
+               ssn.getSchema().getMeta().getName mustBe "monstrosity"
          }
       }
 
      "not lose existing session with different key" in {
 
-         assertResp(route(app, httpReq(GET, endpoint + "/big_conjoint_schema/foo")))
+         assertResp(route(app, httpReq(GET, endpoint + "/monstrosity/foo")))
             .isOk
             .withBodyJson { json =>
                StringUtils.digest((json \ "session").as[String]) mustBe 
@@ -150,7 +150,7 @@ class SessionTest extends EmbeddedServerSpec {
          halfExp mustBe 500   
          for ( wait <- Seq(halfExp, halfExp, halfExp, halfExp) ) {
             Thread.sleep(wait)
-            assertResp(route(app, httpReq(GET, endpoint + "/big_conjoint_schema/foo")))
+            assertResp(route(app, httpReq(GET, endpoint + "/monstrosity/foo")))
                .isOk
                .withBodyJson { json => 
                   StringUtils.digest((json \ "session").as[String]) mustBe 
@@ -165,7 +165,7 @@ class SessionTest extends EmbeddedServerSpec {
       
          ("foo" :: "bar" :: Nil).foreach { sid =>
 
-            assertResp(route(app, httpReq(GET, endpoint + "/big_conjoint_schema/" + sid)))
+            assertResp(route(app, httpReq(GET, endpoint + "/monstrosity/" + sid)))
                .isError(SESSION_EXPIRED, sid)
          }
       }
@@ -175,7 +175,7 @@ class SessionTest extends EmbeddedServerSpec {
          val sid = newSid()
          val ts = System.currentTimeMillis()
          val body = sessionJsonBigCovar.expand("sid" -> sid, "ts" -> ts)
-         assertResp(route(app, httpReq(PUT, endpoint + "/big_conjoint_schema").withBody(body)))
+         assertResp(route(app, httpReq(PUT, endpoint + "/monstrosity").withBody(body)))
             .isOk
             .withNoBody
 
@@ -196,7 +196,7 @@ class SessionTest extends EmbeddedServerSpec {
 
          Thread.sleep(sessionTimeoutMillis + vacuumIntervalMillis);
 
-         assertResp(route(app, httpReq(GET, endpoint + "/big_conjoint_schema/" + sid)))
+         assertResp(route(app, httpReq(GET, endpoint + "/monstrosity/" + sid)))
             .isError(SESSION_EXPIRED, sid)
 
        }

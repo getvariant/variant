@@ -2,6 +2,7 @@ package com.variant.server.boot;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.Map;
@@ -426,7 +427,7 @@ public class Runtime {
 		}
 		
 		boolean resolvable = false;
-		StateVariantImpl resolvedStateVariant = null;
+		Optional<StateVariant> resolvedVariantOpt = Optional.empty();
 		
 		if (sortedList.size() == 0) {
 			// Trivial resolution.
@@ -437,11 +438,11 @@ public class Runtime {
 			Optional<Variation.OnState> vosOpt = highOrderVar.getOnState(state);
 			if (vosOpt.isPresent()) {
 				VariationOnStateImpl vos = (VariationOnStateImpl) vosOpt.get();
-				resolvedStateVariant = (StateVariantImpl) vos.variantSpace().get(sortedList);
-				resolvable = resolvedStateVariant != null;
+				resolvedVariantOpt = vos.getVariant(new HashSet<Experience>(sortedList));
+				resolvable = resolvedVariantOpt.isPresent();
 			}
 		}
-		return resolvable ? Optional.ofNullable(resolvedStateVariant) : null;
+		return resolvable ? resolvedVariantOpt : null;
 	}
 	
 	

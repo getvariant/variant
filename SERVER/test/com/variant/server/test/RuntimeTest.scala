@@ -25,30 +25,10 @@ import com.variant.core.schema.StateVariant
 class RuntimeTest extends EmbeddedServerSpec {
    
 	"Runtime" should {
-/*	   
-       val schemaDeployer = SchemaDeployer.fromClasspath("/ParserConjointOkayBigTestNoHooks.json")
-       server.useSchemaDeployer(schemaDeployer)
-       val response = schemaDeployer.parserResponses(0)
-       response.hasMessages() mustBe false		
-       server.schemata.get("ParserConjointOkayBigTestNoHooks").isDefined mustBe true
-       * 
-       *
-   	 val schema = server.schemata.get("ParserConjointOkayBigTestNoHooks").get.liveGen.get
- 	    val runtime = RuntimeTestFacade(schema)
 
-   	val state1 = schema.getState("state1")
-   	val state2 = schema.getState("state2")
-   	val state3 = schema.getState("state3")
-   	val test1 = schema.getTest("test1")
-   	val test2 = schema.getTest("test2")
-   	val test3 = schema.getTest("test3")
-   	val test4 = schema.getTest("test4")
-   	val test5 = schema.getTest("test5")
-   	val test6 = schema.getTest("test6")
-*/
 	   "resolve for state1" in {
 	         	   
-         val schema = server.schemata.get("big_conjoint_schema").get.liveGen.get
+         val schema = server.schemata.get("monstrosity").get.liveGen.get
  	      val runtime = RuntimeTestFacade(schema)
 
       	val state1 = schema.getState("state1").get
@@ -68,9 +48,6 @@ class RuntimeTest extends EmbeddedServerSpec {
             caughtEx.getMessage.equals(
                new ServerException.Internal("Uninstrumented variation [test1.B] in coordinate vector").getMessage)
          )
-         
-         var resolvedVariant = runtime.resolveState(state1, Array(experience("test2.B", schema))) 
-         resolvedVariant mustBe Option.empty
 
          caughtEx = intercept[ServerException.Internal] {
              runtime.resolveState(state1, Array(experience("test1.A", schema), experience("test2.B", schema)))
@@ -79,6 +56,9 @@ class RuntimeTest extends EmbeddedServerSpec {
             caughtEx.getMessage.equals(
                new ServerException.Internal("Uninstrumented variation [test1.A] in coordinate vector").getMessage)
          )
+
+         var resolvedVariant = runtime.resolveState(state1, Array(experience("test2.B", schema))) 
+         resolvedVariant mustBe Option.empty
 
          resolvedVariant = runtime.resolveState(
 			   state1, 
@@ -183,7 +163,7 @@ class RuntimeTest extends EmbeddedServerSpec {
 	   
 	   "resolve for state2" in {
    		
-         val schema = server.schemata.get("big_conjoint_schema").get.liveGen.get
+         val schema = server.schemata.get("monstrosity").get.liveGen.get
  	      val runtime = RuntimeTestFacade(schema)
 
       	val state1 = schema.getState("state1").get
@@ -336,7 +316,7 @@ class RuntimeTest extends EmbeddedServerSpec {
 	   
 	   "resolve for state3" in {
 
-         val schema = server.schemata.get("big_conjoint_schema").get.liveGen.get
+         val schema = server.schemata.get("monstrosity").get.liveGen.get
  	      val runtime = RuntimeTestFacade(schema)
 
       	val state1 = schema.getState("state1").get
@@ -529,7 +509,7 @@ class RuntimeTest extends EmbeddedServerSpec {
 
 	   "resolve these coordinate vectors" in {
 
-         val schema = server.schemata.get("big_conjoint_schema").get.liveGen.get
+         val schema = server.schemata.get("monstrosity").get.liveGen.get
  	      val runtime = RuntimeTestFacade(schema)
 
       	val state1 = schema.getState("state1").get
@@ -730,7 +710,7 @@ class RuntimeTest extends EmbeddedServerSpec {
 	   
 	   "test isTargetable()" in {
 
-         val schema = server.schemata.get("big_conjoint_schema").get.liveGen.get
+         val schema = server.schemata.get("monstrosity").get.liveGen.get
  	      val runtime = RuntimeTestFacade(schema)
 
       	val state1 = schema.getState("state1").get

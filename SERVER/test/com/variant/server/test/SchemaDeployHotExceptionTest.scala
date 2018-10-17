@@ -20,7 +20,7 @@ class SchemaDeployHotExceptionTest extends EmbeddedServerSpec with TempSchemataD
    private val logger = Logger(this.getClass)
 
    override def schemata = Set[String](
-      "schemata-test-with-errors/big-conjoint-schema-error.json")
+      "schemata-test-with-errors/monster-error.schema")
    
    /**
     *  
@@ -45,7 +45,7 @@ class SchemaDeployHotExceptionTest extends EmbeddedServerSpec with TempSchemataD
       
 	   "detect the touched file and still fail due to the same error" in {
 
-         s"touch ${schemataDir}/big-conjoint-schema-error.json".!!	      	      	         
+         s"touch ${schemataDir}/monster-error.schema".!!	      	      	         
          
 	      // Sleep awhile to let WatcherService.take() have a chance to detect.
 	      Thread.sleep(TempSchemataDir.dirWatcherLatencyMsecs);
@@ -54,7 +54,7 @@ class SchemaDeployHotExceptionTest extends EmbeddedServerSpec with TempSchemataD
 
 	      val logLines = ServerLogTailer.last(3)
          logLines(0).severity mustBe Severity.INFO
-         logLines(0).message must startWith (s"Deploying schema from file [${schemataDir}/big-conjoint-schema-error.json]")
+         logLines(0).message must startWith (s"Deploying schema from file [${schemataDir}/monster-error.schema]")
          logLines(1).severity mustBe Severity.ERROR
          logLines(1).message must startWith (s"[${SyntaxError.JSON_SYNTAX_ERROR.getCode}]")
          logLines(2).severity mustBe Severity.WARN
@@ -65,18 +65,18 @@ class SchemaDeployHotExceptionTest extends EmbeddedServerSpec with TempSchemataD
 	   "detect the fixed file and deploy the schema" in {
 
 	      // Fix the bad schema by adding the quite at the end of comment.
-         ("sed -E s/^[[:space:]]*'comment'.*$/'comment':'fixed_comment'/ " + s"${schemataDir}/big-conjoint-schema-error.json") #> new File("/tmp/big-conjoint-schema-error.json") !!;      	
-         s"cp /tmp/big-conjoint-schema-error.json ${schemataDir}" !!
+         ("sed -E s/^[[:space:]]*'comment'.*$/'comment':'fixed_comment'/ " + s"${schemataDir}/monster-error.schema") #> new File("/tmp/monster-error.schema") !!;      	
+         s"cp /tmp/monster-error.schema ${schemataDir}" !!
          
 	      // Sleep awhile to let WatcherService.take() have a chance to detect.
 	      Thread.sleep(TempSchemataDir.dirWatcherLatencyMsecs);
 
          server.schemata.size mustBe 1
-         val schId = server.schemata.getLiveGen("big_conjoint_schema").get.id
+         val schId = server.schemata.getLiveGen("monstrosity").get.id
          val logLines = ServerLogTailer.last(1)
          println(logLines)
          logLines(0).severity mustBe Severity.INFO
-         logLines(0).message must startWith (s"Deployed schema [big_conjoint_schema] gen ID [${schId}], from [big-conjoint-schema-error.json]")
+         logLines(0).message must startWith (s"Deployed schema [monstrosity] gen ID [${schId}], from [monster-error.schema]")
 
 	   }
 

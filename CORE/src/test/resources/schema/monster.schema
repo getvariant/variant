@@ -1,5 +1,5 @@
 /**
- * Parser Conjoint Okay Bit Test Schema.
+ * Parser Monster Schema.
  * All Tests:
  * Tests States
  *       1 2 3 4 5
@@ -17,7 +17,7 @@
  
 {
    'meta':{
-      'name':'OkayBigTest', 
+      'name':'monstrocity', 
       'comment':'Schema for okay big test!'
    },
    'states':[                                                             

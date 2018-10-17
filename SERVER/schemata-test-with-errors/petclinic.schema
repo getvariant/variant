@@ -8,7 +8,7 @@
 {
    'meta':{
       'name':'petclinic',
-      'comment':'Variation schema for experiments on the Pet Clinic demo application'
+      'comment':'The Petclinic applicaiton with intentional error online 44'
    },
    'states':[                                                
      { 

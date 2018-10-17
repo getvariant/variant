@@ -73,7 +73,7 @@ class TraceEventTest extends EmbeddedServerSpec {
 
    "EventController" should {
 
-      val schema = server.schemata.get("big_conjoint_schema").get.liveGen.get
+      val schema = server.schemata.get("monstrosity").get.liveGen.get
       val eventWriter = schema.eventWriter
       eventWriter.maxDelayMillis  mustEqual 2000
       val millisToSleep = eventWriter.maxDelayMillis + 500
@@ -122,12 +122,12 @@ class TraceEventTest extends EmbeddedServerSpec {
          // New session
          var sid = newSid
          
-         assertResp(route(app, httpReq(POST, context + "/session/big_conjoint_schema/" + sid).withBody(emptyTargetingTrackerBody)))
+         assertResp(route(app, httpReq(POST, context + "/session/monstrosity/" + sid).withBody(emptyTargetingTrackerBody)))
             .isOk
             .withBodySession { ssn =>
                ssn.getId mustNot be (sid)
                sid = ssn.getId
-               ssn.getSchema().getMeta().getName mustBe "big_conjoint_schema"
+               ssn.getSchema().getMeta().getName mustBe "monstrosity"
          }
          
          // Target and get the request.
@@ -143,7 +143,7 @@ class TraceEventTest extends EmbeddedServerSpec {
                val stateReq = ssn.getStateRequest.get
                stateReq mustNot be (null)
                stateReq.getStatus mustBe InProgress
-               stateReq.getLiveExperiences.size mustBe 5
+               stateReq.getLiveExperiences.size mustBe 4
                stateReq.getResolvedParameters.size mustBe 1
                stateReq.getSession.getId mustBe sid
                stateReq.getState mustBe schema.getState("state4").get
@@ -164,7 +164,7 @@ class TraceEventTest extends EmbeddedServerSpec {
                val stateReq = ssn.getStateRequest.get
                stateReq mustNot be (null)
                stateReq.getStatus mustBe Committed
-               stateReq.getLiveExperiences.size mustBe 5
+               stateReq.getLiveExperiences.size mustBe 4
                stateReq.getResolvedParameters.size mustBe 1
                stateReq.getSession.getId mustBe sid
                stateReq.getState mustBe schema.getState("state4").get
@@ -182,7 +182,7 @@ class TraceEventTest extends EmbeddedServerSpec {
          event.attributes("$STATUS") mustBe "Committed"
          event.sessionId mustBe sid
          event.createdOn.getTime mustBe (System.currentTimeMillis() - millisToSleep) +- 100   
-         event.eventExperiences.size() mustBe 5
+         event.eventExperiences.size() mustBe 4
          // Test4 is not instrumented.
          event.eventExperiences.exists {_.testName == "test6"} mustBe false
 
@@ -193,12 +193,12 @@ class TraceEventTest extends EmbeddedServerSpec {
          // New session
          var sid = newSid
          
-         assertResp(route(app, httpReq(POST, context + "/session/big_conjoint_schema/" + sid).withBody(emptyTargetingTrackerBody)))
+         assertResp(route(app, httpReq(POST, context + "/session/monstrosity/" + sid).withBody(emptyTargetingTrackerBody)))
             .isOk
             .withBodySession { ssn =>
                ssn.getId mustNot be (sid)
                sid = ssn.getId
-               ssn.getSchema().getMeta().getName mustBe "big_conjoint_schema"
+               ssn.getSchema().getMeta().getName mustBe "monstrosity"
          }
          
          // Target and get the request.
@@ -268,12 +268,12 @@ class TraceEventTest extends EmbeddedServerSpec {
          // New session
          var sid = newSid
          
-         assertResp(route(app, httpReq(POST, context + "/session/big_conjoint_schema/" + sid).withBody(emptyTargetingTrackerBody)))
+         assertResp(route(app, httpReq(POST, context + "/session/monstrosity/" + sid).withBody(emptyTargetingTrackerBody)))
             .isOk         
             .withBodySession { ssn =>
                ssn.getId mustNot be (sid)
                sid = ssn.getId
-               ssn.getSchema().getMeta().getName mustBe "big_conjoint_schema"
+               ssn.getSchema().getMeta().getName mustBe "monstrosity"
          }
 
          val eventName = "Custom Name"
@@ -301,12 +301,12 @@ class TraceEventTest extends EmbeddedServerSpec {
 
          // New session
          var sid = newSid
-         assertResp(route(app, httpReq(POST, context + "/session/big_conjoint_schema/" + sid).withBody(emptyTargetingTrackerBody)))
+         assertResp(route(app, httpReq(POST, context + "/session/monstrosity/" + sid).withBody(emptyTargetingTrackerBody)))
             .isOk
             .withBodySession { ssn =>
                ssn.getId mustNot be (sid)
                sid = ssn.getId
-               ssn.getSchema().getMeta().getName mustBe "big_conjoint_schema"
+               ssn.getSchema().getMeta().getName mustBe "monstrosity"
          }
 
          // Target and get the request.
@@ -362,12 +362,12 @@ class TraceEventTest extends EmbeddedServerSpec {
          // New session
          var sid = newSid
          
-         assertResp(route(app, httpReq(POST, context + "/session/big_conjoint_schema/" + sid).withBody(emptyTargetingTrackerBody)))
+         assertResp(route(app, httpReq(POST, context + "/session/monstrosity/" + sid).withBody(emptyTargetingTrackerBody)))
             .isOk         
             .withBodySession { ssn =>
                ssn.getId mustNot be (sid)
                sid = ssn.getId
-               ssn.getSchema().getMeta().getName mustBe "big_conjoint_schema"
+               ssn.getSchema().getMeta().getName mustBe "monstrosity"
          }
 
          // Target and get the request.
@@ -382,7 +382,7 @@ class TraceEventTest extends EmbeddedServerSpec {
                val stateReq = ssn.getStateRequest.get
                stateReq mustNot be (null)
                stateReq.getStatus mustBe InProgress
-               stateReq.getLiveExperiences.size mustBe 5
+               stateReq.getLiveExperiences.size mustBe 4
                stateReq.getResolvedParameters.size mustBe 1
                stateReq.getSession.getId mustBe sid
                stateReq.getState mustBe schema.getState("state4").get
@@ -406,11 +406,11 @@ class TraceEventTest extends EmbeddedServerSpec {
          event.sessionId mustBe sid
          event.createdOn.getTime mustBe (System.currentTimeMillis() - millisToSleep) +- 100
          event.name mustBe eventName
-         event.eventExperiences.size() mustBe 5
+         event.eventExperiences.size() mustBe 4
          event.attributes.size mustBe 2
          event.eventExperiences.exists(_.testName == "test1") mustBe true
          event.eventExperiences.exists(_.testName == "test2") mustBe true
-         event.eventExperiences.exists(_.testName == "test3") mustBe true
+         event.eventExperiences.exists(_.testName == "test3") mustBe false
          event.eventExperiences.exists(_.testName == "test4") mustBe true
          event.eventExperiences.exists(_.testName == "test5") mustBe true
          event.eventExperiences.exists(_.testName == "test6") mustBe false
