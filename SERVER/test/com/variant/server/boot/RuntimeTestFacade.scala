@@ -29,8 +29,8 @@ class RuntimeTestFacade(schemaGen: SchemaGen)  extends Runtime(schemaGen) {
    /**
     * 
     */
-   def isResolvable(vector: Array[Experience]): Boolean = {
-      super.isResolvable(vector.toSeq)
+   def isResolvable(coordinates: Experience*): Boolean = {
+      super.isResolvable(coordinates)
    }
    
    /**

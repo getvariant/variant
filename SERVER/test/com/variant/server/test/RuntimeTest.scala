@@ -21,6 +21,8 @@ class RuntimeTest extends EmbeddedServerSpec {
       val state1 = schema.getState("state1").get
       val state2 = schema.getState("state2").get
    	val state3 = schema.getState("state3").get
+   	val state4 = schema.getState("state4").get
+   	
    	val test1 = schema.getVariation("test1").get
       val test2 = schema.getVariation("test2").get
    	val test3 = schema.getVariation("test3").get
@@ -52,7 +54,7 @@ class RuntimeTest extends EmbeddedServerSpec {
 
          runtime.resolveState(
                state1, 
-               experience("test2.B", schema)) mustBe 
+               test2.getExperience("B").get) mustBe 
             test2.getOnState(state1).get.getVariant(
                   test2.getExperience("B").get)
 
@@ -235,596 +237,361 @@ class RuntimeTest extends EmbeddedServerSpec {
 
 
 	   }
-/*	   
-	   "resolve for state3" in {
 
-         val schema = server.schemata.get("monstrosity").get.liveGen.get
- 	      val runtime = RuntimeTestFacade(schema)
+	   "test isResolvable()" in {
 
-      	val state1 = schema.getState("state1").get
-      	val state2 = schema.getState("state2").get
-   	   val state3 = schema.getState("state3").get
-   	   val test1 = schema.getVariation("test1").get
-      	val test2 = schema.getVariation("test2").get
-   	   val test3 = schema.getVariation("test3").get
-   	   val test4 = schema.getVariation("test4").get
-   	   val test5 = schema.getVariation("test5").get
-   	   val test6 = schema.getVariation("test6").get
-
-   	   var resolvedVariant = runtime.resolveState(
-   				state3, 
-   				Array(
-   						experience("test2.A", schema)   // control
-   				)
-   		);
-   		resolvedVariant mustBe None
-   		
-   		resolvedVariant = runtime.resolveState(
-   				state3, 
-   				Array(
-   						experience("test2.B", schema) 
-   				)
-   		);
-   		resolvedVariant mustBe Some
-   		resolvedVariant.get.getParameters().get("path") mustBe "/path/to/state3/test2.B"
-      
-         var caughtEx = intercept[ServerException.Internal] {
-   				runtime.resolveState(
-   						state3, 
-   						Array(
-   								experience("test4.B", schema)   // not instrumented
-   						)
-   				)
-  			}
-		   assert(
-		         caughtEx.getMessage.equals(
-               new ServerException.Internal("Uninstrumented variation [test4.B] in coordinate vector").getMessage)
-         )
-
-         resolvedVariant = runtime.resolveState(
-   				state3, 
-   				Array(
-   						experience("test3.B", schema)    
-   				)
-   		);
-   		resolvedVariant mustBe None
-   
-   		resolvedVariant = runtime.resolveState(
-   				state3, 
-   				Array(
-   						experience("test2.B", schema)   
-   				)
-   		);
-   		resolvedVariant mustBe Some
-   		resolvedVariant.get.getParameters().get("path") mustBe "/path/to/state3/test2.B"
-   
-   		resolvedVariant = runtime.resolveState(
-   				state3, 
-   				Array(
-   						experience("test3.B", schema),   
-   						experience("test5.C", schema)    
-   				)
-   		);
-   		resolvedVariant mustBe None
-   
-   		resolvedVariant = runtime.resolveState(
-   				state3, 
-   				Array(
-   						experience("test2.B", schema),  
-   						experience("test3.C", schema)    
-   				)
-   		);
-   		resolvedVariant mustBe Some
-   		resolvedVariant.get.getParameters().get("path") mustBe "/path/to/state3/test2.B"
-   
-         caughtEx = intercept[ServerException.Internal] {
-   					runtime.resolveState(
-   							state3, 
-   							Array(
-   									experience("test2.B", schema),  
-   									experience("test3.A", schema),   
-   									experience("test2.C", schema)   // dupe test
-   							)
-   					)
-  			}
-		   assert(
-		         caughtEx.getMessage.equals(
-               new ServerException.Internal("Duplicate test [test2] in input vector").getMessage)
-         )
-
-         caughtEx = intercept[ServerException.Internal] {
-   				runtime.resolveState(
-   						state3, 
-   						Array(
-   								experience("test1.C", schema),  
-   								experience("test2.B", schema),  // unsupported
-   								experience("test3.B", schema),   
-   								experience("test4.B", schema)   // uninstrumented
-   						)
-   				)
-  			}
-		   assert(
-		         caughtEx.getMessage.equals(
-               new ServerException.Internal("Uninstrumented variation [test4.B] in coordinate vector").getMessage)
-         )
-
-         resolvedVariant = runtime.resolveState(
-   				state3, 
-   				Array(
-   						experience("test1.C", schema),  
-   						experience("test2.B", schema),  // unsupported
-   						experience("test3.B", schema)    
-   				)
-   		);
-   		resolvedVariant mustBe null
-   		
-   		resolvedVariant = runtime.resolveState(
-   				state3, 
-   				Array(
-   						experience("test2.B", schema),  
-   						experience("test3.C", schema)    
-   				)
-   		);
-   		resolvedVariant mustBe Some
-   		resolvedVariant.get.getParameters().get("path") mustBe "/path/to/state3/test2.B"
-      		
-         caughtEx = intercept[ServerException.Internal] {
-   				runtime.resolveState(
-   						state3, 
-   						Array(
-   								experience("test4.B", schema),  // uninstrumented
-   								experience("test1.C", schema),  
-   								experience("test6.C", schema),  
-   								experience("test3.B", schema)    
-   						)
-   				)
-  			}
-		   assert(
-		         caughtEx.getMessage.equals(
-               new ServerException.Internal("Uninstrumented variation [test4.B] in coordinate vector").getMessage)
-         )
-
-   		resolvedVariant = runtime.resolveState(
-   				state3, 
-   				Array(
-   						experience("test2.B", schema),  // unsupported
-   						experience("test1.C", schema),  
-   						experience("test6.B", schema),  
-   						experience("test3.C", schema)    
-   				)
-   		);
-   		resolvedVariant mustBe null
-   
-   		resolvedVariant = runtime.resolveState(
-   				state3, 
-   				Array(
-   						experience("test2.B", schema),  
-   						experience("test5.C", schema),   
-   						experience("test3.B", schema)    
-   				)
-   		)
-   		resolvedVariant mustBe Some
-   		resolvedVariant.get.getParameters().get("path") mustBe "/path/to/state3/test2.B"
-   
-   		resolvedVariant = runtime.resolveState(
-   				state3, 
-   				Array(
-   						experience("test6.C", schema),  // control
-   						experience("test2.B", schema),  // unsupported
-   						experience("test5.C", schema),   
-   						experience("test1.B", schema)   
-   				)
-   		);
-   		resolvedVariant mustBe null
-   
-   		resolvedVariant = runtime.resolveState(
-   				state3, 
-   				Array(
-   						experience("test6.B", schema),  
-   						experience("test2.B", schema),  
-   						experience("test5.C", schema)    
-   				)
-   		);
-   		resolvedVariant mustBe Some
-   		resolvedVariant.get.getParameters().get("path") mustBe "/path/to/state3/test2.B+test6.B"   
-	   }
-
-	   "resolve these coordinate vectors" in {
-
-         val schema = server.schemata.get("monstrosity").get.liveGen.get
- 	      val runtime = RuntimeTestFacade(schema)
-
-      	val state1 = schema.getState("state1").get
-      	val state2 = schema.getState("state2").get
-   	   val state3 = schema.getState("state3").get
-   	   val test1 = schema.getVariation("test1").get
-      	val test2 = schema.getVariation("test2").get
-   	   val test3 = schema.getVariation("test3").get
-   	   val test4 = schema.getVariation("test4").get
-   	   val test5 = schema.getVariation("test5").get
-   	   val test6 = schema.getVariation("test6").get
-
-   	   runtime.isResolvable(Array(experience("test1.A", schema))) mustBe true
+   	   runtime.isResolvable(test1.getExperience("A").get) mustBe true
 		
-         runtime.isResolvable(Array(experience("test1.B", schema))) mustBe true
+         runtime.isResolvable(test1.getExperience("B").get) mustBe true
 
-         var caughtEx = intercept[ServerException.Internal] {
+         intercept[ServerException.Internal] {
 
 				runtime.minUnresolvableSubvector(
 						Array(
-								experience("test1.C", schema), 
-								experience("test2.B", schema)),
+								test1.getExperience("C").get, 
+								test2.getExperience("B").get),
 						Array(
-								experience("test1.C", schema), 
-								experience("test2.B", schema)))
-  			}
-		   assert(
-		         caughtEx.getMessage.equals(
-               new ServerException.Internal("Input vector [test1.C,test2.B] must be resolvable, but is not").getMessage)
-         )
+								test1.getExperience("C").get, 
+								test2.getExperience("B").get))
+  			
+   	   }.getMessage mustBe "Input vector [test1.C,test2.B] must be resolvable, but is not"
          
-         caughtEx = intercept[ServerException.Internal] {
+         intercept[ServerException.Internal] {
 
 				runtime.minUnresolvableSubvector(
 						Array(
-								experience("test1.C", schema)),
+								test1.getExperience("C").get),
 						Array(
-								experience("test1.B", schema), 
-								experience("test2.B", schema)))
-  			}
-		   assert(
-		         caughtEx.getMessage.equals(
-               new ServerException.Internal("Experience [test1.B] in second argument contradicts experience [test1.C] in first argument").getMessage)
-         )
+								test1.getExperience("B").get, 
+								test2.getExperience("B").get))
+  			
+   	   }.getMessage mustBe "Experience [test1.B] in second argument contradicts experience [test1.C] in first argument"
 
-         caughtEx = intercept[ServerException.Internal] {
+         intercept[ServerException.Internal] {
 
 				runtime.minUnresolvableSubvector(
 						Array(
-								experience("test2.B", schema), 
-								experience("test3.C", schema)),
+								test2.getExperience("B").get, 
+								test3.getExperience("C").get),
 						Array(
-								experience("test1.A", schema), 
-								experience("test3.B", schema)))
-  			}
-		   assert(
-		         caughtEx.getMessage.equals(
-               new ServerException.Internal("Experience [test3.B] in second argument contradicts experience [test3.C] in first argument").getMessage)
-         )
+								test1.getExperience("A").get, 
+								test3.getExperience("B").get))
+  			
+   	   }.getMessage mustBe "Experience [test3.B] in second argument contradicts experience [test3.C] in first argument"
 
-         var subVector = runtime.minUnresolvableSubvector(
+         runtime.minUnresolvableSubvector(
 				Array(
-						experience("test1.A", schema), 
-						experience("test2.B", schema)),
+						test1.getExperience("A").get, 
+						test2.getExperience("B").get),
 				Array(
-						experience("test3.C", schema), 
-						experience("test4.B", schema)))
-		   subVector.toSet mustBe Array(experience("test4.B", schema)).toSet
+						test3.getExperience("C").get, 
+						test4.getExperience("B").get)).toSet mustBe 
+				Array(test4.getExperience("B").get).toSet
 		   
-		   subVector = runtime.minUnresolvableSubvector(
+		   runtime.minUnresolvableSubvector(
 				Array(
-						experience("test2.B", schema)),
+						test2.getExperience("B").get),
 				Array(
-						experience("test3.A", schema), 
-						experience("test4.B", schema)))
-   		subVector.toSet mustBe Array(experience("test4.B", schema)).toSet
+						test3.getExperience("A").get, 
+						test4.getExperience("B").get)).toSet mustBe 		
+			   Array(test4.getExperience("B").get).toSet
    
-   		subVector = runtime.minUnresolvableSubvector(
+   		runtime.minUnresolvableSubvector(
    						Array(
-   								experience("test2.B", schema)),
+   								test2.getExperience("B").get),
    						Array(
-   								experience("test1.B", schema)))
-   		subVector.toSet mustBe Array(experience("test1.B", schema)).toSet
+   								test1.getExperience("B").get)).toSet mustBe 
+   				Array(test1.getExperience("B").get).toSet
    
-   		subVector = runtime.minUnresolvableSubvector(
+   		runtime.minUnresolvableSubvector(
    						Array(
-   								experience("test2.B", schema), 
-   								experience("test3.C", schema)),	
+   								test2.getExperience("B").get, 
+   								test3.getExperience("C").get),	
    						Array(
-   								experience("test1.B", schema)))
-   		subVector.toSet mustBe Array(experience("test1.B", schema)).toSet
+   								test1.getExperience("B").get)).toSet mustBe 
+   		      Array(test1.getExperience("B").get).toSet
    
-   		subVector = runtime.minUnresolvableSubvector(
+   		runtime.minUnresolvableSubvector(
    						Array(
-   								experience("test3.C", schema)),
+   								test3.getExperience("C").get),
    						Array(
-   								experience("test2.B", schema)))
-   		subVector mustBe empty
+   								test2.getExperience("B").get)) mustBe empty
    
-   		subVector = runtime.minUnresolvableSubvector(
+   		runtime.minUnresolvableSubvector(
    						Array(
-   								experience("test3.C", schema)),
+   								test3.getExperience("C").get),
    						Array(
-   								experience("test2.B", schema),
-   								experience("test5.C", schema))
-   				);
-   		subVector.toSet mustBe Array(experience("test5.C", schema)).toSet
+   								test2.getExperience("B").get,
+   								test5.getExperience("C").get)).toSet mustBe 
+   				Array(test5.getExperience("C").get).toSet
    
-   		subVector = runtime.minUnresolvableSubvector(
+   		runtime.minUnresolvableSubvector(
    						Array(
-   								experience("test2.C", schema)),
+   								test2.getExperience("C").get),
    						Array(
-   								experience("test1.C", schema), 
-   								experience("test3.C", schema)));
-   		subVector.toSet mustBe Array(experience("test1.C", schema)).toSet
+   								test1.getExperience("C").get, 
+   								test3.getExperience("C").get)).toSet mustBe 
+   				Array(test1.getExperience("C").get).toSet
    
-   		subVector = runtime.minUnresolvableSubvector(
+   		runtime.minUnresolvableSubvector(
    						Array(
-   								experience("test1.C", schema)),
+   								test1.getExperience("C").get),
    						Array(
-   								experience("test4.B", schema), 
-   								experience("test5.C", schema)));
-   		subVector.toSet mustBe Array(experience("test5.C", schema)).toSet
+   								test4.getExperience("B").get, 
+   								test5.getExperience("C").get)).toSet mustBe 
+   				Array(test5.getExperience("C").get).toSet
    
-   		subVector = runtime.minUnresolvableSubvector(
+   		runtime.minUnresolvableSubvector(
    						Array(
-   								experience("test2.C", schema)),
+   								test2.getExperience("C").get),
    						Array(
-   								experience("test4.B", schema), 
-   								experience("test5.C", schema)));
-   		subVector.toSet mustBe Array(experience("test4.B", schema)).toSet
+   								test4.getExperience("B").get, 
+   								test5.getExperience("C").get)).toSet mustBe 
+   				Array(test4.getExperience("B").get).toSet
    
-   		subVector = runtime.minUnresolvableSubvector(
+   		runtime.minUnresolvableSubvector(
    				Array(
-   						experience("test2.C", schema)),
+   						test2.getExperience("C").get),
    				Array(
-   						experience("test3.B", schema), 
-   						experience("test5.C", schema)));
-   		subVector.toSet mustBe Array(experience("test5.C", schema)).toSet
+   						test3.getExperience("B").get, 
+   						test5.getExperience("C").get)).toSet mustBe 
+   			Array(test5.getExperience("C").get).toSet
    
-   		subVector = runtime.minUnresolvableSubvector(
+   		runtime.minUnresolvableSubvector(
    				Array(
-   						experience("test1.C", schema),
-   						experience("test4.C", schema)),
+   						test1.getExperience("C").get,
+   						test4.getExperience("C").get),
    				Array(
-   						experience("test3.B", schema), 
-   						experience("test5.C", schema)));
-   		subVector.toSet mustBe 
+   						test3.getExperience("B").get, 
+   						test5.getExperience("C").get)).toSet mustBe
    				Array(
-   						experience("test3.B", schema), 
-   						experience("test5.C", schema)).toSet
+   						test3.getExperience("B").get, 
+   						test5.getExperience("C").get).toSet
    
-   		subVector = runtime.minUnresolvableSubvector(
+   		runtime.minUnresolvableSubvector(
    				Array(
-   						experience("test2.C", schema),
-   						experience("test3.C", schema)),
+   						test2.getExperience("C").get,
+   						test3.getExperience("C").get),
    				Array(
-   						experience("test1.C", schema)));
-   		subVector.toSet mustBe 
+   						test1.getExperience("C").get)).toSet mustBe 
    				Array(
-   						experience("test1.C", schema)).toSet
+   						test1.getExperience("C").get).toSet
    		
-   		subVector = runtime.minUnresolvableSubvector(
+   		runtime.minUnresolvableSubvector(
    				Array(
-   						experience("test2.C", schema),
-   						experience("test3.C", schema)),
+   						test2.getExperience("C").get,
+   						test3.getExperience("C").get),
    				Array(
-   						experience("test1.C", schema), 
-   						experience("test4.C", schema)));
-   		subVector.toSet mustBe 
+   						test1.getExperience("C").get, 
+   						test4.getExperience("C").get)).toSet mustBe 
    				Array(
-   						experience("test1.C", schema), 
-   						experience("test4.C", schema)).toSet
+   						test1.getExperience("C").get, 
+   						test4.getExperience("C").get).toSet
    		
-   		subVector = runtime.minUnresolvableSubvector(
+   		runtime.minUnresolvableSubvector(
    				Array(
-   						experience("test6.C", schema),
-   						experience("test1.B", schema)),
+   						test6.getExperience("C").get,
+   						test1.getExperience("B").get),
    				Array(
-   						experience("test5.C", schema), 
-   						experience("test4.C", schema)));
-   		subVector.toSet mustBe 
+   						test5.getExperience("C").get, 
+   						test4.getExperience("C").get)).toSet mustBe 
    				Array(
-                    experience("test5.C", schema)).toSet
+                    test5.getExperience("C").get).toSet
    		
-   		subVector = runtime.minUnresolvableSubvector(
+   		runtime.minUnresolvableSubvector(
    				Array(
-   						experience("test5.C", schema),
-   						experience("test4.B", schema)),
+   						test5.getExperience("C").get,
+   						test4.getExperience("B").get),
    				Array(
-   						experience("test1.C", schema), 
-   						experience("test2.C", schema)));
-   		subVector.toSet mustBe Array(
-   						experience("test1.C", schema), 
-   						experience("test2.C", schema)).toSet
+   						test1.getExperience("C").get, 
+   						test2.getExperience("C").get)).toSet mustBe Array(
+   						test1.getExperience("C").get, 
+   						test2.getExperience("C").get).toSet
 
 	   }
 	   
 	   "test isTargetable()" in {
 
-         val schema = server.schemata.get("monstrosity").get.liveGen.get
- 	      val runtime = RuntimeTestFacade(schema)
-
-      	val state1 = schema.getState("state1").get
-      	val state2 = schema.getState("state2").get
-   	   val state3 = schema.getState("state3").get
-   	   val test1 = schema.getVariation("test1").get
-      	val test2 = schema.getVariation("test2").get
-   	   val test3 = schema.getVariation("test3").get
-   	   val test4 = schema.getVariation("test4").get
-   	   val test5 = schema.getVariation("test5").get
-   	   val test6 = schema.getVariation("test6").get
-
-   	   var caughtEx = intercept[ServerException.Internal] {   
+   	   intercept[ServerException.Internal] {   
    				runtime.isTargetable(
    						test5,
    						state1,
    						Array(
-   								experience("test5.A", schema),
-   								experience("test2.A", schema)))
-     			}
-   		   assert(
-   		         caughtEx.getMessage.equals(
-                  new ServerException.Internal("Input test [test5] is already targeted").getMessage)
-            )
-
-          caughtEx = intercept[ServerException.Internal] {   
+   								test5.getExperience("A").get,
+   								test2.getExperience("A").get))
+     			
+   	      }.getMessage mustBe "Input test [test5] is already targeted"
+   	      
+         intercept[ServerException.Internal] {   
 				runtime.isTargetable(
 						test5,
 						state1,
 						Array(
-								experience("test5.A", schema),
-								experience("test2.A", schema)))
-     			}
-   		   assert(
-   		         caughtEx.getMessage.equals(
-                  new ServerException.Internal("Input test [test5] is already targeted").getMessage)
-            )
+								test5.getExperience("A").get,
+								test2.getExperience("A").get))
+     			
+   	      }.getMessage mustBe "Input test [test5] is already targeted"
 
-		   caughtEx = intercept[ServerException.Internal] {   
+		   intercept[ServerException.Internal] {   
 				runtime.isTargetable(
 					test6, 
 					state1,
 					Array(
-							experience("test1.C", schema), 
-							experience("test3.C", schema),
-							experience("test5.B", schema)))
-     			}
-   		   assert(
-   		         caughtEx.getMessage.equals(
-                  new ServerException.Internal("Input vector [test1.C,test3.C,test5.B] is already unresolvable").getMessage)
-            )
+							test1.getExperience("C").get, 
+							test3.getExperience("C").get,
+							test5.getExperience("B").get))
+     			
+   	      }.getMessage mustBe "Input vector [test1.C,test3.C,test5.B] is already unresolvable"
 
       		runtime.isTargetable(
       				test1, 
       				state1,
-      				Array(experience("test2.B", schema))) mustBe false
+      				Array(test2.getExperience("B").get)) mustBe false
       
       		runtime.isTargetable(
       				test1,
       				state1,
       				Array(
-      						experience("test5.B", schema),
-      						experience("test4.C", schema))) mustBe false
+      						test5.getExperience("B").get,
+      						test4.getExperience("C").get)) mustBe false
       
       		runtime.isTargetable(
       				test1,
       				state1,
       				Array(
-      						experience("test6.B", schema))) mustBe true
+      						test6.getExperience("B").get)) mustBe true
       
       		runtime.isTargetable(
       				test1,
       				state1,
       				Array(
-      						experience("test4.C", schema),
-      						experience("test6.B", schema))) mustBe true
+      						test4.getExperience("C").get,
+      						test6.getExperience("B").get)) mustBe true
       
       		runtime.isTargetable(
       				test1,
       				state1,
       				Array(
-      						experience("test6.C", schema),
-      						experience("test5.B", schema))) mustBe false
+      						test6.getExperience("C").get,
+      						test5.getExperience("B").get)) mustBe false
       
       		runtime.isTargetable(
       				test1,
       				state1,
       				Array(
-      						experience("test4.C", schema),
-      						experience("test5.C", schema),
-      						experience("test6.B", schema))) mustBe false
+      						test4.getExperience("C").get,
+      						test5.getExperience("C").get,
+      						test6.getExperience("B").get)) mustBe false
       
       		runtime.isTargetable(
       				test2,
       				state1,
       				Array(
-      						experience("test6.C", schema), 
-      						experience("test5.C", schema))) mustBe true
+      						test6.getExperience("C").get, 
+      						test5.getExperience("C").get)) mustBe true
+      
+      		runtime.isTargetable(
+      				test2,
+      				state3,
+      				Array(
+      						test6.getExperience("C").get, 
+      						test3.getExperience("A").get)) mustBe true
+      
+      		runtime.isTargetable(
+      				test2,
+      				state3,
+      				Array(
+      						test6.getExperience("A").get, 
+      						test3.getExperience("C").get)) mustBe true
+
+      						runtime.isTargetable(
+      				test2,
+      				state1,
+      				Array(
+      						test5.getExperience("C").get, 
+      						test4.getExperience("C").get)) mustBe false
       
       		runtime.isTargetable(
       				test2,
       				state1,
       				Array(
-      						experience("test6.C", schema), 
-      						experience("test3.C", schema))) mustBe true
+      						test6.getExperience("C").get, 
+      						test4.getExperience("C").get, 
+      						test1.getExperience("C").get)) mustBe false
       
       		runtime.isTargetable(
       				test2,
       				state1,
       				Array(
-      						experience("test5.C", schema), 
-      						experience("test4.C", schema))) mustBe false
+      						test6.getExperience("C").get, 
+      						test4.getExperience("C").get, 
+      						test1.getExperience("C").get)) mustBe false
       
-      		runtime.isTargetable(
-      				test2,
-      				state1,
-      				Array(
-      						experience("test6.C", schema), 
-      						experience("test4.C", schema), 
-      						experience("test1.C", schema))) mustBe false
-      
-      		runtime.isTargetable(
-      				test2,
-      				state1,
-      				Array(
-      						experience("test6.C", schema), 
-      						experience("test4.C", schema), 
-      						experience("test1.C", schema))) mustBe false
-      
-      		// Targetable because 6 and 3 are logically disjoint, i.e.
-      		// even though some states are instrumebnted by both, none is
-      		// a variantful instrumentation.
       		runtime.isTargetable(
       				test3,
       				state1,
       				Array(
-      						experience("test6.C", schema), 
-      						experience("test2.C", schema))) mustBe true
+      						test6.getExperience("C").get, 
+      						test2.getExperience("C").get)) mustBe false
       
       		runtime.isTargetable(
       				test5,
       				state1,
       				Array(
-      						experience("test6.C", schema), 
-      						experience("test4.C", schema), 
-      						experience("test1.C", schema))) mustBe false
+      						test6.getExperience("C").get, 
+      						test2.getExperience("C").get)) mustBe true
+
+      						runtime.isTargetable(
+      				test5,
+      				state1,
+      				Array(
+      						test6.getExperience("C").get, 
+      						test4.getExperience("C").get, 
+      						test1.getExperience("C").get)) mustBe false
       
       		runtime.isTargetable(
       				test5,
       				state1,
       				Array(
-      						experience("test6.C", schema), 
-      						experience("test4.C", schema), 
-      						experience("test1.C", schema))) mustBe false
+      						test6.getExperience("C").get, 
+      						test4.getExperience("C").get, 
+      						test1.getExperience("C").get)) mustBe false
       
       		runtime.isTargetable(
       				test5,
       				state1,
       				Array(
-      						experience("test2.C", schema))) mustBe true
+      						test2.getExperience("C").get)) mustBe true
       
       		runtime.isTargetable(
       				test6,
       				state1,
       				Array(
-      						experience("test4.C", schema), 
-      						experience("test1.C", schema))) mustBe true
+      						test4.getExperience("C").get, 
+      						test1.getExperience("C").get)) mustBe true
       
       		runtime.isTargetable(
       				test6,
       				state1,
       				Array(
-      						experience("test5.C", schema), 
-      						experience("test2.C", schema))) mustBe true
+      						test5.getExperience("C").get, 
+      						test2.getExperience("C").get)) mustBe true
       
-      		// See comment about test3 and test6 above
       		runtime.isTargetable(
-      				test6,
-      				state1,
+      				test4,
+      				state4,
       				Array(
-      						experience("test3.C", schema))) mustBe true
-      
-      		// Ditto
+      						test6.getExperience("C").get, 
+      						test5.getExperience("C").get, 
+      						test2.getExperience("A").get)) mustBe true
+                        
       		runtime.isTargetable(
-      				test6,
-      				state1,
+      				test4,
+      				state4,
       				Array(
-      						experience("test3.C", schema), 
-      						experience("test2.C", schema))) mustBe true
-                  
+      						test6.getExperience("C").get, 
+      						test5.getExperience("C").get, 
+      						test2.getExperience("C").get)) mustBe false
 	   }
-	   * 
-	   */
 	}
 }
