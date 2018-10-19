@@ -226,7 +226,10 @@ public interface Variation {
 		Set<StateVariant> getVariants();
 
 		/**
-		 * The state variant by a set of experiences. 
+		 * The state variant by a set of experiences. At least one experience must be specified.
+		 * It is caller's responsibility to ensure that passed experience list is consistent in that
+		 * a) all variations must be instrumented on this state, and b) no two experiences are from
+		 * the same variation.
 		 * 
 		 * @return The {@link Optional} container, holding the state variant given by the set
 		 *         of experiences if exists, or empty if no state variant corresponds to the 
@@ -234,7 +237,7 @@ public interface Variation {
 		 *
 	     * @since 0.9
 		 */
-		Optional<StateVariant> getVariant(Set<Experience> experiences);
+		Optional<StateVariant> getVariant(Experience exp1st, Experience...exprest);
 
 	}
 }

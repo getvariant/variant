@@ -1,5 +1,6 @@
 package com.variant.core.schema.impl;
 
+import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
@@ -18,7 +19,6 @@ public class VariationOnStateImpl implements Variation.OnState {
 
 	private final StateImpl state;
 	private final VariationImpl var;
-	//private Set<StateVariant> variants = new LinkedHashSet<StateVariant>();
 	private final VariantSpace variantSpace;
 
 	/**
@@ -53,14 +53,21 @@ public class VariationOnStateImpl implements Variation.OnState {
 	}
 	
 	@Override
-	public Optional<StateVariant> getVariant(Set<Experience> experiences) {
-		return Optional.ofNullable(variantSpace.get(experiences));
+	public Optional<StateVariant> getVariant(Experience exp1st, Experience...exprest) {
+		HashSet<Experience> coordinates = new HashSet<Experience>();
+		coordinates.add(exp1st);
+		for (Experience exp: exprest) coordinates.add(exp);
+		return Optional.ofNullable(variantSpace.get(coordinates));
 	}
 
 	//---------------------------------------------------------------------------------------------//
 	//                                       PUBLIC EXT                                            //
 	//---------------------------------------------------------------------------------------------//
 		
+	public Optional<StateVariant> getVariant(Set<Experience> coordinates) {
+		return Optional.ofNullable(variantSpace.get(coordinates));
+	}
+
 	/**
 	 * 
 	 * @param variant

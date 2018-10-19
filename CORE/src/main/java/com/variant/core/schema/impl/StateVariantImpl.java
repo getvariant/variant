@@ -136,7 +136,9 @@ public class StateVariantImpl implements StateVariant {
 			jsonGen.writeEndArray();
 			jsonGen.writeArrayFieldStart("params");
 			for (Map.Entry<String, String> e: getParameters().entrySet()) {
-				jsonGen.writeObjectField(e.getKey(), e.getValue());
+				jsonGen.writeStartObject();
+				jsonGen.writeStringField(e.getKey(), e.getValue());
+				jsonGen.writeEndObject();
 			}
 			jsonGen.writeEndArray();
 			jsonGen.writeEndObject();
