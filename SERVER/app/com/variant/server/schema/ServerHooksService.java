@@ -227,9 +227,7 @@ public class ServerHooksService implements HooksService {
 			throw e;
 		
 		} catch (Exception e) {
-			System.out.println("************** " + e.getMessage());
 			e.printStackTrace();
-			System.out.println("************** " + hookDef);
 			LOG.error(ServerError.HOOK_UNHANDLED_EXCEPTION.asMessage(hookDef.getClassName(), e.getMessage()), e);
 			throw new ServerException.Remote(ServerError.HOOK_UNHANDLED_EXCEPTION, LifecycleHook.class.getName(), e.getMessage());
 		}				
