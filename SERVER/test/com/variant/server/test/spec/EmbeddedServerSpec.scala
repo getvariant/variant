@@ -1,30 +1,18 @@
 package com.variant.server.test.spec
 
-import java.util.Random
-import scala.collection.JavaConversions._
+import scala.collection.JavaConversions.asScalaBuffer
+
 import org.scalatest.BeforeAndAfterAll
 import org.scalatestplus.play.OneAppPerSuite
-import org.scalatestplus.play.PlaySpec
-import com.variant.core.impl.ServerError
-import com.variant.core.schema.Schema
-import com.variant.core.session.SessionScopedTargetingStabile
-import com.variant.core.util.Constants._
-import com.variant.core.util.StringUtils
-import com.variant.server.api.Session
-import com.variant.server.play.VariantApplicationLoader
-import com.variant.server.boot.VariantServer
-import com.variant.server.boot.SessionStore
-import com.variant.server.impl.SessionImpl
+
+import com.variant.core.UserError.Severity
 import com.variant.server.jdbc.JdbcService
+import com.variant.server.play.VariantApplicationLoader
+
 import play.api.Application
 import play.api.Configuration
 import play.api.Logger
 import play.api.inject.guice.GuiceApplicationBuilder
-import play.api.libs.json.JsValue
-import play.api.libs.json.JsValue.jsValueToJsLookup
-import play.api.libs.json.Json
-import play.api.test.FakeRequest
-import play.api.test.Helpers._
 
 /**
  * All tests using an embedded server inherint from here.
@@ -85,8 +73,11 @@ class EmbeddedServerSpec extends BaseSpec with OneAppPerSuite with BeforeAndAfte
 	override protected def application = app
    
    // Print deployment errors, if any
-   server.schemaDeployer.parserResponses.foreach { 
-      _.getMessages.foreach(msg => {println("*** PARSE ERRORS ***\n" + msg)})
+   server.schemaDeployer.parserResponses.foreach { resp =>
+	   if (resp.hasMessages(Severity.ERROR)) {
+	      println(s"***** PARSE ERRORS IN SCHEMA [${resp.getSchemaName}] *****")
+         resp.getMessages.foreach {println(_)}
+	   }
    }
    
    /**

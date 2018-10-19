@@ -2,13 +2,13 @@
  * Parser Monster Schema.
  * All Tests:
  * Tests States
- *       1 2 3 4 5
- * test1   - + - -
- * test2 - + + +  
- * test3 -   +   
- * test4   +   - -
- * test5 + + - - -
- * test6 - - +   +
+ *       1  2  3  4  5
+ * test1    -  +  -  -
+ * test2 -  +a +  +c  
+ * test3 -c    +   
+ * test4    +     -b -
+ * test5 +  +b -  -  -
+ * test6 -  -  +     +a
  * 
  * T1, T2, T3(T2), T4(T1), T5(T2,T4), T6(T1,T2,T4,T5)
  * +: explicit variants with param overrides
@@ -136,19 +136,24 @@
         'onStates':[                                                      
            {                                                             
               'stateRef':'state1'                                         
-           },                                                            
+           },                                              
            {                                                             
               'stateRef':'state2',                                         
-              'variants':[                                               
-                 {                                                       
-                    'experienceRef':'B',                                 
-                    'parameters': [
-                        {
-                            'name':'path',
-                            'value':'/path/to/state2/test2.B'
-                        }
-                    ]
+              'variants':[                              
+                 {                                                      
+                    'experienceRef':'A',                                
+                    'isPhantom':true
                  },                                                      
+                 {                                                      
+                     'experienceRef':'B',
+                     'isPhantom':false,  // just testing
+                     'parameters': [
+                         {
+                             'name':'path',
+                             'value':'/path/to/state2/test2.B'
+                         }
+                     ]
+                  },                                                      
                  {                                                       
                     'experienceRef':'C',                                 
                     'parameters': [
@@ -159,7 +164,7 @@
                     ]
                  }                                                       
               ]                                                          
-           },                                                            
+           },                                 
            {                                                             
               'stateRef':'state3',                                         
               'variants':[                                               
@@ -196,13 +201,8 @@
                     ]
                  },                                                      
                  {                                                       
-                    'experienceRef':'C',                                 
-                    'parameters': [
-                        {
-                            'name':'path',
-                            'value':'/path/to/state4/test2.C'
-                        }
-                    ]
+                    'experienceRef':'C',
+                    'isPhantom': true
                  }                                                       
               ]                                                          
            }                                                             
@@ -229,7 +229,13 @@
         'onStates':[                                                      
            {  
               // test2 is also on t1 and also with no explicit variants.                                       
-              'stateRef':'state1'                                        
+              'stateRef':'state1',
+              'variants': [
+                 {                                                       
+                    'experienceRef':'C',
+                    'isPhantom': true
+                 }
+              ]
            },                            
            {                                                             
               'stateRef':'state3',                                         
@@ -419,7 +425,13 @@
               ]                                                          
            },
            {                                                             
-              'stateRef':'state4'
+              'stateRef':'state4',
+              'variants': [
+                   {                                                       
+                      'experienceRef':'B',
+                      'isPhantom': true
+                   }
+                ]
            },                                        
            {                                                             
               'stateRef':'state5'
@@ -536,12 +548,7 @@
                  /* ------- proper ------ */                                       
                  {                                                       
                     'experienceRef':'B',                                 
-                    'parameters': [
-                        {
-                            'name':'path',
-                            'value':'/path/to/state2/test5.B'
-                        }
-                    ]
+                    'isPhantom':true
                  },                                                      
                  {                                                       
                     'experienceRef':'C',                                 
@@ -552,7 +559,10 @@
                         }
                     ]
                  },                                                      
-                 /* ------- test2 ------ */                                       
+                 
+                 /* ------- test2 ------ */
+                 
+                 /* phantom proper reference test5.B
                  {                                                       
                     'experienceRef':'B',                                 
                     'conjointExperienceRefs': [                         
@@ -567,7 +577,7 @@
                             'value':'/path/to/state2/test2.B+test5.B'
                         }
                     ]
-                 },                                                      
+                 },
                  {                                                       
                     'experienceRef':'B',                                 
                     'conjointExperienceRefs': [                         
@@ -583,6 +593,7 @@
                         }
                     ]
                  },                                                      
+                 ------------------------- */                                                      
                  {                                                       
                     'experienceRef':'C',                                 
                     'conjointExperienceRefs': [                         
@@ -613,7 +624,8 @@
                         }
                     ]
                  },                                                      
-                 /* ------- test4 ------ */                                       
+                 /* ------- test4 ------ */                 
+                 /* phantom proper reference test5.B
                  {                                                       
                     'experienceRef':'B',                                 
                     'conjointExperienceRefs': [                         
@@ -643,7 +655,8 @@
                             'value':'/path/to/state2/test4.C+test5.B'
                         }
                     ]
-                 },                                                      
+                 }, 
+                 ---------------------------------- */                                             
                  {                                                       
                     'experienceRef':'C',                                 
                     'conjointExperienceRefs': [                         
@@ -716,7 +729,8 @@
                             'value':'/path/to/state4/test2.B+test5.B'
                         }
                     ]
-                 },                                                      
+                 }, 
+                 /* Phantom conjoint reference test2.C
                  {                                                       
                     'experienceRef':'B',                                 
                     'conjointExperienceRefs': [                         
@@ -731,7 +745,8 @@
                             'value':'/path/to/state4/test2.C+test5.B'
                         }
                     ]
-                 },                                                      
+                 },
+                 ----------------------------------------*/                  
                  {                                                       
                     'experienceRef':'C',                                 
                     'conjointExperienceRefs': [                         
@@ -746,7 +761,8 @@
                             'value':'/path/to/state4/test2.B+test5.C'
                         }
                     ]
-                 },                                                      
+                 }                                                      
+                 /* Phantom conjoint reference test2.C
                  {                                                       
                     'experienceRef':'C',                                 
                     'conjointExperienceRefs': [                         
@@ -762,6 +778,8 @@
                         }
                     ]
                  }                              
+                 --------------------------------------- *
+                 
                  /* ------- omitting test4 ------ */                                       
               ]                                                          
            },                                                            
@@ -987,6 +1005,10 @@
               'stateRef':'state5',                                         
               'variants':[                                               
                  /* ------- proper ------ */                                       
+                 {                                                       
+                    'experienceRef':'A',                                 
+                    'isPhantom':true
+                 },
                  {                                                       
                     'experienceRef':'B',                                 
                     'parameters': [

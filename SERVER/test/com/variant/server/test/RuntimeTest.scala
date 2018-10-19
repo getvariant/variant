@@ -73,13 +73,22 @@ class RuntimeTest extends EmbeddedServerSpec {
 					
 			}.getMessage mustBe "Duplicate variation [test2] in coordinate vector"
          
-         runtime.resolveState(
+         intercept[ServerException.Internal] {
+			   runtime.resolveState(
 				   state1, 
 				   test2.getExperience("B").get,   
 					test3.getExperience("C").get,   
-					test5.getExperience("B").get) mustBe null
+					test5.getExperience("B").get)
+					
+			}.getMessage mustBe "Undefined experience [test3.C] in coordinate vector"
 
          runtime.resolveState(
+				   state1, 
+				   test2.getExperience("B").get,   
+					test3.getExperience("B").get,   
+					test5.getExperience("B").get) mustBe null
+
+					runtime.resolveState(
 				   state1, 
 				   test2.getExperience("B").get,   
 					test3.getExperience("A").get,   
@@ -227,14 +236,22 @@ class RuntimeTest extends EmbeddedServerSpec {
 		            test6.getExperience("B").get,
 		            test5.getExperience("C").get)
 		            
-   		runtime.resolveState(
-   				state2, 
+   		intercept[ServerException.Internal] {
+  			   runtime.resolveState(
+  					state2, 
    				test1.getExperience("A").get, 
    				test6.getExperience("A").get,   
    				test4.getExperience("A").get, 
    				test2.getExperience("A").get,   
-   				test5.getExperience("A").get) mustBe Optional.empty
+   				test5.getExperience("A").get)
+  			}.getMessage mustBe "Undefined experience [test2.A] in coordinate vector"
 
+   	   runtime.resolveState(
+  					state2, 
+   				test1.getExperience("A").get, 
+   				test6.getExperience("A").get,   
+   				test4.getExperience("A").get, 
+   				test5.getExperience("A").get) mustBe Optional.empty
 
 	   }
 
