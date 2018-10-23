@@ -37,14 +37,14 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 	@org.junit.Test
 	public void noStabilTest() throws Exception {
 		
-		Connection conn = client.connectTo("big_conjoint_schema");		
+		Connection conn = client.connectTo("monstrosity");		
 
 		// Via SID tracker, create.
 		Session ssn = conn.getOrCreateSession(newSid());
 		assertNotNull(ssn);
 
 	   	Schema schema = ssn.getSchema();
-	   	State state1 = schema.getState("state1").get();
+	   	State state3 = schema.getState("state3").get();
 	   	//State state2 = schema.getState("state2");
 	   	Variation test1 = schema.getVariation("test1").get();
 	   	Variation test2 = schema.getVariation("test2").get();
@@ -53,30 +53,27 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 	   	Variation test5 = schema.getVariation("test5").get();
 	   	Variation test6 = schema.getVariation("test6").get();
 
-	   	final StateRequest req = ssn.targetForState(state1);
+	   	final StateRequest req = ssn.targetForState(state3);
 	   	assertNotNull(req);
 	   	assertEquals(req, ssn.getStateRequest().get());
 		assertEquals(5, req.getLiveExperiences().size());
 
-		assertFalse(req.getLiveExperience(test1).isPresent());
-		
+		assertTrue(req.getLiveExperience(test1).isPresent());
 		assertTrue(req.getLiveExperience(test2).isPresent());
 		assertTrue(req.getLiveExperience(test3).isPresent());
-		assertTrue(req.getLiveExperience(test4).isPresent());
+		assertFalse(req.getLiveExperience(test4).isPresent());
 		assertTrue(req.getLiveExperience(test5).isPresent());
 		assertTrue(req.getLiveExperience(test6).isPresent());
 	   			
-		// On occasion, we may get a trivial resolution and these will fail ????
 		assertNotNull(req.getResolvedParameters().get("path"));
-		// assertNotNull(req.getResolvedStateVariant());     See #119. Should never return null.        
 
 		assertEquals(ssn, req.getSession());
-		assertEquals(state1, req.getState());
+		assertEquals(state3, req.getState());
 		StateVisitedEvent event = (StateVisitedEvent) req.getStateVisitedEvent();
 		assertNotNull(event);
 		assertEquals(TraceEvent.SVE_NAME, event.getName());
 		assertEquals(1, event.getAttributes().size());
-		assertEquals(state1.getName(), event.getAttribute("$STATE"));
+		assertEquals(state3.getName(), event.getAttribute("$STATE"));
 			
 		assertTrue(req.getStatus() == InProgress);
 		req.commit();
@@ -109,11 +106,11 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 	@org.junit.Test
 	public void deterministicTest() throws Exception {
 		
-		Connection conn = client.connectTo("big_conjoint_schema");
+		Connection conn = client.connectTo("monstrosity");
 		
 		// Via SID tracker, create.
 		String sid = newSid();
-		Object[] userData = new Object[] {sid, "test4.C", "test5.C"};
+		Object[] userData = new Object[] {sid, "test6.B", "test4.C", "test5.C"};
 		Session ssn = conn.getOrCreateSession(userData);
 		assertNotNull(ssn);
 		assertNotEquals(sid, ssn.getId());
@@ -129,23 +126,23 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 
 	   	final StateRequest req = ssn.targetForState(state2);
 	   	assertNotNull(req);
-		assertEquals(6, req.getLiveExperiences().size());
+		assertEquals(5, req.getLiveExperiences().size());
 
 		// test1 is disjoint with test5 => has to target to control.
-		assertEquals(experience(schema, "test1.A"), req.getLiveExperience(test1).get());
+		assertEquals(test1.getExperience("A").get(), req.getLiveExperience(test1).get());
 		// test2 is disjoint with test4 => has to target to control. 
-		assertEquals(experience(schema, "test2.A"), req.getLiveExperience(test2).get());
-		// test3 is disjoint with both => has to target to control.
-		assertEquals(experience(schema, "test3.A"), req.getLiveExperience(test3).get());
+		assertEquals(test2.getExperience("A").get(), req.getLiveExperience(test2).get());
+		// test3 is uninstrumented
+		assertFalse(req.getLiveExperience(test3).isPresent());
 		// must honor tracker
-		assertEquals(experience(schema, "test4.C"), req.getLiveExperience(test4).get());
+		assertEquals(test4.getExperience("C").get(), req.getLiveExperience(test4).get());
 		// must honor tracker.
-		assertEquals(experience(schema, "test5.C"), req.getLiveExperience(test5).get());
+		assertEquals(test5.getExperience("C").get(), req.getLiveExperience(test5).get());
 		// test6 is conjoint with both => can target to anything.
-		assertNotNull(req.getLiveExperience(test6));
-
-		assertEquals("/path/to/state2/test4.C+test5.C", req.getResolvedParameters().get("path"));
-		assertNotNull(req.getResolvedStateVariant());
+		assertEquals(test6.getExperience("B").get(), req.getLiveExperience(test6).get());
+		
+		assertEquals("/path/to/state2", req.getResolvedParameters().get("path"));
+		assertTrue(req.getResolvedStateVariant().isPresent());
 		
 		assertEquals(InProgress, req.getStatus());
 		req.commit();
@@ -161,7 +158,7 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 	@org.junit.Test
 	public void commitTest() throws Exception {
 		
-		Connection conn = client.connectTo("big_conjoint_schema");
+		Connection conn = client.connectTo("monstrosity");
 
 		// Some session, just to get the schema.
 		Schema schema = conn.getOrCreateSession("foo").getSchema();
@@ -227,7 +224,7 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 	@org.junit.Test
 	public void failTest() throws Exception {
 		
-		Connection conn = client.connectTo("big_conjoint_schema");
+		Connection conn = client.connectTo("monstrosity");
 
 		Session ssn1 = conn.getOrCreateSession(newSid());
 		Schema schema = ssn1.getSchema();
@@ -282,7 +279,7 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 	@org.junit.Test
 	public void sessionExpiredTest() throws Exception {
 		
-		Connection conn = client.connectTo("big_conjoint_schema");		
+		Connection conn = client.connectTo("monstrosity");		
 
 		String sid = newSid();
 		final Session ssn = conn.getOrCreateSession(sid);
@@ -309,7 +306,7 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 	 * Petclinic schema defines a qual and a targeting hook which will fail,
 	 * unless we create "user-agent" session attributes.
 	 */
-	@org.junit.Test
+	//@org.junit.Test
 	public void targetingHookExceptionTest() throws Exception {
 		
 		Connection conn = client.connectTo("petclinic");		
@@ -322,24 +319,22 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 		// expect 'user-agent' attribute
 	   	new ClientExceptionInterceptor() {
 			@Override public void toRun() {
-				ssn.targetForState(schema.getState("newOwner").get());
+				ssn.targetForState(schema.getState("vets").get());
 			}
 			@Override public void onThrown(VariantException e) {
 				assertEquals(ServerError.HOOK_UNHANDLED_EXCEPTION, e.getError());
 			}
-		}.assertThrown();
-
-		
-		
+		}.assertThrown();		
 		
 		assertFalse(ssn.getStateRequest().isPresent());
 		assertTrue(ssn.getTraversedStates().isEmpty());
-		assertTrue(ssn.getTraversedVariations().isEmpty());
+		// See # 193
+		assertEquals(2, ssn.getTraversedVariations().size());
 		assertTrue(ssn.getDisqualifiedVariations().isEmpty());
 		
 		// Set the attribute and target. 
 		ssn.getAttributes().put("user-agent", "Any string");
-		StateRequest req = ssn.targetForState(schema.getState("newOwner").get());
+		StateRequest req = ssn.targetForState(schema.getState("newVisit").get());
 		assertEquals(req, ssn.getStateRequest().get());
 		assertEquals(InProgress, req.getStatus());
 		req.commit();
@@ -349,13 +344,13 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 	@org.junit.Test
 	public void targetFromParallelConnectionsTest() throws Exception {
 		
-		Connection conn1 = client.connectTo("big_conjoint_schema");		
+		Connection conn1 = client.connectTo("monstrosity");		
 
 		Session ssn1 = conn1.getOrCreateSession(newSid());	
 		Schema schema1 = ssn1.getSchema();
 		StateRequest req1 = ssn1.targetForState(schema1.getState("state3").get());
 
-		Connection conn2 = client.connectTo("big_conjoint_schema");		
+		Connection conn2 = client.connectTo("monstrosity");		
 	   	Session ssn2 = conn2.getSessionById(ssn1.getId());
 	   	assertNotNull(ssn2);
 		Schema schema2 = ssn2.getSchema();

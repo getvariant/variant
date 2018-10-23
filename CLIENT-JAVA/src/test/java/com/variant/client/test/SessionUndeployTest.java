@@ -40,17 +40,17 @@ public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 		restartServer();
 		
 		// Connection to a schema
-		ConnectionImpl conn1 = (ConnectionImpl) client.connectTo("big_conjoint_schema");		
+		ConnectionImpl conn1 = (ConnectionImpl) client.connectTo("monstrosity");		
 		assertNotNull(conn1);
 		assertNotNull(conn1.getClient());
 		assertEquals(conn1.getSessionTimeoutMillis(), 1000);
-		assertEquals("big_conjoint_schema", conn1.getSchemaName());
+		assertEquals("monstrosity", conn1.getSchemaName());
 		
 		// Second connection to the same schema
-		Connection conn2 = client.connectTo("big_conjoint_schema");		
+		Connection conn2 = client.connectTo("monstrosity");		
 		assertNotNull(conn2);
 		assertEquals(conn1.getClient(), conn2.getClient());
-		assertEquals("big_conjoint_schema", conn2.getSchemaName());
+		assertEquals("monstrosity", conn2.getSchemaName());
 
 		// Third connection to petclinic schema
 		Connection conn3 = client.connectTo("petclinic");		
@@ -108,7 +108,7 @@ public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 			final int _i = i;  // Zhava. 
 			async (() -> {
 				Session ssn = conn3.getOrCreateSession(newSid());
-				State state = ssn.getSchema().getState("newOwner").get();
+				State state = ssn.getSchema().getState("newVisit").get();
 				// The qualifying and targeting hooks will throw an NPE
 				// if user-agent attribute is not set.
 				ssn.getAttributes().put("user-agent", "does not matter");
@@ -122,7 +122,7 @@ public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 
 		joinAll();
 
-		IoUtils.delete(SCHEMATA_DIR + "/big-conjoint-schema.json");
+		IoUtils.delete(SCHEMATA_DIR + "/monster.schema");
 		Thread.sleep(dirWatcherLatencyMillis);
 
 		// Short session timeout => all sessions should be gone
@@ -236,7 +236,7 @@ public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 						case 5: ssn.getAttributes().get("foo"); break;
 						case 6: ssn.getAttributes().put("foo", "bar"); break;
 						case 7: ssn.getAttributes().remove("foo"); break;
-						case 8: ssn.targetForState(ssn.getSchema().getState("newOwner").get()); break;
+						case 8: ssn.targetForState(ssn.getSchema().getState("newVisit").get()); break;
 
 						}
 					 }
@@ -255,7 +255,7 @@ public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 		new ClientExceptionInterceptor() {
 			
 			@Override public void toRun() {
-				client.connectTo("big_conjoint_schema");
+				client.connectTo("monstrosity");
 			}
 
 			@Override public void onThrown(VariantException e) {
@@ -276,8 +276,8 @@ public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 
 		restartServer();
 
-		// Restore the big_conjoint_schema
-	    IoUtils.fileCopy(SCHEMATA_DIR_SRC + "big-conjoint-schema.json", SCHEMATA_DIR + "/big-conjoint-schema.json");
+		// Restore the monstrosity
+	    IoUtils.fileCopy(SCHEMATA_DIR_SRC + "monster.schema", SCHEMATA_DIR + "/monster.schema");
 
 		// restart the server with the longger session timeout
 		int ssnTimeout = dirWatcherLatencyMillis/1000 + 5;
@@ -285,17 +285,17 @@ public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 		restartServer(CollectionsUtils.pairsToMap(new Tuples.Pair<String,String>("variant.session.timeout", String.valueOf(ssnTimeout))));
 		
 		// Connection to a schema
-		ConnectionImpl conn1 = (ConnectionImpl) client.connectTo("big_conjoint_schema");		
+		ConnectionImpl conn1 = (ConnectionImpl) client.connectTo("monstrosity");		
 		assertNotNull(conn1);
 		assertNotNull(conn1.getClient());
 		assertEquals(ssnTimeout * 1000, conn1.getSessionTimeoutMillis());
-		assertEquals("big_conjoint_schema", conn1.getSchemaName());
+		assertEquals("monstrosity", conn1.getSchemaName());
 		
 		// Second connection to the same schema
-		Connection conn2 = client.connectTo("big_conjoint_schema");		
+		Connection conn2 = client.connectTo("monstrosity");		
 		assertNotNull(conn2);
 		assertEquals(conn1.getClient(), conn2.getClient());
-		assertEquals("big_conjoint_schema", conn2.getSchemaName());
+		assertEquals("monstrosity", conn2.getSchemaName());
 
 		// Third connection to petclinic schema
 		Connection conn3 = client.connectTo("petclinic");		
@@ -353,7 +353,7 @@ public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 			final int _i = i;  // Zhava. 
 			async (() -> {
 				Session ssn = conn3.getOrCreateSession(newSid());
-				State state = ssn.getSchema().getState("newOwner").get();
+				State state = ssn.getSchema().getState("newVisit").get();
 				// The qualifying and targeting hooks will throw an NPE
 				// if user-agent attribute is not set.
 				ssn.getAttributes().put("user-agent", "does not matter");
@@ -367,7 +367,7 @@ public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 
 		joinAll();
 
-		IoUtils.delete(SCHEMATA_DIR + "/big-conjoint-schema.json");
+		IoUtils.delete(SCHEMATA_DIR + "/monster.schema");
 		Thread.sleep(dirWatcherLatencyMillis);
 
 		// Long session timeout => all sessions should be alive.
@@ -497,7 +497,7 @@ public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 
 		joinAll();
 
-		assertNotNull(client.connectTo("big_conjoint_schema"));
+		assertNotNull(client.connectTo("monstrosity"));
 
 	}	
 }

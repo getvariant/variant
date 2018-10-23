@@ -27,16 +27,16 @@ public class ConnectionHotRedeployTest extends ClientBaseTestWithServer {
 		
 		restartServer();
 		
-		final Connection conn1 = client.connectTo("big_conjoint_schema");		
+		final Connection conn1 = client.connectTo("monstrosity");		
 		assertNotNull(conn1);
-		assertEquals("big_conjoint_schema", conn1.getSchemaName());
+		assertEquals("monstrosity", conn1.getSchemaName());
 
 		Session ssn1 = conn1.getOrCreateSession("foo");
 		
 		assertNotNull(ssn1);
 		assertEquals(conn1.getSchemaName(), ssn1.getSchema().getMeta().getName());
 		
-	    IoUtils.fileCopy(SCHEMATA_DIR_SRC + "big-conjoint-schema.json", SCHEMATA_DIR + "/big-conjoint-schema.json");
+	    IoUtils.fileCopy(SCHEMATA_DIR_SRC + "monster.schema", SCHEMATA_DIR + "/monster.schema");
 		Thread.sleep(dirWatcherLatencyMillis);
 
 		// Session has expired by now.
@@ -61,7 +61,7 @@ public class ConnectionHotRedeployTest extends ClientBaseTestWithServer {
 		assertNotNull(ssn2.targetForState(ssn1.getSchema().getState("state3").get()));
 
 		// New connection should work too
-		Connection conn2 = client.connectTo("big_conjoint_schema");
+		Connection conn2 = client.connectTo("monstrosity");
 		Session ssn3 = conn2.getOrCreateSession("bar");
 		ssn3.getAttributes().put("foo", "bar");
 		assertEquals("bar", ssn3.getAttributes().get("foo"));

@@ -55,17 +55,17 @@ public class ConnectionColdTest extends ClientBaseTestWithServer {
 		restartServer();
 		
 		// Connection to a schema
-		ConnectionImpl conn1 = (ConnectionImpl) client.connectTo("big_conjoint_schema");		
+		ConnectionImpl conn1 = (ConnectionImpl) client.connectTo("monstrosity");		
 		assertNotNull(conn1);
 		assertNotNull(conn1.getClient());
 		assertEquals(conn1.getSessionTimeoutMillis(), 1000);
-		assertEquals("big_conjoint_schema", conn1.getSchemaName());
+		assertEquals("monstrosity", conn1.getSchemaName());
 		
 		// Second connection to the same schema
-		Connection conn2 = client.connectTo("big_conjoint_schema");		
+		Connection conn2 = client.connectTo("monstrosity");		
 		assertNotNull(conn2);
 		assertEquals(conn1.getClient(), conn2.getClient());
-		assertEquals("big_conjoint_schema", conn2.getSchemaName());
+		assertEquals("monstrosity", conn2.getSchemaName());
 
 		// Third connection to petclinic schema
 		Connection conn3 = client.connectTo("petclinic");		
@@ -99,7 +99,7 @@ public class ConnectionColdTest extends ClientBaseTestWithServer {
 	
 		restartServer();
 		
-		final Connection conn = client.connectTo("big_conjoint_schema");		
+		final Connection conn = client.connectTo("monstrosity");		
 		assertNotNull(conn);
 		final Session ssn = conn.getOrCreateSession("foo");
 		assertNotNull(ssn);

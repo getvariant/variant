@@ -45,7 +45,7 @@ public class TraceEventsTest extends ClientBaseTestWithServer {
 	@org.junit.Test
 	public void sveTest() throws Exception {
 		
-		Connection conn = client.connectTo("big_conjoint_schema");		
+		Connection conn = client.connectTo("monstrosity");		
 
 		// New session.
 		Session ssn1 = conn.getOrCreateSession(newSid());
@@ -53,10 +53,9 @@ public class TraceEventsTest extends ClientBaseTestWithServer {
 		// Crete a session attribute
 		ssn1.getAttributes().put("ssn1 attr key", "ssn1 attr value");
 	   	Schema schema = ssn1.getSchema();
-	   	State state1 = schema.getState("state1").get();
-	   	//State state2 = schema.getState("state2");
+	   	State state2 = schema.getState("state2").get();
 
-	   	StateRequest req1 = ssn1.targetForState(state1);
+	   	StateRequest req1 = ssn1.targetForState(state2);
 	   	assertNotNull(req1);
 	   	assertEquals(req1, ssn1.getStateRequest().get());
 		assertEquals(5, req1.getLiveExperiences().size());
@@ -64,7 +63,7 @@ public class TraceEventsTest extends ClientBaseTestWithServer {
 		StateVisitedEvent event1 = (StateVisitedEvent) req1.getStateVisitedEvent();
 		assertEquals(TraceEvent.SVE_NAME, event1.getName());
 		assertEquals(1, event1.getAttributes().size());
-		assertEquals("state1", event1.getAttribute("$STATE"));
+		assertEquals("state2", event1.getAttribute("$STATE"));
 		
 		event1.setAttribute("foo", "bar");
 		
@@ -79,7 +78,7 @@ public class TraceEventsTest extends ClientBaseTestWithServer {
 		assertEquals(event1.getName(), event2.getName());
 		// The SVE is recreated in a local copy, but their attributes are lost, except the $STATE attribute.
 		assertEquals(1, event2.getAttributes().size());
-		assertEquals("state1", event1.getAttribute("$STATE"));
+		assertEquals("state2", event1.getAttribute("$STATE"));
 		
 		event2.setAttribute("sve2 atr key", "sve2 attr value");
 		req2.commit();
@@ -91,12 +90,12 @@ public class TraceEventsTest extends ClientBaseTestWithServer {
 		//System.out.println(event);
 		assertEquals(TraceEvent.SVE_NAME, event.name);
 		assertEqualAsSets(
-				CollectionsUtils.pairsToMap(new Pair("$STATE", "state1"), new Pair("$STATUS", "Committed"), new Pair("sve2 atr key", "sve2 attr value")), 
+				CollectionsUtils.pairsToMap(new Pair("$STATE", "state2"), new Pair("$STATUS", "Committed"), new Pair("sve2 atr key", "sve2 attr value")), 
 				event.attributes);
 		assertEquals(5, event.eventExperiences.size());
-		assertFalse(event.eventExperiences.stream().anyMatch(ee -> ee.testName.equals("test1")));
+		assertTrue(event.eventExperiences.stream().anyMatch(ee -> ee.testName.equals("test1")));
 		assertTrue(event.eventExperiences.stream().anyMatch(ee -> ee.testName.equals("test2")));
-		assertTrue(event.eventExperiences.stream().anyMatch(ee -> ee.testName.equals("test3")));
+		assertFalse(event.eventExperiences.stream().anyMatch(ee -> ee.testName.equals("test3")));
 		assertTrue(event.eventExperiences.stream().anyMatch(ee -> ee.testName.equals("test4")));
 		assertTrue(event.eventExperiences.stream().anyMatch(ee -> ee.testName.equals("test5")));
 		assertTrue(event.eventExperiences.stream().anyMatch(ee -> ee.testName.equals("test6")));
@@ -117,7 +116,7 @@ public class TraceEventsTest extends ClientBaseTestWithServer {
 	@org.junit.Test
 	public void svеTriggerTest() throws Exception {
 		
-		Connection conn = client.connectTo("big_conjoint_schema");		
+		Connection conn = client.connectTo("monstrosity");		
 
 		// New session.
 		String sid = newSid();
@@ -145,7 +144,7 @@ public class TraceEventsTest extends ClientBaseTestWithServer {
 	@org.junit.Test
 	public void cutomEventTest() throws Exception {
 		
-		Connection conn = client.connectTo("big_conjoint_schema");		
+		Connection conn = client.connectTo("monstrosity");		
 
 		// New session.
 		Session ssn = conn.getOrCreateSession(newSid());

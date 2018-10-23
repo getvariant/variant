@@ -28,16 +28,16 @@ public class ConnectionHotUndeployTest extends ClientBaseTestWithServer {
 		restartServer();
 
 		// Connection must go after schema undeployed.
-		final Connection conn1 = client.connectTo("big_conjoint_schema");		
+		final Connection conn1 = client.connectTo("monstrosity");		
 		assertNotNull(conn1);
-		assertEquals("big_conjoint_schema", conn1.getSchemaName());
+		assertEquals("monstrosity", conn1.getSchemaName());
 
 		Session foo1 = conn1.getOrCreateSession("foo");
 		
 		assertNotNull(foo1);
 		assertEquals(conn1.getSchemaName(), foo1.getSchema().getMeta().getName());
 
-		IoUtils.delete(SCHEMATA_DIR + "/big-conjoint-schema.json");
+		IoUtils.delete(SCHEMATA_DIR + "/monster.schema");
 		Thread.sleep(dirWatcherLatencyMillis);
 		
 		// Session should be timed out by now.
@@ -60,7 +60,7 @@ public class ConnectionHotUndeployTest extends ClientBaseTestWithServer {
 		new ClientExceptionInterceptor() {
 			
 			@Override public void toRun() {
-				client.connectTo("big_conjoint_schema");
+				client.connectTo("monstrosity");
 			}
 			
 			@Override public void onThrown(VariantException e) {

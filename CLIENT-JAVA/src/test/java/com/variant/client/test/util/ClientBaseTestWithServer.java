@@ -68,7 +68,7 @@ abstract public class ClientBaseTestWithServer extends ClientBaseTest {
 		try {
 			// Rebuild the schemata dir.
 			IoUtils.emptyDir(SCHEMATA_DIR);
-		    IoUtils.fileCopy(SCHEMATA_DIR_SRC + "big-conjoint-schema.json", SCHEMATA_DIR + "/big-conjoint-schema.json");
+		    IoUtils.fileCopy(SCHEMATA_DIR_SRC + "monster.schema", SCHEMATA_DIR + "/monster.schema");
 		    IoUtils.fileCopy(SCHEMATA_DIR_SRC + "petclinic.schema", SCHEMATA_DIR + "/petclinic.schema");
 		}
 		catch (Exception e) {

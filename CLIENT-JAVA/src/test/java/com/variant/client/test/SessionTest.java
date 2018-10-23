@@ -26,7 +26,7 @@ public class SessionTest extends ClientBaseTestWithServer {
 		
 		restartServer();
 
-		Connection conn = client.connectTo("big_conjoint_schema");		
+		Connection conn = client.connectTo("monstrosity");		
 		assertNotNull(conn);
 		String sid = newSid();
 		
@@ -47,7 +47,7 @@ public class SessionTest extends ClientBaseTestWithServer {
 		assertTrue(ssn1.getDisqualifiedVariations().isEmpty());
 		assertTrue(ssn1.getTraversedStates().isEmpty());
 		assertTrue(ssn1.getTraversedVariations().isEmpty());		
-		assertEquals("big_conjoint_schema", ssn1.getSchema().getMeta().getName());
+		assertEquals("monstrosity", ssn1.getSchema().getMeta().getName());
 		
 		// Get same session by SID
 		Session ssn2 = conn.getSessionById(ssn1.getId());
@@ -69,7 +69,7 @@ public class SessionTest extends ClientBaseTestWithServer {
 		
 		restartServer();
 
-		Connection conn = client.connectTo("big_conjoint_schema");		
+		Connection conn = client.connectTo("monstrosity");		
 		assertNotNull(conn);
 		
 		Session[] sessions = new Session[10];
@@ -78,7 +78,7 @@ public class SessionTest extends ClientBaseTestWithServer {
 			sessions[i] = conn.getOrCreateSession(sid);
 			assertNotNull(sessions[i]);
 			assertEquals(1000, sessions[i].getTimeoutMillis());
-			assertEquals("big_conjoint_schema", sessions[i].getSchema().getMeta().getName());
+			assertEquals("monstrosity", sessions[i].getSchema().getMeta().getName());
 		}
 		
 		// Let sessions a chance to expire on the server.
@@ -117,8 +117,8 @@ public class SessionTest extends ClientBaseTestWithServer {
 		restartServer();
 
 		// Open two parallel connections
-		Connection conn1 = client.connectTo("big_conjoint_schema");		
-		Connection conn2 = client.connectTo("big_conjoint_schema");		
+		Connection conn1 = client.connectTo("monstrosity");		
+		Connection conn2 = client.connectTo("monstrosity");		
 		assertNotNull(conn1);
 		assertNotNull(conn2);
 
