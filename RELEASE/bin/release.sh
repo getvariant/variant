@@ -7,7 +7,7 @@
 #!/bin/bash
 
 export version=0.9.3
-export version2=""
+export version2="RC2"
 
 function usage() {
     echo "$(basename $0) email"
