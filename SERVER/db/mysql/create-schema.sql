@@ -6,7 +6,7 @@ CREATE TABLE events (
   CONSTRAINT events_pk PRIMARY KEY (id)
  );
 
-CREATE INDEX events_session_id_ix on events (session_id);
+-- CREATE INDEX events_session_id_ix on events (session_id);
  
 CREATE TABLE event_attributes ( 
   event_id              BIGINT REFERENCES events (id) ON DELETE CASCADE,
@@ -14,7 +14,7 @@ CREATE TABLE event_attributes (
   value                 VARCHAR(256) NOT NULL
  );
 
-CREATE INDEX event_attributes_ix1 on event_attributes (event_id);
+-- CREATE INDEX event_attributes_ix1 on event_attributes (event_id);
 
 CREATE TABLE event_experiences ( 
   id                    BIGINT       NOT NULL AUTO_INCREMENT,
