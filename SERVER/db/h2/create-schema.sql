@@ -22,11 +22,11 @@ CREATE TABLE event_attributes (
 CREATE INDEX event_attributes_ix1 on event_attributes (event_id);
 
 CREATE TABLE event_experiences ( 
-  id                    BIGINT       NOT NULL,      
+  id                    BIGINT       NOT NULL, 
   event_id              BIGINT REFERENCES events(id) ON DELETE CASCADE,
   variation_name        VARCHAR(512) NOT NULL, 
-  experience_name       VARCHAR(512) NOT NULL,      
-  is_control            BOOLEAN NOT NULL,           
+  experience_name       VARCHAR(512) NOT NULL, 
+  is_control            BOOLEAN NOT NULL,     
   CONSTRAINT event_experiences_pk PRIMARY KEY (id),
   CONSTRAINT event_experiences_ix1 UNIQUE (event_id, variation_name, experience_name)
  );
