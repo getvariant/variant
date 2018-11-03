@@ -238,7 +238,7 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 	   	
 	   	assertEquals(InProgress, req1.getStatus());
 	   	
-	   	StateRequest req2 = conn.getSessionById(ssn1.getId()).getStateRequest().get();
+	   	StateRequest req2 = conn.getSessionById(ssn1.getId()).get().getStateRequest().get();
 	   	
 	   	req1.fail();
 	   	assertEquals(Failed, req1.getStatus());
@@ -351,7 +351,7 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 		StateRequest req1 = ssn1.targetForState(schema1.getState("state3").get());
 
 		Connection conn2 = client.connectTo("monstrosity");		
-	   	Session ssn2 = conn2.getSessionById(ssn1.getId());
+	   	Session ssn2 = conn2.getSessionById(ssn1.getId()).get();
 	   	assertNotNull(ssn2);
 		Schema schema2 = ssn2.getSchema();
 	   	

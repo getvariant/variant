@@ -257,9 +257,9 @@ public class ConnectionImpl implements Connection {
 	}
 
 	@Override
-	public Session getSessionById(String sid) {
+	public Optional<Session> getSessionById(String sid) {
 		preChecks();
-		return getHeadlessSession(sid);
+		return Optional.ofNullable(getHeadlessSession(sid));
 	}
 
 	@Override

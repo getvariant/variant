@@ -28,14 +28,13 @@ public class SessionTest extends ClientBaseTestWithServer {
 		String sid = newSid();
 		
 		// By session ID
-		Session ssn1 = conn.getSessionById(sid);
-		assertNull(ssn1);
+		assertFalse(conn.getSessionById(sid).isPresent());
 
 		// Via SID tracker, no create.
 		assertFalse(conn.getSession(sid).isPresent());
 
 		// Via SID tracker, create.
-		ssn1 = conn.getOrCreateSession(sid);
+		Session ssn1 = conn.getOrCreateSession(sid);
 		assertNotNull(ssn1);
 		assertNotEquals(sid, ssn1.getId());
 		assertEquals(System.currentTimeMillis(), ssn1.getCreateDate().getTime(), 2);
@@ -46,7 +45,7 @@ public class SessionTest extends ClientBaseTestWithServer {
 		assertEquals("monstrosity", ssn1.getSchema().getMeta().getName());
 		
 		// Get same session by SID
-		Session ssn2 = conn.getSessionById(ssn1.getId());
+		Session ssn2 = conn.getSessionById(ssn1.getId()).get();
 		assertEquals(
 				((SessionImpl)ssn1).getCoreSession().toJson(), 
 				((SessionImpl)ssn2).getCoreSession().toJson());
@@ -99,7 +98,7 @@ public class SessionTest extends ClientBaseTestWithServer {
 		// Ensure we change session id on create with an expired ID.
 		for (int i = 0; i < sessions.length; i++) {
 			Session ssn1 = sessions[i];
-			assertNull(conn.getSessionById(ssn1.getId()));  // expired.
+			assertFalse(conn.getSessionById(ssn1.getId()).isPresent());  // expired.
 			Session ssn2 = conn.getOrCreateSession(ssn1.getId());
 			assertNotEquals(ssn2.getId(), ssn1.getId());
 		}
@@ -120,11 +119,11 @@ public class SessionTest extends ClientBaseTestWithServer {
 
 		// Open a session.
 		String sid = newSid();
-		assertNull(conn1.getSessionById(sid));
+		assertFalse(conn1.getSessionById(sid).isPresent());
 		Session ssn1 = conn1.getOrCreateSession(sid);
 		assertNotNull(ssn1);
 		assertNotEquals(sid, ssn1.getId());
-		Session ssn2 = conn2.getSessionById(ssn1.getId());
+		Session ssn2 = conn2.getSessionById(ssn1.getId()).get();
 		assertNotNull(ssn2);
 		assertEquals(ssn1.getId(), ssn2.getId());
 		assertEquals(

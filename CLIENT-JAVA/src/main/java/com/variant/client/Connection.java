@@ -78,15 +78,14 @@ public interface Connection {
 	 * 
 	 * @param sessionId The ID of the session you are looking to retrieve from the server.
      *
-	 * @return An object of type {@link Session}, if session exists, or {@code null} if no session with this ID
-	 *         was found on the server. This call is guaranteed to be idempotent, i.e. a subsequent
-	 *         invocation with the same session ID will return the same object, so long as the session hasn't expired.
+	 * @return An {@link Optional}, containing the {@link Session} object, if session with the given ID
+	 *         exists on Variant server, or empty otherwise.
 	 *         
 	 * @throws UnknownSchemaException
      *
      * @since 0.7
 	 */
-	Session getSessionById(String sessionId);
+	Optional<Session> getSessionById(String sessionId);
 	
 	/**
 	 * The name of the schema which is the target of this connection.

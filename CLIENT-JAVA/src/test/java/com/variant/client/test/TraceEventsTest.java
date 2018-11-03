@@ -68,7 +68,7 @@ public class TraceEventsTest extends ClientBaseTestWithServer {
 		event1.setAttribute("foo", "bar");
 		
 		// Reget the session.  
-		Session ssn2 = conn.getSessionById(ssn1.getId());
+		Session ssn2 = conn.getSessionById(ssn1.getId()).get();
 		assertEquals(ssn1.getId(), ssn2.getId());
 		StateRequest req2 = ssn2.getStateRequest().get();		
 		assertEquals(InProgress, req2.getStatus());

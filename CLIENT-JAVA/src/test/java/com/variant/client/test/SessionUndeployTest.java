@@ -89,7 +89,7 @@ public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 			final int _i = i;  // Zhava. 
 			async (() -> {
 				String sid = sessions1[_i].getId();
-				Session ssn = conn2.getSessionById(sid);
+				Session ssn = conn2.getSessionById(sid).get();
 				assertEquals(sid, ssn.getId());
 				assertNotEquals(ssn, sessions1[_i]);
 				// Should be okay to use state from parallel schema.
@@ -140,7 +140,7 @@ public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 				assertNotNull(ssn.getCreateDate());
 				assertEquals(conn1, ssn.getConnection());
 				assertEquals(1000, ssn.getTimeoutMillis());
-				assertNull(conn1.getSessionById(sessions1[_i].getId()));
+				assertFalse(conn1.getSessionById(sessions1[_i].getId()).isPresent());
 								
 				// All else should throw session expired exception.
 				new ClientExceptionInterceptor() {
@@ -180,7 +180,7 @@ public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 				assertNotNull(ssn.getCreateDate());
 				assertEquals(conn2, ssn.getConnection());
 				assertEquals(1000, ssn.getTimeoutMillis());
-			    assertNull(conn2.getSessionById(sessions1[_i].getId()));
+			    assertFalse(conn2.getSessionById(sessions1[_i].getId()).isPresent());
 			    
 				// Mutating methods.
 				new ClientExceptionInterceptor() {
@@ -212,7 +212,7 @@ public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 			async (() -> {
 				
 				// Session has expired on the server
-				assertNull(conn3.getSessionById(sessions3[_i].getId()));
+				assertFalse(conn3.getSessionById(sessions3[_i].getId()).isPresent());
 			
 				SessionImpl ssn = (SessionImpl) sessions3[_i];
 				StateRequest req = requests3[_i];
@@ -334,7 +334,7 @@ public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 			final int _i = i;  // Zhava. 
 			async (() -> {
 				String sid = sessions1[_i].getId();
-				Session ssn = conn2.getSessionById(sid);
+				Session ssn = conn2.getSessionById(sid).get();
 				assertEquals(sid, ssn.getId());
 				assertNotEquals(ssn, sessions1[_i]);
 				// Should be okay to use state from parallel schema.
@@ -408,11 +408,11 @@ public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 
 				}.assertThrown();
 				
-				Session ssnByIdFromThisConnection = conn1.getSessionById(ssn.getId());
+				Session ssnByIdFromThisConnection = conn1.getSessionById(ssn.getId()).get();
 				assertEquals(value, ssnByIdFromThisConnection.getAttributes().get(key));
 				
 				// Getting session by ID in different connection should yield different object.
-				Session ssnByIdFromOtherConnection = conn2.getSessionById(ssn.getId());
+				Session ssnByIdFromOtherConnection = conn2.getSessionById(ssn.getId()).get();
 				assertNotEquals(ssn, ssnByIdFromOtherConnection);
 				assertTrue(ssnByIdFromOtherConnection.getStateRequest().isPresent());
 				assertNotEquals(ssn.getStateRequest().get(), ssnByIdFromOtherConnection.getStateRequest().get());
@@ -474,7 +474,7 @@ public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 			async (() -> {
 				
 				// Session has expired on the server
-				assertNotNull(conn3.getSessionById(sessions3[_i].getId()));
+				assertTrue(conn3.getSessionById(sessions3[_i].getId()).isPresent());
 
 				SessionImpl ssn = (SessionImpl) sessions3[_i];
 				StateRequest req = requests3[_i];
