@@ -1,5 +1,7 @@
 package com.variant.client;
 
+import java.util.Optional;
+
 
 
 /**
@@ -45,13 +47,14 @@ public interface Connection {
 	 *                 to the implementations of {@link SessionIdTracker#init(Object...)}
 	 *                 and {@link TargetingTracker#init(Session, Object...)}.
      *
-     * @return An object of type {@link Session}, if the session exists on the server, or <code>null</code> otherwise.
+     * @return An {@link Optional}, containing the {@link Session} object if the session exists on Variant server,
+     *         or empty otherwise.
      * 
 	 * @throws UnknownSchemaException
 	 * 
 	 * @since 0.7
 	 */
-	Session getSession(Object... userData);
+	Optional<Session> getSession(Object... userData);
 
 	/**
 	 * Get, if exists, the Variant session with the externally tracked ID.

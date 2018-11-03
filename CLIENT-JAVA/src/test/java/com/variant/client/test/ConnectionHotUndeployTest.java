@@ -1,8 +1,6 @@
 package com.variant.client.test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.*;
 
 import com.variant.client.Connection;
 import com.variant.client.Session;
@@ -41,7 +39,7 @@ public class ConnectionHotUndeployTest extends ClientBaseTestWithServer {
 		Thread.sleep(dirWatcherLatencyMillis);
 		
 		// Session should be timed out by now.
-		assertNull(conn1.getSession("foo"));
+		assertFalse(conn1.getSession("foo").isPresent());
 		
 		// Can't create another session
 		new ClientExceptionInterceptor() {

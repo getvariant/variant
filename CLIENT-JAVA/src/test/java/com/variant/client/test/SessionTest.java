@@ -1,9 +1,6 @@
 package com.variant.client.test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import com.variant.client.Connection;
 import com.variant.client.Session;
@@ -35,8 +32,7 @@ public class SessionTest extends ClientBaseTestWithServer {
 		assertNull(ssn1);
 
 		// Via SID tracker, no create.
-		ssn1 = conn.getSession(sid);
-		assertNull(ssn1);
+		assertFalse(conn.getSession(sid).isPresent());
 
 		// Via SID tracker, create.
 		ssn1 = conn.getOrCreateSession(sid);
@@ -56,7 +52,7 @@ public class SessionTest extends ClientBaseTestWithServer {
 				((SessionImpl)ssn2).getCoreSession().toJson());
 		
 		// Get same session via SID tracker
-		ssn2 = conn.getSession(ssn1.getId());
+		ssn2 = conn.getSession(ssn1.getId()).get();
 		assertEquals(
 				((SessionImpl)ssn1).getCoreSession().toJson(), 
 				((SessionImpl)ssn2).getCoreSession().toJson());

@@ -1,8 +1,6 @@
 package com.variant.client.test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.*;
 
 import com.variant.client.Connection;
 import com.variant.client.ServerConnectException;
@@ -151,7 +149,7 @@ public class ConnectionColdTest extends ClientBaseTestWithServer {
 
 		// Should be back in business after server restarts.
 		restartServer();
-		assertNull(conn.getSession("foo"));
+		assertFalse(conn.getSession("foo").isPresent());
 		Session ssn2 = conn.getOrCreateSession("foo");
 		assertNotNull(ssn2);
 		assertNotNull(conn.getSession(ssn2.getId()));

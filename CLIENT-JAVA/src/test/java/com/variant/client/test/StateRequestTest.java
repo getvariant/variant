@@ -86,7 +86,7 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 		assertEquals(Committed, req.getStatus());
 
 		// Reget the session -- should not change anything.
-		Session ssn2 = conn.getSession(ssn.getId());
+		Session ssn2 = conn.getSession(ssn.getId()).get();
 		StateRequest req2 = ssn2.getStateRequest().get();
 		assertEquals(Committed, req2.getStatus());
 

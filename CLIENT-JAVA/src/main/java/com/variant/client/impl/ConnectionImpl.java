@@ -5,6 +5,7 @@ import static com.variant.client.ConfigKeys.TARGETING_TRACKER_CLASS_NAME;
 import static com.variant.client.impl.ClientUserError.SESSION_ID_TRACKER_NO_INTERFACE;
 import static com.variant.client.impl.ClientUserError.TARGETING_TRACKER_NO_INTERFACE;
 
+import java.util.Optional;
 import java.util.Random;
 
 import com.variant.client.Connection;
@@ -250,9 +251,9 @@ public class ConnectionImpl implements Connection {
 	/**
 	 */
 	@Override
-	public Session getSession(Object... userData) {
+	public Optional<Session> getSession(Object... userData) {
 		preChecks();
-		return getForegroundSession(false, userData);
+		return Optional.ofNullable(getForegroundSession(false, userData));
 	}
 
 	@Override
