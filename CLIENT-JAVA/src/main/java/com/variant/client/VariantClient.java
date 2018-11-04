@@ -34,9 +34,7 @@ public interface VariantClient {
 	 * 
 	 * @throws UnknownSchemaException if given schema does not exist on the server.
 	 * @since 0.7
-	 *
-	public Connection getConnection(String schema);
-	*/
+	 */
 	
 	public Connection connectTo(String schema);
 	

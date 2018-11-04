@@ -54,7 +54,7 @@ public interface Connection {
 	 * 
 	 * @since 0.7
 	 */
-	Optional<Session> getSession(Object... userData);
+	Optional<? extends Session> getSession(Object... userData);
 
 	/**
 	 * Get, if exists, the Variant session with the externally tracked ID.
@@ -85,7 +85,7 @@ public interface Connection {
      *
      * @since 0.7
 	 */
-	Optional<Session> getSessionById(String sessionId);
+	Optional<? extends Session> getSessionById(String sessionId);
 	
 	/**
 	 * The name of the schema which is the target of this connection.

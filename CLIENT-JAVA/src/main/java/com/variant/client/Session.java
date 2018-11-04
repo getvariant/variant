@@ -165,7 +165,7 @@ public interface Session {
 	 * 
 	 * @since 0.5
 	 */
-	public Optional<StateRequest> getStateRequest();
+	public Optional<? extends StateRequest> getStateRequest();
 
 	/**
 	 * Trigger a custom trace event.
