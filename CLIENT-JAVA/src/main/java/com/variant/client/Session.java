@@ -78,7 +78,8 @@ public interface Session {
      * <p>Target this session for a state. 
      *  
 	 * @return An object of type {@link StateRequest}, which
-	 *         may be further examined for more information about the outcome of this operation.  
+	 *         may be further examined for more information about the outcome of this operation.
+	 *         Nover <code>null</code>
 	 * 
 	 * @throws SessionExpiredException
 	 * @throws UnknownSchemaException

@@ -322,7 +322,7 @@ public class Server {
 			jsonGen.writeStringField("state", state);
 			// If this is the first target request, we need to send the content
 			// of the targeting tracker, because it's not yet reflected in the
-			// shared state on the server. When server created thsi session,
+			// shared state on the server. When server created this session,
 			// it didn't have this information.
 			if (ssn.getStateRequest() == null) {
 				jsonGen.writeArrayFieldStart("stab");
@@ -333,6 +333,7 @@ public class Server {
 				}
 				jsonGen.writeEndArray();
 			}
+			
 			jsonGen.writeEndObject();
 			jsonGen.flush();
 		}
@@ -347,7 +348,9 @@ public class Server {
 				return Payload.Session.parse(ssn.getConnection(), resp);
 			}
 		}.run(ssn);
-		
+
+		// If no errors from the server, remove existing state request and rewrap.
+		ssn.clearStateRequest();
 		ssn.rewrap(CoreSession.fromJson(response.coreSsnSrc, ssn.getSchema()));
 		
 	}

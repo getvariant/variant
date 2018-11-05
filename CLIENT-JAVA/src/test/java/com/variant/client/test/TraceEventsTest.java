@@ -65,6 +65,7 @@ public class TraceEventsTest extends ClientBaseTestWithServer {
 		assertEquals(1, event1.getAttributes().size());
 		assertEquals("state2", event1.getAttribute("$STATE"));
 		
+		// This won't make it all the way to the server because we'll commit in a parallel session.
 		event1.setAttribute("foo", "bar");
 		
 		// Reget the session.  
@@ -107,6 +108,81 @@ public class TraceEventsTest extends ClientBaseTestWithServer {
 		assertEquals(Committed, req1.getStatus());
 		Thread.sleep(EVENT_WRITER_MAX_DELAY);
 		assertEquals(1, new TraceEventReader().read(e -> e.sessionId.equals(ssn1.getId())).size());
+
+	}
+
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@org.junit.Test
+	public void multiStateTest() throws Exception {
+		
+		Connection conn = client.connectTo("monstrosity");		
+
+		// State2
+		Session ssn = conn.getOrCreateSession(newSid());
+	   	Schema schema = ssn.getSchema();
+	   	State state2 = schema.getState("state2").get();
+
+	   	StateRequest req1 = ssn.targetForState(state2);
+		assertEquals(5, req1.getLiveExperiences().size());
+		
+		StateVisitedEvent event1 = (StateVisitedEvent) req1.getStateVisitedEvent();
+		assertEquals(TraceEvent.SVE_NAME, event1.getName());
+		assertEquals(1, event1.getAttributes().size());
+		assertEquals("state2", event1.getAttribute("$STATE"));
+		event1.setAttribute("foo", "bar");		
+		req1.commit();
+		
+		Thread.sleep(EVENT_WRITER_MAX_DELAY);
+		List<TraceEventFromDatabase> events = new TraceEventReader().read(e -> e.sessionId.equals(ssn.getId()));
+		assertEquals(1, events.size());
+		TraceEventFromDatabase event = events.get(0);
+		//System.out.println(event);
+		assertEquals(TraceEvent.SVE_NAME, event.name);
+		assertEqualAsSets(
+				CollectionsUtils.pairsToMap(new Pair("$STATE", "state2"), new Pair("$STATUS", "Committed"), new Pair("foo", "bar")), 
+				event.attributes);
+		assertEquals(5, event.eventExperiences.size());
+		assertTrue(event.eventExperiences.stream().anyMatch(ee -> ee.testName.equals("test1")));
+		assertTrue(event.eventExperiences.stream().anyMatch(ee -> ee.testName.equals("test2")));
+		assertFalse(event.eventExperiences.stream().anyMatch(ee -> ee.testName.equals("test3")));
+		assertTrue(event.eventExperiences.stream().anyMatch(ee -> ee.testName.equals("test4")));
+		assertTrue(event.eventExperiences.stream().anyMatch(ee -> ee.testName.equals("test5")));
+		assertTrue(event.eventExperiences.stream().anyMatch(ee -> ee.testName.equals("test6")));
+		
+		assertEquals(Committed, req1.getStatus());
+		req1.commit();  // Noop.
+		assertEquals(Committed, req1.getStatus());
+
+		// State5
+	   	State state5 = schema.getState("state5").get();
+	   	StateRequest req2 = ssn.targetForState(state5);
+		assertEquals(4, req2.getLiveExperiences().size());
+		
+		StateVisitedEvent event2 = (StateVisitedEvent) req2.getStateVisitedEvent();
+		assertNotNull(event2);
+		assertEquals(TraceEvent.SVE_NAME, event2.getName());
+		assertEquals(1, event2.getAttributes().size());
+		assertEquals("state5", event2.getAttribute("$STATE"));
+		req2.commit();
+		
+		Thread.sleep(EVENT_WRITER_MAX_DELAY);
+		events = new TraceEventReader().read(e -> e.sessionId.equals(ssn.getId()));
+		assertEquals(2, events.size());
+		event = events.get(1);
+		//System.out.println(event);
+		assertEquals(TraceEvent.SVE_NAME, event.name);
+		assertEqualAsSets(
+				CollectionsUtils.pairsToMap(new Pair("$STATE", "state5"), new Pair("$STATUS", "Committed")), 
+				event.attributes);
+		assertEquals(4, event.eventExperiences.size());
+		assertTrue(event.eventExperiences.stream().anyMatch(ee -> ee.testName.equals("test1")));
+		assertFalse(event.eventExperiences.stream().anyMatch(ee -> ee.testName.equals("test2")));
+		assertFalse(event.eventExperiences.stream().anyMatch(ee -> ee.testName.equals("test3")));
+		assertTrue(event.eventExperiences.stream().anyMatch(ee -> ee.testName.equals("test4")));
+		assertTrue(event.eventExperiences.stream().anyMatch(ee -> ee.testName.equals("test5")));
+		assertTrue(event.eventExperiences.stream().anyMatch(ee -> ee.testName.equals("test6")));
+		
+		assertEquals(Committed, req2.getStatus());
 
 	}
 

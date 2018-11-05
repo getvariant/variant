@@ -263,6 +263,13 @@ public class SessionImpl implements Session {
 	}
 
 	/**
+	 * 
+	 */
+	public void clearStateRequest() {
+		stateRequest = null;
+	}
+	
+	/**
 	 * Replace the core session. Recursively replaces the core state request.
 	 */
 	public void rewrap(CoreSession coreSession) {
