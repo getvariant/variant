@@ -13,7 +13,7 @@ import com.variant.core.schema.Schema;
 import com.variant.core.schema.parser.FlusherService;
 import com.variant.core.schema.parser.ParserResponse;
 import com.variant.core.schema.parser.SchemaParser;
-import com.variant.server.api.EventFlusher;
+import com.variant.server.api.TraceEventFlusher;
 import com.variant.server.boot.ServerErrorLocal;
 import com.variant.server.boot.VariantServer;
 import com.variant.server.boot.VariantServer$;
@@ -30,7 +30,7 @@ public class ServerFlusherService implements FlusherService {
 	private final VariantServer server = VariantServer$.MODULE$.instance();
 	
 	// If flusher is not defined, it will be instantiated lazily by getFlusher
-	private EventFlusher flusher = null;	
+	private TraceEventFlusher flusher = null;	
 	
 		
 	private Flusher defaultFlusher() {
@@ -86,12 +86,12 @@ public class ServerFlusherService implements FlusherService {
 			}			
 			
 			// It must implement the right interface.
-			if (! (flusherObj instanceof EventFlusher)) {
-				response.addMessage(ServerErrorLocal.FLUSHER_CLASS_NO_INTERFACE, flusherObj.getClass().getName(), EventFlusher.class.getName());
+			if (! (flusherObj instanceof TraceEventFlusher)) {
+				response.addMessage(ServerErrorLocal.FLUSHER_CLASS_NO_INTERFACE, flusherObj.getClass().getName(), TraceEventFlusher.class.getName());
 				return;
 			}
 			
-			this.flusher = (EventFlusher) flusherObj;
+			this.flusher = (TraceEventFlusher) flusherObj;
 			logger.info(String.format(
 					"Registered event flusher [%s] for schema [%s]", 
 					flusher.getClassName(), parser.responseInProgress().getSchema().getMeta().getName()));
@@ -112,7 +112,7 @@ public class ServerFlusherService implements FlusherService {
 	 * If none regustered at schema parse time, default to externally configured.
 	 * @return
 	 */
-	public EventFlusher getFlusher() {
+	public TraceEventFlusher getFlusher() {
 		return flusher;
 	}
 	

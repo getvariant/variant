@@ -6,7 +6,7 @@ import com.variant.core.schema.{ Schema => CoreSchema }
 import com.variant.core.schema.parser.ParserResponse
 import com.variant.core.util.StringUtils
 import com.variant.server.boot.Runtime
-import com.variant.server.event.EventWriter
+import com.variant.server.event.TraceEventWriter
 
 import play.api.Logger
 
@@ -75,7 +75,7 @@ class SchemaGen(val response: ParserResponse, val origin: String) extends CoreSc
 	val source = response.getSchemaSrc
 	val hooksService = response.getParser.getHooksService.asInstanceOf[ServerHooksService]
    val flusherService = response.getParser.getFlusherService.asInstanceOf[ServerFlusherService]
-	val eventWriter = new EventWriter(flusherService)
+	val eventWriter = new TraceEventWriter(flusherService)
 	   
    /**
     * 

@@ -8,7 +8,7 @@ import com.variant.core.schema.Variation.Experience;
 
 /**
  * A enriched Variant trace event that can be flushed by an event flusher. 
- * Instantiated by Variant server and passed to an externally configured implementation of {@link EventFlusher}.
+ * Instantiated by Variant server and passed to an externally configured implementation of {@link TraceEventFlusher}.
  * 
  * @since 0.7
  */

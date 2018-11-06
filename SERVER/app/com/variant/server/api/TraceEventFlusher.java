@@ -41,7 +41,7 @@ import java.util.Collection;
  * @author Igor Urisman
  * @since 0.7
  */
-public interface EventFlusher {
+public interface TraceEventFlusher {
 	
 	/**
 	 * <p>Called by the server, whenever the asynchronous event writer needs to flush events from memory. 
@@ -50,7 +50,7 @@ public interface EventFlusher {
 	 *               The size of the collection may be up to the size defined by the 
      *               variant.event.writer.buffer.size configuration property.
 	 * 
-	 * @see EventFlusherH2, EventFlusherPostgres
+	 * @see TraceEventFlusherH2, TraceEventFlusherPostgres
 	 * @since 0.7
 	 */
 	public void flush(Collection<FlushableTraceEvent> events) throws Exception;

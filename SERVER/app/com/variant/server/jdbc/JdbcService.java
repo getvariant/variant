@@ -15,7 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.variant.core.util.StringUtils;
-import com.variant.server.event.EventWriter;
+import com.variant.server.event.TraceEventWriter;
 
 
 public class JdbcService {
@@ -88,7 +88,7 @@ public class JdbcService {
 
 	}
 
-	private EventWriter eventWriter;
+	private TraceEventWriter eventWriter;
 	
 	//---------------------------------------------------------------------------------------------//
 	//                                          PUBLIC                                             //
@@ -104,7 +104,7 @@ public class JdbcService {
 		H2
 	}
 
-	public JdbcService(EventWriter eventWriter) {
+	public JdbcService(TraceEventWriter eventWriter) {
 		if (eventWriter == null) throw new IllegalArgumentException("EventWriter cannot be null");
 		this.eventWriter = eventWriter;
 	}
@@ -116,10 +116,10 @@ public class JdbcService {
 	public Vendor getVendor() {
 
 		// Figure out the JDBC vendor, if we can.
-		if (eventWriter.flusher() instanceof com.variant.server.api.EventFlusherPostgres) {
+		if (eventWriter.flusher() instanceof com.variant.server.api.TraceEventFlusherPostgres) {
 			return Vendor.POSTGRES;
 		}
-		else if (eventWriter.flusher() instanceof com.variant.server.api.EventFlusherH2) {
+		else if (eventWriter.flusher() instanceof com.variant.server.api.TraceEventFlusherH2) {
 			return Vendor.H2;
 		}
 		else return null;
@@ -129,7 +129,7 @@ public class JdbcService {
 	 * Obtain the underlying JDBC connection via EventWriter.
 	 */
 	public Connection getConnection() throws Exception {
-		return ((EventFlusherJdbc)eventWriter.flusher()).getJdbcConnection();
+		return ((TraceEventFlusherJdbc)eventWriter.flusher()).getJdbcConnection();
 	}
 		
 	/**

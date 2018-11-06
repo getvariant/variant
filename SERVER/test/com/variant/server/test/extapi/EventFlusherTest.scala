@@ -1,21 +1,20 @@
 package com.variant.server.test.extapi
 
-import scala.collection.JavaConversions._
-import com.variant.core.UserError.Severity._
-import org.scalatest.Assertions._
-import com.variant.server.boot.ServerErrorLocal._
-import com.variant.server.boot.ServerErrorLocal
-import play.api.Application
 import org.scalatest.TestData
-import play.api.inject.guice.GuiceApplicationBuilder
-import play.api.Configuration
-import com.variant.server.play.VariantApplicationLoader
-import org.scalatestplus.play.PlaySpec
 import org.scalatestplus.play.OneAppPerTest
+import org.scalatestplus.play.PlaySpec
+
+import com.variant.core.UserError.Severity.ERROR
+import com.variant.server.api.TraceEventFlusherH2
+import com.variant.server.api.TraceEventFlusherNull
+import com.variant.server.boot.ServerErrorLocal
 import com.variant.server.boot.VariantServer
+import com.variant.server.play.VariantApplicationLoader
 import com.variant.server.schema.SchemaDeployer
-import com.variant.server.api.EventFlusherH2
-import com.variant.server.api.EventFlusherNull
+
+import play.api.Application
+import play.api.Configuration
+import play.api.inject.guice.GuiceApplicationBuilder
 
 /**
  * TODO: Need to also test annotations.
@@ -101,7 +100,7 @@ class EventFlusherTest extends PlaySpec with OneAppPerTest {
    		schema.getMeta.getFlusher() mustBe null
    		
    		// As defined in conf-test/variant.conf
-   		schema.eventWriter.flusher.getClass mustBe classOf[com.variant.server.api.EventFlusherH2]
+   		schema.eventWriter.flusher.getClass mustBe classOf[com.variant.server.api.TraceEventFlusherH2]
    		
     }
 
@@ -133,7 +132,7 @@ class EventFlusherTest extends PlaySpec with OneAppPerTest {
    'meta':{                                                             		    	    
       'name':'FlusherTest',
       'flusher': {
-        'class':'com.variant.server.api.EventFlusherNull'  
+        'class':'com.variant.server.api.TraceEventFlusherNull'  
        }
    },                                                                   
 	'states':[ 
@@ -178,7 +177,7 @@ class EventFlusherTest extends PlaySpec with OneAppPerTest {
    		schema.getMeta.getFlusher() mustNot be (null)
    		
    		// As defined in conf-test/variant.conf
-   		schema.eventWriter.flusher.getClass mustBe classOf[com.variant.server.api.EventFlusherNull]
+   		schema.eventWriter.flusher.getClass mustBe classOf[com.variant.server.api.TraceEventFlusherNull]
    		
     }
 

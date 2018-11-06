@@ -10,7 +10,7 @@ import java.util.Collection;
 import java.util.Map;
 
 import com.variant.core.schema.Variation.Experience;
-import com.variant.server.api.EventFlusher;
+import com.variant.server.api.TraceEventFlusher;
 import com.variant.server.api.FlushableTraceEvent;
 import com.variant.server.api.ServerException;
 import com.variant.server.jdbc.JdbcService.Vendor;
@@ -24,7 +24,7 @@ import com.variant.server.jdbc.JdbcService.Vendor;
  * @author Igor.
  *
  */
-abstract public class EventFlusherJdbc implements EventFlusher {
+abstract public class TraceEventFlusherJdbc implements TraceEventFlusher {
 				
 	/**
 	 * Concrete subclass tells this class how to obtain a connection to its flavor of JDBC.

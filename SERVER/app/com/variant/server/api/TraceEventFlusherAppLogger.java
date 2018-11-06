@@ -10,7 +10,7 @@ import com.typesafe.config.Config;
 import com.variant.core.schema.Variation.Experience;
 
 /**
- * An implementation of {@link EventFlusher}, which appends trace events
+ * An implementation of {@link TraceEventFlusher}, which appends trace events
  * to the application logger. This is the default, out of the box event flusher,
  * which is completely independent of the operational environment. Probably not for production use, 
  * but is good enough for the demo application.
@@ -26,13 +26,13 @@ import com.variant.core.schema.Variation.Experience;
  * 
  * @since 0.5
  */
-public class EventFlusherAppLogger implements EventFlusher {
+public class TraceEventFlusherAppLogger implements TraceEventFlusher {
 	
-	private static final Logger LOG = LoggerFactory.getLogger(EventFlusherAppLogger.class);
+	private static final Logger LOG = LoggerFactory.getLogger(TraceEventFlusherAppLogger.class);
 
 	private String level = null;
 
-	public EventFlusherAppLogger(Config config) {
+	public TraceEventFlusherAppLogger(Config config) {
 		level = config.getString("level");
 		
 		if (level == null) {

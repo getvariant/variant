@@ -10,8 +10,8 @@ import java.util.HashMap
 import java.util.HashSet
 import java.util.Map
 import scala.collection.JavaConversions._
-import com.variant.server.event.EventWriter
-import com.variant.server.jdbc.EventFlusherJdbc
+import com.variant.server.event.TraceEventWriter
+import com.variant.server.jdbc.TraceEventFlusherJdbc
 
 
 /**
@@ -22,15 +22,15 @@ import com.variant.server.jdbc.EventFlusherJdbc
  *
  */
 object TraceEventReader {
-   def apply(eventWriter: EventWriter) = new TraceEventReader(eventWriter)
+   def apply(eventWriter: TraceEventWriter) = new TraceEventReader(eventWriter)
 }
 
 /**
  * 
  */
-class TraceEventReader (eventWriter: EventWriter) {
+class TraceEventReader (eventWriter: TraceEventWriter) {
    
-   val jdbcConnection = eventWriter.flusher.asInstanceOf[EventFlusherJdbc].getJdbcConnection
+   val jdbcConnection = eventWriter.flusher.asInstanceOf[TraceEventFlusherJdbc].getJdbcConnection
 
    /**
 	 * Read events as a collection

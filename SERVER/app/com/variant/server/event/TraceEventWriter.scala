@@ -2,19 +2,18 @@ package com.variant.server.event;
 
 import java.util.LinkedList
 import java.util.concurrent.ConcurrentLinkedQueue
-import org.apache.commons.lang3.time.DurationFormatUtils
-import com.variant.server.api.ConfigKeys._
-import com.variant.server.boot.ServerErrorLocal._
-import play.api.Logger
-import com.typesafe.config.Config
-import com.variant.core.impl.VariantException
-import com.variant.server.api.ServerException
-import com.variant.server.api.FlushableTraceEvent
-import com.variant.server.api.EventFlusher
-import com.variant.server.schema.ServerFlusherService
-import com.variant.server.boot.VariantServer
 
-class EventWriter (private val flushService: ServerFlusherService) {
+import org.apache.commons.lang3.time.DurationFormatUtils
+
+import com.variant.server.api.ConfigKeys.EVENT_WRITER_BUFFER_SIZE
+import com.variant.server.api.ConfigKeys.EVENT_WRITER_MAX_DELAY
+import com.variant.server.api.FlushableTraceEvent
+import com.variant.server.boot.VariantServer
+import com.variant.server.schema.ServerFlusherService
+
+import play.api.Logger
+
+class TraceEventWriter (private val flushService: ServerFlusherService) {
 	
    private val logger = Logger(this.getClass)
    
