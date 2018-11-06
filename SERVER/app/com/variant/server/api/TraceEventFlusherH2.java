@@ -8,6 +8,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 
 import com.typesafe.config.Config;
+import com.variant.server.boot.ServerExceptionLocal;
 import com.variant.server.jdbc.TraceEventFlusherJdbc;
 import com.variant.server.jdbc.JdbcService.Vendor;
 
@@ -38,17 +39,17 @@ public class TraceEventFlusherH2 extends TraceEventFlusherJdbc {
 		
 		url = config.getString("url");
 		if (url == null)
-			throw new ServerException.Local(
+			throw new ServerExceptionLocal(
 					CONFIG_PROPERTY_NOT_SET, "url", getClass().getName(), EVENT_FLUSHER_CLASS_INIT);
 
 		user = config.getString("user");
 		if (user == null)
-			throw new ServerException.Local(
+			throw new ServerExceptionLocal(
 					CONFIG_PROPERTY_NOT_SET, "user", getClass().getName(), EVENT_FLUSHER_CLASS_INIT);
 
 		password = config.getString("password");
 		if (password == null)
-			throw new ServerException.Local(
+			throw new ServerExceptionLocal(
 					CONFIG_PROPERTY_NOT_SET, "password", getClass().getName(), EVENT_FLUSHER_CLASS_INIT);
 		
 	}

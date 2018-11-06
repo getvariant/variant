@@ -1,9 +1,15 @@
 package com.variant.server.util
 
-import java.nio.file.{Path, WatchEvent, WatchKey, Files}
-import java.nio.file.StandardWatchEventKinds._
-import scala.collection.JavaConversions._
-import com.variant.server.api.ServerException
+import java.nio.file.Path
+import java.nio.file.StandardWatchEventKinds.ENTRY_CREATE
+import java.nio.file.StandardWatchEventKinds.ENTRY_DELETE
+import java.nio.file.StandardWatchEventKinds.ENTRY_MODIFY
+import java.nio.file.WatchEvent
+
+import scala.collection.JavaConversions.asScalaBuffer
+
+import com.variant.server.boot.ServerExceptionInternal
+
 import play.api.Logger
 
 
@@ -39,7 +45,7 @@ abstract class AsyncDirectoryWatcher(val path: Path) extends Thread {
                   case ENTRY_MODIFY => onModify(target)
                   case ENTRY_DELETE => onDelete(target)
                }
-         case event => throw new ServerException.Internal(s"Unknown event [${event}]")
+         case event => throw new ServerExceptionInternal(s"Unknown event [${event}]")
          }
          key.reset()
       }   

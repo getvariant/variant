@@ -12,6 +12,7 @@ import com.variant.core.util.TimeUtils
 import scala.concurrent.ExecutionContext
 import scala.concurrent.duration._
 import javax.inject.Inject
+import com.variant.server.boot.ServerExceptionRemote
 
 /**
  * Superclass for all Variant actions.
@@ -44,7 +45,7 @@ class VariantAction @Inject()
             block(request) 
          }
          catch {
-            case e: ServerException.Remote  =>
+            case e: ServerExceptionRemote  =>
       
                val msg = "Internal API error: %s".format(e.error.asMessage(e.args:_*))
                if (e.error.isInternal) logger.error(msg.toString(), e)

@@ -97,7 +97,7 @@ public class Runtime {
 		State schemaState = schema.getState(state.getName()).get();
 		
 		if (System.identityHashCode(schemaState) != System.identityHashCode(state)) 
-			throw new ServerException.Internal("State [" + state.getName() + "] is not in schema");
+			throw new ServerExceptionInternal("State [" + state.getName() + "] is not in schema");
 				
 		// 1. Build the active test list.
 		ArrayList<Variation> activeTestList = new ArrayList<Variation>();
@@ -128,12 +128,12 @@ public class Runtime {
 				// Already traversed, hence must be already targeted.
 				Experience exp = session.getTargetingStabile().getAsExperience(test.getName(), schema);
 				if (exp == null)
-					throw new ServerException.Internal(
+					throw new ServerExceptionInternal(
 							"Active traversed test [" + test.getName() + "] not in targeting stabile");
 
 				// It's a user error to hit an undefined state in an active experience.
 				if (exp.isPhantom(state))  {
-					throw new ServerException.Local(ServerError.STATE_UNDEFINED_IN_EXPERIENCE, exp.toString(), state.getName());
+					throw new ServerExceptionLocal(ServerError.STATE_UNDEFINED_IN_EXPERIENCE, exp.toString(), state.getName());
 				}
 
 				alreadyTargeted.add(exp);
@@ -224,7 +224,7 @@ public class Runtime {
 
 		// If all went well, we must be resolvable.
 		Optional<StateVariant> resolvedVariantOpt = resolveState(state, vector);
-		if (resolvedVariantOpt == null) throw new ServerException.Internal(
+		if (resolvedVariantOpt == null) throw new ServerExceptionInternal(
 				"Vector [" + CollectionsUtils.toString(vector, ",") + "] is unresolvable");
 		
 		// AOK. Create the state request object.
@@ -301,14 +301,14 @@ public class Runtime {
 					
 		// V must be resolvable.
 		if (!isResolvable(v))
-			throw new ServerException.Internal(
+			throw new ServerExceptionInternal(
 					String.format("Input vector [%s] must be resolvable, but is not", CollectionsUtils.toString(v, ",")));
 
 		// W must not contain experiences that contradict those in V
 		for (Experience ew: w) {
 			for (Experience ev: v) {
 				if (ew.getVariation().equals(ev.getVariation()))
-					throw new ServerException.Internal(
+					throw new ServerExceptionInternal(
 							String.format("Experience [%s] in second argument contradicts experience [%s] in first argument", ew, ev));
 			}
 		}
@@ -348,11 +348,11 @@ public class Runtime {
 		// alreadyTargetedExperiences should not contain an experience for the input test.
 		for (Experience e: alreadyTargetedExperiences) {
 			if (var.equals(e.getVariation())) 
-				throw new ServerException.Internal("Input test [" + var + "] is already targeted");
+				throw new ServerExceptionInternal("Input test [" + var + "] is already targeted");
 		}
 
 		if (!isResolvable(alreadyTargetedExperiences))
-			throw new ServerException.Internal(
+			throw new ServerExceptionInternal(
 					"Input vector [" + StringUtils.join(alreadyTargetedExperiences, ",") + "] is already unresolvable");
 		
 		// Find some non-control, defined experience. Untargetable if none.
@@ -405,15 +405,15 @@ public class Runtime {
 			for (Experience e: coord) {
 				if (e.getVariation().equals(var)) {
 					if (found) {
-						throw new ServerException.Internal("Duplicate variation [" + var + "] in coordinate vector");
+						throw new ServerExceptionInternal("Duplicate variation [" + var + "] in coordinate vector");
 					}
 					else {
 						
 						if (!state.isInstrumentedBy(e.getVariation()))
-							throw new ServerException.Internal("Uninstrumented variation [" + e + "] in coordinate vector");
+							throw new ServerExceptionInternal("Uninstrumented variation [" + e + "] in coordinate vector");
 
 						if (e.isPhantom(state))
-							throw new ServerException.Internal("Undefined experience [" + e + "] in coordinate vector");
+							throw new ServerExceptionInternal("Undefined experience [" + e + "] in coordinate vector");
 
 						found = true;
 

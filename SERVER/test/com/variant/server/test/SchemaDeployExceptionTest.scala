@@ -23,6 +23,7 @@ import play.api.test.Helpers._
 import play.api.test.Helpers.route
 import play.api.test.Helpers.writeableOf_AnyContentAsEmpty
 import play.api.libs.json.Json
+import com.variant.server.boot.ServerExceptionLocal
 
 /**
  * Test various schema deployment error scenarios
@@ -87,7 +88,7 @@ class SchemaDeployExceptionTest extends BaseSpec with OneAppPerTest {
          server.startupErrorLog.size mustEqual 1
          val ex = server.startupErrorLog.head
          ex.getMessage mustEqual
-            new ServerException.Local(CONFIG_PROPERTY_NOT_SET, ConfigKeys.SCHEMATA_DIR).getMessage
+            new ServerExceptionLocal(CONFIG_PROPERTY_NOT_SET, ConfigKeys.SCHEMATA_DIR).getMessage
    		server.isUp mustBe false
       }
    }
@@ -99,7 +100,7 @@ class SchemaDeployExceptionTest extends BaseSpec with OneAppPerTest {
          server.startupErrorLog.size mustEqual 1
          val ex = server.startupErrorLog.head
          ex.getSeverity mustEqual SCHEMATA_DIR_MISSING.getSeverity
-         ex.getMessage mustEqual new ServerException.Local(SCHEMATA_DIR_MISSING, "non-existent").getMessage
+         ex.getMessage mustEqual new ServerExceptionLocal(SCHEMATA_DIR_MISSING, "non-existent").getMessage
    		server.isUp mustBe false
       }
       
@@ -129,7 +130,7 @@ class SchemaDeployExceptionTest extends BaseSpec with OneAppPerTest {
          server.startupErrorLog.size mustEqual 1
          val ex = server.startupErrorLog.head
          ex.getSeverity mustEqual FATAL
-         ex.getMessage mustEqual new ServerException.Local(SCHEMATA_DIR_NOT_DIR, "test-schemata-file").getMessage
+         ex.getMessage mustEqual new ServerExceptionLocal(SCHEMATA_DIR_NOT_DIR, "test-schemata-file").getMessage
    		server.isUp mustBe false
       }
       

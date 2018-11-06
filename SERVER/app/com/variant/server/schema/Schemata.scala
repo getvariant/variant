@@ -1,11 +1,11 @@
 package com.variant.server.schema
 
-import scala.collection.JavaConversions._
-import scala.collection.mutable.HashMap
-import com.variant.server.api.ServerException
-import com.variant.server.boot.ServerErrorLocal
-import play.api.Logger
+import scala.collection.JavaConversions.asScalaBuffer
 import scala.collection.concurrent.TrieMap
+
+import com.variant.server.boot.ServerExceptionInternal
+
+import play.api.Logger
 
 /**
  * 
@@ -78,7 +78,7 @@ class Schemata () {
       val schemaToUndeploy = _schemaMap.filter ( e => { e._2.origin == origin } )
       
       if (schemaToUndeploy.size > 1)
-         throw new ServerException.Internal(s"Found ${schemaToUndeploy.size} schemata with origin ${origin}")
+         throw new ServerExceptionInternal(s"Found ${schemaToUndeploy.size} schemata with origin ${origin}")
       
       schemaToUndeploy.foreach { e => e._2.undeployLiveGen() }
    }

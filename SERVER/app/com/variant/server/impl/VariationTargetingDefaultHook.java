@@ -7,9 +7,10 @@ import com.variant.core.lifecycle.LifecycleHook;
 import com.variant.core.schema.State;
 import com.variant.core.schema.Variation;
 import com.variant.core.schema.Variation.Experience;
-import com.variant.server.api.ServerException;
 import com.variant.server.api.lifecycle.PostResultFactory;
 import com.variant.server.api.lifecycle.VariationTargetingLifecycleEvent;
+import com.variant.server.boot.ServerExceptionInternal;
+import com.variant.server.boot.ServerExceptionLocal;
 
 class VariationTargetingDefaultHook implements LifecycleHook<VariationTargetingLifecycleEvent> {
 	
@@ -45,13 +46,13 @@ class VariationTargetingDefaultHook implements LifecycleHook<VariationTargetingL
 			if (!e.getWeight().isPresent()) {
 				// It's not a syntax error not to supply the weight, but if we're
 				// here it means that no targeter hook fired, and that's a runtime error.
-				throw new ServerException.Local(ServerError.EXPERIENCE_WEIGHT_MISSING, e.getVariation().getName(), e.getName());
+				throw new ServerExceptionLocal(ServerError.EXPERIENCE_WEIGHT_MISSING, e.getVariation().getName(), e.getName());
 			}
 			weightSum += e.getWeight().get().doubleValue();
 		}
 
 		if (weightSum == 0) {
-			throw new ServerException.Internal(
+			throw new ServerExceptionInternal(
 					String.format("No defined states in test [%s] on state [%s]", var.getName(), state.getName()));
 		}
 		
@@ -68,7 +69,7 @@ class VariationTargetingDefaultHook implements LifecycleHook<VariationTargetingL
 		}
 		
 		// Should never happen.						
-		throw new ServerException.Internal("Error in default targeter.");
+		throw new ServerExceptionInternal("Error in default targeter.");
 	}
 
 }

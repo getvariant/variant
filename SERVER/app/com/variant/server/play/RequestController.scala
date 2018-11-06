@@ -1,7 +1,6 @@
 package com.variant.server.play
 
 import scala.collection.JavaConversions._
-
 import com.variant.core.StateRequestStatus
 import com.variant.core.StateRequestStatus._
 import com.variant.core.impl.ServerError._
@@ -16,13 +15,14 @@ import com.variant.server.event.ServerTraceEvent
 import com.variant.server.impl.SessionImpl
 import com.variant.server.impl.StateRequestImpl
 import com.variant.server.util.JavaImplicits._
-
 import javax.inject.Inject
 import play.api.Logger
 import play.api.libs.json._
 import play.api.mvc.ControllerComponents
 import play.api.mvc.Request
 import play.api.mvc.Result
+import com.variant.server.boot.ServerExceptionRemote
+import com.variant.server.boot.ServerExceptionInternal
 
 //@Singleton -- Is this for non-shared state controllers?
 class RequestController @Inject() (
@@ -40,14 +40,14 @@ class RequestController @Inject() (
    def create() = action { req =>
       
       val bodyJson = getBody(req).getOrElse {
-         throw new ServerException.Remote(EmptyBody)
+         throw new ServerExceptionRemote(EmptyBody)
       }
       
       val sid = (bodyJson \ "sid").asOpt[String].getOrElse {
-         throw new ServerException.Remote(MissingProperty, "sid")         
+         throw new ServerExceptionRemote(MissingProperty, "sid")         
       }
       val stateName = (bodyJson \ "state").asOpt[String].getOrElse {
-         throw new ServerException.Remote(MissingProperty, "state")         
+         throw new ServerExceptionRemote(MissingProperty, "state")         
       }
 
       val stabile = (bodyJson \ "stab").asOpt[List[String]]
@@ -58,12 +58,12 @@ class RequestController @Inject() (
       //val req = Option(ssn.getStateRequest.orElse(null))
       ssn.getStateRequest.foreach { req =>
          if (req.getStatus == InProgress)
-            throw new ServerException.Remote(ACTIVE_REQUEST)                
+            throw new ServerExceptionRemote(ACTIVE_REQUEST)                
       }
       
       val state = ssn.schemaGen.getState(stateName)
       if (!state.isDefined)
-         throw new ServerException.Internal("State [%s] not in schema [%s]".format(stateName, ssn.schemaGen.getMeta.getName))
+         throw new ServerExceptionInternal("State [%s] not in schema [%s]".format(stateName, ssn.schemaGen.getMeta.getName))
       
       // If stabile was sent, process it, discarding elements not in the schema,
       // and add to the session's stabile. This should have been the first state request in the life
@@ -96,22 +96,22 @@ class RequestController @Inject() (
    def commit() = action { req =>
 
       val bodyJson = getBody(req).getOrElse {
-         throw new ServerException.Remote(EmptyBody)   
+         throw new ServerExceptionRemote(EmptyBody)   
       }
       
       val sid = (bodyJson \ "sid").asOpt[String].getOrElse {
-         throw new ServerException.Remote(MissingProperty, "sid")         
+         throw new ServerExceptionRemote(MissingProperty, "sid")         
       }
 
       val status = {
          val ordinal = (bodyJson \ "status").asOpt[Int].getOrElse {
-            throw new ServerException.Remote(MissingProperty, "status")
+            throw new ServerExceptionRemote(MissingProperty, "status")
          }
          StateRequestStatus.values()(ordinal)
       }
       
       if (!status.isIn(Committed, Failed)) 
-         throw new ServerException.Remote(InvalidRequestStatus, status.toString())
+         throw new ServerExceptionRemote(InvalidRequestStatus, status.toString())
       
       val attrs = (bodyJson \ "attrs").asOpt[Map[String,String]].getOrElse {
          Map[String,String]()
@@ -123,10 +123,10 @@ class RequestController @Inject() (
       val stateReq = ssn.getStateRequest.get.asInstanceOf[StateRequestImpl]
       
       if (stateReq.getStatus == Committed && status == Failed)
-			throw new ServerException.Remote(ServerError.CANNOT_FAIL);
+			throw new ServerExceptionRemote(ServerError.CANNOT_FAIL);
       
 		else if (stateReq.getStatus == Failed && status == Committed)
-			throw new ServerException.Remote(ServerError.CANNOT_COMMIT);
+			throw new ServerExceptionRemote(ServerError.CANNOT_COMMIT);
 		
 		else if (stateReq.getStatus == InProgress) {
 

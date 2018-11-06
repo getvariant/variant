@@ -4,6 +4,8 @@ import scala.collection.mutable.ListBuffer
 import com.variant.server.api.ServerException
 import com.variant.server.boot.ServerErrorLocal._
 import play.api.Logger
+import com.variant.server.boot.ServerExceptionLocal
+import com.variant.server.boot.ServerExceptionInternal
 
 
 /**
@@ -44,12 +46,12 @@ class ServerSchema(private val seed: SchemaGen) {
       
       // New gen's name must match ours.
       if (gen.getMeta.getName != name)
-         throw new ServerException.Internal(
+         throw new ServerExceptionInternal(
                s"Cannot add schema gen [${gen.getMeta.getName}] to schema [${name}]");
 
       // New gen's origin must match ours.
       if (gen.origin != origin)
-         throw new ServerException.Local(SCHEMA_CANNOT_REPLACE, name, origin, gen.origin)
+         throw new ServerExceptionLocal(SCHEMA_CANNOT_REPLACE, name, origin, gen.origin)
 
       val oldLive = liveGen      
       gen.state = SchemaGen.State.Live

@@ -1,10 +1,10 @@
 package com.variant.server.test;
 
-import com.variant.server.api.ServerException
-import com.variant.server.boot.RuntimeTestFacade
-import com.variant.server.util.JavaImplicits._
-import com.variant.server.test.spec.EmbeddedServerSpec
 import java.util.Optional
+
+import com.variant.server.boot.RuntimeTestFacade
+import com.variant.server.boot.ServerExceptionInternal
+import com.variant.server.test.spec.EmbeddedServerSpec
 
 /**
  * TODO: Need to also test annotations.
@@ -35,13 +35,13 @@ class RuntimeTest extends EmbeddedServerSpec {
        */
 	   "resolve for state1" in {
 	         	    
-   	   intercept[ServerException.Internal] {
+   	   intercept[ServerExceptionInternal] {
              
             runtime.resolveState(state1, test1.getExperience("B").get)
              
          }.getMessage mustEqual "Uninstrumented variation [test1.B] in coordinate vector"
 
-         intercept[ServerException.Internal] {
+         intercept[ServerExceptionInternal] {
          
             runtime.resolveState(state1, test1.getExperience("A").get, test2.getExperience("B").get)
          
@@ -63,7 +63,7 @@ class RuntimeTest extends EmbeddedServerSpec {
 				test3.getExperience("B").get,   
 				test5.getExperience("C").get) mustBe null
 
-         intercept[ServerException.Internal] {
+         intercept[ServerExceptionInternal] {
             
 				runtime.resolveState(
 					state1,	 
@@ -73,7 +73,7 @@ class RuntimeTest extends EmbeddedServerSpec {
 					
 			}.getMessage mustBe "Duplicate variation [test2] in coordinate vector"
          
-         intercept[ServerException.Internal] {
+         intercept[ServerExceptionInternal] {
 			   runtime.resolveState(
 				   state1, 
 				   test2.getExperience("B").get,   
@@ -97,7 +97,7 @@ class RuntimeTest extends EmbeddedServerSpec {
 		            test2.getExperience("B").get, 
 		            test5.getExperience("B").get)
 
-		   intercept[ServerException.Internal] {
+		   intercept[ServerExceptionInternal] {
 				runtime.resolveState(
 						state1, 
 						test4.getExperience("B").get, 
@@ -184,7 +184,7 @@ class RuntimeTest extends EmbeddedServerSpec {
 		            test2.getExperience("B").get,
 		            test6.getExperience("C").get)
     		
-         intercept[ServerException.Internal] {
+         intercept[ServerExceptionInternal] {
  				runtime.resolveState(
    					state2, 
    					test2.getExperience("B").get,  
@@ -203,7 +203,7 @@ class RuntimeTest extends EmbeddedServerSpec {
 		            test6.getExperience("C").get,
 		            test4.getExperience("B").get)
       
-         intercept[ServerException.Internal] {
+         intercept[ServerExceptionInternal] {
    		   runtime.resolveState(
    				state2, 
    				test2.getExperience("B").get,  
@@ -236,7 +236,7 @@ class RuntimeTest extends EmbeddedServerSpec {
 		            test6.getExperience("B").get,
 		            test5.getExperience("C").get)
 		            
-   		intercept[ServerException.Internal] {
+   		intercept[ServerExceptionInternal] {
   			   runtime.resolveState(
   					state2, 
    				test1.getExperience("A").get, 
@@ -261,7 +261,7 @@ class RuntimeTest extends EmbeddedServerSpec {
 		
          runtime.isResolvable(test1.getExperience("B").get) mustBe true
 
-         intercept[ServerException.Internal] {
+         intercept[ServerExceptionInternal] {
 
 				runtime.minUnresolvableSubvector(
 						Array(
@@ -273,7 +273,7 @@ class RuntimeTest extends EmbeddedServerSpec {
   			
    	   }.getMessage mustBe "Input vector [test1.C,test2.B] must be resolvable, but is not"
          
-         intercept[ServerException.Internal] {
+         intercept[ServerExceptionInternal] {
 
 				runtime.minUnresolvableSubvector(
 						Array(
@@ -284,7 +284,7 @@ class RuntimeTest extends EmbeddedServerSpec {
   			
    	   }.getMessage mustBe "Experience [test1.B] in second argument contradicts experience [test1.C] in first argument"
 
-         intercept[ServerException.Internal] {
+         intercept[ServerExceptionInternal] {
 
 				runtime.minUnresolvableSubvector(
 						Array(
@@ -429,7 +429,7 @@ class RuntimeTest extends EmbeddedServerSpec {
 	   
 	   "test isTargetable()" in {
 
-   	   intercept[ServerException.Internal] {   
+   	   intercept[ServerExceptionInternal] {   
    				runtime.isTargetable(
    						test5,
    						state1,
@@ -439,7 +439,7 @@ class RuntimeTest extends EmbeddedServerSpec {
      			
    	      }.getMessage mustBe "Input test [test5] is already targeted"
    	      
-         intercept[ServerException.Internal] {   
+         intercept[ServerExceptionInternal] {   
 				runtime.isTargetable(
 						test5,
 						state1,
@@ -449,7 +449,7 @@ class RuntimeTest extends EmbeddedServerSpec {
      			
    	      }.getMessage mustBe "Input test [test5] is already targeted"
 
-		   intercept[ServerException.Internal] {   
+		   intercept[ServerExceptionInternal] {   
 				runtime.isTargetable(
 					test6, 
 					state1,

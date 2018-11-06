@@ -13,6 +13,7 @@ import com.variant.core.schema.Variation.Experience;
 import com.variant.server.api.TraceEventFlusher;
 import com.variant.server.api.FlushableTraceEvent;
 import com.variant.server.api.ServerException;
+import com.variant.server.boot.ServerExceptionInternal;
 import com.variant.server.jdbc.JdbcService.Vendor;
 
 
@@ -57,7 +58,7 @@ abstract public class TraceEventFlusherJdbc implements TraceEventFlusher {
 
 		final String INSERT_EVENT_EXPERIENCES_SQL = 
 				"INSERT INTO event_experiences " +
-			    "(id, event_id, test_name, experience_name, is_control) " +
+			    "(id, event_id, variation_name, experience_name, is_control) " +
 				(getJdbcVendor() == Vendor.POSTGRES ?
 						"VALUES (NEXTVAL('event_experiences_id_seq'), ?, ?, ?, ?)" :
 				getJdbcVendor() == Vendor.H2 ?
@@ -100,12 +101,12 @@ abstract public class TraceEventFlusherJdbc implements TraceEventFlusher {
 					while(gennedKeys.next()) {
 
 						if (index == events.size()) 
-							throw new ServerException.Internal("Received more genereated keys than inserted event records.");
+							throw new ServerExceptionInternal("Received more genereated keys than inserted event records.");
 						
 						eventIds[index++] = gennedKeys.getLong(1);
 					}
 					if (index < events.size()) 
-						throw new ServerException.Internal("Received fewer genereated keys than inserted event records.");
+						throw new ServerExceptionInternal("Received fewer genereated keys than inserted event records.");
 
 					stmt.close();
 

@@ -1,19 +1,19 @@
 package com.variant.server.schema
 
 import java.io.File
-import scala.io.Source
-import scala.collection.mutable
-import play.api.Logger
-import com.variant.server.api.ConfigKeys._
-import com.variant.core.impl.CommonError._
-import com.variant.server.api.ServerException
-import com.variant.server.boot.ServerErrorLocal
-import com.variant.server.boot.VariantServer
-import com.variant.core.UserError.Severity
-import scala.collection.mutable.ArrayBuffer
-import scala.collection.mutable.HashMap
-import com.variant.server.util.AsyncDirectoryWatcher
 import java.nio.file.Path
+
+import scala.io.Source
+
+import com.variant.core.UserError.Severity
+import com.variant.core.impl.CommonError.CONFIG_PROPERTY_NOT_SET
+import com.variant.server.api.ConfigKeys.SCHEMATA_DIR
+import com.variant.server.boot.ServerErrorLocal
+import com.variant.server.boot.ServerExceptionLocal
+import com.variant.server.boot.VariantServer
+import com.variant.server.util.AsyncDirectoryWatcher
+
+import play.api.Logger
    
 /**
  * Deploy schemata from a directory on the file system.
@@ -30,15 +30,15 @@ class SchemaDeployerFileSystem() extends AbstractSchemaDeployer {
   lazy val dir = {
      
      if (!VariantServer.instance.config.hasPath(SCHEMATA_DIR))
-        throw new ServerException.Local(CONFIG_PROPERTY_NOT_SET, SCHEMATA_DIR);
+        throw new ServerExceptionLocal(CONFIG_PROPERTY_NOT_SET, SCHEMATA_DIR);
       
      val dirName = Option(VariantServer.instance.config.getString(SCHEMATA_DIR))
 
      val result = new File(dirName.get)
      if (!result.exists)
-        throw new ServerException.Local(ServerErrorLocal.SCHEMATA_DIR_MISSING, dirName.get)
+        throw new ServerExceptionLocal(ServerErrorLocal.SCHEMATA_DIR_MISSING, dirName.get)
      if (!result.isDirectory)
-        throw new ServerException.Local(ServerErrorLocal.SCHEMATA_DIR_NOT_DIR, dirName.get)
+        throw new ServerExceptionLocal(ServerErrorLocal.SCHEMATA_DIR_NOT_DIR, dirName.get)
      result
   }
   
@@ -87,7 +87,7 @@ class SchemaDeployerFileSystem() extends AbstractSchemaDeployer {
             try {
                deploy(parserResp, file.getName)
             } catch {
-               case ue: ServerException.Local => 
+               case ue: ServerExceptionLocal => 
                   logger.error(ue.getMessage)
                   logger.warn(ServerErrorLocal.SCHEMA_FAILED.asMessage( parserResp.getSchema.getMeta.getName, file.getAbsolutePath))
             }

@@ -21,6 +21,7 @@ import com.variant.server.api.Session
 import com.variant.server.impl.SessionImpl
 import com.variant.core.util.Constants._
 import play.api.mvc.ControllerComponents
+import com.variant.server.boot.ServerExceptionRemote
 
 //@Singleton -- Is this for non-shared state controllers?
 class EventController @Inject() (
@@ -38,19 +39,19 @@ class EventController @Inject() (
    def post() = action { req =>
 
       val bodyJson = getBody(req).getOrElse {
-         throw new ServerException.Remote(EmptyBody)
+         throw new ServerExceptionRemote(EmptyBody)
       }
       
       val sid = (bodyJson \ "sid").asOpt[String].getOrElse {
-         throw new ServerException.Remote(MissingProperty, "sid")            
+         throw new ServerExceptionRemote(MissingProperty, "sid")            
       }
       
       val eventJson = (bodyJson \ "event").getOrElse {
-         throw new ServerException.Remote(MissingProperty, "event")            
+         throw new ServerExceptionRemote(MissingProperty, "event")            
       }
 
       val name = (eventJson \ "name").asOpt[String].getOrElse {
-         throw new ServerException.Remote(MissingProperty, "name")         
+         throw new ServerExceptionRemote(MissingProperty, "name")         
       }
       
       val attrs = (eventJson \ "attrs").asOpt[Map[String,String]].getOrElse {

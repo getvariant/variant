@@ -1,14 +1,8 @@
 package com.variant.server.test
 
-import com.variant.server.boot.ServerErrorLocal._
-import com.variant.core.impl.ServerError._
-import com.variant.server.api.Session
-import org.scalatestplus.play.PlaySpec
-import org.scalatestplus.play.OneAppPerSuite
-import com.variant.server.api.ServerException
-import com.variant.core.impl.CoreException
+import com.variant.core.impl.ServerError.EXPERIENCE_WEIGHT_MISSING
+import com.variant.server.boot.ServerExceptionLocal
 import com.variant.server.impl.SessionImpl
-import com.variant.server.schema.SchemaDeployer.fromString
 import com.variant.server.schema.SchemaDeployer
 import com.variant.server.test.spec.EmbeddedServerSpec
 
@@ -110,8 +104,8 @@ class RuntimeExceptionTest extends EmbeddedServerSpec {
 			   fail("Expected exception not thrown")
    		}
          catch {
-            case uex: ServerException.Local =>  uex.getMessage() mustEqual
-      			new ServerException.Local(EXPERIENCE_WEIGHT_MISSING, "test1", "A").getMessage()
+            case uex: ServerExceptionLocal =>  uex.getMessage() mustEqual
+      			new ServerExceptionLocal(EXPERIENCE_WEIGHT_MISSING, "test1", "A").getMessage()
    		}
       }
    }

@@ -45,7 +45,7 @@ class TraceEventReader (eventWriter: TraceEventWriter) {
 				"FROM events e LEFT OUTER JOIN event_attributes p ON e.id = p.event_id";
 
 		val SELECT_EVENT_EXPERIENCES_SQL =
-				"SELECT id, event_id, test_name, experience_name, is_control " +
+				"SELECT id, event_id, variation_name, experience_name, is_control " +
 				"FROM event_experiences";
 		
 		JdbcAdapter.executeQuery(

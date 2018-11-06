@@ -17,6 +17,8 @@ import com.variant.core.schema.parser.ParserResponse;
 import com.variant.server.api.ServerException;
 import com.variant.server.api.lifecycle.RuntimeLifecycleEvent;
 import com.variant.server.boot.ServerErrorLocal;
+import com.variant.server.boot.ServerExceptionLocal;
+import com.variant.server.boot.ServerExceptionRemote;
 import com.variant.server.boot.VariantServer;
 import com.variant.server.boot.VariantServer$;
 import com.variant.server.util.ClassUtil;
@@ -223,13 +225,13 @@ public class ServerHooksService implements HooksService {
 		   
 		   return null;
 
-		} catch (ServerException.Local e) {
+		} catch (ServerExceptionLocal e) {
 			throw e;
 		
 		} catch (Exception e) {
 			e.printStackTrace();
 			LOG.error(ServerError.HOOK_UNHANDLED_EXCEPTION.asMessage(hookDef.getClassName(), e.getMessage()), e);
-			throw new ServerException.Remote(ServerError.HOOK_UNHANDLED_EXCEPTION, LifecycleHook.class.getName(), e.getMessage());
+			throw new ServerExceptionRemote(ServerError.HOOK_UNHANDLED_EXCEPTION, LifecycleHook.class.getName(), e.getMessage());
 		}				
 
 	}

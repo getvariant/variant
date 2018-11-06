@@ -13,6 +13,7 @@ import play.api.mvc.AbstractController
 import play.api.mvc.AnyContent
 import play.api.mvc.ControllerComponents
 import play.api.mvc.Request
+import com.variant.server.boot.ServerExceptionRemote
 
 /**
  * All Variant controllers inherit from this.
@@ -45,7 +46,7 @@ abstract class VariantController @Inject() (
                } catch {
                   case t: JsonParseException =>
                      // Lose new lines that Jackson inserts into messages.
-                     throw new ServerException.Remote(ServerError.JsonParseError, t.getMessage.replaceAll("\\s+"," "))
+                     throw new ServerExceptionRemote(ServerError.JsonParseError, t.getMessage.replaceAll("\\s+"," "))
                }
                
             }

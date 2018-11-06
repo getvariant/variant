@@ -115,7 +115,7 @@ class VariantServerImpl @Inject() (
    		logger.error(ServerErrorLocal.SERVER_BOOT_FAILED.asMessage(productName))
    		// Only print error stack if internal error.
    		startupErrorLog.foreach { e => 
-   		   if (e.isInstanceOf[ServerException.Internal])
+   		   if (e.isInstanceOf[ServerExceptionInternal])
       		   logger.error(e.getMessage(), e) 
       		else
       		   logger.error(e.getMessage())

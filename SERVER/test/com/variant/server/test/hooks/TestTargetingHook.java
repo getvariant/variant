@@ -12,6 +12,7 @@ import com.variant.server.api.ServerException;
 import com.variant.server.api.Session;
 import com.variant.server.api.lifecycle.PostResultFactory;
 import com.variant.server.api.lifecycle.VariationTargetingLifecycleEvent;
+import com.variant.server.boot.ServerExceptionInternal;
 
 /**
  * Test targeter hook.
@@ -84,7 +85,7 @@ public class TestTargetingHook implements LifecycleHook<VariationTargetingLifecy
 		}
 
 		if (weightSum == 0) {
-			throw new ServerException.Internal(
+			throw new ServerExceptionInternal(
 					String.format("No defined states in test [%s] on state [%s]", test.getName(), state.getName()));
 		}
 		

@@ -17,6 +17,7 @@ import com.variant.server.api.Session
 import com.variant.server.boot.ServerErrorRemote
 import com.variant.server.schema.SchemaGen
 import java.util.Map.Entry
+import com.variant.server.boot.ServerExceptionRemote
 
 object SessionController {
    
@@ -40,7 +41,7 @@ class SessionController @Inject() (
       
       // Must match the schema name.
       if (ssn.schemaGen.getMeta.getName != schemaName) 
-		      throw new ServerException.Remote(WRONG_CONNECTION, schemaName)
+		      throw new ServerExceptionRemote(WRONG_CONNECTION, schemaName)
 
       val response = JsObject(Seq(
          "session" -> JsString(ssn.toJson),
@@ -61,11 +62,11 @@ class SessionController @Inject() (
    def getOrCreateSession(schemaName:String, sid:String) = action { req =>
      
       val bodyJson = req.body.asText.getOrElse {
-         throw new ServerException.Remote(EmptyBody)
+         throw new ServerExceptionRemote(EmptyBody)
       }
       
       val trackedExperiences = (Json.parse(bodyJson) \ "tt").asOpt[List[String]].getOrElse {
-         throw new ServerException.Remote(MissingProperty, "tt")
+         throw new ServerExceptionRemote(MissingProperty, "tt")
       }
       
       val result: SessionImpl = server.ssnStore.get(sid) match {
@@ -74,7 +75,7 @@ class SessionController @Inject() (
          case Some(ssn) => {
             
             if (ssn.schemaGen.getMeta.getName != schemaName) 
-		      throw new ServerException.Remote(WRONG_CONNECTION, schemaName)
+		      throw new ServerExceptionRemote(WRONG_CONNECTION, schemaName)
             
             ssn
          }
@@ -85,7 +86,7 @@ class SessionController @Inject() (
 
             val liveGen = server.schemata.getLiveGen(schemaName).getOrElse {
                logger.debug("Schema [%s] not found".format(schemaName))
-               throw new ServerException.Remote(UNKNOWN_SCHEMA, schemaName)
+               throw new ServerExceptionRemote(UNKNOWN_SCHEMA, schemaName)
             }
             
             val newSsn = SessionImpl.empty(StringUtils.random64BitString(SessionController.rand), liveGen)
@@ -128,11 +129,11 @@ class SessionController @Inject() (
    def saveSession(schemaName: String) = action { req =>
       
       val ssnJson = req.body.asText.getOrElse {
-         throw new ServerException.Remote(EmptyBody)
+         throw new ServerExceptionRemote(EmptyBody)
       }
       
       val sid = (Json.parse(ssnJson) \ "sid").asOpt[String].getOrElse {
-         throw new ServerException.Remote(MissingProperty, "sid")
+         throw new ServerExceptionRemote(MissingProperty, "sid")
       }
       
       val gen = server.ssnStore.get(sid) match {
@@ -141,14 +142,14 @@ class SessionController @Inject() (
             
             // Must match the schema name.
             if (ssn.schemaGen.getMeta.getName != schemaName) 
-		      throw new ServerException.Remote(WRONG_CONNECTION, schemaName)
+		      throw new ServerExceptionRemote(WRONG_CONNECTION, schemaName)
 
             ssn.schemaGen
             
          case None =>
             // Given schema must have a live gen.
             server.schemata.getLiveGen(schemaName).getOrElse {
-               throw new ServerException.Remote(UNKNOWN_SCHEMA, schemaName)
+               throw new ServerExceptionRemote(UNKNOWN_SCHEMA, schemaName)
             }
       }
       
@@ -165,14 +166,14 @@ class SessionController @Inject() (
    def addAttribute() = action { req =>
 
       val bodyJson = getBody(req).getOrElse {
-         throw new ServerException.Remote(EmptyBody)
+         throw new ServerExceptionRemote(EmptyBody)
       }
       
       val sid = (bodyJson \ "sid").asOpt[String].getOrElse {
-         throw new ServerException.Remote(MissingProperty, "sid")         
+         throw new ServerExceptionRemote(MissingProperty, "sid")         
       }
       val name = (bodyJson \ "name").asOpt[String].getOrElse {
-         throw new ServerException.Remote(MissingProperty, "name")         
+         throw new ServerExceptionRemote(MissingProperty, "name")         
       }
       val value = (bodyJson \ "value").asOpt[String].getOrElse(null)
 
@@ -194,13 +195,13 @@ class SessionController @Inject() (
    def clearAttribute() = action { req =>
 
       val bodyJson = getBody(req).getOrElse {
-         throw new ServerException.Remote(EmptyBody)
+         throw new ServerExceptionRemote(EmptyBody)
       }
       val sid = (bodyJson \ "sid").asOpt[String].getOrElse {
-         throw new ServerException.Remote(MissingProperty, "sid")         
+         throw new ServerExceptionRemote(MissingProperty, "sid")         
       }
       val name = (bodyJson \ "name").asOpt[String].getOrElse {
-         throw new ServerException.Remote(MissingProperty, "name")         
+         throw new ServerExceptionRemote(MissingProperty, "name")         
       }
 
       val ssn = server.ssnStore.getOrBust(sid)

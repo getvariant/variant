@@ -1,13 +1,13 @@
 package com.variant.server.test.extapi
 
+import com.variant.core.impl.ServerError
+import com.variant.server.boot.ServerExceptionLocal
 import com.variant.server.impl.SessionImpl
+import com.variant.server.schema.SchemaDeployer
 import com.variant.server.test.hooks.TestTargetingHook
 import com.variant.server.test.hooks.TestTargetingHookNil
-import com.variant.server.test.util.ParameterizedString
-import com.variant.server.api.ServerException
-import com.variant.server.schema.SchemaDeployer
 import com.variant.server.test.spec.EmbeddedServerAsyncSpec
-import com.variant.core.impl.ServerError
+import com.variant.server.test.util.ParameterizedString
 
 class TargetingTest extends EmbeddedServerAsyncSpec {
 
@@ -325,11 +325,11 @@ class TargetingTest extends EmbeddedServerAsyncSpec {
 	
 		   var ssn = SessionImpl.empty(newSid(), schema)
    	   
-   	   val caughtEx = intercept[ServerException.Local] {
+   	   val caughtEx = intercept[ServerExceptionLocal] {
              ssn.targetForState(state1)   // targeting hook returns an experience not from test1
          }
          caughtEx.getMessage mustBe (
-                     new ServerException.Local(
+                     new ServerExceptionLocal(
                            ServerError.HOOK_TARGETING_BAD_EXPERIENCE, classOf[TestTargetingHook].getName, "test1", "test2.A"
                      ).getMessage)
  
