@@ -64,7 +64,7 @@
             {
                // Assigns all Chrome traffic to the control experience
                'name':'ChromeTargeter',
-               'class':'com.variant.server.ext.demo.ChromeTargetingHook'
+               'class':'com.variant.extapi.standard.hook.ChromeTargetingHook'
             }
          ]
       },

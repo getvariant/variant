@@ -79,18 +79,6 @@
             {                                                
                'stateRef':'ownerDetail'
             }                                                
-         ],
-         'hooks':[
-            {
-               // Disqualifies all Safari traffic.
-               'name':'SafariDisqualifier',
-               'class':'com.variant.server.ext.demo.SafariDisqualHook'
-            },
-            {
-               // Assigns all Chrome traffic to the control experience
-               'name':'ChromeTargeter',
-               'class':'com.variant.server.ext.demo.ChromeTargetingHook'
-            }
          ]
       }                                                     
    ]                                                         

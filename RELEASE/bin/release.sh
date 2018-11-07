@@ -7,7 +7,7 @@
 #!/bin/bash
 
 export version=0.9.3
-export version2="-RC2"
+export version2="-RC3"
 
 function usage() {
     echo "$(basename $0) email"
@@ -20,7 +20,7 @@ fi
 
 variant_root=$(cd $(dirname $0)/../..; pwd)
 variant_pub_root=$(cd $variant_root/../variant-pub; pwd)
-extapi_root=$variant_pub_root/variant-server-extapi
+extapi_root=$variant_pub_root/variant-extapi-standard
 servlet_adapter_root=$variant_pub_root/variant-java-servlet-adapter
 release_dir=${variant_root}/RELEASE
 stage_dir=${release_dir}/stage
@@ -42,7 +42,7 @@ cp $variant_root/CORE/target/variant-core*.jar $servlet_adapter_root/lib
 #
 ${variant_root}/SERVER/mbin/release.sh
 cp $variant_root/SERVER/target/universal/variant-server-${version}.zip ${stage_dir}/server/variant-server-${version}${version2}.zip
-cp $variant_root/SERVER/target/universal/variant-server-extapi-${version}.jar $extapi_root/lib
+cp $variant_root/SERVER/target/universal/variant-extapi-standard-${version}.jar $extapi_root/lib
 
 #
 # JAVA CLIENT
