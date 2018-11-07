@@ -1,4 +1,4 @@
-package com.variant.server.jdbc;
+package com.variant.server.test.util;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -100,10 +100,7 @@ public class JdbcService {
 	 * @author Igor
 	 *
 	 */
-	public static enum Vendor {
-		POSTGRES,
-		H2
-	}
+	public static enum Vendor { POSTGRES, H2, MYSQL}
 
 	public JdbcService(TraceEventWriter eventWriter) {
 		this.eventWriter = eventWriter;

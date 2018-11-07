@@ -32,14 +32,15 @@ libraryDependencies ++= Seq(
   
   // Variant Core
   "com.variant"            % "variant-core"        % coreVersion,  
+  
+  // We should not need this any more because there's no JDBC dependencies in app
+  // and those in test are resolved at run time via the unmanaged /ext path.
   // Postgres 9.1 JDBC driver in test
-//  "postgresql"             % "postgresql"  % "9.1-901-1.jdbc4"   , //% Test, Include in production. #149
+  //"postgresql"             % "postgresql"  % "9.1-901-1.jdbc4"   , % Test
+  
   // H2 In mem DB in test 
   "com.h2database"         % "h2"          % "1.4.191"           % Test,
   
-  // Reflections class path scanner. As of May '17 provided with the WTFPL license.
-  // "org.reflections"        % "reflections" % "0.9.11",
-
   // Need to install CORS filter
   filters
   )

@@ -6,7 +6,7 @@ import org.scalatest.BeforeAndAfterAll
 import org.scalatestplus.play.OneAppPerSuite
 
 import com.variant.core.UserError.Severity
-import com.variant.server.jdbc.JdbcService
+import com.variant.server.test.util.JdbcService
 import com.variant.server.play.VariantApplicationLoader
 
 import play.api.Application
@@ -52,14 +52,16 @@ class EmbeddedServerSpec extends BaseSpec with OneAppPerSuite with BeforeAndAfte
       		val jdbc = new JdbcService(schema.eventWriter)
       		try {			
       			jdbc.getVendor match {
-         			case JdbcService.Vendor.POSTGRES => {
+         			case JdbcService.Vendor.POSTGRES =>
          			   jdbc.recreateSchema()
          			   logger.info("Recreated PostgreSQL schema")
-         			}
+         			
       	   		case JdbcService.Vendor.H2 => 
       	   		   jdbc.createSchema()
          			   logger.info("Recreated H2 schema")
+         			   
       		   }
+
       		}
       		catch {
       		   case _: ClassCastException => 

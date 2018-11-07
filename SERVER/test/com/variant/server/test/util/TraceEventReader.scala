@@ -8,7 +8,6 @@ import java.util.Map
 import scala.collection.JavaConversions._
 import org.junit.runners.model.Statement
 import com.variant.server.event.TraceEventWriter
-import com.variant.server.jdbc.JdbcService
 import com.variant.core.util.JdbcAdapter
 
 
