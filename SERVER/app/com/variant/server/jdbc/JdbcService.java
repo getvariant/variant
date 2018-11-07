@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.sql.Connection;
+import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -105,7 +106,6 @@ public class JdbcService {
 	}
 
 	public JdbcService(TraceEventWriter eventWriter) {
-		if (eventWriter == null) throw new IllegalArgumentException("EventWriter cannot be null");
 		this.eventWriter = eventWriter;
 	}
 
@@ -126,10 +126,21 @@ public class JdbcService {
 	}
 	
 	/**
-	 * Obtain the underlying JDBC connection via EventWriter.
+	 * Connect to database.
 	 */
 	public Connection getConnection() throws Exception {
-		return ((TraceEventFlusherJdbc)eventWriter.flusher()).getJdbcConnection();
+		
+		String url = null;
+		switch (getVendor()) {
+		case POSTGRES:
+			url = "jdbc:postgresql://localhost/variant?user=variant&password=variant";
+			break;
+		case H2:
+			url = "jdbc:h2:mem:variant;MVCC=true;DB_CLOSE_DELAY=-1;user=variant;password=variant";
+			break;
+		}
+		
+		return DriverManager.getConnection(url);
 	}
 		
 	/**

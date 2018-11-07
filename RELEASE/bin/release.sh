@@ -42,7 +42,7 @@ cp $variant_root/CORE/target/variant-core*.jar $servlet_adapter_root/lib
 #
 ${variant_root}/SERVER/mbin/release.sh
 cp $variant_root/SERVER/target/universal/variant-server-${version}.zip ${stage_dir}/server/variant-server-${version}${version2}.zip
-cp $variant_root/SERVER/target/universal/variant-extapi-standard-${version}.jar $extapi_root/lib
+cp $variant_root/SERVER/target/universal/variant-server-extapi-${version}.jar $extapi_root/lib
 
 #
 # JAVA CLIENT

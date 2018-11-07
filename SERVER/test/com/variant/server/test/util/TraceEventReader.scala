@@ -1,17 +1,15 @@
 package com.variant.server.test.util
 
-import com.variant.server.jdbc.JdbcService
-import com.variant.server.jdbc.JdbcAdapter
-import java.util.Collection
 import java.sql.Connection
-import org.junit.runners.model.Statement
 import java.sql.ResultSet
+import java.util.Collection
 import java.util.HashMap
-import java.util.HashSet
 import java.util.Map
 import scala.collection.JavaConversions._
+import org.junit.runners.model.Statement
 import com.variant.server.event.TraceEventWriter
-import com.variant.server.jdbc.TraceEventFlusherJdbc
+import com.variant.server.jdbc.JdbcService
+import com.variant.core.util.JdbcAdapter
 
 
 /**
@@ -30,7 +28,7 @@ object TraceEventReader {
  */
 class TraceEventReader (eventWriter: TraceEventWriter) {
    
-   val jdbcConnection = eventWriter.flusher.asInstanceOf[TraceEventFlusherJdbc].getJdbcConnection
+   val jdbcConnection = new JdbcService(eventWriter).getConnection
 
    /**
 	 * Read events as a collection

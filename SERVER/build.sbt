@@ -70,7 +70,10 @@ testOptions in Test += Tests.Argument("-oF")  // Full stack traces (truncagted b
 unmanagedClasspath in Test += baseDirectory.value / "conf-test"
 unmanagedClasspath in Runtime += baseDirectory.value / "conf-test"
 
-// Include the extapi demo jar.
+// Java sources compilation level
+javacOptions ++= Seq("-source", "1.8", "-target", "1.8")
+
+// Include the extapi jars.
 unmanagedClasspath in Test += baseDirectory.value / "distr/ext/*"
 unmanagedClasspath in Runtime += baseDirectory.value / "distr/ext/*"
 

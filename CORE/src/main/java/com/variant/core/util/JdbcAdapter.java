@@ -1,4 +1,4 @@
-package com.variant.server.jdbc;
+package com.variant.core.util;
 
 import java.sql.Connection;
 import java.sql.SQLException;
