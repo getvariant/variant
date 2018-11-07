@@ -6,8 +6,8 @@ import org.scalatest.BeforeAndAfterAll
 import org.scalatestplus.play.OneAppPerSuite
 
 import com.variant.core.UserError.Severity
-import com.variant.server.test.util.JdbcService
 import com.variant.server.play.VariantApplicationLoader
+import com.variant.server.test.util.JdbcService
 
 import play.api.Application
 import play.api.Configuration

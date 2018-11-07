@@ -9,13 +9,14 @@ cd `dirname $0`/../../SERVER
 root_dir=$(pwd)
 
 # All args are required
-if [ $# -ne 1 ]; then
-    echo "usage: `basename $0` target-dir" >&2
+if [ $# -ne 2 ]; then
+    echo "usage: `basename $0` target-dir {postgres|mysql}" >&2
     echo "but was: `basename $0` $@" >&2
     exit 1
 fi
 
 server_dir=$1
+flusher=$2
 
 #
 # Main
@@ -37,7 +38,7 @@ mkdir ${server_dir}
 unzip target/universal/variant-server-*.zip -d ${server_dir}
 mv ${server_dir}/variant-server-*/* ${server_dir}
 rmdir ${server_dir}/variant-server-*
-cp standalone-server/conf/variant.conf ${server_dir}/conf
+cp standalone-server/conf/variant-${flusher}.conf ${server_dir}/conf/variant.conf
 cp standalone-server/ext/* ${server_dir}/ext
 
 # Restore the target directory.

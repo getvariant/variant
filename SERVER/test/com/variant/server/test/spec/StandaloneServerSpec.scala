@@ -28,39 +28,16 @@ object StandaloneServerSpec {
 class StandaloneServerSpec extends PlaySpec with BeforeAndAfterAll {
 
    // Directory where the standalong server is built. Tests may overide this.
-   protected val serverDir = "/private/tmp/standaloneServer"
-   
+   protected lazy val serverDir = "/private/tmp/standaloneServer"
+
+   // The flusher to use. Valid values: 'mysql' or 'postgres'. Tests may overide this.
+   protected lazy val flusher = "postgres"
+
    // The standalone server 
-   protected val server = new StandaloneServer(serverDir)
+   protected val server = new StandaloneServer(serverDir, flusher)
    
    private val logger = Logger(this.getClass)
-   
-   
-   /**
-	 * @throws Exception 
-	 * 
-	 *
-	private def recreateDatabase() {
-	   // Assuming the there's always the petclinic_experiments schema and that it has the right event writer.
-		val jdbc = new JdbcService(server.schemata.getLiveGen("petclinic_experiments").get.eventWriter)
-		try {			
-			jdbc.getVendor match {
-   			case JdbcService.Vendor.POSTGRES => {
-   			   jdbc.recreateSchema()
-   			   logger.info("Recreated PostgreSQL schema")
-   			}
-	   		case JdbcService.Vendor.H2 => 
-	   		   jdbc.createSchema()
-   			   logger.info("Recreated H2 schema")
-		   }
-		}
-		catch {
-		   case _: ClassCastException => 
-		   case e: Throwable => throw e		
-		}
-	}
-	*/ 
-   
+      
    "Server must come up with the petclinic schemata" in {
 
          server.start()
@@ -97,14 +74,14 @@ class StandaloneServerSpec extends PlaySpec with BeforeAndAfterAll {
 /**
  * Class represents a standalone server configured on the filesystem in serverDir directory.
  */
-class StandaloneServer(serverDir: String) {
+class StandaloneServer(serverDir: String, flusher: String) {
 
    println(s"Building server in ${serverDir}. Takes a few seconds...")
 
    // Build standalone server in serverDir.
    // Stdout is ignored. Stderr is sent to console.
    // Blocks until process terminates.
-   Seq("mbin/standaloneServer.sh", serverDir).!!
+   Seq("mbin/standaloneServer.sh", serverDir, flusher).!!
    println(s"Built server in ${serverDir}")
 
    private[this] var svrProc: Process = _

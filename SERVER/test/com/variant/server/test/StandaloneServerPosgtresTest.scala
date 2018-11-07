@@ -18,10 +18,12 @@ import com.variant.core.util.StringUtils
 /**
  * Test the server running in a separate process.
  */
-class StandaloneServerTest extends StandaloneServerSpec {
+class StandaloneServerPostgresTest extends StandaloneServerSpec {
 
    val rand = new Random()
    
+   override lazy val flusher = "postgres"
+
    "Server" should {
 
       "send 404 on a bad request" in  {
@@ -40,7 +42,7 @@ class StandaloneServerTest extends StandaloneServerSpec {
          resp.getStringContent must startWith (VariantServer.productName)
       }
 
-      "fail to deploy petclinic without the postgres driver in ext/" in  {
+      "fail to deploy petclinic without the right driver in ext/" in  {
 
          server.stop()
          s"rm ${serverDir}/ext/postgresql.postgresql-9.1-901-1.jdbc4.jar" ! ;
