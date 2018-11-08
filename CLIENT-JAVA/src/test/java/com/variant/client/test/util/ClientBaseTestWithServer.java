@@ -15,7 +15,7 @@ abstract public class ClientBaseTestWithServer extends ClientBaseTest {
 				
 	// Remote server should mount this schemata dir
 	public final static String SERVER_DIR = "/tmp/remote-server";
-
+	
 	// Remote server should mount this schemata dir
 	public final static String SCHEMATA_DIR = "/tmp/remote-schemata";
 	
@@ -41,7 +41,7 @@ abstract public class ClientBaseTestWithServer extends ClientBaseTest {
 	protected static StandaloneServer buildServer() {
 
 		try {
-		    StandaloneServer result = new StandaloneServer(SERVER_DIR);
+		    StandaloneServer result = new StandaloneServer(SERVER_DIR, "postgres");
 		    String msg = "Built Standalone Server in " + SERVER_DIR;
 		    int width = msg.length() + 10;
 		    System.out.println("       " + StringUtils.repeat("*", width));

@@ -30,7 +30,7 @@ public class StandaloneServer {
 	/**
 	 * Build the standalone server in the given file system directory.
 	 */
-	public StandaloneServer(String serverDir) throws Exception {
+	public StandaloneServer(String serverDir, String flusher) throws Exception {
 		
 		this.serverDir = serverDir;
 				
@@ -41,7 +41,7 @@ public class StandaloneServer {
 		// Run the command
 		String command = script + " build " + serverDir;
 		LOG.info(String.format("Building standalone server [%s]", command));
-		int rc = NativeProcess.execQuiet(script + " " + serverDir);
+		int rc = NativeProcess.execQuiet(script + " " + serverDir + " " + flusher);
 
 		if (rc != 0) {
 			throw new RuntimeException("Failed to build standalone server");
