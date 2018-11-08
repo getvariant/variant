@@ -38,7 +38,7 @@ class TraceEventReader (eventWriter: TraceEventWriter) {
 	def read(p: TraceEventFromDatabase => Boolean = (_ => true)) = {
 
 		val SELECT_EVENTS_SQL = 
-				"SELECT e.id, e.session_id, e.created_on, e.event_name, p.key, p.value " +
+				"SELECT e.id, e.session_id, e.created_on, e.event_name, p.name, p.value " +
 				"FROM events e LEFT OUTER JOIN event_attributes p ON e.id = p.event_id";
 
 		val SELECT_EVENT_EXPERIENCES_SQL =
