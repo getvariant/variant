@@ -40,8 +40,8 @@ class SchemaDeployHotTest extends EmbeddedServerSpec with TempSchemataDir {
 	   "startup with two schemata" in {
 	      
 	      server.schemata.size mustBe 2
-	      val bigGen = server.schemata.get("ParserConjointOkayBigTestNoHooks").get.liveGen.get
-         bigGen.getMeta.getName mustEqual "ParserConjointOkayBigTestNoHooks"
+	      val bigGen = server.schemata.get("monstrosity").get.liveGen.get
+         bigGen.getMeta.getName mustEqual "monstrosity"
          val petGen = server.schemata.get("petclinic").get.liveGen.get
          petGen.getMeta.getName mustEqual "petclinic" 
                   
@@ -51,7 +51,7 @@ class SchemaDeployHotTest extends EmbeddedServerSpec with TempSchemataDir {
       
       "deploy a third schema" in {
 
-	      IoUtils.fileCopy("schemata-test/monster.schema", s"${schemataDir}/monster.schema");
+	      IoUtils.fileCopy("conf-test/ParserConjointOkayBigTestNoHooks.json", s"${schemataDir}/ParserConjointOkayBigTestNoHooks.json");
 
 	      // Sleep awhile to let WatcherService.take() have a chance to detect.
 	      Thread.sleep(dirWatcherLatencyMsecs);
@@ -69,7 +69,7 @@ class SchemaDeployHotTest extends EmbeddedServerSpec with TempSchemataDir {
 	      
 	      val currentGen = server.schemata.get("petclinic").get.liveGen.get
 	      
-         IoUtils.fileCopy("distr/schemata/petclinic.schema", s"${schemataDir}/petclinic.schema");
+         IoUtils.fileCopy("schemata-test/petclinic.schema", s"${schemataDir}/petclinic.schema");
          Thread.sleep(dirWatcherLatencyMsecs)
     
          val newGen =  server.schemata.get("petclinic").get.liveGen.get
@@ -91,7 +91,7 @@ class SchemaDeployHotTest extends EmbeddedServerSpec with TempSchemataDir {
 	      
 	      val currentGen = server.schemata.get("petclinic").get.liveGen.get
 	      
-         IoUtils.fileCopy("distr/schemata/petclinic.schema", s"${schemataDir}/petclinic2.schema")
+         IoUtils.fileCopy("schemata-test/petclinic.schema", s"${schemataDir}/petclinic2.schema")
          Thread.sleep(dirWatcherLatencyMsecs)
     
          val newGen =  server.schemata.get("petclinic").get.liveGen.get
@@ -290,7 +290,7 @@ class SchemaDeployHotTest extends EmbeddedServerSpec with TempSchemataDir {
 	   "confirm the 2 schemata" in {
 	      
          IoUtils.fileCopy("conf-test/ParserConjointOkayBigTestNoHooks.json", s"${schemataDir}/ParserConjointOkayBigTestNoHooks.json");
-         IoUtils.fileCopy("distr/schemata/petclinic.schema", s"${schemataDir}/petclinic.schema");
+         IoUtils.fileCopy("schemata-test/petclinic.schema", s"${schemataDir}/petclinic.schema");
 
          Thread.sleep(dirWatcherLatencyMsecs)
          

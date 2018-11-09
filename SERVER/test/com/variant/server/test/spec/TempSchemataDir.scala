@@ -33,8 +33,8 @@ trait TempSchemataDir extends PlaySpec with OneAppPerSuite with BeforeAndAfterAl
 
    // Subclasses may override this.
    def schemata = Set[String](
-         "conf-test/ParserConjointOkayBigTestNoHooks.json",
-         "distr/schemata/petclinic.schema")
+         "schemata-test/monster.schema",
+         "schemata-test/petclinic.schema")
    
    // Custom application builder.  
    // val references must be static because this is an implicit method.

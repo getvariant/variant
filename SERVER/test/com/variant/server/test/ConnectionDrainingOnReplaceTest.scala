@@ -49,7 +49,7 @@ class ConnectionDrainingOnReplaceTest extends EmbeddedServerAsyncSpec with TempS
 	   "startup with two schemata" in {
 	      
          server.schemata.size mustBe 2
-         server.schemata.get("ParserConjointOkayBigTestNoHooks").get.liveGen.isDefined mustBe true
+         server.schemata.get("monstrosity").get.liveGen.isDefined mustBe true
          server.schemata.get("petclinic").get.liveGen.isDefined mustBe true
                   
          // Let the directory watcher thread start before copying any files.
@@ -66,12 +66,12 @@ class ConnectionDrainingOnReplaceTest extends EmbeddedServerAsyncSpec with TempS
 
             val sid = newSid
 	         ssnId2Big(i) = sid
-            assertResp(route(app, httpReq(POST, context + "/session/ParserConjointOkayBigTestNoHooks/" + sid).withBody(emptyTargetingTrackerBody)))
+            assertResp(route(app, httpReq(POST, context + "/session/monstrosity/" + sid).withBody(emptyTargetingTrackerBody)))
                .is(OK)
                .withBodySession { ssn =>
                   ssn.getId mustNot be (sid)
                   ssnId2Big(i) = ssn.getId
-                  ssn.getSchema().getMeta().getName mustBe "ParserConjointOkayBigTestNoHooks"
+                  ssn.getSchema().getMeta().getName mustBe "monstrosity"
                }
          }
          
@@ -96,11 +96,11 @@ class ConnectionDrainingOnReplaceTest extends EmbeddedServerAsyncSpec with TempS
          // pick connection randomly to emulate parallel connections.
          for (i <- 0 until SESSIONS) async {
             val sid = ssnId2Big(i)
-            assertResp(route(app, httpReq(GET, context + "/session/ParserConjointOkayBigTestNoHooks/" + sid)))
+            assertResp(route(app, httpReq(GET, context + "/session/monstrosity/" + sid)))
                .is(OK)
                .withBodySession { ssn =>
                   ssn.getId must be (sid)
-                  ssn.getSchema().getMeta().getName mustBe "ParserConjointOkayBigTestNoHooks"
+                  ssn.getSchema().getMeta().getName mustBe "monstrosity"
                }
          }
          
@@ -119,17 +119,17 @@ class ConnectionDrainingOnReplaceTest extends EmbeddedServerAsyncSpec with TempS
 
       "replace schema ParserConjointOkayBigTestNoHooks" in {
 
-	      val oldGen = server.schemata.get("ParserConjointOkayBigTestNoHooks").get.liveGen.get
+	      val oldGen = server.schemata.get("monstrosity").get.liveGen.get
 	      oldGen.state mustBe Live
 
          async {
    	      
-            IoUtils.fileCopy("conf-test/ParserConjointOkayBigTestNoHooks.json", s"${schemataDir}/ParserConjointOkayBigTestNoHooks.json");
+            IoUtils.fileCopy("schemata-test/monster.schema", s"${schemataDir}/monster.schema");
             Thread.sleep(dirWatcherLatencyMsecs)
             
             oldGen.state mustBe Dead
 
-            val newGen = server.schemata.get("ParserConjointOkayBigTestNoHooks").get.liveGen.get
+            val newGen = server.schemata.get("monstrosity").get.liveGen.get
             newGen.id mustNot be (oldGen.id)
             newGen.state mustBe Live
             server.schemata.size mustBe 2
@@ -142,11 +142,11 @@ class ConnectionDrainingOnReplaceTest extends EmbeddedServerAsyncSpec with TempS
          // pick connection randomly to emulate parallel connections.
          for (i <- 0 until SESSIONS) async {
             val sid = ssnId2Big(i)
-            assertResp(route(app, httpReq(GET, context + "/session/ParserConjointOkayBigTestNoHooks/" + sid)))
+            assertResp(route(app, httpReq(GET, context + "/session/monstrosity/" + sid)))
                .is(OK)
                .withBodySession { ssn =>
                   ssn.getId must be (sid)
-                  ssn.getSchema().getMeta().getName mustBe "ParserConjointOkayBigTestNoHooks"
+                  ssn.getSchema().getMeta().getName mustBe "monstrosity"
             }
          }
 
@@ -188,20 +188,20 @@ class ConnectionDrainingOnReplaceTest extends EmbeddedServerAsyncSpec with TempS
          
          val sid = newSid
          var actualSid: String = null
-         assertResp(route(app, httpReq(POST, context + "/session/ParserConjointOkayBigTestNoHooks/" + sid).withBody(emptyTargetingTrackerBody)))
+         assertResp(route(app, httpReq(POST, context + "/session/monstrosity/" + sid).withBody(emptyTargetingTrackerBody)))
             .is(OK)
             .withBodySession { ssn =>
                ssn.getId mustNot be (sid)
                actualSid = ssn.getId
-               ssn.getSchema().getMeta().getName mustBe "ParserConjointOkayBigTestNoHooks"
+               ssn.getSchema().getMeta().getName mustBe "monstrosity"
          }
 
          // And read, just in case
-         assertResp(route(app, httpReq(GET, context + "/session/ParserConjointOkayBigTestNoHooks/" + actualSid)))
+         assertResp(route(app, httpReq(GET, context + "/session/monstrosity/" + actualSid)))
             .is(OK)
             .withBodySession { ssn =>
                ssn.getId must be (actualSid)
-               ssn.getSchema().getMeta().getName mustBe "ParserConjointOkayBigTestNoHooks"
+               ssn.getSchema().getMeta().getName mustBe "monstrosity"
          }
 
       }
@@ -214,7 +214,7 @@ class ConnectionDrainingOnReplaceTest extends EmbeddedServerAsyncSpec with TempS
          
          for (i <- 0 until SESSIONS) {
             val sid = ssnId2Big(i)
-            assertResp(route(app, httpReq(GET, context + "/session/ParserConjointOkayBigTestNoHooks/" + sid)))
+            assertResp(route(app, httpReq(GET, context + "/session/monstrosity/" + sid)))
                .isError(SESSION_EXPIRED, sid)
          }
 

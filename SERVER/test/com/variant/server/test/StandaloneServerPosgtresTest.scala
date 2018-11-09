@@ -64,7 +64,7 @@ class StandaloneServerPostgresTest extends StandaloneServerSpec {
          lines(2).message mustBe ServerErrorLocal.SCHEMA_FAILED.asMessage("petclinic", s"${serverDir}/schemata/petclinic.schema")
 
       }
-
+/*
       "Redeploy petclinic after restoring postgres driver in ext/" in  {
          
          // Hot redeploy won't work. Not sure why, prob. class loader will refuse to look for the same class twice.
@@ -181,5 +181,7 @@ class StandaloneServerPostgresTest extends StandaloneServerSpec {
                }
          )         
       }
+      * 
+      */
    }
 }

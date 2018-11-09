@@ -40,6 +40,7 @@ mv ${server_dir}/variant-server-*/* ${server_dir}
 rmdir ${server_dir}/variant-server-*
 cp standalone-server/conf/variant-${flusher}.conf ${server_dir}/conf/variant.conf
 cp standalone-server/ext/* ${server_dir}/ext
+cp standalone-server/schemata/* ${server_dir}/schemata
 
 # Restore the target directory.
 if [ -e /tmp/target ]; then

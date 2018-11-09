@@ -31,7 +31,6 @@ cd variant-${version}
 rm -rf README share bin/foo*
 cp -r ${workspace_root_dir}/SERVER/distr/schemata .
 cp -r ${workspace_root_dir}/SERVER/distr/ext .
-cp -r ${workspace_root_dir}/SERVER/distr/db .
 cp ${workspace_root_dir}/SERVER/distr/bin/variant.sh bin
 
 # Rename play-built startup script in order not to confuse the customers.

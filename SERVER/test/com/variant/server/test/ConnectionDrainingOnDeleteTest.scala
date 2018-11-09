@@ -47,7 +47,7 @@ class ConnectionDrainingOnDeleteTest extends EmbeddedServerAsyncSpec with TempSc
       "startup with two schemata" in {
 	      
          server.schemata.size mustBe 2
-         server.schemata.get("ParserConjointOkayBigTestNoHooks").get.liveGen.isDefined mustBe true 
+         server.schemata.get("monstrosity").get.liveGen.isDefined mustBe true 
          server.schemata.get("petclinic").get.liveGen.isDefined mustBe true
                   
          // Let the directory watcher thread start before copying any files.
@@ -62,12 +62,12 @@ class ConnectionDrainingOnDeleteTest extends EmbeddedServerAsyncSpec with TempSc
          for (j <- 0 until SESSIONS) async {
 
             val sid = newSid
-            assertResp(route(app, httpReq(POST, context + "/session/ParserConjointOkayBigTestNoHooks/" + sid).withBody(emptyTargetingTrackerBody)))
+            assertResp(route(app, httpReq(POST, context + "/session/monstrosity/" + sid).withBody(emptyTargetingTrackerBody)))
                .is(OK)
             .withBodySession { ssn =>
                ssn.getId mustNot be (sid)
                ssnId2Big(j) = ssn.getId
-               ssn.getSchema().getMeta().getName mustBe "ParserConjointOkayBigTestNoHooks"
+               ssn.getSchema().getMeta().getName mustBe "monstrosity"
             }
          }
 	      
@@ -90,11 +90,11 @@ class ConnectionDrainingOnDeleteTest extends EmbeddedServerAsyncSpec with TempSc
          	   
          for (i <- 0 until SESSIONS) async {
             val sid = ssnId2Big(i)
-            assertResp(route(app, httpReq(GET, context + "/session/ParserConjointOkayBigTestNoHooks/" + sid)))
+            assertResp(route(app, httpReq(GET, context + "/session/monstrosity/" + sid)))
                .is(OK)
                .withBodySession { ssn =>
                   ssn.getId must be (sid)
-                  ssn.getSchema().getMeta().getName mustBe "ParserConjointOkayBigTestNoHooks"
+                  ssn.getSchema().getMeta().getName mustBe "monstrosity"
                }
          }
          
@@ -111,18 +111,18 @@ class ConnectionDrainingOnDeleteTest extends EmbeddedServerAsyncSpec with TempSc
 	      joinAll
    	}
 
-      "delete schema ParserConjointOkayBigTestNoHooks" in {
+      "delete schema monstrosity" in {
 
-	      val oldGen = server.schemata.getLiveGen("ParserConjointOkayBigTestNoHooks").get
+	      val oldGen = server.schemata.getLiveGen("monstrosity").get
          oldGen.state mustBe Live
 
          async {
    	      
-	         IoUtils.delete(s"${schemataDir}/ParserConjointOkayBigTestNoHooks.json");
+	         IoUtils.delete(s"${schemataDir}/monster.schema");
             Thread.sleep(dirWatcherLatencyMsecs)
             
             oldGen.state mustBe Dead
-            server.schemata.getLiveGen("ParserConjointOkayBigTestNoHooks") mustBe None
+            server.schemata.getLiveGen("monstrosity") mustBe None
 	      }
 	   }
 
@@ -157,7 +157,7 @@ class ConnectionDrainingOnDeleteTest extends EmbeddedServerAsyncSpec with TempSc
 
          // Confirm the schema is gone.
          server.schemata.size mustBe 1
-         server.schemata.getLiveGen("ParserConjointOkayBigTestNoHooks") mustBe None
+         server.schemata.getLiveGen("monstrosity") mustBe None
          server.schemata.getLiveGen("petclinic").isDefined mustBe true
 
    	}
@@ -169,7 +169,7 @@ class ConnectionDrainingOnDeleteTest extends EmbeddedServerAsyncSpec with TempSc
    
          for (i <- 0 until SESSIONS) {
 	         val body = sessionJsonBig.expand("sid" -> ssnId2Big(i))
-            assertResp(route(app, httpReq(PUT, context + "/session/ParserConjointOkayBigTestNoHooks").withBody(body)))
+            assertResp(route(app, httpReq(PUT, context + "/session/monstrosity").withBody(body)))
                .is(OK)
                .withNoBody
          }
@@ -208,8 +208,8 @@ class ConnectionDrainingOnDeleteTest extends EmbeddedServerAsyncSpec with TempSc
       
       "refuse session create in dead generation" in {
 
-         assertResp(route(app, httpReq(POST, context + "/session/ParserConjointOkayBigTestNoHooks/" + newSid).withBody(emptyTargetingTrackerBody)))
-            .isError(UNKNOWN_SCHEMA, "ParserConjointOkayBigTestNoHooks")
+         assertResp(route(app, httpReq(POST, context + "/session/monstrosity/" + newSid).withBody(emptyTargetingTrackerBody)))
+            .isError(UNKNOWN_SCHEMA, "monstrosity")
       }
 
       "expire all sessions and dispose of all dead generations after session timeout period" in {
@@ -218,7 +218,7 @@ class ConnectionDrainingOnDeleteTest extends EmbeddedServerAsyncSpec with TempSc
          
          for (i <- 0 until SESSIONS) {
             val sid = ssnId2Big(i)
-            assertResp(route(app, httpReq(GET, context + "/session/ParserConjointOkayBigTestNoHooks/" + sid)))
+            assertResp(route(app, httpReq(GET, context + "/session/monstrosity/" + sid)))
                .isError(SESSION_EXPIRED, sid)
          }
 
