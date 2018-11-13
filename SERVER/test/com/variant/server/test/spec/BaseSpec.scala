@@ -163,41 +163,6 @@ trait BaseSpec extends PlaySpec {
       }
 
       /**
-       * The response should be a new session with a different SID
-       * and expected schema.
-       *
-      def withSession(f: () = {
-         
-         try {
-            val json = contentAsJson(res)
-            val ssn = Json.parse((json \ "session").as[String])
-            val schemaId = (json \ "schema" \ "id").as[String]
-            val schemaSrc = (json \ "schema" \ "src").as[String]
-      
-            if (existing) (ssn \ "sid").as[String] mustBe sid
-            else (ssn \ "sid").as[String] mustNot be (sid)
-            
-            schemaSrc mustBe server.schemata.get(schemaName).get.liveGen.get.source
-            schemaId mustBe server.schemata.getLiveGen(schemaName).get.id
-            val parser = ServerSchemaParser()
-            val parserResp = parser.parse(schemaSrc)
-            parserResp.hasMessages(UserError.Severity.ERROR) mustBe false
-      		parserResp.getSchema() mustNot be (null)
-         	parserResp.getSchemaSrc() mustNot be (null)
-      
-            val CoreSchema = parserResp.getSchema
-            CoreSchema.getMeta.getName mustEqual schemaName
-         } catch {
-            case t: Throwable => 
-               fail(t.getMessage + stackLine, t) 
-         }
-         
-         this
-      }
-      * 
-      */
-
-      /**
        * Deserialize session from response body.
        * Extract session ID from the json and use that
        * to obtain the schema gen for deserialization.

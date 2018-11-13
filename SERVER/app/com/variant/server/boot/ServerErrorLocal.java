@@ -47,22 +47,23 @@ public class ServerErrorLocal extends CommonError {
 	public final static ServerErrorLocal FLUSHER_CLASS_NO_INTERFACE = 
 			new ServerErrorLocal(428, Severity.ERROR, "Event flusher class [%s] must implement interface [%s]");
 
+	public final static ServerErrorLocal SCHEMA_DEPLOYED = 
+			new ServerErrorLocal(429, Severity.INFO, "Deployed schema [%s] from [%s]");
+
 	public final static ServerErrorLocal SCHEMA_FAILED = 
-			new ServerErrorLocal(429, Severity.WARN, "Schema [%s] was not deployed from [%s] due to previous errors");
+			new ServerErrorLocal(430, Severity.WARN, "Schema [%s] was not deployed from [%s] due to previous errors");
 
 	public final static ServerErrorLocal EMPTY_SCHEMATA = 
-			new ServerErrorLocal(430, Severity.INFO, "No schemata found in [%s]");
+			new ServerErrorLocal(431, Severity.INFO, "No schemata found in [%s]");
 
 	public final static ServerErrorLocal SERVER_BOOT_OK = 
-			new ServerErrorLocal(431, Severity.INFO, "%s bootstrapped on :%s%s in %s");
+			new ServerErrorLocal(432, Severity.INFO, "%s bootstrapped on :%s%s in %s");
 
 	public final static ServerErrorLocal SERVER_BOOT_FAILED = 
-			new ServerErrorLocal(432, Severity.INFO, "%s failed to bootstrap due to following errors:");
+			new ServerErrorLocal(433, Severity.INFO, "%s failed to bootstrap due to following errors:");
 
 	public final static ServerErrorLocal SERVER_SHUTDOWN = 
-			new ServerErrorLocal(433, Severity.INFO, "%s shutdown on :%s%s, uptime %s.");
-
-
+			new ServerErrorLocal(434, Severity.INFO, "%s shutdown on :%s%s, uptime %s.");
 	
    /**
     * 

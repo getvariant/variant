@@ -2,10 +2,9 @@ package com.variant.server.schema
 
 import scala.collection.JavaConversions.asScalaBuffer
 import scala.collection.concurrent.TrieMap
-
 import com.variant.server.boot.ServerExceptionInternal
-
 import play.api.Logger
+import com.variant.server.boot.ServerErrorLocal
 
 /**
  * 
@@ -34,7 +33,7 @@ class Schemata () {
       
       // Write log message
       val msg = new StringBuilder()
-      msg.append("Deployed schema [%s] gen ID [%s], from [%s]:".format(gen.getMeta.getName, gen.id, gen.origin));
+      msg.append(ServerErrorLocal.SCHEMA_DEPLOYED.asMessage(gen.getMeta.getName, gen.origin));
       for (test <- gen.getVariations) {
          msg.append("\n   ").append(test.getName()).append(":[");
          var first = true;

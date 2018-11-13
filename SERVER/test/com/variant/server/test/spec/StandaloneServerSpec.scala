@@ -30,8 +30,8 @@ class StandaloneServerSpec extends PlaySpec with BeforeAndAfterAll {
    // Directory where the standalong server is built. Tests may overide this.
    protected lazy val serverDir = "/private/tmp/standaloneServer"
 
-   // The flusher to use. Valid values: 'mysql' or 'postgres'. Tests may overide this.
-   protected lazy val flusher = "postgres"
+   // The flusher to use. Valid values: 'default', 'mysql', or 'postgres'. Tests may overide this.
+   protected lazy val flusher = "default"
 
    // The standalone server 
    protected val server = new StandaloneServer(serverDir, flusher)
@@ -129,7 +129,7 @@ class StandaloneServer(serverDir: String, flusher: String) {
       }
       svrProc = (serverDir + "/bin/variant.sh start " + paramString.toString).run(svrLog)
       
-      // Block until we read the line with message 431.
+      // Block until we read the startup message.
       var started = false
       var failed = false
       while (!started && !failed) {
@@ -141,7 +141,7 @@ class StandaloneServer(serverDir: String, flusher: String) {
             onTimeout()
             failed = true
          }
-         else if (line.matches(".*\\[431\\].*bootstrapped.*")) started = true;
+         else if (line.matches(".*\\[432\\].*bootstrapped.*")) started = true;
       }
       
       if (!failed) {

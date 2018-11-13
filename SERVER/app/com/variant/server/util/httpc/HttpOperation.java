@@ -47,6 +47,11 @@ abstract public class HttpOperation {
 	public static HttpOperation get(String url) {
 		return new Get(url);
 	}
+	
+	public static HttpOperation post(String url) {
+		return new Post(url);
+	}
+
 	//-------------------------------------------------------------------------------\\
 	//                            CONCRETE OPERATIONS
 	//-------------------------------------------------------------------------------\\
@@ -63,4 +68,18 @@ abstract public class HttpOperation {
 			}
 		}
 	}
+	
+	public static class Post extends HttpOperation {
+		
+		private Post(String url) {
+			super(url);
+			try {
+				conn.setRequestMethod("POST");
+			}
+			catch (Throwable t) {
+				throw new RuntimeException("Unable to set POST", t);
+			}
+		}
+	}
+
 }
