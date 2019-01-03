@@ -13,7 +13,7 @@ import com.variant.core.util.StringUtils;
  */
 abstract public class ClientBaseTestWithServer extends ClientBaseTest {
 				
-	// Remote server should mount this schemata dir
+	// Remote server location
 	public final static String SERVER_DIR = "/tmp/remote-server";
 	
 	// Remote server should mount this schemata dir

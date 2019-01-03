@@ -34,8 +34,11 @@ cp ${workspace_root_dir}/SERVER/distr/bin/variant.sh bin
 # Rename play-built startup script in order not to confuse the customers.
 mv bin/variant bin/playapp
 
-# Make the log directory
-mkdir log
+# Make the log and schemata directories
+mkdir log schemata
+
+# Remove the auto-generated share directory 
+rm -rf share
 
 # Replace version in the control script. Used by "stop"
 sed "s/<version>/${version}/" bin/variant.sh > /tmp/variant.sh
