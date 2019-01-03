@@ -28,8 +28,6 @@ cd target/universal
 unzip variant-${version}.zip
 rm variant-${version}.zip
 cd variant-${version}
-rm -rf README share bin/foo*
-cp -r ${workspace_root_dir}/SERVER/distr/schemata .
 cp -r ${workspace_root_dir}/SERVER/distr/ext .
 cp ${workspace_root_dir}/SERVER/distr/bin/variant.sh bin
 

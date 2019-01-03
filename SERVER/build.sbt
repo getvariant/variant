@@ -2,12 +2,14 @@
 // Variant Server build config
 //
 
+//sbtVersion := "1.2.8"
+scalaVersion := "2.12.8"
+
 val coreVersion = "0.9.3"
 name := "Variant"
 version := coreVersion
 
 lazy val root = (project in file(".")).enablePlugins(PlayScala)
-scalaVersion := "2.11.7"
 
 // Add local Maven repo for com.variant artifacts built with Maven.
 resolvers += Resolver.mavenLocal
@@ -28,10 +30,10 @@ libraryDependencies ++= Seq(
   "com.typesafe.play"      %% "play-json"          % "2.6.0",
   "com.typesafe.play"      %% "play-iteratees"     % "2.6.1",
   
-  "org.scalatestplus.play" %% "scalatestplus-play" % "1.5.1" % Test,
+  "org.scalatestplus.play" %% "scalatestplus-play" % "3.0.0" % Test,
   
   // Variant Core
-  "com.variant"            % "variant-core"        % coreVersion,  
+  "com.variant"            % "variant-core"        % "0.9.3",  
   
   // We should not need this any more because there's no JDBC dependencies in app
   // and those in test are resolved at run time via the unmanaged /ext path.
@@ -74,9 +76,9 @@ unmanagedClasspath in Runtime += baseDirectory.value / "conf-test"
 // Java sources compilation level
 javacOptions ++= Seq("-source", "1.8", "-target", "1.8")
 
-// Include the extapi jars.
+// Include the standard extension for tests to see the flusher classes.
 unmanagedClasspath in Test += baseDirectory.value / "distr/ext/*"
-unmanagedClasspath in Runtime += baseDirectory.value / "distr/ext/*"
+//unmanagedClasspath in Runtime += baseDirectory.value / "distr/ext/*"
 
 
 // Config overrides for run and test.

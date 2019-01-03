@@ -76,7 +76,7 @@ class SchemaDeployHotExceptionTest extends EmbeddedServerSpec with TempSchemataD
          val logLines = ServerLogTailer.last(1)
          println(logLines)
          logLines(0).severity mustBe Severity.INFO
-         logLines(0).message must startWith (s"Deployed schema [monstrosity] gen ID [${schId}], from [monster-error.schema]")
+         logLines(0).message must startWith (s"[${ServerErrorLocal.SCHEMA_DEPLOYED.getCode}] Deployed schema [monstrosity] from [monster-error.schema]")
 
 	   }
 

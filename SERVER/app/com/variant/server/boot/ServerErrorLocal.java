@@ -68,7 +68,7 @@ public class ServerErrorLocal extends CommonError {
    /**
     * 
     */
-   private ServerErrorLocal(int code, Severity severity, String format) {
+   private ServerErrorLocal(int code, com.variant.core.UserError.Severity severity, String format) {
 		super(code, severity, format);
 	}
 

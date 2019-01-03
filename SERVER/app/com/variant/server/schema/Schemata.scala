@@ -1,10 +1,12 @@
 package com.variant.server.schema
 
-import scala.collection.JavaConversions.asScalaBuffer
+import scala.collection.JavaConverters._
 import scala.collection.concurrent.TrieMap
-import com.variant.server.boot.ServerExceptionInternal
-import play.api.Logger
+
 import com.variant.server.boot.ServerErrorLocal
+import com.variant.server.boot.ServerExceptionInternal
+
+import play.api.Logger
 
 /**
  * 
@@ -34,10 +36,10 @@ class Schemata () {
       // Write log message
       val msg = new StringBuilder()
       msg.append(ServerErrorLocal.SCHEMA_DEPLOYED.asMessage(gen.getMeta.getName, gen.origin));
-      for (test <- gen.getVariations) {
+      for (test <- gen.getVariations.asScala) {
          msg.append("\n   ").append(test.getName()).append(":[");
          var first = true;
-      for (exp <- test.getExperiences()) {
+      for (exp <- test.getExperiences.asScala) {
         if (first) first = false;
         else msg.append(", ");
         msg.append(exp.getName);

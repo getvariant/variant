@@ -6,7 +6,7 @@ import java.nio.file.StandardWatchEventKinds.ENTRY_DELETE
 import java.nio.file.StandardWatchEventKinds.ENTRY_MODIFY
 import java.nio.file.WatchEvent
 
-import scala.collection.JavaConversions.asScalaBuffer
+import scala.collection.JavaConverters._
 
 import com.variant.server.boot.ServerExceptionInternal
 
@@ -37,7 +37,7 @@ abstract class AsyncDirectoryWatcher(val path: Path) extends Thread {
 
    override def run() = Iterator.continually(watchService.take()).foreach {
       key => {
-         key.pollEvents() foreach {
+         key.pollEvents.asScala.foreach {
             case event: WatchEvent[_] =>
                val target = event.context().asInstanceOf[Path]
                event.kind() match {

@@ -2,7 +2,7 @@ package com.variant.server.schema
 
 import scala.collection.mutable
 import scala.collection.immutable
-import scala.collection.JavaConversions._
+import scala.collection.JavaConverters._
 import play.api.Logger
 import com.variant.core.schema.parser.ParserResponse
 import com.variant.core.schema.parser.FlusherService
@@ -31,7 +31,7 @@ abstract class AbstractSchemaDeployer() extends SchemaDeployer {
     val resp = parser.parse(schemaSrc)
 
     // Log all parser messages.
-    resp.getMessages(Severity.ERROR).foreach { logParserMessage(_) }
+    resp.getMessages(Severity.ERROR).asScala.foreach { logParserMessage(_) }
     
     _parserResponses += resp
     resp

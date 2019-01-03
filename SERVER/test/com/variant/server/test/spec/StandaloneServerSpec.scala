@@ -30,8 +30,8 @@ class StandaloneServerSpec extends PlaySpec with BeforeAndAfterAll {
    // Directory where the standalong server is built. Tests may overide this.
    protected lazy val serverDir = "/private/tmp/standaloneServer"
 
-   // The flusher to use. Valid values: 'default', 'mysql', or 'postgres'. Tests may overide this.
-   protected lazy val flusher = "default"
+   // The flusher to use. Valid values: 'null', 'mysql', or 'postgres'. Tests may overide this.
+   protected lazy val flusher = "null"
 
    // The standalone server 
    protected val server = new StandaloneServer(serverDir, flusher)

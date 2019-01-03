@@ -1,20 +1,24 @@
 package com.variant.server.boot
 
-import scala.collection.JavaConversions.asScalaSet
+import java.lang.management.ManagementFactory
+
+import scala.collection.JavaConverters._
 import scala.collection.mutable
 import scala.concurrent.Future
+
 import org.apache.commons.lang3.time.DurationFormatUtils
+
 import com.typesafe.config.Config
 import com.variant.core.UserError.Severity
 import com.variant.server.api.ServerException
 import com.variant.server.schema.SchemaDeployer
 import com.variant.server.schema.Schemata
+
 import javax.inject.Inject
 import javax.inject.Singleton
 import play.api.Configuration
 import play.api.Logger
 import play.api.inject.ApplicationLifecycle
-import java.lang.management.ManagementFactory
 
 
 /**
@@ -93,7 +97,7 @@ class VariantServerImpl @Inject() (
       try {
          // Echo all config keys if debug
       	if (logger.isDebugEnabled) {
-           config.entrySet().filter(x => x.getKey.startsWith("variant.")).foreach(e => logger.debug("  %s => [%s]".format(e.getKey, e.getValue())))
+           config.entrySet().asScala.filter(x => x.getKey.startsWith("variant.")).foreach(e => logger.debug("  %s => [%s]".format(e.getKey, e.getValue())))
          }
             	
       	

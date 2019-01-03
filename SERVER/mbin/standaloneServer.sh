@@ -38,8 +38,14 @@ mkdir ${server_dir}
 unzip target/universal/variant-server-*.zip -d ${server_dir}
 mv ${server_dir}/variant-server-*/* ${server_dir}
 rmdir ${server_dir}/variant-server-*
-cp standalone-server/conf/variant-${flusher}.conf ${server_dir}/conf/variant.conf
+
+if [ "$flusher" != "null" ]; then
+  cp standalone-server/conf/variant-${flusher}.conf ${server_dir}/conf/variant.conf
+fi
+
 cp standalone-server/ext/* ${server_dir}/ext
+
+mkdir ${server_dir}/schemata
 cp standalone-server/schemata/* ${server_dir}/schemata
 
 # Restore the target directory.
