@@ -3,9 +3,8 @@
 # Generate server and client javadoc.
 # 
 
-
 version=0.9
-dot_version=0.9.3
+dot_version=0.9.4
 workspace_root_dir=$(cd $(dirname $0)/../..; pwd)
 core_src_dir=${workspace_root_dir}/CORE/src/main/java
 server_src_dir=${workspace_root_dir}/SERVER/app

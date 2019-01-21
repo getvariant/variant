@@ -2,11 +2,10 @@
 // Variant Server build config
 //
 
-//sbtVersion := "1.2.8"
 scalaVersion := "2.12.8"
 
-val coreVersion = "0.9.3"
-name := "Variant"
+val coreVersion = "0.9.4"
+name := "Variant " + coreVersion
 version := coreVersion
 
 lazy val root = (project in file(".")).enablePlugins(PlayScala)
@@ -33,7 +32,7 @@ libraryDependencies ++= Seq(
   "org.scalatestplus.play" %% "scalatestplus-play" % "3.0.0" % Test,
   
   // Variant Core
-  "com.variant"            % "variant-core"        % "0.9.3",  
+  "com.variant"            % "variant-core"        % coreVersion,  
   
   // We should not need this any more because there's no JDBC dependencies in app
   // and those in test are resolved at run time via the unmanaged /ext path.
