@@ -1,6 +1,8 @@
 package com.variant.client;
 
 
+import java.util.Properties;
+
 import com.typesafe.config.Config;
 import com.variant.client.impl.VariantClientImpl;
 
@@ -46,16 +48,16 @@ public interface VariantClient {
 	public static class Factory {
 		
 		/**
-		 * Obtain a new instance of {@link VariantClient}.
+		 * Obtain a new instance of {@link VariantClient} 
 		 * Host application should hold on to and reuse the object returned by this method whenever possible.
 		 * One of these per process is recommended.
 		 * 
 		 * @return Instance of the {@link VariantClient} type.
-		 * @since 0.6
+		 * @since 0.9
 		 */
-		public static VariantClient getInstance() {
+		public static VariantClient getInstance(Properties props) {
 			
-			return new VariantClientImpl();
+			return new VariantClientImpl(props);
 		}
 	}
 }

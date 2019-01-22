@@ -1,4 +1,4 @@
-package com.variant.core.conf;
+package com.variant.server.boot;
 
 import static com.variant.core.impl.CommonError.CONFIG_BOTH_FILE_AND_RESOURCE_GIVEN;
 import static com.variant.core.impl.CommonError.CONFIG_FILE_NOT_FOUND;

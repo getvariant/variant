@@ -21,7 +21,7 @@ object EmbeddedServerSpec {
    private var sqlSchemaCreated = false
 }
 
-class EmbeddedServerSpec extends BaseSpec with OneAppPerSuite with BeforeAndAfterAll {
+class EmbeddedServerSpec extends BaseServerSpec with OneAppPerSuite with BeforeAndAfterAll {
 
    import EmbeddedServerSpec._
    

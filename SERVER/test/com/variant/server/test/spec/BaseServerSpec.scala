@@ -23,9 +23,9 @@ import com.variant.core.schema.ParserMessage
 import com.variant.core.UserError
 
 /**
- * 
+ * Base server spec
  */
-trait BaseSpec extends PlaySpec {
+trait BaseServerSpec extends PlaySpec {
       
    private val rand = new Random(System.currentTimeMillis)
    /**

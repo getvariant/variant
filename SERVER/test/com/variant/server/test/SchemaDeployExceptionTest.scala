@@ -13,7 +13,7 @@ import com.variant.server.api.ServerException
 import com.variant.server.boot.ServerErrorLocal._
 import com.variant.server.play.VariantApplicationLoader
 import com.variant.server.boot.VariantServer
-import com.variant.server.test.spec.BaseSpec
+import com.variant.server.test.spec.BaseServerSpec
 import com.variant.server.test.util.ServerLogTailer
 import play.api.Application
 import play.api.Configuration
@@ -28,7 +28,7 @@ import com.variant.server.boot.ServerExceptionLocal
 /**
  * Test various schema deployment error scenarios
  */
-class SchemaDeployExceptionTest extends BaseSpec with OneAppPerTest {
+class SchemaDeployExceptionTest extends BaseServerSpec with OneAppPerTest {
    
   /**
    * This will implicitly rebuild the server before each test.

@@ -1,6 +1,7 @@
 package com.variant.client.impl;
 
 import java.util.Map;
+import java.util.Properties;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -9,7 +10,7 @@ import com.typesafe.config.Config;
 import com.typesafe.config.ConfigValue;
 import com.variant.client.Connection;
 import com.variant.client.VariantClient;
-import com.variant.core.conf.ConfigLoader;
+import com.variant.server.boot.ConfigLoader;
 
 /**
  * <p>Variant Java Client API. Makes no assumptions about the host application other than 
@@ -22,8 +23,6 @@ public class VariantClientImpl implements VariantClient {
 		
 	final private static Logger LOG = LoggerFactory.getLogger(VariantClientImpl.class);
 	private final Config config = ConfigLoader.load("/variant.conf", "/com/variant/client/variant-default.conf");
-//	private final ConnectionFactory connFactory = new ConnectionFactory(this);
-//	private final ConcurrentHashMap<String, Connection> connMap = new ConcurrentHashMap<String, Connection>();
 	
 	public final Server server;
 		
@@ -33,7 +32,7 @@ public class VariantClientImpl implements VariantClient {
 
 	/**
 	 */
-	public VariantClientImpl() {
+	public VariantClientImpl(Properties props) {
 		server = new Server(this);
 		
         // Echo all config keys if debug
