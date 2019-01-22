@@ -5,7 +5,7 @@
 scalaVersion := "2.12.8"
 
 val coreVersion = "0.9.4"
-name := "Variant " + coreVersion
+name := "Variant"
 version := coreVersion
 
 lazy val root = (project in file(".")).enablePlugins(PlayScala)

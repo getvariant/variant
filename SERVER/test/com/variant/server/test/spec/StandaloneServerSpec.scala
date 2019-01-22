@@ -38,7 +38,7 @@ class StandaloneServerSpec extends PlaySpec with BeforeAndAfterAll {
    
    private val logger = Logger(this.getClass)
       
-   "Server must come up with the petclinic schemata" in {
+   "Server must come up with petclinic schema" in {
 
          server.start()
          
