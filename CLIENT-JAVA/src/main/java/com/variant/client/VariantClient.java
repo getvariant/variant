@@ -1,10 +1,13 @@
 package com.variant.client;
 
 
-import java.util.Properties;
+import static com.variant.client.impl.ConfigKeys.*;
 
-import com.typesafe.config.Config;
+import java.util.HashMap;
+
+import com.variant.client.impl.ClientUserError;
 import com.variant.client.impl.VariantClientImpl;
+import com.variant.core.util.immutable.ImmutableMap;
 
 /**
  * Variant Java Client object.
@@ -18,19 +21,11 @@ import com.variant.client.impl.VariantClientImpl;
 public interface VariantClient {
 		
 	/**
-	 * Externally supplied configuration.
-	 * See Variant Java Client User Guile for details on configuring Variant Java client.
+	 * Connect to a variation schema on a Variant server by its URI.
+	 * Variant schema URI has the following format:
+	 * [variant:]//netloc[:port]/schema
 	 * 
-	 * @return An object of type <a href="https://lightbend.github.io/config/latest/api/com/typesafe/config/Config.html" target="_blank">com.typesafe.config.Config</a>.
-	 * 
-	 * @since 0.7
-	 */
-	public Config getConfig();
-	
-	/**
-	 * Connect to the given variation schema on the server.
-	 * 
-	 * @param schema The name of the schema, which should be deployed on the server.
+	 * @param uri The Variant URI to the schema.
 	 *        
 	 * @return An instance of the {@link Connection} type.
 	 * 
@@ -38,26 +33,84 @@ public interface VariantClient {
 	 * @since 0.7
 	 */
 	
-	public Connection connectTo(String schema);
+	Connection connectTo(String uri);
 	
 	/**
-	 * Static factory class: call {@link #getInstance()} to obtain a new instance of {@link VariantClient}.
+	 * Variant client builder helper class. Implements the builder design pattern.
 	 * 
-	 * @since 0.6
+	 * @since 0.9
 	 */
-	public static class Factory {
+	public static class Builder {
+		
+		// Init with defaults.
+		@SuppressWarnings("serial")
+		HashMap<String, Object> props = new HashMap<String, Object>() {{
+			put(TARGETING_STABILITY_DAYS, 0);
+		}};
+
+		/**
+		 * Instantiate a Variant clicent builder. 
+		 */
+		public Builder() {}
 		
 		/**
-		 * Obtain a new instance of {@link VariantClient} 
+		 * Set targeting stability days. Must be 0 or greater.
+		 * @param days
+		 * @return this object.
+		 * @since 0.9
+		 */
+		public Builder withTargetingStabilityDays(int days) {
+			props.put(TARGETING_STABILITY_DAYS, days);
+			return this;
+		}
+		
+		/**
+		 * Set targeting tracker class.
+		 * @param Class implementing the {@link TargetingTracker} interface.
+		 * @return this object.
+		 * @since 0.9
+		 */
+		public Builder withTargetingTrackerClass(Class<TargetingTracker> klass) {
+
+			if (!TargetingTracker.class.isAssignableFrom(klass))
+				throw new VariantException(ClientUserError.TARGETING_TRACKER_NO_INTERFACE, klass.getName());
+		
+			props.put(TARGETING_TRACKER_CLASS, klass);
+			return this;
+		}
+		
+		/**
+		 * Set session ID tracker class.
+		 * @param Class implementing the {@link SessionIdTracker} interface.
+		 * @return this object.
+		 * @since 0.9
+		 */
+		public Builder withSessionIdTrackerClass(Class<SessionIdTracker> klass) {
+
+			if (!SessionIdTracker.class.isAssignableFrom(klass))
+				throw new VariantException(ClientUserError.SESSION_ID_TRACKER_NO_INTERFACE, klass.getName());
+
+			props.put(SESSION_ID_TRACKER_CLASS, klass);
+			return this;
+		}
+
+		/**
+		 * Instantiate a new instance of {@link VariantClient} 
 		 * Host application should hold on to and reuse the object returned by this method whenever possible.
-		 * One of these per process is recommended.
+		 * In most cases, one {@link VariantClient} instance per application should be sufficient.
 		 * 
 		 * @return Instance of the {@link VariantClient} type.
 		 * @since 0.9
 		 */
-		public static VariantClient getInstance(Properties props) {
+		public VariantClient build() {
 			
-			return new VariantClientImpl(props);
+			if (props.get(TARGETING_TRACKER_CLASS) == null)
+				throw new VariantException(ClientUserError.TARGETING_TRACKER_MISSING);
+			
+			if (props.get(SESSION_ID_TRACKER_CLASS) == null)
+				throw new VariantException(ClientUserError.SESSION_ID_TRACKER_MISSING);
+
+			return new VariantClientImpl(new ImmutableMap<String, Object>(props));
 		}
 	}
 }

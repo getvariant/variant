@@ -1,13 +1,10 @@
 package com.variant.client.test;
 
-import static com.variant.client.ConfigKeys.SESSION_ID_TRACKER_CLASS_NAME;
-import static com.variant.client.ConfigKeys.TARGETING_STABILITY_DAYS;
-import static com.variant.client.ConfigKeys.TARGETING_TRACKER_CLASS_NAME;
+import static com.variant.client.impl.ConfigKeys.*;
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
-import com.typesafe.config.Config;
 import com.variant.client.VariantClient;
 import com.variant.client.impl.ClientUserError;
 import com.variant.client.test.util.ClientBaseTest;

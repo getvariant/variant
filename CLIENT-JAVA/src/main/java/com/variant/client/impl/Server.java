@@ -1,6 +1,7 @@
 package com.variant.client.impl;
 
 import java.io.StringWriter;
+import java.net.URI;
 import java.util.Map;
 
 import org.slf4j.Logger;
@@ -8,7 +9,6 @@ import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
-import com.variant.client.ConfigKeys;
 import com.variant.client.SessionExpiredException;
 import com.variant.client.TargetingTracker;
 import com.variant.client.UnknownSchemaException;
@@ -33,9 +33,9 @@ public class Server {
 
 	private static final Logger LOG = LoggerFactory.getLogger(Server.class);
 
-	private final String serverUrl;
 	private final HttpAdapter adapter;
-
+	private String serverUrl;
+	
 	/**
 	 * All outbound operations which expect a return type.
 	 *
@@ -110,8 +110,6 @@ public class Server {
 	Server(VariantClientImpl client) {
 		this.client = client;
 		this.adapter = new HttpAdapter();
-		String url = client.getConfig().getString(ConfigKeys.SERVER_URL);
-		this.serverUrl =  url.endsWith("/") ? url : url + "/";
 	}
 	
 	//---------------------------------------------------------------------------------------------//
@@ -119,15 +117,24 @@ public class Server {
 	//---------------------------------------------------------------------------------------------//
 
 	/**
-	 * Connect this server to a schema.
+	 * Connect this server to a schema denoted by the given URI.
 	 * @return
 	 */
-	Payload.Connection connect(String schema) {
+	Payload.Connection connect(String stringUri) {
 		
 		if (LOG.isTraceEnabled()) LOG.trace("connect()");
 
+		// Parse the URI
+		URI uri = URI.create(stringUri);
+		serverUrl = uri.getHost();
+		String schema = uri.getPath();
+		
+		if (serverUrl == null || schema == null) {
+			throw new VariantException(ClientUserError.MALFORMED_VARIANT_URI, stringUri);
+		}
+		
 		try {
-			HttpResponse resp = adapter.get(serverUrl + "connection/" + schema);
+			HttpResponse resp = adapter.get(uri.getHost() + "connection/" + uri.getPath());
 			return Payload.Connection.parse(resp);
 		}
 		catch (VariantException ce) {
@@ -436,4 +443,10 @@ public class Server {
 		}.run(ssn);
 	}
 
+	public static void main(String[] args) {
+		URI uri = URI.create("//localhost:5377/foo");
+		System.out.println(uri.getScheme());
+		System.out.println(uri.getHost());
+		System.out.println(uri.getPath());
+	}
 }

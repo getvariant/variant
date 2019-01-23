@@ -5,6 +5,10 @@ import java.util.Map;
 
 public class ImmutableMap<K,V> extends HashMap<K,V> {
 
+	public ImmutableMap() {
+		super();
+	}
+	
 	public ImmutableMap(Map<K, V> map) {
 		super.putAll(map);
 	}

@@ -12,7 +12,6 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.typesafe.config.Config;
 import com.variant.client.Connection;
 import com.variant.client.Session;
 import com.variant.client.SessionExpiredException;
@@ -150,15 +149,6 @@ public class SessionImpl implements Session {
 	@Override
 	public Connection getConnection() {
 		return conn;
-	}
-
-	/**
-	 * Non-mutating, 
-	 * but connection may refuse.
-	 */
-	@Override
-	public Config getConfig() {
-		return conn.getClient().getConfig();
 	}
 
 	/**

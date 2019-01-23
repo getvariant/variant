@@ -1,16 +1,13 @@
 package com.variant.client.impl;
 
 import java.util.Map;
-import java.util.Properties;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.typesafe.config.Config;
-import com.typesafe.config.ConfigValue;
 import com.variant.client.Connection;
 import com.variant.client.VariantClient;
-import com.variant.server.boot.ConfigLoader;
+import com.variant.core.util.immutable.ImmutableMap;
 
 /**
  * <p>Variant Java Client API. Makes no assumptions about the host application other than 
@@ -20,10 +17,10 @@ import com.variant.server.boot.ConfigLoader;
  * @since 0.6
  */
 public class VariantClientImpl implements VariantClient {
-		
+
 	final private static Logger LOG = LoggerFactory.getLogger(VariantClientImpl.class);
-	private final Config config = ConfigLoader.load("/variant.conf", "/com/variant/client/variant-default.conf");
-	
+
+	public final ImmutableMap<String, Object> props;
 	public final Server server;
 		
 	//---------------------------------------------------------------------------------------------//
@@ -32,25 +29,19 @@ public class VariantClientImpl implements VariantClient {
 
 	/**
 	 */
-	public VariantClientImpl(Properties props) {
+	public VariantClientImpl(ImmutableMap<String, Object> props) {
+
+		this.props = props;
 		server = new Server(this);
-		
-        // Echo all config keys if debug
+				
      	if (LOG.isDebugEnabled()) {
-     		for (Map.Entry<String, ConfigValue> e : config.entrySet()) {
+     		for (Map.Entry<String, Object> e : props.entrySet()) {
      			LOG.debug(String.format("  %s => [%s]", e.getKey(), e.getValue()));
      		}
         }
 
 	}
 	
-	/**
-	 */
-	@Override
-	public Config getConfig() {
-		return config;
-	}
-
 	@Override
 	public Connection connectTo(String schema) {
 		

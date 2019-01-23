@@ -1,9 +1,7 @@
 package com.variant.client.impl;
 
-import static com.variant.client.ConfigKeys.SESSION_ID_TRACKER_CLASS_NAME;
-import static com.variant.client.ConfigKeys.TARGETING_TRACKER_CLASS_NAME;
-import static com.variant.client.impl.ClientUserError.SESSION_ID_TRACKER_NO_INTERFACE;
-import static com.variant.client.impl.ClientUserError.TARGETING_TRACKER_NO_INTERFACE;
+import static com.variant.client.impl.ConfigKeys.SESSION_ID_TRACKER_CLASS;
+import static com.variant.client.impl.ConfigKeys.TARGETING_TRACKER_CLASS;
 
 import java.util.Optional;
 import java.util.Random;
@@ -67,22 +65,16 @@ public class ConnectionImpl implements Connection {
 	 * @return
 	 */
 	private SessionIdTracker initSessionIdTracker(Object...userData) {
-		// Session ID tracker.
-		String className = client.getConfig().getString(SESSION_ID_TRACKER_CLASS_NAME);
+		
+		@SuppressWarnings("unchecked")
+		Class<SessionIdTracker> klass = (Class<SessionIdTracker>) client.props.get(SESSION_ID_TRACKER_CLASS);
 		try {
-			Class<?> sidTrackerClass = Class.forName(className);
-			Object sidTrackerObject = sidTrackerClass.newInstance();
-			if (sidTrackerObject instanceof SessionIdTracker) {
-				SessionIdTracker result = (SessionIdTracker) sidTrackerObject;
-				result.init(userData);
-				return result;
-			}
-			else {
-				throw new VariantException(SESSION_ID_TRACKER_NO_INTERFACE, className, SessionIdTracker.class.getName());
-			}
+			SessionIdTracker result = klass.newInstance();
+			result.init(userData);
+			return result;
 		}
 		catch (Exception e) {
-			throw new VariantException.Internal("Unable to instantiate session id tracker class [" + className + "]", e);
+			throw new VariantException.Internal("Unable to instantiate session ID tracker class [" + klass.getName() +"]", e);
 		}
 	}
 	
@@ -94,25 +86,17 @@ public class ConnectionImpl implements Connection {
 	 */
 	private TargetingTracker initTargetingTracker(Object...userData) {
 		
-		// Instantiate targeting tracker.
-		String className = client.getConfig().getString(TARGETING_TRACKER_CLASS_NAME);
-		
+		@SuppressWarnings("unchecked")
+		Class<TargetingTracker> klass = (Class<TargetingTracker>) client.props.get(TARGETING_TRACKER_CLASS);
 		try {
-			Object object = Class.forName(className).newInstance();
-			if (object instanceof TargetingTracker) {
-				TargetingTracker result = (TargetingTracker) object;
-				result.init(userData);
-				//System.out.println("***************************");
-				//result.get().forEach((e)->System.out.println(e));
-				return result;
-			}
-			else {
-				throw new VariantException(TARGETING_TRACKER_NO_INTERFACE, className, TargetingTracker.class.getName());
-			}
+			TargetingTracker result = klass.newInstance();
+			result.init(userData);
+			return result;
 		}
 		catch (Exception e) {
-			throw new VariantException.Internal("Unable to instantiate targeting tracker class [" + className +"]", e);
+			throw new VariantException.Internal("Unable to instantiate targeting tracker class [" + klass.getName() +"]", e);
 		}
+
 	}
 
 			

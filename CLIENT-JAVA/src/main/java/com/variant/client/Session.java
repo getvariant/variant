@@ -5,7 +5,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
-import com.typesafe.config.Config;
 import com.variant.core.TraceEvent;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.State;
@@ -88,16 +87,6 @@ public interface Session {
 	 */
 	StateRequest targetForState(State state);
 		
-	/**
-	 * Externally supplied configuration. A shortcut for {@code getConnection().getClient().getConfig()}
-	 * See Variant Java Client User Guile for details on configuring Variant Java client.
-	 * 
-	 * @return An object of type <a href="https://lightbend.github.io/config/latest/api/com/typesafe/config/Config.html" target="_blank">com.typesafe.config.Config</a>.
-	 * 
-	 * @since 0.7
-	 */
-	public Config getConfig();
-
 	/**
      * <p>Session timeout interval, as set by the server. The server will dispose of this session after this many milliseconds of inactivity.
      *  
