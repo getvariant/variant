@@ -1,5 +1,6 @@
 package com.variant.client.impl;
 
+import java.net.URI;
 import java.util.Map;
 
 import org.slf4j.Logger;
@@ -7,6 +8,7 @@ import org.slf4j.LoggerFactory;
 
 import com.variant.client.Connection;
 import com.variant.client.VariantClient;
+import com.variant.client.VariantException;
 import com.variant.core.util.immutable.ImmutableMap;
 
 /**
@@ -43,9 +45,17 @@ public class VariantClientImpl implements VariantClient {
 	}
 	
 	@Override
-	public Connection connectTo(String schema) {
-		
-		return new ConnectionImpl(this, schema, server.connect(schema));
+	public Connection connectTo(String stringUri) {
+
+		// Parse the uri param
+		URI uri = URI.create(stringUri);
+		if (uri.getHost() == null || uri.getPath() == null) {
+			throw new VariantException(ClientUserError.MALFORMED_VARIANT_URI, stringUri);
+		}
+
+		String schema = uri.getPath();
+
+		return new ConnectionImpl(this, schema, server.connect(uri));
 	}
 
 }

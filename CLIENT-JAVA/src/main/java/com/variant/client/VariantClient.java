@@ -70,7 +70,7 @@ public interface VariantClient {
 		 * @return this object.
 		 * @since 0.9
 		 */
-		public Builder withTargetingTrackerClass(Class<TargetingTracker> klass) {
+		public Builder withTargetingTrackerClass(Class<? extends TargetingTracker> klass) {
 
 			if (!TargetingTracker.class.isAssignableFrom(klass))
 				throw new VariantException(ClientUserError.TARGETING_TRACKER_NO_INTERFACE, klass.getName());
@@ -85,7 +85,7 @@ public interface VariantClient {
 		 * @return this object.
 		 * @since 0.9
 		 */
-		public Builder withSessionIdTrackerClass(Class<SessionIdTracker> klass) {
+		public Builder withSessionIdTrackerClass(Class<? extends SessionIdTracker> klass) {
 
 			if (!SessionIdTracker.class.isAssignableFrom(klass))
 				throw new VariantException(ClientUserError.SESSION_ID_TRACKER_NO_INTERFACE, klass.getName());

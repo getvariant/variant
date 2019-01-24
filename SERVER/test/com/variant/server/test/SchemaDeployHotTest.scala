@@ -141,7 +141,7 @@ class SchemaDeployHotTest extends EmbeddedServerSpec with TempSchemataDir {
 
 	      // Create a session to keep the schema from being vacuumed after undeployment.
 	      val sid = newSid
-         assertResp(route(app, httpReq(POST, context + "/session/monstrosity/" + sid).withBody(emptyTargetingTrackerBody)))
+         assertResp(route(app, httpReq(POST, "/session/monstrosity/" + sid).withBody(emptyTargetingTrackerBody)))
             .isOk
             .withBodySession { ssn =>
                ssn.getId mustNot be (sid)
@@ -233,7 +233,7 @@ class SchemaDeployHotTest extends EmbeddedServerSpec with TempSchemataDir {
 	   
 	   "create session in the third schema" in {
 	   
-	      assertResp(route(app, httpReq(POST, context + "/session/ParserConjointOkayBigTestNoHooks/" + sid).withBody(emptyTargetingTrackerBody)))
+	      assertResp(route(app, httpReq(POST, "/session/ParserConjointOkayBigTestNoHooks/" + sid).withBody(emptyTargetingTrackerBody)))
             .isOk
             .withBodySession { ssn =>
                ssn.getId mustNot be (sid)
@@ -258,7 +258,7 @@ class SchemaDeployHotTest extends EmbeddedServerSpec with TempSchemataDir {
 
 	   "permit session read over draining connection" in {
 	      
-         assertResp(route(app, httpReq(GET, context + "/session/ParserConjointOkayBigTestNoHooks/" + sid)))
+         assertResp(route(app, httpReq(GET, "/session/ParserConjointOkayBigTestNoHooks/" + sid)))
             .isOk
             .withBodyJson(json => json mustNot be (null))
 	   }
@@ -270,7 +270,7 @@ class SchemaDeployHotTest extends EmbeddedServerSpec with TempSchemataDir {
             "name" -> "foo",
             "value" -> "bar"
          )
-         assertResp(route(app, httpReq(PUT, context + "/session/attr").withBody(body.toString())))
+         assertResp(route(app, httpReq(PUT, "/session/attr").withBody(body.toString())))
             .isOk
             .withBodySession  { ssn =>
                ssn.getAttributes.get("foo") mustBe null
@@ -282,7 +282,7 @@ class SchemaDeployHotTest extends EmbeddedServerSpec with TempSchemataDir {
          
          Thread.sleep(sessionTimeoutSecs * 1000);
          
-         assertResp(route(app, httpReq(GET, context + "/session/ParserConjointOkayBigTestNoHooks/" + sid)))
+         assertResp(route(app, httpReq(GET, "/session/ParserConjointOkayBigTestNoHooks/" + sid)))
             .isError(SESSION_EXPIRED, sid)
 
 	   }
@@ -311,7 +311,7 @@ class SchemaDeployHotTest extends EmbeddedServerSpec with TempSchemataDir {
 	   "create a session in schema ParserConjointOkayBigTestNoHooks" in {
          
          val body = sessionJsonBigCovar.expand("sid" -> sid1)
-         assertResp(route(app, httpReq(PUT, context + "/session/ParserConjointOkayBigTestNoHooks").withBody(body)))
+         assertResp(route(app, httpReq(PUT, "/session/ParserConjointOkayBigTestNoHooks").withBody(body)))
             .isOk
             .withNoBody
       }
@@ -330,7 +330,7 @@ class SchemaDeployHotTest extends EmbeddedServerSpec with TempSchemataDir {
          val halfExp = sessionTimeoutSecs * 500
          for ( wait <- Seq(halfExp, halfExp, halfExp, halfExp) ) {
             Thread.sleep(wait)
-            assertResp(route(app, httpReq(GET, context + "/session/ParserConjointOkayBigTestNoHooks/" + sid1)))
+            assertResp(route(app, httpReq(GET, "/session/ParserConjointOkayBigTestNoHooks/" + sid1)))
                .isOk
                .withBodyJson { json => 
                   StringUtils.digest((json \ "session").as[String]) mustBe 
@@ -352,13 +352,13 @@ class SchemaDeployHotTest extends EmbeddedServerSpec with TempSchemataDir {
 	   
 	   "create new session in the unaffected schema petclinic" in {
          
-         assertResp(route(app, httpReq(POST, context + "/session/petclinic/" + newSid).withBody(emptyTargetingTrackerBody)))
+         assertResp(route(app, httpReq(POST, "/session/petclinic/" + newSid).withBody(emptyTargetingTrackerBody)))
             .isOk
       }
 	   
 	   "create new session in the new schema" in {
          
-         assertResp(route(app, httpReq(POST, context + "/session/monstrosity/" + newSid).withBody(emptyTargetingTrackerBody)))
+         assertResp(route(app, httpReq(POST, "/session/monstrosity/" + newSid).withBody(emptyTargetingTrackerBody)))
             .isOk
       }
    }

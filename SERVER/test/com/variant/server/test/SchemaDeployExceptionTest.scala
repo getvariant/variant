@@ -108,15 +108,15 @@ class SchemaDeployExceptionTest extends BaseServerSpec with OneAppPerTest {
 
          server.isUp mustBe false
 
-         assertResp(route(app, httpReq(PUT, context + "/session/foo")))
+         assertResp(route(app, httpReq(PUT, "/session/foo")))
             .is(SERVICE_UNAVAILABLE)
             .withNoBody
 
-         assertResp(route(app, httpReq(GET, context + "/session/foo/bar")))
+         assertResp(route(app, httpReq(GET, "/session/foo/bar")))
             .is(SERVICE_UNAVAILABLE)
             .withNoBody
 
-         assertResp(route(app, httpReq(POST, context + "/session/foo/bar")))
+         assertResp(route(app, httpReq(POST, "/session/foo/bar")))
             .is(SERVICE_UNAVAILABLE)
             .withNoBody
       }
@@ -138,15 +138,15 @@ class SchemaDeployExceptionTest extends BaseServerSpec with OneAppPerTest {
 
          server.isUp mustBe false
                   
-         assertResp(route(app, httpReq(PUT, context + "/session/foo")))
+         assertResp(route(app, httpReq(PUT, "/session/foo")))
             .is(SERVICE_UNAVAILABLE)
             .withNoBody
 
-         assertResp(route(app, httpReq(GET, context + "/session/foo/bar")))
+         assertResp(route(app, httpReq(GET, "/session/foo/bar")))
             .is(SERVICE_UNAVAILABLE)
             .withNoBody
 
-         assertResp(route(app, httpReq(POST, context + "/session/foo/bar")))
+         assertResp(route(app, httpReq(POST, "/session/foo/bar")))
             .is(SERVICE_UNAVAILABLE)
             .withNoBody
 

@@ -1,7 +1,7 @@
 package com.variant.server.test
 
 import com.variant.core.impl.CoreException
-import com.variant.server.boot.ConfigLoader
+import com.variant.server.util.ConfigLoader
 import com.variant.server.test.spec.ServerlessSpec
 import com.variant.core.impl.CommonError
 import com.typesafe.config.Config

@@ -19,8 +19,8 @@ import com.variant.core.util.Constants._
  */
 class SessionAttributeTest extends EmbeddedServerSpec {
       
-   val endpointSession = context + "/session"
-   val endpointAttribute = context + "/session/attr"
+   val endpointSession = "/session"
+   val endpointAttribute = "/session/attr"
    
    val sessionJsonBigCovar = ParameterizedString(
       sessionJsonBigCovarPrototype.format(System.currentTimeMillis()))

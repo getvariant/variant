@@ -26,17 +26,19 @@ class StandaloneServerDefaultsTest extends StandaloneServerSpec {
 
       "send 404 on a bad request" in  {
          
+         HttpOperation.get("http://localhost:5377/variant").exec()
+            .getResponseCode mustBe 404
+
          HttpOperation.get("http://localhost:5377/bad").exec()
             .getResponseCode mustBe 404
 
          HttpOperation.get("http://localhost:5377/variant/bad").exec()
             .getResponseCode mustBe 404
-
       }
     
       "deploy petclinic and write to the application log" in  {
             
-         HttpOperation.get("http://localhost:5377/variant/connection/petclinic")
+         HttpOperation.get("http://localhost:5377/connection/petclinic")
             .exec().getResponseCode mustBe 200
 
          val lines = ServerLogTailer.last(2, serverDir + "/log/variant.log")
@@ -49,7 +51,7 @@ class StandaloneServerDefaultsTest extends StandaloneServerSpec {
 
       "send health on a root request" in  {
          
-         val resp = HttpOperation.get("http://localhost:5377/variant").exec() 
+         val resp = HttpOperation.get("http://localhost:5377").exec() 
          resp.getResponseCode mustBe 200
          resp.getStringContent must startWith (VariantServer.productName)
       }
@@ -59,7 +61,7 @@ class StandaloneServerDefaultsTest extends StandaloneServerSpec {
          server.stop()
          server.start(Map("http.port" -> "1234"))
          
-         HttpOperation.get("http://localhost:1234/variant/connection/petclinic")
+         HttpOperation.get("http://localhost:1234/connection/petclinic")
             .exec().getResponseCode mustBe 200
          
       }
@@ -76,7 +78,7 @@ class StandaloneServerDefaultsTest extends StandaloneServerSpec {
          
          server.start(Map("variant.config.file"->fileName))
          
-         val resp = HttpOperation.get("http://localhost:5377/variant/connection/petclinic").exec()
+         val resp = HttpOperation.get("http://localhost:5377/connection/petclinic").exec()
          resp.getResponseCode mustBe 400
          resp.getErrorContent mustBe ServerError.UNKNOWN_SCHEMA.asMessage("petclinic")
          val lines = ServerLogTailer.last(4, serverDir + "/log/variant.log")
@@ -99,7 +101,7 @@ class StandaloneServerDefaultsTest extends StandaloneServerSpec {
          
          server.start(Map("variant.config.resource" -> ("/" + resourceName)))
          
-         val resp = HttpOperation.get("http://localhost:5377/variant/connection/petclinic").exec()
+         val resp = HttpOperation.get("http://localhost:5377/connection/petclinic").exec()
          resp.getResponseCode mustBe 400
          resp.getErrorContent mustBe ServerError.UNKNOWN_SCHEMA.asMessage("petclinic")
          val lines = ServerLogTailer.last(4, serverDir + "/log/variant.log")

@@ -49,7 +49,7 @@ object ConnectionTest {
 class ConnectionTest extends EmbeddedServerAsyncSpec {
    
       
-   val endpoint = context + "/connection"
+   val endpoint = "/connection"
 
    "ConnectionController" should {
    

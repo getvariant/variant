@@ -9,6 +9,8 @@ import com.variant.client.VariantClient;
 import com.variant.client.VariantException;
 import com.variant.client.impl.ConnectionImpl;
 import com.variant.client.impl.SessionImpl;
+import com.variant.client.session.SessionIdTrackerSimple;
+import com.variant.client.session.TargetingTrackerSimple;
 import com.variant.client.test.util.ClientBaseTestWithServerAsync;
 import com.variant.core.TraceEvent;
 import com.variant.core.impl.ServerError;
@@ -26,7 +28,11 @@ public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 	private int SESSIONS = 20;
 	
 	// Sole client
-	private VariantClient client = VariantClient.Factory.getInstance();	
+	// Sole client
+	private VariantClient client = new VariantClient.Builder()
+			.withSessionIdTrackerClass(SessionIdTrackerSimple.class)
+			.withTargetingTrackerClass(TargetingTrackerSimple.class)
+			.build();
 	
 	/**
 	 * Schema undeployed with a session timeout interval set to less than
@@ -381,7 +387,6 @@ public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 
 				assertNotNull(ssn.getId());
 				assertNotNull(ssn.getCreateDate());
-				assertEquals(client.getConfig(), ssn.getConfig());
 				assertEquals(conn1, ssn.getConnection());
 				assertEquals(ssnTimeout * 1000, ssn.getTimeoutMillis());
 				
@@ -449,7 +454,6 @@ public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 
 				assertNotNull(ssn.getId());
 				assertNotNull(ssn.getCreateDate());
-				assertEquals(client.getConfig(), ssn.getConfig());
 				assertEquals(conn2, ssn.getConnection());
 				assertEquals(ssnTimeout * 1000, ssn.getTimeoutMillis());
 				
@@ -481,7 +485,6 @@ public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 
 				assertNotNull(ssn.getId());
 				assertNotNull(ssn.getCreateDate());
-				assertEquals(client.getConfig(), ssn.getConfig());
 				assertEquals(conn3, ssn.getConnection());
 				assertEquals(ssnTimeout * 1000, ssn.getTimeoutMillis());
 				

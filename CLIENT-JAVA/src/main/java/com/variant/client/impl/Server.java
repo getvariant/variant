@@ -120,18 +120,13 @@ public class Server {
 	 * Connect this server to a schema denoted by the given URI.
 	 * @return
 	 */
-	Payload.Connection connect(String stringUri) {
+	Payload.Connection connect(URI uri) {
 		
 		if (LOG.isTraceEnabled()) LOG.trace("connect()");
 
-		// Parse the URI
-		URI uri = URI.create(stringUri);
 		serverUrl = uri.getHost();
 		String schema = uri.getPath();
 		
-		if (serverUrl == null || schema == null) {
-			throw new VariantException(ClientUserError.MALFORMED_VARIANT_URI, stringUri);
-		}
 		
 		try {
 			HttpResponse resp = adapter.get(uri.getHost() + "connection/" + uri.getPath());

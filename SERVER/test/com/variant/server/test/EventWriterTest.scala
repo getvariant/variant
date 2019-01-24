@@ -53,7 +53,7 @@ class EventWriterTest extends EmbeddedServerSpec {
          val sid = newSid
          eventReader.read(e => e.sessionId == sid).size mustBe 0 
          val body = sessionJson.expand("sid" -> sid)
-         assertResp(route(app, httpReq(PUT, context + "/session/monstrosity").withBody(body)))
+         assertResp(route(app, httpReq(PUT, "/session/monstrosity").withBody(body)))
             .isOk
             .withNoBody
          
@@ -97,7 +97,7 @@ class EventWriterTest extends EmbeddedServerSpec {
          val sid = newSid
          eventReader.read(e => e.sessionId == sid).size mustBe 0 
          val body = sessionJson.expand("sid" -> sid)
-         assertResp(route(app, httpReq(PUT, context + "/session/monstrosity").withBody(body)))
+         assertResp(route(app, httpReq(PUT, "/session/monstrosity").withBody(body)))
             .isOk
             .withNoBody
 
@@ -132,7 +132,7 @@ class EventWriterTest extends EmbeddedServerSpec {
          val sid = newSid
          eventReader.read(e => e.sessionId == sid).size mustBe 0 
          val body = sessionJson.expand("sid" -> sid)
-         assertResp(route(app,httpReq(PUT, context + "/session/monstrosity").withBody(body)))
+         assertResp(route(app,httpReq(PUT, "/session/monstrosity").withBody(body)))
             .isOk
             .withNoBody
 

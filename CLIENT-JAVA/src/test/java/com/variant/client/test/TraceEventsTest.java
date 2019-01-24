@@ -15,6 +15,8 @@ import com.variant.client.StateRequest;
 import com.variant.client.VariantClient;
 import com.variant.client.VariantException;
 import com.variant.client.impl.ClientUserError;
+import com.variant.client.session.SessionIdTrackerSimple;
+import com.variant.client.session.TargetingTrackerSimple;
 import com.variant.client.test.util.ClientBaseTestWithServer;
 import com.variant.client.test.util.event.TraceEventFromDatabase;
 import com.variant.client.test.util.event.TraceEventReader;
@@ -27,7 +29,11 @@ import com.variant.core.util.Tuples.Pair;
 
 public class TraceEventsTest extends ClientBaseTestWithServer {
 
-	private final VariantClient client = VariantClient.Factory.getInstance();
+	// Sole client
+	private VariantClient client = new VariantClient.Builder()
+			.withSessionIdTrackerClass(SessionIdTrackerSimple.class)
+			.withTargetingTrackerClass(TargetingTrackerSimple.class)
+			.build();
 
 	/**
 	 * Start the server with long enough session expiration

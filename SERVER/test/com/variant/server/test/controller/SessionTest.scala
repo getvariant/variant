@@ -45,7 +45,7 @@ class SessionTest extends EmbeddedServerSpec {
    
    import SessionTest._
    
-   val endpoint = context + "/session"
+   val endpoint = "/session"
    
    val sessionJsonBigCovar = ParameterizedString(
          sessionJsonBigCovarPrototype.format(System.currentTimeMillis()))

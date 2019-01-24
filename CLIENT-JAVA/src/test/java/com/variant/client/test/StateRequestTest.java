@@ -14,6 +14,8 @@ import com.variant.client.StateRequest;
 import com.variant.client.VariantClient;
 import com.variant.client.VariantException;
 import com.variant.client.impl.SchemaImpl;
+import com.variant.client.session.SessionIdTrackerSimple;
+import com.variant.client.session.TargetingTrackerSimple;
 import com.variant.client.test.util.ClientBaseTestWithServer;
 import com.variant.client.test.util.event.TraceEventFromDatabase;
 import com.variant.client.test.util.event.TraceEventReader;
@@ -26,7 +28,11 @@ import com.variant.core.schema.Variation;
 
 public class StateRequestTest extends ClientBaseTestWithServer {
 
-	private final VariantClient client = VariantClient.Factory.getInstance();
+	// Sole client
+	private VariantClient client = new VariantClient.Builder()
+			.withSessionIdTrackerClass(SessionIdTrackerSimple.class)
+			.withTargetingTrackerClass(TargetingTrackerSimple.class)
+			.build();
 		
 	public StateRequestTest() {
 		restartServer();

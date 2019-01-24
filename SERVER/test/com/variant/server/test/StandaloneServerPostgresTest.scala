@@ -29,6 +29,9 @@ class StandaloneServerPostgresTest extends StandaloneServerSpec {
 
       "send 404 on a bad request" in  {
          
+         HttpOperation.get("http://localhost:5377/variant").exec()
+            .getResponseCode mustBe 404
+
          HttpOperation.get("http://localhost:5377/bad").exec()
             .getResponseCode mustBe 404
 
@@ -38,7 +41,7 @@ class StandaloneServerPostgresTest extends StandaloneServerSpec {
       }
     
       "send health on a root request" in  {
-         val resp = HttpOperation.get("http://localhost:5377/variant").exec() 
+         val resp = HttpOperation.get("http://localhost:5377").exec() 
          resp.getResponseCode mustBe 200
          resp.getStringContent must startWith (VariantServer.productName)
       }
@@ -48,7 +51,7 @@ class StandaloneServerPostgresTest extends StandaloneServerSpec {
          server.stop()
          s"rm ${postgresDriverJar}" ! ;
          server.start()
-         val resp = HttpOperation.get("http://localhost:5377/variant/connection/petclinic").exec()
+         val resp = HttpOperation.get("http://localhost:5377/connection/petclinic").exec()
          resp.getResponseCode mustBe 400
          resp.getErrorContent mustBe ServerError.UNKNOWN_SCHEMA.asMessage("petclinic")
          

@@ -35,7 +35,6 @@ trait BaseServerSpec extends PlaySpec {
     */
    protected def application: Application
    
-   protected def context = application.configuration.get[String]("play.http.context")
    protected def server = application.injector.instanceOf[VariantServer]
 
    protected def liveGenOf(schemaName: String) = server.schemata.get(schemaName).get.liveGen.get

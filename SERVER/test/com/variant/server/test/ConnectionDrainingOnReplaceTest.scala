@@ -66,7 +66,7 @@ class ConnectionDrainingOnReplaceTest extends EmbeddedServerAsyncSpec with TempS
 
             val sid = newSid
 	         ssnId2Big(i) = sid
-            assertResp(route(app, httpReq(POST, context + "/session/monstrosity/" + sid).withBody(emptyTargetingTrackerBody)))
+            assertResp(route(app, httpReq(POST, "/session/monstrosity/" + sid).withBody(emptyTargetingTrackerBody)))
                .is(OK)
                .withBodySession { ssn =>
                   ssn.getId mustNot be (sid)
@@ -79,7 +79,7 @@ class ConnectionDrainingOnReplaceTest extends EmbeddedServerAsyncSpec with TempS
 
             val sid = newSid
 	         ssnId2Pet(i) = sid
-            assertResp(route(app, httpReq(POST, context + "/session/petclinic/" + sid).withBody(emptyTargetingTrackerBody)))
+            assertResp(route(app, httpReq(POST, "/session/petclinic/" + sid).withBody(emptyTargetingTrackerBody)))
                .is(OK)
                .withBodySession { ssn =>
                   ssn.getId mustNot be (sid)
@@ -96,7 +96,7 @@ class ConnectionDrainingOnReplaceTest extends EmbeddedServerAsyncSpec with TempS
          // pick connection randomly to emulate parallel connections.
          for (i <- 0 until SESSIONS) async {
             val sid = ssnId2Big(i)
-            assertResp(route(app, httpReq(GET, context + "/session/monstrosity/" + sid)))
+            assertResp(route(app, httpReq(GET, "/session/monstrosity/" + sid)))
                .is(OK)
                .withBodySession { ssn =>
                   ssn.getId must be (sid)
@@ -106,7 +106,7 @@ class ConnectionDrainingOnReplaceTest extends EmbeddedServerAsyncSpec with TempS
          
          for (i <- 0 until SESSIONS) async {
             val sid = ssnId2Pet(i)
-            assertResp(route(app, httpReq(GET, context + "/session/petclinic/" + sid)))
+            assertResp(route(app, httpReq(GET, "/session/petclinic/" + sid)))
                .is(OK)
                .withBodySession { ssn =>
                   ssn.getId must be (sid)
@@ -142,7 +142,7 @@ class ConnectionDrainingOnReplaceTest extends EmbeddedServerAsyncSpec with TempS
          // pick connection randomly to emulate parallel connections.
          for (i <- 0 until SESSIONS) async {
             val sid = ssnId2Big(i)
-            assertResp(route(app, httpReq(GET, context + "/session/monstrosity/" + sid)))
+            assertResp(route(app, httpReq(GET, "/session/monstrosity/" + sid)))
                .is(OK)
                .withBodySession { ssn =>
                   ssn.getId must be (sid)
@@ -152,7 +152,7 @@ class ConnectionDrainingOnReplaceTest extends EmbeddedServerAsyncSpec with TempS
 
          for (i <- 0 until SESSIONS) async {
             val sid = ssnId2Pet(i)
-            assertResp(route(app, httpReq(GET, context + "/session/petclinic/" + sid)))
+            assertResp(route(app, httpReq(GET, "/session/petclinic/" + sid)))
                .is(OK)
                .withBodySession { ssn =>
                   ssn.getId must be (sid)
@@ -173,7 +173,7 @@ class ConnectionDrainingOnReplaceTest extends EmbeddedServerAsyncSpec with TempS
                "name" -> "foo",
                "value" -> "bar"
             )
-            assertResp(route(app, httpReq(PUT, context + "/session/attr").withBody(body.toString())))
+            assertResp(route(app, httpReq(PUT, "/session/attr").withBody(body.toString())))
                .isOk
                .withBodySession  { ssn =>
                   ssn.getAttributes.get("foo") mustBe null
@@ -188,7 +188,7 @@ class ConnectionDrainingOnReplaceTest extends EmbeddedServerAsyncSpec with TempS
          
          val sid = newSid
          var actualSid: String = null
-         assertResp(route(app, httpReq(POST, context + "/session/monstrosity/" + sid).withBody(emptyTargetingTrackerBody)))
+         assertResp(route(app, httpReq(POST, "/session/monstrosity/" + sid).withBody(emptyTargetingTrackerBody)))
             .is(OK)
             .withBodySession { ssn =>
                ssn.getId mustNot be (sid)
@@ -197,7 +197,7 @@ class ConnectionDrainingOnReplaceTest extends EmbeddedServerAsyncSpec with TempS
          }
 
          // And read, just in case
-         assertResp(route(app, httpReq(GET, context + "/session/monstrosity/" + actualSid)))
+         assertResp(route(app, httpReq(GET, "/session/monstrosity/" + actualSid)))
             .is(OK)
             .withBodySession { ssn =>
                ssn.getId must be (actualSid)
@@ -214,13 +214,13 @@ class ConnectionDrainingOnReplaceTest extends EmbeddedServerAsyncSpec with TempS
          
          for (i <- 0 until SESSIONS) {
             val sid = ssnId2Big(i)
-            assertResp(route(app, httpReq(GET, context + "/session/monstrosity/" + sid)))
+            assertResp(route(app, httpReq(GET, "/session/monstrosity/" + sid)))
                .isError(SESSION_EXPIRED, sid)
          }
 
          for (i <- 0 until SESSIONS) {
             val sid = ssnId2Pet(i)
-            assertResp(route(app, httpReq(GET, context + "/session/petclinic/" + sid)))
+            assertResp(route(app, httpReq(GET, "/session/petclinic/" + sid)))
                .isError(SESSION_EXPIRED, sid)
          }
          

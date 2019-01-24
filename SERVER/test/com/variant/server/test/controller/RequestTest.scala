@@ -1,26 +1,36 @@
 package com.variant.server.test.controller
 
+import java.util.Optional
+
+import scala.collection.JavaConversions.`deprecated asScalaSet`
+import scala.collection.JavaConversions.`deprecated mapAsJavaMap`
+
 import org.scalatestplus.play._
 import play.api.test._
 import play.api.test.Helpers._
-import scala.collection.JavaConversions._
-import com.variant.server.api.ConfigKeys
-import com.variant.server.test.spec.EmbeddedServerSpec
-import com.variant.core.impl.ServerError._
-import com.variant.core.StateRequestStatus._
-import play.api.libs.json._
-import com.variant.server.impl.SessionImpl
-import com.variant.core.session.CoreSession
-import com.variant.core.StateRequestStatus._
-import com.variant.server.test.util.TraceEventReader
-import com.variant.server.test.util.EventExperienceFromDatabase
-import com.variant.core.impl.StateVisitedEvent
-import com.variant.core.session.CoreStateRequest
-import com.variant.server.schema.ServerSchemaParser
+
+import com.variant.core.StateRequestStatus.Committed
+import com.variant.core.StateRequestStatus.Failed
+import com.variant.core.StateRequestStatus.InProgress
 import com.variant.core.TraceEvent
+import com.variant.core.impl.ServerError.ACTIVE_REQUEST
+import com.variant.core.impl.ServerError.CANNOT_COMMIT
+import com.variant.core.impl.ServerError.CANNOT_FAIL
+import com.variant.core.impl.ServerError.InvalidRequestStatus
+import com.variant.core.session.CoreSession
+import com.variant.core.session.CoreStateRequest
 import com.variant.server.event.ServerTraceEvent
-import com.variant.server.api.StateRequest
-import java.util.Optional
+import com.variant.server.impl.SessionImpl
+import com.variant.server.test.spec.EmbeddedServerSpec
+import com.variant.server.test.util.EventExperienceFromDatabase
+import com.variant.server.test.util.TraceEventReader
+
+import play.api.libs.json.JsValue
+import play.api.libs.json.Json
+import play.api.test.Helpers.GET
+import play.api.test.Helpers.POST
+import play.api.test.Helpers.PUT
+import play.api.test.Helpers.route
 
 
 /**
@@ -49,7 +59,7 @@ class RequestTest extends EmbeddedServerSpec {
       "create new session" in {
          
          // create a new session.
-         assertResp(route(app, httpReq(POST, context + "/session/monstrosity/" + sid).withBody(emptyTargetingTrackerBody)))
+         assertResp(route(app, httpReq(POST, "/session/monstrosity/" + sid).withBody(emptyTargetingTrackerBody)))
             .isOk         
             .withBodySession { ssn =>
                ssn.getId mustNot be (sid)
@@ -61,7 +71,7 @@ class RequestTest extends EmbeddedServerSpec {
       "create and commit new state request without SVE attributes" in {
 
          // Get existing session.
-         assertResp(route(app, httpReq(GET, context + "/session/monstrosity/" + sid)))
+         assertResp(route(app, httpReq(GET, "/session/monstrosity/" + sid)))
             .isOk
             .withBodyJson { json => 
                val coreSsn = CoreSession.fromJson((json \ "session").as[String], schema)
@@ -75,7 +85,7 @@ class RequestTest extends EmbeddedServerSpec {
             ).toString
          
          // Target and get the request.
-         assertResp(route(app, httpReq(POST, context + "/request").withTextBody(reqBody1)))
+         assertResp(route(app, httpReq(POST, "/request").withTextBody(reqBody1)))
             .isOk
             .withBodyJson { json => 
                val coreSsn = CoreSession.fromJson((json \ "session").as[String], schema)
@@ -99,7 +109,7 @@ class RequestTest extends EmbeddedServerSpec {
             ).toString
            
          var stateReq: CoreStateRequest = null
-         assertResp(route(app, httpReq(PUT, context + "/request").withTextBody(reqBody2)))
+         assertResp(route(app, httpReq(PUT, "/request").withTextBody(reqBody2)))
             .isOk
             .withBodyJson { json => 
                val coreSsn = CoreSession.fromJson((json \ "session").as[String], schema)
@@ -116,7 +126,7 @@ class RequestTest extends EmbeddedServerSpec {
 
          // Try committing again... Should work because we don't actually check for this on the server.
          // and trust that the client will check before sending the request and check again after receiving.
-         assertResp(route(app, httpReq(PUT, context + "/request").withTextBody(reqBody2)))
+         assertResp(route(app, httpReq(PUT, "/request").withTextBody(reqBody2)))
             .isOk
 
          // Wait for event writer to flush and confirm we wrote 1 state visit event.
@@ -140,7 +150,7 @@ class RequestTest extends EmbeddedServerSpec {
          var sid = newSid
          
          // Recreate session because the old one expired while we waited for the event writer.
-         assertResp(route(app, httpReq(POST, context + "/session/monstrosity/" + sid).withBody(emptyTargetingTrackerBody)))
+         assertResp(route(app, httpReq(POST, "/session/monstrosity/" + sid).withBody(emptyTargetingTrackerBody)))
             .isOk
             .withBodySession { ssn =>
                ssn.getId mustNot be (sid)
@@ -156,7 +166,7 @@ class RequestTest extends EmbeddedServerSpec {
             ).toString
          
          // Target and get the request.
-         assertResp(route(app, httpReq(POST, context + "/request").withTextBody(reqBody1)))
+         assertResp(route(app, httpReq(POST, "/request").withTextBody(reqBody1)))
             .isOk
             .withBodySession { ssn => 
                val stateReq = ssn.getStateRequest.get
@@ -180,7 +190,7 @@ class RequestTest extends EmbeddedServerSpec {
          ).toString
            
          var stateReq: CoreStateRequest = null
-         assertResp(route(app, httpReq(PUT, context + "/request").withTextBody(reqBody2)))
+         assertResp(route(app, httpReq(PUT, "/request").withTextBody(reqBody2)))
             .isOk
             .withBodyJson { json => 
                val coreSsn = CoreSession.fromJson((json \ "session").as[String], schema)
@@ -197,7 +207,7 @@ class RequestTest extends EmbeddedServerSpec {
 
          // Try committing again... Should work because we don't actually check for this on the server.
          // and trust that the client will check before sending the request and check again after receiving.
-         assertResp(route(app, httpReq(PUT, context + "/request").withTextBody(reqBody2)))
+         assertResp(route(app, httpReq(PUT, "/request").withTextBody(reqBody2)))
             .isOk
          
          // Wait for event writer to flush and confirm we wrote 1 state visit event.
@@ -219,7 +229,7 @@ class RequestTest extends EmbeddedServerSpec {
 
          var sid = newSid
          
-         assertResp(route(app, httpReq(POST, context + "/session/monstrosity/" + sid).withBody(emptyTargetingTrackerBody)))
+         assertResp(route(app, httpReq(POST, "/session/monstrosity/" + sid).withBody(emptyTargetingTrackerBody)))
             .isOk
             .withBodySession { ssn =>
                ssn.getId mustNot be (sid)
@@ -233,7 +243,7 @@ class RequestTest extends EmbeddedServerSpec {
             "state" -> "state4"
             ).toString
          
-         assertResp(route(app, httpReq(POST, context + "/request").withTextBody(reqBody1)))
+         assertResp(route(app, httpReq(POST, "/request").withTextBody(reqBody1)))
             .isOk
             .withBodyJson { json => 
                val coreSsn = CoreSession.fromJson((json \ "session").as[String], schema)
@@ -257,7 +267,7 @@ class RequestTest extends EmbeddedServerSpec {
             "attrs" -> Map("key1"->"val1", "key2"->"val2")
          ).toString
            
-         assertResp(route(app, httpReq(PUT, context + "/request").withTextBody(reqBody2)))
+         assertResp(route(app, httpReq(PUT, "/request").withTextBody(reqBody2)))
             .isOk
             .withBodyJson { json => 
                val coreSsn = CoreSession.fromJson((json \ "session").as[String], schema)
@@ -279,7 +289,7 @@ class RequestTest extends EmbeddedServerSpec {
             "attrs" -> Map("key1"->"val1", "key2"->"val2")
          ).toString
 
-         assertResp(route(app, httpReq(PUT, context + "/request").withTextBody(reqBody3)))
+         assertResp(route(app, httpReq(PUT, "/request").withTextBody(reqBody3)))
             .isError(CANNOT_FAIL)
             
          // Only commit sve in written
@@ -298,7 +308,7 @@ class RequestTest extends EmbeddedServerSpec {
 
          var sid = newSid
          
-         assertResp(route(app, httpReq(POST, context + "/session/monstrosity/" + sid).withBody(emptyTargetingTrackerBody)))
+         assertResp(route(app, httpReq(POST, "/session/monstrosity/" + sid).withBody(emptyTargetingTrackerBody)))
             .isOk
             .withBodySession { ssn =>
                ssn.getId mustNot be (sid)
@@ -312,7 +322,7 @@ class RequestTest extends EmbeddedServerSpec {
             "state" -> "state5"
             ).toString
          
-         assertResp(route(app, httpReq(POST, context + "/request").withTextBody(reqBody1)))
+         assertResp(route(app, httpReq(POST, "/request").withTextBody(reqBody1)))
             .isOk
             .withBodyJson { json => 
                val coreSsn = CoreSession.fromJson((json \ "session").as[String], schema)
@@ -335,7 +345,7 @@ class RequestTest extends EmbeddedServerSpec {
             "attrs" -> Map("key1"->"val1", "key2"->"val2")
          ).toString
            
-         assertResp(route(app, httpReq(PUT, context + "/request").withTextBody(reqBody2)))
+         assertResp(route(app, httpReq(PUT, "/request").withTextBody(reqBody2)))
             .isOk
             .withBodyJson { json => 
                val coreSsn = CoreSession.fromJson((json \ "session").as[String], schema)
@@ -356,7 +366,7 @@ class RequestTest extends EmbeddedServerSpec {
             "status" -> Committed.ordinal
          ).toString
            
-         assertResp(route(app, httpReq(PUT, context + "/request").withTextBody(reqBody3)))
+         assertResp(route(app, httpReq(PUT, "/request").withTextBody(reqBody3)))
             .isError(CANNOT_COMMIT)
 
          // Only failure sve in written
@@ -375,7 +385,7 @@ class RequestTest extends EmbeddedServerSpec {
 
          var sid = newSid
          
-         assertResp(route(app, httpReq(POST, context + "/session/monstrosity/" + sid).withBody(emptyTargetingTrackerBody)))
+         assertResp(route(app, httpReq(POST, "/session/monstrosity/" + sid).withBody(emptyTargetingTrackerBody)))
             .isOk
             .withBodySession { ssn =>
                ssn.getId mustNot be (sid)
@@ -389,7 +399,7 @@ class RequestTest extends EmbeddedServerSpec {
             "state" -> "state5"
             ).toString
          
-         assertResp(route(app, httpReq(POST, context + "/request").withTextBody(reqBody1)))
+         assertResp(route(app, httpReq(POST, "/request").withTextBody(reqBody1)))
             .isOk
             .withBodyJson { json => 
                val coreSsn = CoreSession.fromJson((json \ "session").as[String], schema)
@@ -412,7 +422,7 @@ class RequestTest extends EmbeddedServerSpec {
             "attrs" -> Map("key1"->"val1", "key2"->"val2")
          ).toString
            
-         assertResp(route(app, httpReq(PUT, context + "/request").withTextBody(reqBody2)))
+         assertResp(route(app, httpReq(PUT, "/request").withTextBody(reqBody2)))
             .isOk
             .withBodyJson { json => 
                val coreSsn = CoreSession.fromJson((json \ "session").as[String], schema)
@@ -433,7 +443,7 @@ class RequestTest extends EmbeddedServerSpec {
             "status" -> InProgress.ordinal
          ).toString
            
-         assertResp(route(app, httpReq(PUT, context + "/request").withTextBody(reqBody3)))
+         assertResp(route(app, httpReq(PUT, "/request").withTextBody(reqBody3)))
             .isError(InvalidRequestStatus, "InProgress")
 
          // Only failure sve in written
@@ -453,7 +463,7 @@ class RequestTest extends EmbeddedServerSpec {
          var sid = newSid
          
          // create a new session.
-         assertResp(route(app, httpReq(POST, context + "/session/monstrosity/" + sid).withBody(emptyTargetingTrackerBody)))
+         assertResp(route(app, httpReq(POST, "/session/monstrosity/" + sid).withBody(emptyTargetingTrackerBody)))
             .isOk
             .withBodySession { ssn =>
                ssn.getId mustNot be (sid)
@@ -468,7 +478,7 @@ class RequestTest extends EmbeddedServerSpec {
             ).toString
 
          // Target and get the request.
-         assertResp(route(app, httpReq(POST, context + "/request").withTextBody(reqBody1)))
+         assertResp(route(app, httpReq(POST, "/request").withTextBody(reqBody1)))
             .isOk
             .withBodySession { ssn => 
                val stateReq = ssn.getStateRequest.get
@@ -481,7 +491,7 @@ class RequestTest extends EmbeddedServerSpec {
             }
 
          // Target again and get the error.
-         assertResp(route(app, httpReq(POST, context + "/request").withTextBody(reqBody1)))
+         assertResp(route(app, httpReq(POST, "/request").withTextBody(reqBody1)))
             .isError(ACTIVE_REQUEST)
 
          // Commit the request.
@@ -490,7 +500,7 @@ class RequestTest extends EmbeddedServerSpec {
             "status" -> Committed.ordinal
             ).toString
 
-         assertResp(route(app, httpReq(PUT, context + "/request").withTextBody(reqBody2)))
+         assertResp(route(app, httpReq(PUT, "/request").withTextBody(reqBody2)))
             .isOk
             .withBodySession { ssn =>
                ssn.getId must be (sid)
@@ -512,7 +522,7 @@ class RequestTest extends EmbeddedServerSpec {
             ).toString
 
          // Target and get the request.
-         assertResp(route(app, httpReq(POST, context + "/request").withTextBody(reqBody3)))
+         assertResp(route(app, httpReq(POST, "/request").withTextBody(reqBody3)))
             .isOk
             .withBodySession { ssn => 
                val stateReq = ssn.getStateRequest.get
@@ -539,7 +549,7 @@ class RequestTest extends EmbeddedServerSpec {
          
          // ssn.setAttribute("user-agent", "Safari")
 
-         assertResp(route(app, httpReq(POST, context + "/session/petclinic/" + sid).withBody(emptyTargetingTrackerBody)))
+         assertResp(route(app, httpReq(POST, "/session/petclinic/" + sid).withBody(emptyTargetingTrackerBody)))
             .isOk
             .withBodySession { ssn =>
                ssn.getId mustNot be (sid)
@@ -555,13 +565,13 @@ class RequestTest extends EmbeddedServerSpec {
             "name" -> "disqual",
             "value" -> "true"     // this will cause disqualification
          )
-         assertResp(route(app, httpReq(PUT, context + "/session/attr").withBody(body.toString())))
+         assertResp(route(app, httpReq(PUT, "/session/attr").withBody(body.toString())))
             .isOk
       }
 
       "disqualify session from test" in {
 
-         assertResp(route(app, httpReq(POST, context + "/session/petclinic/" + sid).withBody(emptyTargetingTrackerBody)))
+         assertResp(route(app, httpReq(POST, "/session/petclinic/" + sid).withBody(emptyTargetingTrackerBody)))
             .isOk
             .withBodyJson { json => 
                val coreSsn = CoreSession.fromJson((json \ "session").as[String], schema)
@@ -575,7 +585,7 @@ class RequestTest extends EmbeddedServerSpec {
             ).toString
 
          // Target and get the request.
-         assertResp(route(app, httpReq(POST, context + "/request").withTextBody(reqBody1)))
+         assertResp(route(app, httpReq(POST, "/request").withTextBody(reqBody1)))
             .isOk
             .withBodyJson { json => 
                val coreSsn = CoreSession.fromJson((json \ "session").as[String], schema)
@@ -600,7 +610,7 @@ class RequestTest extends EmbeddedServerSpec {
             "status" -> Committed.ordinal
             ).toString
         
-         assertResp(route(app, httpReq(PUT, context + "/request").withTextBody(reqBody2)))
+         assertResp(route(app, httpReq(PUT, "/request").withTextBody(reqBody2)))
             .isOk
             .withBodyJson { json => 
                val coreSsn = CoreSession.fromJson((json \ "session").as[String], schema)
@@ -619,7 +629,7 @@ class RequestTest extends EmbeddedServerSpec {
          // Send custom event.
          val eventBody = TraceEventTest.body.expand("sid" -> sid, "name" -> "eventName")
          //status(resp)(akka.util.Timeout(5 minutes)) mustBe OK
-         assertResp(route(app, httpReq(POST, context + "/event").withTextBody(eventBody)))
+         assertResp(route(app, httpReq(POST, "/event").withTextBody(eventBody)))
             .isOk
             .withNoBody
 

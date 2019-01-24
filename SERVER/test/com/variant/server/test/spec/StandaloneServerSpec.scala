@@ -42,7 +42,7 @@ class StandaloneServerSpec extends PlaySpec with BeforeAndAfterAll {
 
          server.start()
          
-         HttpOperation.get("http://localhost:5377/variant/connection/petclinic")
+         HttpOperation.get("http://localhost:5377/connection/petclinic")
             .exec().getResponseCode mustBe 200
    }
    
@@ -152,7 +152,7 @@ class StandaloneServer(serverDir: String, flusher: String) {
          var confirmed  = false
          while (!confirmed && waited < timeoutMillis) {
             try {
-               val health = Source.fromURL("http://localhost:" + port + "/variant").mkString
+               val health = Source.fromURL("http://localhost:" + port).mkString
                if (!health.startsWith(VariantServer.productName))
                   throw new RuntimeException (s"Unexpected halth response from server [${health}]")
                confirmed = true;

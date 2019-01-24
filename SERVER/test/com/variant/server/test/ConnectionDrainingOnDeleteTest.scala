@@ -62,7 +62,7 @@ class ConnectionDrainingOnDeleteTest extends EmbeddedServerAsyncSpec with TempSc
          for (j <- 0 until SESSIONS) async {
 
             val sid = newSid
-            assertResp(route(app, httpReq(POST, context + "/session/monstrosity/" + sid).withBody(emptyTargetingTrackerBody)))
+            assertResp(route(app, httpReq(POST, "/session/monstrosity/" + sid).withBody(emptyTargetingTrackerBody)))
                .is(OK)
             .withBodySession { ssn =>
                ssn.getId mustNot be (sid)
@@ -74,7 +74,7 @@ class ConnectionDrainingOnDeleteTest extends EmbeddedServerAsyncSpec with TempSc
          for (j <- 0 until SESSIONS) async {
 
             val sid = newSid
-            assertResp(route(app, httpReq(POST, context + "/session/petclinic/" + sid).withBody(emptyTargetingTrackerBody)))
+            assertResp(route(app, httpReq(POST, "/session/petclinic/" + sid).withBody(emptyTargetingTrackerBody)))
                .is(OK)
             .withBodySession { ssn =>
                ssn.getId mustNot be (sid)
@@ -90,7 +90,7 @@ class ConnectionDrainingOnDeleteTest extends EmbeddedServerAsyncSpec with TempSc
          	   
          for (i <- 0 until SESSIONS) async {
             val sid = ssnId2Big(i)
-            assertResp(route(app, httpReq(GET, context + "/session/monstrosity/" + sid)))
+            assertResp(route(app, httpReq(GET, "/session/monstrosity/" + sid)))
                .is(OK)
                .withBodySession { ssn =>
                   ssn.getId must be (sid)
@@ -100,7 +100,7 @@ class ConnectionDrainingOnDeleteTest extends EmbeddedServerAsyncSpec with TempSc
          
          for (i <- 0 until SESSIONS) async {
             val sid = ssnId2Pet(i)
-            assertResp(route(app, httpReq(GET, context + "/session/petclinic/" + sid)))
+            assertResp(route(app, httpReq(GET, "/session/petclinic/" + sid)))
                .is(OK)
                .withBodySession { ssn =>
                   ssn.getId must be (sid)
@@ -135,7 +135,7 @@ class ConnectionDrainingOnDeleteTest extends EmbeddedServerAsyncSpec with TempSc
                "name" -> "foo",
                "value" -> "bar"
             )
-            assertResp(route(app, httpReq(PUT, context + "/session/attr").withBody(body.toString())))
+            assertResp(route(app, httpReq(PUT, "/session/attr").withBody(body.toString())))
                .isOk
                .withBodySession  { ssn =>
                   ssn.getAttributes.get("foo") mustBe null
@@ -145,7 +145,7 @@ class ConnectionDrainingOnDeleteTest extends EmbeddedServerAsyncSpec with TempSc
 
          for (i <- 0 until SESSIONS) async {
             val sid = ssnId2Pet(i)
-            assertResp(route(app, httpReq(GET, context + "/session/petclinic/" + sid)))
+            assertResp(route(app, httpReq(GET, "/session/petclinic/" + sid)))
                .is(OK)
                .withBodySession { ssn =>
                   ssn.getId must be (sid)
@@ -169,14 +169,14 @@ class ConnectionDrainingOnDeleteTest extends EmbeddedServerAsyncSpec with TempSc
    
          for (i <- 0 until SESSIONS) {
 	         val body = sessionJsonBig.expand("sid" -> ssnId2Big(i))
-            assertResp(route(app, httpReq(PUT, context + "/session/monstrosity").withBody(body)))
+            assertResp(route(app, httpReq(PUT, "/session/monstrosity").withBody(body)))
                .is(OK)
                .withNoBody
          }
 
          for (i <- 0 until SESSIONS) {
 	         val body = sessionJsonPet.expand("sid" -> ssnId2Pet(i))
-            assertResp(route(app, httpReq(PUT, context + "/session/petclinic").withBody(body)))
+            assertResp(route(app, httpReq(PUT, "/session/petclinic").withBody(body)))
                .is(OK)
                .withNoBody
          }
@@ -189,7 +189,7 @@ class ConnectionDrainingOnDeleteTest extends EmbeddedServerAsyncSpec with TempSc
          // Create
          val sid = newSid
          var actualSid: String = null
-         assertResp(route(app, httpReq(POST, context + "/session/petclinic/" + sid).withBody(emptyTargetingTrackerBody)))
+         assertResp(route(app, httpReq(POST, "/session/petclinic/" + sid).withBody(emptyTargetingTrackerBody)))
             .is(OK)
             .withBodySession { ssn =>
                ssn.getId mustNot be (sid)
@@ -198,7 +198,7 @@ class ConnectionDrainingOnDeleteTest extends EmbeddedServerAsyncSpec with TempSc
             }
 
          // And read, just in case
-         assertResp(route(app, httpReq(GET, context + "/session/petclinic/" + actualSid)))
+         assertResp(route(app, httpReq(GET, "/session/petclinic/" + actualSid)))
             .is(OK)
             .withBodySession { ssn =>
                ssn.getId must be (actualSid)
@@ -208,7 +208,7 @@ class ConnectionDrainingOnDeleteTest extends EmbeddedServerAsyncSpec with TempSc
       
       "refuse session create in dead generation" in {
 
-         assertResp(route(app, httpReq(POST, context + "/session/monstrosity/" + newSid).withBody(emptyTargetingTrackerBody)))
+         assertResp(route(app, httpReq(POST, "/session/monstrosity/" + newSid).withBody(emptyTargetingTrackerBody)))
             .isError(UNKNOWN_SCHEMA, "monstrosity")
       }
 
@@ -218,13 +218,13 @@ class ConnectionDrainingOnDeleteTest extends EmbeddedServerAsyncSpec with TempSc
          
          for (i <- 0 until SESSIONS) {
             val sid = ssnId2Big(i)
-            assertResp(route(app, httpReq(GET, context + "/session/monstrosity/" + sid)))
+            assertResp(route(app, httpReq(GET, "/session/monstrosity/" + sid)))
                .isError(SESSION_EXPIRED, sid)
          }
 
          for (i <- 0 until SESSIONS) {
             val sid = ssnId2Pet(i)
-            assertResp(route(app, httpReq(GET, context + "/session/petclinic/" + sid)))
+            assertResp(route(app, httpReq(GET, "/session/petclinic/" + sid)))
                .isError(SESSION_EXPIRED, sid)
          }
          

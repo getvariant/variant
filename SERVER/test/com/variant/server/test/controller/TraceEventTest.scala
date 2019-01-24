@@ -2,13 +2,13 @@ package com.variant.server.test.controller
 
 import scala.collection.JavaConversions.mutableSetAsJavaSet
 
+import com.variant.core.StateRequestStatus.Committed
+import com.variant.core.StateRequestStatus.InProgress
 import com.variant.core.TraceEvent
-import com.variant.core.StateRequestStatus._
 import com.variant.core.impl.ServerError.EmptyBody
 import com.variant.core.impl.ServerError.JsonParseError
 import com.variant.core.impl.ServerError.MissingProperty
 import com.variant.core.impl.ServerError.SESSION_EXPIRED
-import com.variant.core.session.CoreSession
 import com.variant.server.impl.SessionImpl
 import com.variant.server.test.spec.EmbeddedServerSpec
 import com.variant.server.test.util.ParameterizedString
@@ -67,7 +67,7 @@ class TraceEventTest extends EmbeddedServerSpec {
    
    import TraceEventTest._
    
-   val endpoint = context + "/event"
+   val endpoint = "/event"
       
    val emptyTargetingTrackerBody = "{\"tt\":[]}"
 
@@ -122,7 +122,7 @@ class TraceEventTest extends EmbeddedServerSpec {
          // New session
          var sid = newSid
          
-         assertResp(route(app, httpReq(POST, context + "/session/monstrosity/" + sid).withBody(emptyTargetingTrackerBody)))
+         assertResp(route(app, httpReq(POST, "/session/monstrosity/" + sid).withBody(emptyTargetingTrackerBody)))
             .isOk
             .withBodySession { ssn =>
                ssn.getId mustNot be (sid)
@@ -136,7 +136,7 @@ class TraceEventTest extends EmbeddedServerSpec {
             "state" -> "state4"
             ).toString
          
-         assertResp(route(app, httpReq(POST, context + "/request").withTextBody(reqBody1)))
+         assertResp(route(app, httpReq(POST, "/request").withTextBody(reqBody1)))
             .isOk
             .withBodySession { ssn => 
                ssn.getId mustBe sid
@@ -158,7 +158,7 @@ class TraceEventTest extends EmbeddedServerSpec {
             "status" -> Committed.ordinal
             ).toString
 
-         assertResp(route(app, httpReq(PUT, context + "/request").withTextBody(reqBody2)))
+         assertResp(route(app, httpReq(PUT, "/request").withTextBody(reqBody2)))
             .isOk
             .withBodySession { ssn => 
                val stateReq = ssn.getStateRequest.get
@@ -193,7 +193,7 @@ class TraceEventTest extends EmbeddedServerSpec {
          // New session
          var sid = newSid
          
-         assertResp(route(app, httpReq(POST, context + "/session/monstrosity/" + sid).withBody(emptyTargetingTrackerBody)))
+         assertResp(route(app, httpReq(POST, "/session/monstrosity/" + sid).withBody(emptyTargetingTrackerBody)))
             .isOk
             .withBodySession { ssn =>
                ssn.getId mustNot be (sid)
@@ -207,7 +207,7 @@ class TraceEventTest extends EmbeddedServerSpec {
             "state" -> "state3"
             ).toString
          
-         assertResp(route(app, httpReq(POST, context + "/request").withTextBody(reqBody1)))
+         assertResp(route(app, httpReq(POST, "/request").withTextBody(reqBody1)))
             .isOk
             .withBodySession { ssn => 
                val stateReq = ssn.getStateRequest.get
@@ -230,7 +230,7 @@ class TraceEventTest extends EmbeddedServerSpec {
             "attrs" -> Map("key1"->"val1", "key2"->"val2", "key3"->"val3")
             ).toString
 
-         assertResp(route(app, httpReq(PUT, context + "/request").withTextBody(reqBody2)))
+         assertResp(route(app, httpReq(PUT, "/request").withTextBody(reqBody2)))
             .isOk
             .withBodySession { ssn => 
                val stateReq = ssn.getStateRequest.get
@@ -268,7 +268,7 @@ class TraceEventTest extends EmbeddedServerSpec {
          // New session
          var sid = newSid
          
-         assertResp(route(app, httpReq(POST, context + "/session/monstrosity/" + sid).withBody(emptyTargetingTrackerBody)))
+         assertResp(route(app, httpReq(POST, "/session/monstrosity/" + sid).withBody(emptyTargetingTrackerBody)))
             .isOk         
             .withBodySession { ssn =>
                ssn.getId mustNot be (sid)
@@ -301,7 +301,7 @@ class TraceEventTest extends EmbeddedServerSpec {
 
          // New session
          var sid = newSid
-         assertResp(route(app, httpReq(POST, context + "/session/monstrosity/" + sid).withBody(emptyTargetingTrackerBody)))
+         assertResp(route(app, httpReq(POST, "/session/monstrosity/" + sid).withBody(emptyTargetingTrackerBody)))
             .isOk
             .withBodySession { ssn =>
                ssn.getId mustNot be (sid)
@@ -315,7 +315,7 @@ class TraceEventTest extends EmbeddedServerSpec {
             "state" -> "state5"
             ).toString
          
-         assertResp(route(app, httpReq(POST, context + "/request").withTextBody(reqBody1)))
+         assertResp(route(app, httpReq(POST, "/request").withTextBody(reqBody1)))
             .isOk
             .withBodySession { ssn => 
                val stateReq = ssn.getStateRequest.get
@@ -362,7 +362,7 @@ class TraceEventTest extends EmbeddedServerSpec {
          // New session
          var sid = newSid
          
-         assertResp(route(app, httpReq(POST, context + "/session/monstrosity/" + sid).withBody(emptyTargetingTrackerBody)))
+         assertResp(route(app, httpReq(POST, "/session/monstrosity/" + sid).withBody(emptyTargetingTrackerBody)))
             .isOk         
             .withBodySession { ssn =>
                ssn.getId mustNot be (sid)
@@ -376,7 +376,7 @@ class TraceEventTest extends EmbeddedServerSpec {
             "state" -> "state4"
             ).toString
          
-         assertResp(route(app, httpReq(POST, context + "/request").withTextBody(reqBody1)))
+         assertResp(route(app, httpReq(POST, "/request").withTextBody(reqBody1)))
             .isOk
             .withBodySession { ssn => 
                val stateReq = ssn.getStateRequest.get
