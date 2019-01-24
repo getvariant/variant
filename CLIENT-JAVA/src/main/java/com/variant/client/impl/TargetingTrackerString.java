@@ -1,4 +1,4 @@
-package com.variant.client.session;
+package com.variant.client.impl;
 
 import java.util.Collection;
 import java.util.HashSet;

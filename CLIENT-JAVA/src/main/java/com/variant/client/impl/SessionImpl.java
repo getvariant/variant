@@ -19,7 +19,6 @@ import com.variant.client.SessionIdTracker;
 import com.variant.client.StateRequest;
 import com.variant.client.TargetingTracker;
 import com.variant.client.VariantException;
-import com.variant.client.session.TargetingTrackerEntryImpl;
 import com.variant.core.TraceEvent;
 import com.variant.core.impl.StateVisitedEvent;
 import com.variant.core.schema.Schema;

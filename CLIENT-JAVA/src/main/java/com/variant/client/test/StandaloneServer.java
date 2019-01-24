@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Start server process in a subprocess.
+ * This is main so that adapters can take advantate of it.
  * 
  * @author Igor
  */

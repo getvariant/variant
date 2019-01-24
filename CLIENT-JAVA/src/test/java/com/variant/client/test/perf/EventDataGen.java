@@ -4,8 +4,8 @@ package com.variant.client.test.perf;
 import java.util.Random;
 
 import com.variant.client.VariantClient;
-import com.variant.client.session.SessionIdTrackerSimple;
-import com.variant.client.session.TargetingTrackerSimple;
+import com.variant.client.test.SessionIdTrackerHeadless;
+import com.variant.client.test.TargetingTrackerHeadless;
 import com.variant.client.test.util.ClientBaseTestWithServer;
 
 public class EventDataGen extends ClientBaseTestWithServer {
@@ -25,8 +25,8 @@ public class EventDataGen extends ClientBaseTestWithServer {
 ///////      startServer("conf-test/petclinic-with-postgres.conf");  <<<< This has changed!!!
 		// Sole client
 		VariantClient client = new VariantClient.Builder()
-				.withSessionIdTrackerClass(SessionIdTrackerSimple.class)
-				.withTargetingTrackerClass(TargetingTrackerSimple.class)
+				.withSessionIdTrackerClass(SessionIdTrackerHeadless.class)
+				.withTargetingTrackerClass(TargetingTrackerHeadless.class)
 				.build();
 /*
 		// For getCoreApi() to work, we need to be in the right package.

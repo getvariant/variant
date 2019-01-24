@@ -1,4 +1,4 @@
-package com.variant.client.session;
+package com.variant.client.impl;
 
 import com.variant.client.TargetingTracker;
 import com.variant.core.session.SessionScopedTargetingStabile;

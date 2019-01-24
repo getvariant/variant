@@ -1,14 +1,16 @@
-package com.variant.client.session;
+package com.variant.client.test;
 
 import java.util.HashSet;
 import java.util.Set;
 
+import com.variant.client.impl.TargetingTrackerEntryImpl;
+import com.variant.client.impl.TargetingTrackerString;
+
 /**
- *** Suitable for tests only. ***
- * A simple implementation of the targeting tracker.
+ * A headless implementation of the targeting tracker.
  * No tracking in external state, simply saves targeted experiences in an in-memory string buffer.
  */
-public class TargetingTrackerSimple extends TargetingTrackerString {
+public class TargetingTrackerHeadless extends TargetingTrackerString {
 
 	private String buffer = null;
 		
@@ -31,7 +33,7 @@ public class TargetingTrackerSimple extends TargetingTrackerString {
 
 	@Override
 	public void save(Object... userData) {
-		//throw new UnsupportedOperationException();
+
 	}
 
 	@Override

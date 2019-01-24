@@ -12,8 +12,6 @@ import com.variant.client.VariantClient;
 import com.variant.client.VariantException;
 import com.variant.client.impl.ClientUserError;
 import com.variant.client.impl.ConnectionImpl;
-import com.variant.client.session.SessionIdTrackerSimple;
-import com.variant.client.session.TargetingTrackerSimple;
 import com.variant.client.test.util.ClientBaseTestWithServer;
 import com.variant.core.impl.ServerError;
 
@@ -25,8 +23,8 @@ public class ConnectionColdTest extends ClientBaseTestWithServer {
 	
 	// Sole client
 	private VariantClient client = new VariantClient.Builder()
-			.withSessionIdTrackerClass(SessionIdTrackerSimple.class)
-			.withTargetingTrackerClass(TargetingTrackerSimple.class)
+			.withSessionIdTrackerClass(SessionIdTrackerHeadless.class)
+			.withTargetingTrackerClass(TargetingTrackerHeadless.class)
 			.build();
 	
 	/**

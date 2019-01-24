@@ -6,8 +6,6 @@ import com.variant.client.Connection;
 import com.variant.client.Session;
 import com.variant.client.VariantClient;
 import com.variant.client.VariantException;
-import com.variant.client.session.SessionIdTrackerSimple;
-import com.variant.client.session.TargetingTrackerSimple;
 import com.variant.client.test.util.ClientBaseTestWithServer;
 import com.variant.core.impl.ServerError;
 import com.variant.core.util.IoUtils;
@@ -19,8 +17,8 @@ public class ConnectionHotUndeployTest extends ClientBaseTestWithServer {
 	// Sole client
 	// Sole client
 	private VariantClient client = new VariantClient.Builder()
-			.withSessionIdTrackerClass(SessionIdTrackerSimple.class)
-			.withTargetingTrackerClass(TargetingTrackerSimple.class)
+			.withSessionIdTrackerClass(SessionIdTrackerHeadless.class)
+			.withTargetingTrackerClass(TargetingTrackerHeadless.class)
 			.build();
 	
 	/**

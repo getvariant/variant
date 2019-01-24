@@ -8,8 +8,6 @@ import com.variant.client.SessionExpiredException;
 import com.variant.client.VariantClient;
 import com.variant.client.VariantException;
 import com.variant.client.impl.SessionImpl;
-import com.variant.client.session.SessionIdTrackerSimple;
-import com.variant.client.session.TargetingTrackerSimple;
 import com.variant.client.test.util.ClientBaseTestWithServer;
 import com.variant.core.impl.ServerError;
 import com.variant.core.schema.State;
@@ -18,8 +16,8 @@ public class SessionTest extends ClientBaseTestWithServer {
 
 	// Sole client
 	private VariantClient client = new VariantClient.Builder()
-			.withSessionIdTrackerClass(SessionIdTrackerSimple.class)
-			.withTargetingTrackerClass(TargetingTrackerSimple.class)
+			.withSessionIdTrackerClass(SessionIdTrackerHeadless.class)
+			.withTargetingTrackerClass(TargetingTrackerHeadless.class)
 			.build();
 		
 	/**
