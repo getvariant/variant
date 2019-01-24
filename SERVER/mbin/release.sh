@@ -4,7 +4,7 @@
 
 #!/bin/bash
 
-export version=0.9.4
+export version=0.10.0
 export version2=""
 
 function usage() {

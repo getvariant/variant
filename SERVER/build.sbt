@@ -4,7 +4,7 @@
 
 scalaVersion := "2.12.8"
 
-val coreVersion = "0.9.4"
+val coreVersion = "0.10.0"
 name := "Variant"
 version := coreVersion
 
