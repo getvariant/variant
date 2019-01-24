@@ -46,20 +46,20 @@ public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 		restartServer();
 		
 		// Connection to a schema
-		ConnectionImpl conn1 = (ConnectionImpl) client.connectTo("monstrosity");		
+		ConnectionImpl conn1 = (ConnectionImpl) client.connectTo("variant://localhost:5377/monstrosity");		
 		assertNotNull(conn1);
 		assertNotNull(conn1.getClient());
 		assertEquals(conn1.getSessionTimeoutMillis(), 1000);
 		assertEquals("monstrosity", conn1.getSchemaName());
 		
 		// Second connection to the same schema
-		Connection conn2 = client.connectTo("monstrosity");		
+		Connection conn2 = client.connectTo("variant://localhost:5377/monstrosity");		
 		assertNotNull(conn2);
 		assertEquals(conn1.getClient(), conn2.getClient());
 		assertEquals("monstrosity", conn2.getSchemaName());
 
 		// Third connection to petclinic schema
-		Connection conn3 = client.connectTo("petclinic");		
+		Connection conn3 = client.connectTo("variant://localhost:5377/petclinic");		
 		assertNotNull(conn3);
 		assertEquals(conn1.getClient(), conn3.getClient());
 		assertEquals("petclinic", conn3.getSchemaName());
@@ -261,7 +261,7 @@ public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 		new ClientExceptionInterceptor() {
 			
 			@Override public void toRun() {
-				client.connectTo("monstrosity");
+				client.connectTo("variant://localhost:5377/monstrosity");
 			}
 
 			@Override public void onThrown(VariantException e) {
@@ -291,20 +291,20 @@ public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 		restartServer(CollectionsUtils.pairsToMap(new Tuples.Pair<String,String>("variant.session.timeout", String.valueOf(ssnTimeout))));
 		
 		// Connection to a schema
-		ConnectionImpl conn1 = (ConnectionImpl) client.connectTo("monstrosity");		
+		ConnectionImpl conn1 = (ConnectionImpl) client.connectTo("variant://localhost:5377/monstrosity");		
 		assertNotNull(conn1);
 		assertNotNull(conn1.getClient());
 		assertEquals(ssnTimeout * 1000, conn1.getSessionTimeoutMillis());
 		assertEquals("monstrosity", conn1.getSchemaName());
 		
 		// Second connection to the same schema
-		Connection conn2 = client.connectTo("monstrosity");		
+		Connection conn2 = client.connectTo("variant://localhost:5377/monstrosity");		
 		assertNotNull(conn2);
 		assertEquals(conn1.getClient(), conn2.getClient());
 		assertEquals("monstrosity", conn2.getSchemaName());
 
 		// Third connection to petclinic schema
-		Connection conn3 = client.connectTo("petclinic");		
+		Connection conn3 = client.connectTo("variant://localhost:5377/petclinic");		
 		assertNotNull(conn3);
 		assertEquals(conn1.getClient(), conn3.getClient());
 		assertEquals("petclinic", conn3.getSchemaName());
@@ -500,7 +500,7 @@ public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 
 		joinAll();
 
-		assertNotNull(client.connectTo("monstrosity"));
+		assertNotNull(client.connectTo("variant://localhost:5377/monstrosity"));
 
 	}	
 }

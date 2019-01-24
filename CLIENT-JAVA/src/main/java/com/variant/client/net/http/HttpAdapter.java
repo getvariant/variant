@@ -8,7 +8,7 @@ import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.entity.ByteArrayEntity;
 
 public class HttpAdapter {
-		
+	
 	private final HttpRemoter remoter;
 	
 	// ---------------------------------------------------------------------------------------------//
@@ -24,8 +24,7 @@ public class HttpAdapter {
 	 * @param url
 	 * @return
 	 */
-	public HttpResponse get(final String url) { 		
-		
+	public HttpResponse get(final String url) {
 		return remoter.call(
 				new HttpRemoter.Requestable() {	
 					@Override public HttpUriRequest requestOp() {

@@ -33,7 +33,7 @@ public class ConnectionHotRedeployTest extends ClientBaseTestWithServer {
 		
 		restartServer();
 		
-		final Connection conn1 = client.connectTo("monstrosity");		
+		final Connection conn1 = client.connectTo("variant://localhost:5377/monstrosity");		
 		assertNotNull(conn1);
 		assertEquals("monstrosity", conn1.getSchemaName());
 
@@ -67,7 +67,7 @@ public class ConnectionHotRedeployTest extends ClientBaseTestWithServer {
 		assertNotNull(ssn2.targetForState(ssn1.getSchema().getState("state3").get()));
 
 		// New connection should work too
-		Connection conn2 = client.connectTo("monstrosity");
+		Connection conn2 = client.connectTo("variant://localhost:5377/monstrosity");
 		Session ssn3 = conn2.getOrCreateSession("bar");
 		ssn3.getAttributes().put("foo", "bar");
 		assertEquals("bar", ssn3.getAttributes().get("foo"));

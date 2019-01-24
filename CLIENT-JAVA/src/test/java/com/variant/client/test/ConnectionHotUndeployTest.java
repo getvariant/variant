@@ -32,7 +32,7 @@ public class ConnectionHotUndeployTest extends ClientBaseTestWithServer {
 		restartServer();
 
 		// Connection must go after schema undeployed.
-		final Connection conn1 = client.connectTo("monstrosity");		
+		final Connection conn1 = client.connectTo("variant://localhost:5377/monstrosity");		
 		assertNotNull(conn1);
 		assertEquals("monstrosity", conn1.getSchemaName());
 
@@ -64,7 +64,7 @@ public class ConnectionHotUndeployTest extends ClientBaseTestWithServer {
 		new ClientExceptionInterceptor() {
 			
 			@Override public void toRun() {
-				client.connectTo("monstrosity");
+				client.connectTo("variant://localhost:5377/monstrosity");
 			}
 			
 			@Override public void onThrown(VariantException e) {
@@ -74,7 +74,7 @@ public class ConnectionHotUndeployTest extends ClientBaseTestWithServer {
 		}.assertThrown();
 		
 		// Petclinic should be fine.
-		assertNotNull(client.connectTo("petclinic"));
+		assertNotNull(client.connectTo("variant://localhost:5377/petclinic"));
 
 	}	
 

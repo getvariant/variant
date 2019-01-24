@@ -43,7 +43,7 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 	@org.junit.Test
 	public void noStabilTest() throws Exception {
 		
-		Connection conn = client.connectTo("monstrosity");		
+		Connection conn = client.connectTo("variant://localhost:5377/monstrosity");		
 
 		// Via SID tracker, create.
 		Session ssn = conn.getOrCreateSession(newSid());
@@ -112,7 +112,7 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 	@org.junit.Test
 	public void deterministicTest() throws Exception {
 		
-		Connection conn = client.connectTo("monstrosity");
+		Connection conn = client.connectTo("variant://localhost:5377/monstrosity");
 		
 		// Via SID tracker, create.
 		String sid = newSid();
@@ -164,7 +164,7 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 	@org.junit.Test
 	public void commitTest() throws Exception {
 		
-		Connection conn = client.connectTo("monstrosity");
+		Connection conn = client.connectTo("variant://localhost:5377/monstrosity");
 
 		// Some session, just to get the schema.
 		Schema schema = conn.getOrCreateSession("foo").getSchema();
@@ -230,7 +230,7 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 	@org.junit.Test
 	public void failTest() throws Exception {
 		
-		Connection conn = client.connectTo("monstrosity");
+		Connection conn = client.connectTo("variant://localhost:5377/monstrosity");
 
 		Session ssn1 = conn.getOrCreateSession(newSid());
 		Schema schema = ssn1.getSchema();
@@ -285,7 +285,7 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 	@org.junit.Test
 	public void sessionExpiredTest() throws Exception {
 		
-		Connection conn = client.connectTo("monstrosity");		
+		Connection conn = client.connectTo("variant://localhost:5377/monstrosity");		
 
 		String sid = newSid();
 		final Session ssn = conn.getOrCreateSession(sid);
@@ -315,7 +315,7 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 	//@org.junit.Test
 	public void targetingHookExceptionTest() throws Exception {
 		
-		Connection conn = client.connectTo("petclinic");		
+		Connection conn = client.connectTo("variant://localhost:5377/petclinic");		
 
 		String sid = newSid();
 		final Session ssn = conn.getOrCreateSession(sid);	
@@ -350,13 +350,13 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 	@org.junit.Test
 	public void targetFromParallelConnectionsTest() throws Exception {
 		
-		Connection conn1 = client.connectTo("monstrosity");		
+		Connection conn1 = client.connectTo("variant://localhost:5377/monstrosity");		
 
 		Session ssn1 = conn1.getOrCreateSession(newSid());	
 		Schema schema1 = ssn1.getSchema();
 		StateRequest req1 = ssn1.targetForState(schema1.getState("state3").get());
 
-		Connection conn2 = client.connectTo("monstrosity");		
+		Connection conn2 = client.connectTo("variant://localhost:5377/monstrosity");		
 	   	Session ssn2 = conn2.getSessionById(ssn1.getId()).get();
 	   	assertNotNull(ssn2);
 		Schema schema2 = ssn2.getSchema();

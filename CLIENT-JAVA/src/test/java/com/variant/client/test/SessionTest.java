@@ -29,7 +29,7 @@ public class SessionTest extends ClientBaseTestWithServer {
 		
 		restartServer();
 
-		Connection conn = client.connectTo("monstrosity");		
+		Connection conn = client.connectTo("variant://localhost:5377/monstrosity");		
 		assertNotNull(conn);
 		String sid = newSid();
 		
@@ -70,7 +70,7 @@ public class SessionTest extends ClientBaseTestWithServer {
 		
 		restartServer();
 
-		Connection conn = client.connectTo("monstrosity");		
+		Connection conn = client.connectTo("variant://localhost:5377/monstrosity");		
 		assertNotNull(conn);
 		
 		Session[] sessions = new Session[10];
@@ -118,8 +118,8 @@ public class SessionTest extends ClientBaseTestWithServer {
 		restartServer();
 
 		// Open two parallel connections
-		Connection conn1 = client.connectTo("monstrosity");		
-		Connection conn2 = client.connectTo("monstrosity");		
+		Connection conn1 = client.connectTo("variant://localhost:5377/monstrosity");		
+		Connection conn2 = client.connectTo("variant://localhost:5377/monstrosity");		
 		assertNotNull(conn1);
 		assertNotNull(conn2);
 

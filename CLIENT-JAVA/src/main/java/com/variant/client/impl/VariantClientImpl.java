@@ -49,11 +49,11 @@ public class VariantClientImpl implements VariantClient {
 
 		// Parse the uri param
 		URI uri = URI.create(stringUri);
-		if (uri.getHost() == null || uri.getPath() == null) {
+		if (uri.getHost() == null || uri.getPath() == null || uri.getPort() < 0) {
 			throw new VariantException(ClientUserError.MALFORMED_VARIANT_URI, stringUri);
 		}
 
-		String schema = uri.getPath();
+		String schema = uri.getPath().substring(1);  // lose the leading /
 
 		return new ConnectionImpl(this, schema, server.connect(uri));
 	}

@@ -51,7 +51,7 @@ public class TraceEventsTest extends ClientBaseTestWithServer {
 	@org.junit.Test
 	public void sveTest() throws Exception {
 		
-		Connection conn = client.connectTo("monstrosity");		
+		Connection conn = client.connectTo("variant://localhost:5377/monstrosity");		
 
 		// New session.
 		Session ssn1 = conn.getOrCreateSession(newSid());
@@ -121,7 +121,7 @@ public class TraceEventsTest extends ClientBaseTestWithServer {
 	@org.junit.Test
 	public void multiStateTest() throws Exception {
 		
-		Connection conn = client.connectTo("monstrosity");		
+		Connection conn = client.connectTo("variant://localhost:5377/monstrosity");		
 
 		// State2
 		Session ssn = conn.getOrCreateSession(newSid());
@@ -198,7 +198,7 @@ public class TraceEventsTest extends ClientBaseTestWithServer {
 	@org.junit.Test
 	public void svеTriggerTest() throws Exception {
 		
-		Connection conn = client.connectTo("monstrosity");		
+		Connection conn = client.connectTo("variant://localhost:5377/monstrosity");		
 
 		// New session.
 		String sid = newSid();
@@ -226,7 +226,7 @@ public class TraceEventsTest extends ClientBaseTestWithServer {
 	@org.junit.Test
 	public void cutomEventTest() throws Exception {
 		
-		Connection conn = client.connectTo("monstrosity");		
+		Connection conn = client.connectTo("variant://localhost:5377/monstrosity");		
 
 		// New session.
 		Session ssn = conn.getOrCreateSession(newSid());

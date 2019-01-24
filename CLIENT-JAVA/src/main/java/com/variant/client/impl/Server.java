@@ -120,16 +120,15 @@ public class Server {
 	 * Connect this server to a schema denoted by the given URI.
 	 * @return
 	 */
-	Payload.Connection connect(URI uri) {
+	Payload.Connection connect(URI variantUri) {
 		
 		if (LOG.isTraceEnabled()) LOG.trace("connect()");
 
-		serverUrl = uri.getHost();
-		String schema = uri.getPath();
-		
+		serverUrl = "http://" + variantUri.getHost() + ":" + variantUri.getPort() + "/";
+		String schema = variantUri.getPath().substring(1); // remove the leading /
 		
 		try {
-			HttpResponse resp = adapter.get(uri.getHost() + "connection/" + uri.getPath());
+			HttpResponse resp = adapter.get(serverUrl + "connection/" + schema);
 			return Payload.Connection.parse(resp);
 		}
 		catch (VariantException ce) {
@@ -439,9 +438,10 @@ public class Server {
 	}
 
 	public static void main(String[] args) {
-		URI uri = URI.create("//localhost:5377/foo");
+		URI uri = URI.create("//localhost/connect/bad_schema");
 		System.out.println(uri.getScheme());
 		System.out.println(uri.getHost());
+		System.out.println(uri.getPort());
 		System.out.println(uri.getPath());
 	}
 }

@@ -102,7 +102,7 @@ public class HttpRemoter {
 			throw new ServerConnectException(req.getURI().getHost());
 		}
 		catch (Throwable e) {
-			throw new VariantException.Internal("Unexpected exception in HTTP POST: " + e.getMessage(), e);
+			throw new VariantException.Internal("Unexpected exception in [" + req.getRequestLine() + "]", e);
 		} finally {
 			if (resp != null) {
 				try {resp.close();}					
