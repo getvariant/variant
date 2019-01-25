@@ -6,8 +6,6 @@ import scala.collection.JavaConverters._
 import scala.collection.mutable
 import scala.concurrent.Future
 
-import org.apache.commons.lang3.time.DurationFormatUtils
-
 import com.typesafe.config.Config
 import com.variant.core.UserError.Severity
 import com.variant.server.api.ServerException
@@ -19,6 +17,7 @@ import javax.inject.Singleton
 import play.api.Configuration
 import play.api.Logger
 import play.api.inject.ApplicationLifecycle
+import com.variant.core.util.TimeUtils
 
 
 /**
@@ -132,7 +131,7 @@ class VariantServerImpl @Inject() (
                productName,
                config.getString("http.port"),
                config.getString("play.http.context"),
-      			DurationFormatUtils.formatDuration(ManagementFactory.getRuntimeMXBean().getUptime(), "mm:ss.SSS")))   	
+      			TimeUtils.formatDuration(ManagementFactory.getRuntimeMXBean().getUptime())))   	
 
          _isUp = true
    	}      
@@ -161,7 +160,7 @@ class VariantServerImpl @Inject() (
             productName,
             config.getString("http.port"),
             config.getString("play.http.context"),
-   			DurationFormatUtils.formatDuration(ManagementFactory.getRuntimeMXBean().getUptime(), "HH:mm:ss")))
+   			TimeUtils.formatDuration(ManagementFactory.getRuntimeMXBean().getUptime())))
    			   			
       // System.exit(0)  << DO NOT DO THIS! Messes up tests.
    	// Ideally, we want to exit in Prod to make the application quit and come back to the

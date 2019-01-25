@@ -2,6 +2,7 @@ package com.variant.server.schema
 
 import java.util.concurrent.atomic.AtomicInteger
 
+import scala.collection.JavaConverters._
 import com.variant.core.schema.{ Schema => CoreSchema }
 import com.variant.core.schema.parser.ParserResponse
 import com.variant.core.util.StringUtils
@@ -72,11 +73,11 @@ class SchemaGen(val response: ParserResponse, val origin: String) extends CoreSc
 	/*------------------------------------ Public Extensions ------------------------------------*/
 	
    val runtime = new Runtime(this)
-	val source = response.getSchemaSrc
-	val hooksService = response.getParser.getHooksService.asInstanceOf[ServerHooksService]
+   val source = response.getSchemaSrc
+	 val hooksService = response.getParser.getHooksService.asInstanceOf[ServerHooksService]
    val flusherService = response.getParser.getFlusherService.asInstanceOf[ServerFlusherService]
-	val eventWriter = new TraceEventWriter(flusherService)
-	   
+	 val eventWriter = new TraceEventWriter(flusherService)
+	     
    /**
     * 
     */

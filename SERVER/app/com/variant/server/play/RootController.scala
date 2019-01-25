@@ -17,6 +17,8 @@ import com.variant.core.session.CoreStateRequest
 import play.api.mvc.AnyContent
 import play.api.mvc.ControllerComponents
 import java.lang.management.ManagementFactory
+import scala.collection.mutable.StringBuilder
+import com.variant.core.util.TimeUtils
 
 //@Singleton -- Is this for non-shared state controllers?
 class RootController @Inject() (
@@ -34,7 +36,26 @@ class RootController @Inject() (
     * Print server status message
     */
    def status() = action { req =>
-      Ok(VariantServer.productName + ". Uptime %s.\n".format(ManagementFactory.getRuntimeMXBean().getUptime(), "HH:mm:ss"))
+     
+      val msg: StringBuilder = new StringBuilder(VariantServer.productName) ++= ".\n" ++=
+        "Uptime: %s.\n".format(TimeUtils.formatDuration(ManagementFactory.getRuntimeMXBean().getUptime()))
+      
+      val schemata = server.schemata.getLiveGens
+      if (schemata.size == 0) {
+         msg.append("No schemata deployed")
+      }
+      else {
+        msg.append("Schemata:")
+        server.schemata.getLiveGens.foreach(liveGen => 
+           msg.append(
+           "\n   Name: " + liveGen.getMeta.getName +
+           "\n      Comment: " + liveGen.getMeta.getComment + 
+           "\n      States: " + liveGen.getStates.size + 
+           "\n      Variations: " + liveGen.getVariations.size))
+      }
+      msg.append('\n')
+      
+      Ok(msg.toString())
    }
 
 }

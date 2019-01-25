@@ -34,23 +34,14 @@ class Schemata () {
       }
       
       // Write log message
-      val msg = new StringBuilder()
-      msg.append(ServerErrorLocal.SCHEMA_DEPLOYED.asMessage(gen.getMeta.getName, gen.origin));
-      for (test <- gen.getVariations.asScala) {
-         msg.append("\n   ").append(test.getName()).append(":[");
-         var first = true;
-      for (exp <- test.getExperiences.asScala) {
-        if (first) first = false;
-        else msg.append(", ");
-        msg.append(exp.getName);
-        if (exp.isControl) msg.append(" (control)");
-      }
-      msg.append("]");
-      msg.append(" (").append(if (test.isOn()) "ON" else "OFF").append(")");
-    }
-
-    logger.info(msg.toString())
-
+      val msg = ServerErrorLocal.SCHEMA_DEPLOYED.asMessage(gen.getMeta.getName, gen.origin) + '\n' +
+           "Name: " + gen.getMeta.getName + "\n" +
+           "   Comment: " + gen.getMeta.getComment + "\n" + 
+           "   States: " + gen.getStates.size + "\n" + 
+           "   Variations: " + gen.getVariations.size
+  
+      logger.info(msg)
+      
    }
    
    /**
@@ -69,6 +60,15 @@ class Schemata () {
       }
    }
    
+   /**
+    * Get a list of all live generations.
+    */
+   def getLiveGens(): List[SchemaGen] = {
+      
+      _schemaMap.values.map(_.liveGen).flatten.toList
+
+   }
+
    /**
     * Undeploy schema by origin.
     * When a schema file is deleted, all we have if the file name.
