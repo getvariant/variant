@@ -17,5 +17,5 @@ public interface ConfigKeys {
 	public static final String EVENT_FLUSHER_CLASS_INIT   = "variant.event.flusher.class.init";
 	public static final String EVENT_WRITER_BUFFER_SIZE   = "variant.event.writer.buffer.size";
 	public static final String EVENT_WRITER_MAX_DELAY     = "variant.event.writer.max.delay";
-
+	
 }

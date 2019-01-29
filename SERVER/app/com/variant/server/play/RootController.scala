@@ -39,7 +39,7 @@ class RootController @Inject() (
      
       val msg: StringBuilder = new StringBuilder(VariantServer.productName) ++= ".\n" ++=
         "Uptime: %s.\n".format(TimeUtils.formatDuration(ManagementFactory.getRuntimeMXBean().getUptime()))
-      
+            
       val schemata = server.schemata.getLiveGens
       if (schemata.size == 0) {
          msg.append("No schemata deployed")

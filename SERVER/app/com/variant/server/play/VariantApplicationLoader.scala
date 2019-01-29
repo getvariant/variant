@@ -20,7 +20,7 @@ import com.variant.server.util.ConfigLoader;
  */
 object VariantApplicationLoader {
    
-   def config = ConfigLoader.load("/variant.conf", "/com/variant/server/boot/variant-default.conf");
+   val config = ConfigLoader.load("/variant.conf", "/com/variant/server/boot/variant-default.conf");
 
 }
 

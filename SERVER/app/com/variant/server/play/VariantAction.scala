@@ -1,29 +1,44 @@
 package com.variant.server.play
 
-import play.api.mvc._
-import com.variant.core.util.Constants._
-import play.api.Logger
-import com.variant.server.api.ServerException
-import com.variant.server.boot.ServerErrorRemote
+import scala.concurrent.ExecutionContext
 import scala.concurrent.Future
-import com.variant.server.boot.VariantServer
+import scala.util.Failure
+import scala.util.Success
+
 import com.variant.core.impl.ServerError
 import com.variant.core.util.TimeUtils
-import scala.concurrent.ExecutionContext
-import scala.concurrent.duration._
-import javax.inject.Inject
+import com.variant.server.boot.ServerErrorRemote
 import com.variant.server.boot.ServerExceptionRemote
+import com.variant.server.boot.VariantServer
+
+import javax.inject.Inject
+import play.api.Logger
+import play.api.mvc._
+import com.variant.server.impl.ConfigKeysSecret
 
 /**
  * Superclass for all Variant actions.
  */
+object VariantAction {
+
+  /**
+   * Compute if we should be timing requests only once
+   */
+  private val withTiming = {
+     try { VariantApplicationLoader.config.getBoolean("variant.with.timing")}
+     catch { case _:Throwable => false }
+   }
+}
+
 class VariantAction @Inject()
    (parser: BodyParsers.Default)
    (implicit ec: ExecutionContext) 
    extends ActionBuilderImpl(parser) with Results {
   
+   import VariantAction._
+   
    private[this] val logger = Logger(this.getClass)
-      
+   
    /**
     * 
     */
@@ -31,9 +46,7 @@ class VariantAction @Inject()
    
       val start = System.currentTimeMillis
       val req = request.method + " " + request.path      
-            
-      var future: Future[Result] = null
-      
+                  
       if (VariantServer.instance.isUp) {
 
          if (logger.isTraceEnabled) {
@@ -41,8 +54,13 @@ class VariantAction @Inject()
          }
          
          try {
-            // Delegate to the concrete.
-            block(request) 
+            // Delegate to the concrete action and time for performance testing 
+            val start = System.currentTimeMillis()
+
+            block(request).map { res =>
+              if (withTiming) res.withHeaders("Variant-Timer" -> String.valueOf((System.currentTimeMillis - start))) 
+              else res
+           }
          }
          catch {
             case e: ServerExceptionRemote  =>
