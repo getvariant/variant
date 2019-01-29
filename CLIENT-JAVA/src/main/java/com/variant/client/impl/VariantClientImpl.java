@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import com.variant.client.Connection;
 import com.variant.client.VariantClient;
 import com.variant.client.VariantException;
+import com.variant.client.util.MethodTimingWrapper;
 import com.variant.core.util.immutable.ImmutableMap;
 
 /**
@@ -47,15 +48,17 @@ public class VariantClientImpl implements VariantClient {
 	@Override
 	public Connection connectTo(String stringUri) {
 
-		// Parse the uri param
-		URI uri = URI.create(stringUri);
-		if (uri.getHost() == null || uri.getPath() == null || uri.getPort() < 0) {
-			throw new VariantException(ClientUserError.MALFORMED_VARIANT_URI, stringUri);
-		}
-
-		String schema = uri.getPath().substring(1);  // lose the leading /
-
-		return new ConnectionImpl(this, schema, server.connect(uri));
+		return new MethodTimingWrapper<Connection>().exec( () -> {
+			// Parse the uri param
+			URI uri = URI.create(stringUri);
+			if (uri.getHost() == null || uri.getPath() == null || uri.getPort() < 0) {
+				throw new VariantException(ClientUserError.MALFORMED_VARIANT_URI, stringUri);
+			}
+	
+			String schema = uri.getPath().substring(1);  // lose the leading /
+	
+			return new ConnectionImpl(this, schema, server.connect(uri));
+		});
 	}
 
 }

@@ -1,5 +1,7 @@
 package com.variant.client.net.http;
 
+import static com.variant.client.impl.ConfigKeys.SYS_PROP_TIMERS;
+
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -14,6 +16,7 @@ import org.slf4j.LoggerFactory;
 
 import com.variant.client.ServerConnectException;
 import com.variant.client.VariantException;
+import com.variant.client.util.Timers;
 import com.variant.core.util.Constants;
 import com.variant.core.util.TimeUtils;
 
@@ -53,9 +56,17 @@ public class HttpRemoter {
 			req = requestable.requestOp();
 			req.setHeader("Content-Type", Constants.HTTP_HEADER_CONTENT_TYPE);
 
+			if (System.getProperty(SYS_PROP_TIMERS) != null) {
+				Timers.remoteTimer.get().start();
+			}
 			resp = httpClient.execute(req);			
 			HttpResponse result = new HttpResponse(req, resp);
 
+			Timers.remoteCallCounter.get().increment();
+			Timers.remoteTimer.get().stop();
+
+			long elapsed = System.currentTimeMillis() - start;
+			
 			if (LOG.isTraceEnabled()) {
 				
 				StringBuilder buff = new StringBuilder();
@@ -67,14 +78,14 @@ public class HttpRemoter {
 				}
 				buff.append("\n<<< ").append(resp.getStatusLine().getStatusCode())
 					.append(" (")
-					.append(TimeUtils.formatDuration(System.currentTimeMillis() - start))
+					.append(TimeUtils.formatDuration(elapsed))
 					.append(")");
 				buff.append("\nConnection Status: ").append(result.status);
 				buff.append("\nBody: '").append(result.body).append("'");
 				
 				LOG.trace(buff.toString());
 			}
-
+			
 			// Process the http status and the body.
 			switch (result.status) {
 			

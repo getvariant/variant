@@ -26,7 +26,6 @@ public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 	private int SESSIONS = 20;
 	
 	// Sole client
-	// Sole client
 	private VariantClient client = new VariantClient.Builder()
 			.withSessionIdTrackerClass(SessionIdTrackerHeadless.class)
 			.withTargetingTrackerClass(TargetingTrackerHeadless.class)

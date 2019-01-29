@@ -93,6 +93,7 @@ public interface VariantClient {
 			props.put(SESSION_ID_TRACKER_CLASS, klass);
 			return this;
 		}
+		
 
 		/**
 		 * Instantiate a new instance of {@link VariantClient} 

@@ -2,6 +2,7 @@ package com.variant.client.impl;
 
 import static com.variant.client.impl.ConfigKeys.SESSION_ID_TRACKER_CLASS;
 import static com.variant.client.impl.ConfigKeys.TARGETING_TRACKER_CLASS;
+import static com.variant.client.impl.ConfigKeys.SYS_PROP_TIMERS;
 
 import java.util.Optional;
 import java.util.Random;
@@ -14,6 +15,8 @@ import com.variant.client.TargetingTracker;
 import com.variant.client.VariantClient;
 import com.variant.client.VariantException;
 import com.variant.client.net.Payload;
+import com.variant.client.util.MethodTimingWrapper;
+import com.variant.client.util.Timers;
 import com.variant.core.UserError.Severity;
 import com.variant.core.schema.ParserMessage;
 import com.variant.core.schema.Schema;
@@ -49,13 +52,6 @@ public class ConnectionImpl implements Connection {
 		
 		sessionTimeoutMillis = payload.sessionTimeout * 1000L;
 
-	}
-
-	/**
-	 * Anything?
-	 */
-	private void preChecks() {
-		// Nothing?
 	}
 	
 	/**
@@ -220,7 +216,6 @@ public class ConnectionImpl implements Connection {
 	 */
 	@Override
 	public VariantClient getClient() {
-		//preChecks(); We need to call this while raising connection closed LCE.
 		return client;
 	}
 
@@ -228,22 +223,26 @@ public class ConnectionImpl implements Connection {
 	 */
 	@Override
 	public Session getOrCreateSession(Object... userData) {
-		preChecks(); 
-		return getForegroundSession(true, userData);
+
+		return new MethodTimingWrapper<Session>().exec( () -> {
+			return getForegroundSession(true, userData);
+		});
 	}
 			
 	/**
 	 */
 	@Override
 	public Optional<Session> getSession(Object... userData) {
-		preChecks();
-		return Optional.ofNullable(getForegroundSession(false, userData));
+		return new MethodTimingWrapper<Optional<Session>>().exec( () -> {
+			return Optional.ofNullable(getForegroundSession(false, userData));
+		});
 	}
 
 	@Override
 	public Optional<Session> getSessionById(String sid) {
-		preChecks();
-		return Optional.ofNullable(getHeadlessSession(sid));
+		return new MethodTimingWrapper<Optional<Session>>().exec( () -> {
+			return Optional.ofNullable(getHeadlessSession(sid));
+		});
 	}
 
 	@Override
