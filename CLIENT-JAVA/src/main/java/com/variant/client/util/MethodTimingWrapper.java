@@ -14,14 +14,12 @@ public class MethodTimingWrapper<T> {
 		if (System.getProperty(SYS_PROP_TIMERS) != null) {
 			Timers.localTimer.get().reset().start();
 			Timers.remoteTimer.get().reset();
-			Timers.remoteCallCounter.get().reset();
 		}
 		
 		T result = op.apply();
 		
 		if (System.getProperty(SYS_PROP_TIMERS) != null) {
 			Timers.localTimer.get().stop();
-			Timers.remoteTimer.get().stop();
 		}
 
 		return result;

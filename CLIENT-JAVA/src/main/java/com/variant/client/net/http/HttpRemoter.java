@@ -2,6 +2,7 @@ package com.variant.client.net.http;
 
 import static com.variant.client.impl.ConfigKeys.SYS_PROP_TIMERS;
 
+import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -56,15 +57,17 @@ public class HttpRemoter {
 			req = requestable.requestOp();
 			req.setHeader("Content-Type", Constants.HTTP_HEADER_CONTENT_TYPE);
 
-			if (System.getProperty(SYS_PROP_TIMERS) != null) {
-				Timers.remoteTimer.get().start();
-			}
 			resp = httpClient.execute(req);			
 			HttpResponse result = new HttpResponse(req, resp);
 
-			Timers.remoteCallCounter.get().increment();
-			Timers.remoteTimer.get().stop();
-
+			if (System.getProperty(SYS_PROP_TIMERS) != null) {
+				Timers.remoteTimer.get().increment();
+				Header[] timerHeaderArr = resp.getHeaders(Constants.HTTP_HEADER_SERVER_TIMIER);
+				String millisString = 
+					timerHeaderArr == null ? "0" : timerHeaderArr[0].getValue();
+				Timers.remoteTimer.get().increment(Long.parseLong(millisString));
+			}
+			
 			long elapsed = System.currentTimeMillis() - start;
 			
 			if (LOG.isTraceEnabled()) {

@@ -6,17 +6,14 @@ package com.variant.client.util;
  */
 public class Timers {
 	
-	public static ThreadLocal<StopWatch> remoteTimer = new ThreadLocal<StopWatch>() {
-		@Override protected StopWatch initialValue() { return new StopWatch(); }
+	public static ThreadLocal<StopWatchWithCounter> remoteTimer = new ThreadLocal<StopWatchWithCounter>() {
+		@Override protected StopWatchWithCounter initialValue() { return new StopWatchWithCounter(); }
 	};
 
 	public static ThreadLocal<StopWatch> localTimer = new ThreadLocal<StopWatch>() {
 		@Override protected StopWatch initialValue() { return new StopWatch(); }
 	};
 
-	public static ThreadLocal<Counter> remoteCallCounter = new ThreadLocal<Counter>() {
-		@Override protected Counter initialValue() { return new Counter(); }
-	};
 
 	/**
 	 */
@@ -29,6 +26,12 @@ public class Timers {
 			runningTotal = 0;
 			lastStart = -1;
 			return this;
+		}
+		
+		public void increment(long incr) {
+			if (lastStart > 0) 
+				throw new RuntimeException("Cannot increment a running timer");
+			runningTotal += incr;
 		}
 		
 		public long stop() {
@@ -49,29 +52,44 @@ public class Timers {
 			lastStart = System.currentTimeMillis();
 		}
 		
-		public long value() {
+		/**
+		 * Clear after reading to avoid stale state.
+		 * @return
+		 */
+		public long getAndClear() {
 			if (lastStart > 0) 
 				throw new RuntimeException("Stop timer first");
-			return runningTotal;
+			long result = runningTotal;
+			runningTotal = 0;
+			return result;
 		}
 	}
 	
 	/**
 	 */
-	public static class Counter {
+	public static class StopWatchWithCounter extends StopWatch {
 			
-		private int value = 0;
+		private int count = 0;
 		
 		public void increment() {
-			value++;
+			count++;
 		}
 		
-		public int value() {
-			return value;
+		/**
+		 * Clear after reading to avoid stale state.
+		 * @return
+		 */
+		public int getAndClearCount() {
+			int result = count;
+			count = 0;
+			return result;
 		}
 		
-		public void reset() {
-			value = 0;
+		@Override
+		public StopWatchWithCounter reset() {
+			super.reset();
+			count = 0;
+			return this;
 		}
 
 	}

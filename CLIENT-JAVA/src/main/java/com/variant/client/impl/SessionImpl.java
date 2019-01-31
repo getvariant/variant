@@ -19,6 +19,7 @@ import com.variant.client.SessionIdTracker;
 import com.variant.client.StateRequest;
 import com.variant.client.TargetingTracker;
 import com.variant.client.VariantException;
+import com.variant.client.util.MethodTimingWrapper;
 import com.variant.core.TraceEvent;
 import com.variant.core.impl.StateVisitedEvent;
 import com.variant.core.schema.Schema;
@@ -122,8 +123,10 @@ public class SessionImpl implements Session {
 		if (state == null) 
 			throw new VariantException(PARAM_CANNOT_BE_NULL, "state");
 		
-		server.requestCreate(this, state.getName());
-		return getStateRequest().get();
+		return new MethodTimingWrapper<StateRequest>().exec( () -> {
+			server.requestCreate(this, state.getName());
+			return getStateRequest().get();
+		});
 	}
 	
 	/**
@@ -164,8 +167,10 @@ public class SessionImpl implements Session {
 	@Override
 	public Map<State, Integer> getTraversedStates() {
 		preChecks();
-		refreshFromServer();
-		return coreSession.getTraversedStates();
+		return new MethodTimingWrapper<Map<State, Integer>>().exec( () -> {
+			refreshFromServer();
+			return coreSession.getTraversedStates();
+		});
 	}
 
 	/**
@@ -174,8 +179,10 @@ public class SessionImpl implements Session {
 	@Override
 	public Set<Variation> getTraversedVariations() {
 		preChecks();
-		refreshFromServer();
-		return coreSession.getTraversedVariations();
+		return new MethodTimingWrapper<Set<Variation>>().exec( () -> {
+			refreshFromServer();
+			return coreSession.getTraversedVariations();
+		});
 	}
 
 	/**
@@ -184,8 +191,10 @@ public class SessionImpl implements Session {
 	@Override
 	public Set<Variation> getDisqualifiedVariations() {
 		preChecks();
-		refreshFromServer();
-		return coreSession.getDisqualifiedVariations();
+		return new MethodTimingWrapper<Set<Variation>>().exec( () -> {
+			refreshFromServer();
+			return coreSession.getDisqualifiedVariations();
+		});
 	}
 
 	/**
@@ -197,8 +206,10 @@ public class SessionImpl implements Session {
 		
 		if (event instanceof StateVisitedEvent) 
 			throw new VariantException(CANNOT_TRIGGER_SVE);
-		
-		conn.client.server.eventSave(this, event);
+		new MethodTimingWrapper<Object>().exec( () -> {
+			conn.client.server.eventSave(this, event);
+			return null;  // A vid method, really. Need this to make the compiler happy.
+		});
 	}
 	
 	/**
@@ -215,8 +226,10 @@ public class SessionImpl implements Session {
 	@Override
 	public Map<String,String> getAttributes() {
 		preChecks();
-		refreshFromServer();
-		return new SessionAttributeMap(this);
+		return new MethodTimingWrapper<Map<String,String>>().exec( () -> {
+			refreshFromServer();
+			return new SessionAttributeMap(this);
+		});
 	}
 
 	// ---------------------------------------------------------------------------------------------//

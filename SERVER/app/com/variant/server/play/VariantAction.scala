@@ -7,6 +7,7 @@ import scala.util.Success
 
 import com.variant.core.impl.ServerError
 import com.variant.core.util.TimeUtils
+import com.variant.core.util.Constants.HTTP_HEADER_SERVER_TIMIER
 import com.variant.server.boot.ServerErrorRemote
 import com.variant.server.boot.ServerExceptionRemote
 import com.variant.server.boot.VariantServer
@@ -58,7 +59,7 @@ class VariantAction @Inject()
             val start = System.currentTimeMillis()
 
             block(request).map { res =>
-              if (withTiming) res.withHeaders("Variant-Timer" -> String.valueOf((System.currentTimeMillis - start))) 
+              if (withTiming) res.withHeaders(HTTP_HEADER_SERVER_TIMIER -> String.valueOf((System.currentTimeMillis - start))) 
               else res
            }
          }

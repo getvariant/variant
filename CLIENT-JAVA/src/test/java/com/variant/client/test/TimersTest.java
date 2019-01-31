@@ -1,21 +1,25 @@
 package com.variant.client.test;
 
-import static org.junit.Assert.*;
+import static com.variant.client.impl.ConfigKeys.SYS_PROP_TIMERS;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
-import com.variant.client.Connection;
+import java.util.Map;
+
 import com.variant.client.Session;
 import com.variant.client.StateRequest;
 import com.variant.client.VariantClient;
 import com.variant.client.impl.ConnectionImpl;
-
-import static com.variant.client.impl.ConfigKeys.SYS_PROP_TIMERS;
 import com.variant.client.test.util.ClientBaseTestWithServerAsync;
 import com.variant.client.util.Timers;
 import com.variant.core.schema.State;
+import com.variant.core.util.CollectionsUtils;
+import com.variant.core.util.Tuples.Pair;
 
 public class TimersTest extends ClientBaseTestWithServerAsync {
 
-	private int SESSIONS = 4;
+	private int SESSIONS = 20;
 	
 	// Sole client
 	private VariantClient client = new VariantClient.Builder()
@@ -28,87 +32,100 @@ public class TimersTest extends ClientBaseTestWithServerAsync {
 		
 		System.setProperty(SYS_PROP_TIMERS, "");
 
-		restartServer();
+		restartServer(CollectionsUtils.pairsToMap(new Pair<String,String>("variant.with.timing", "true")));
 		
 		assertTrue("".equals(System.getProperty(SYS_PROP_TIMERS)) );
 		
-		ConnectionImpl conn1 = (ConnectionImpl) client.connectTo("variant://localhost:5377/monstrosity");
-		assertEquals(1, Timers.remoteCallCounter.get().value());
-		assert(Timers.remoteTimer.get().value() > 0 && Timers.remoteTimer.get().value() < 100);
-		assert(Timers.localTimer.get().value() > 0 && Timers.localTimer.get().value() < 400);
-		
-		Connection conn2 = client.connectTo("variant://localhost:5377/petclinic");	
-		assertEquals(1, Timers.remoteCallCounter.get().value());
-		assert(Timers.remoteTimer.get().value() > 0 && Timers.remoteTimer.get().value() < 100);
-		assert(Timers.localTimer.get().value() > 0 && Timers.localTimer.get().value() < 400);
-		
-		// Create sessions in conn1
-		Session[] sessions1 = new Session[SESSIONS];
-		StateRequest[] requests1 = new StateRequest[SESSIONS];
+		ConnectionImpl conn = new TimingWrapper<ConnectionImpl>().exec( () -> {
+			return (ConnectionImpl) client.connectTo("variant://localhost:5377/monstrosity");
+		});
+
 		for (int i = 0; i < SESSIONS; i++) {
-			final int _i = i;  // Zhava. 
+			int _i = i;  // Zhava. 
 			async (() -> {
-				assertTrue(Timers.localTimer.get().isStopped());
-				assertTrue(Timers.remoteTimer.get().isStopped());
-				Session ssn = conn1.getOrCreateSession(newSid());
-				assertEquals(1, Timers.remoteCallCounter.get().value());
-				assert(Timers.remoteTimer.get().value() > 0 && Timers.remoteTimer.get().value() < 100);
-				System.out.println("**** " + Timers.remoteTimer.get().value());
-				assert(Timers.localTimer.get().value() > 0 && Timers.localTimer.get().value() < 400);
+
+				// Create sessions
+				Session ssn = new TimingWrapper<Session>().exec( () -> {
+					return conn.getOrCreateSession(newSid());
+				});
 				
-				State state = ssn.getSchema().getState("state" + ((_i % 5) + 1)).get();				
-				assertTrue(Timers.localTimer.get().isStopped());
-				assertTrue(Timers.remoteTimer.get().isStopped());
-				StateRequest req = ssn.targetForState(state);
+				// Get session attribute map.
+				Map<String,String> attr = new TimingWrapper<Map<String,String>>().exec( () -> {
+					return ssn.getAttributes();
+				});
+				
+				// Working with attribute map is local
+				String val = new TimingWrapper<String>().withNoRemoteCalls().exec( () -> {
+					System.out.println("********* " + Timers.remoteTimer.get().getAndClearCount());
+					String res = attr.get("foo");
+					System.out.println("********* " + Timers.remoteTimer.get().getAndClearCount());
+					return res;
+				});
+
+				assertNull(val);
+
+				StateRequest req = new TimingWrapper<StateRequest>().exec( () -> {
+					State state = ssn.getSchema().getState("state" + ((_i % 5) + 1)).get();				
+					return ssn.targetForState(state);
+				});
 				
 			});
 		}
 		
 		joinAll();
-/*		
-		for (int i = 0; i < SESSIONS; i++) {
-			assertNotNull(sessions1[i]);
-			assertNotNull(requests1[i]);
-		}
 		
-		// Retrieve existing sessions
-		Session[] sessions2 = new Session[SESSIONS];
-		StateRequest[] requests2 = new StateRequest[SESSIONS];
-		for (int i = 0; i < SESSIONS; i++) {
-			final int _i = i;  // Zhava. 
-			async (() -> {
-				String sid = sessions1[_i].getId();
-				Session ssn = conn1.getSessionById(sid).get();
-				assertEquals(sid, ssn.getId());
-				assertNotEquals(ssn, sessions1[_i]);
-				// Should be okay to use state from parallel schema.
-				StateRequest req = ssn.getStateRequest().get();
-				assertNotNull(req);
-				assertEquals(req.getSession(), ssn);
-				sessions2[_i] = ssn;
-				requests2[_i] = req;
-			});
-		}
-
-		// Create sessions in conn2
-		Session[] sessions3 = new Session[SESSIONS];
-		StateRequest[] requests3 = new StateRequest[SESSIONS];
-		for (int i = 0; i < SESSIONS; i++) {
-			final int _i = i;  // Zhava. 
-			async (() -> {
-				Session ssn = conn2.getOrCreateSession(newSid());
-				State state = ssn.getSchema().getState("newVisit").get();
-				// The qualifying and targeting hooks will throw an NPE
-				// if user-agent attribute is not set.
-				ssn.getAttributes().put("user-agent", "does not matter");
-				StateRequest req = ssn.targetForState(state);
-				assertNotNull(req);
-				assertEquals(req.getSession(), ssn);
-				sessions3[_i] = ssn;
-				requests3[_i] = req;
-			});
-		}
-		*/
 	}
 	
+	/**
+	 * Saving keystrokes...
+	 */
+	private static class TimingWrapper<T> {
+
+		private int[] expectedLocalBounds = {0, 300};
+		private int[] expectedRemoteBounds = {0, 100};
+		private int expectedRemoteCount = 1;
+				
+		TimingWrapper(int[] localBounds, int[] remoteBounds, int remoteCount) {
+			this.expectedLocalBounds = localBounds;
+			this.expectedRemoteBounds = remoteBounds;
+			this.expectedRemoteCount = remoteCount;
+		}
+
+		TimingWrapper() {
+			this(new int[] {0, 300}, new int[] {0, 100}, 1);
+		}
+
+		TimingWrapper<T> withNoRemoteCalls() {
+			expectedRemoteBounds = new int[] {0, 0};
+			expectedRemoteCount = 0;
+			return this;
+		}
+		
+		T exec(Operation<T> op) {
+							
+			assertTrue(Timers.localTimer.get().isStopped());
+			assertTrue(Timers.remoteTimer.get().isStopped());
+			
+			Timers.localTimer.get().reset();
+			Timers.remoteTimer.get().reset();
+
+			T result = op.apply();
+
+			assertEquals(expectedRemoteCount, Timers.remoteTimer.get().getAndClearCount());
+			long remoteTime = Timers.remoteTimer.get().getAndClear();
+			assertTrue(remoteTime >= expectedLocalBounds[0]);
+			assertTrue(remoteTime <= expectedRemoteBounds[1]);
+			long localTime = Timers.localTimer.get().getAndClear();
+			assertTrue("" + localTime + " was not >= " + expectedLocalBounds[0], localTime >= expectedLocalBounds[0]);
+			assertTrue("" + localTime + " was not <= " + expectedLocalBounds[1], localTime <= expectedLocalBounds[1]);
+
+			return result;
+		}
+		
+		@FunctionalInterface
+		static interface Operation<V> {
+			V apply();
+		}
+	}
+
 }

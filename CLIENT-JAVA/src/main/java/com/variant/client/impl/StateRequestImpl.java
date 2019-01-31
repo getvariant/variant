@@ -7,6 +7,7 @@ import java.util.Set;
 import com.variant.client.Session;
 import com.variant.client.StateRequest;
 import com.variant.client.VariantException;
+import com.variant.client.util.MethodTimingWrapper;
 import com.variant.core.StateRequestStatus;
 import com.variant.core.TraceEvent;
 import com.variant.core.impl.ServerError;
@@ -34,6 +35,28 @@ public class StateRequestImpl implements StateRequest {
 		session.preChecks();
 	}
 	
+	/**
+	 * Both commit() and fail() call here.
+	 * @param state
+	 * @param userData
+	 */
+	private void _commit(StateRequestStatus status, Object... userData) {
+		
+		checkState();
+		
+		// If local state already reflects target state -- noop.
+		if (status != coreRequest.getStatus()) {
+		
+			// Persist targeting and session ID trackers.  Note that we expect the userData to apply to both.
+			session.saveTrackers(userData);
+			
+			// Commit in shared state TODO: make this async
+			conn.client.server.requestCommit(this, status);
+			
+			sve = null;
+		}
+	}
+
 	public StateRequestImpl(SessionImpl session) 
 	{	
 		this.session = session;
@@ -76,43 +99,28 @@ public class StateRequestImpl implements StateRequest {
 		return coreRequest.getLiveExperience(var);
 	}
 
-	/**
-	 * Both commit() and fail() call here.
-	 * @param state
-	 * @param userData
-	 */
-	public void _commit(StateRequestStatus status, Object... userData) {
-		
-		checkState();
-		
-		// If local state already reflects target state -- noop.
-		if (status != coreRequest.getStatus()) {
-		
-			// Persist targeting and session ID trackers.  Note that we expect the userData to apply to both.
-			session.saveTrackers(userData);
-			
-			// Commit in shared state TODO: make this async
-			conn.client.server.requestCommit(this, status);
-			
-			sve = null;
-		}
-	}
-
 	@Override
 	public void commit(Object... userData) {
 		
-		if (getStatus() == StateRequestStatus.Failed)
-			throw new VariantException(ServerError.CANNOT_COMMIT);
-		else if (getStatus() == StateRequestStatus.InProgress)
-			_commit(StateRequestStatus.Committed, userData);
+		new MethodTimingWrapper<Object>().exec( () -> {
+			if (getStatus() == StateRequestStatus.Failed)
+				throw new VariantException(ServerError.CANNOT_COMMIT);
+			else if (getStatus() == StateRequestStatus.InProgress)
+				_commit(StateRequestStatus.Committed, userData);
+			return null;  // void method -- making compiler happy.
+		});
 	}
 	
 	@Override
 	public void fail(Object... userData) {
-		if (getStatus() == StateRequestStatus.Committed)
-			throw new VariantException(ServerError.CANNOT_FAIL);
-		else if (getStatus() == StateRequestStatus.InProgress)
-		_commit(StateRequestStatus.Failed, userData);
+
+		new MethodTimingWrapper<Object>().exec( () -> {
+			if (getStatus() == StateRequestStatus.Committed)
+				throw new VariantException(ServerError.CANNOT_FAIL);
+			else if (getStatus() == StateRequestStatus.InProgress)
+				_commit(StateRequestStatus.Failed, userData);
+			return null;  // void method -- making compiler happy.
+		});
 	}
 	
 	@Override

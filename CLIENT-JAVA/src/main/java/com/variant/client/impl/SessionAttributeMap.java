@@ -74,7 +74,6 @@ public class SessionAttributeMap implements Map<String, String> {
 	@Override
 	public void clear() {
 		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
