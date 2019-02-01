@@ -4,9 +4,12 @@ import static com.variant.client.impl.ClientUserError.PARAM_CANNOT_BE_NULL;
 
 import java.util.Collection;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
+import com.variant.client.Session;
 import com.variant.client.VariantException;
+import com.variant.client.util.MethodTimingWrapper;
 
 /**
  * Client side replica of a distributed attribute map that stays in sync with
@@ -44,7 +47,9 @@ public class SessionAttributeMap implements Map<String, String> {
 	public String get(Object key) {
 		if (key == null) throw new VariantException(PARAM_CANNOT_BE_NULL, "key");
 		ssn.preChecks();
-		return ssn.getCoreSession().getAttributes().get(key);
+		return new MethodTimingWrapper<String>().exec( () -> {
+			return ssn.getCoreSession().getAttributes().get(key);
+		});
 	}
 
 	@Override
@@ -52,23 +57,31 @@ public class SessionAttributeMap implements Map<String, String> {
 		if (key == null) throw new VariantException(PARAM_CANNOT_BE_NULL, "key");
 		if (value == null) throw new VariantException(PARAM_CANNOT_BE_NULL, "value");
 		ssn.preChecks();
-		ssn.getServer().sessionAttrSet(ssn, key, value);
-		return ssn.getCoreSession().getAttributes().put(key, value);
+		return new MethodTimingWrapper<String>().exec( () -> {
+			ssn.getServer().sessionAttrSet(ssn, key, value);
+			return ssn.getCoreSession().getAttributes().put(key, value);
+		});
 	}
 
 	@Override
 	public String remove(Object key) {
 		if (key == null) throw new VariantException(PARAM_CANNOT_BE_NULL, "key");
 		ssn.preChecks();
-		ssn.getServer().sessionAttrClear(ssn, key.toString());
-		return ssn.getCoreSession().getAttributes().remove(key);
+		return new MethodTimingWrapper<String>().exec( () -> {
+			ssn.getServer().sessionAttrClear(ssn, key.toString());
+			return ssn.getCoreSession().getAttributes().remove(key);
+		});
 	}
 
 	@Override
 	public void putAll(Map<? extends String, ? extends String> m) {
-		for (Map.Entry<? extends String, ? extends String> e: m.entrySet()) {
-			put(e.getKey(), e.getValue());
-		}
+		
+		new MethodTimingWrapper<String>().exec( () -> {
+			for (Map.Entry<? extends String, ? extends String> e: m.entrySet()) {
+				put(e.getKey(), e.getValue());
+			}
+			return null;
+		});
 	}
 
 	@Override

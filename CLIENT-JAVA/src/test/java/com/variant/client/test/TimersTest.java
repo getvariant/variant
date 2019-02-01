@@ -6,6 +6,8 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Map;
+import java.util.Set;
+import java.util.Optional;
 
 import com.variant.client.Session;
 import com.variant.client.StateRequest;
@@ -13,7 +15,9 @@ import com.variant.client.VariantClient;
 import com.variant.client.impl.ConnectionImpl;
 import com.variant.client.test.util.ClientBaseTestWithServerAsync;
 import com.variant.client.util.Timers;
+import com.variant.core.TraceEvent;
 import com.variant.core.schema.State;
+import com.variant.core.schema.Variation;
 import com.variant.core.util.CollectionsUtils;
 import com.variant.core.util.Tuples.Pair;
 
@@ -56,19 +60,70 @@ public class TimersTest extends ClientBaseTestWithServerAsync {
 				
 				// Working with attribute map is local
 				String val = new TimingWrapper<String>().withNoRemoteCalls().exec( () -> {
-					System.out.println("********* " + Timers.remoteTimer.get().getAndClearCount());
 					String res = attr.get("foo");
-					System.out.println("********* " + Timers.remoteTimer.get().getAndClearCount());
 					return res;
 				});
 
 				assertNull(val);
 
+				val = new TimingWrapper<String>().exec( () -> {
+					String res = attr.put("foo", "bar");
+					return res;
+				});
+
+				assertNull(val);
+
+				val = new TimingWrapper<String>().withNoRemoteCalls().exec( () -> {
+					String res = attr.get("foo");
+					return res;
+				});
+
+				assertEquals("bar", val);
+
+				val = new TimingWrapper<String>().exec( () -> {
+					String res = attr.remove("foo");
+					return res;
+				});
+
+				assertEquals("bar", val);
+
 				StateRequest req = new TimingWrapper<StateRequest>().exec( () -> {
 					State state = ssn.getSchema().getState("state" + ((_i % 5) + 1)).get();				
 					return ssn.targetForState(state);
 				});
-				
+
+				new TimingWrapper<Object>().withNoRemoteCalls().exec( () -> {
+					req.getLiveExperiences();
+					return null;
+				});
+
+				new TimingWrapper<Object>().exec( () -> {
+					if (_i % 2 == 0) req.commit(); else req.fail();
+					return null;
+				});
+
+				new TimingWrapper<Optional<? extends StateRequest>>().withNoRemoteCalls().exec( () -> {
+					return ssn.getStateRequest();
+				});
+
+				// Trigger trace event
+				new TimingWrapper<Object>().exec( () -> {
+					ssn.triggerTraceEvent(TraceEvent.mkTraceEvent("foo"));
+					return null;
+				});
+
+				new TimingWrapper<Set<Variation>>().exec( () -> {
+					return ssn.getTraversedVariations();
+				});
+
+				new TimingWrapper<Set<Variation>>().exec( () -> {
+					return ssn.getDisqualifiedVariations();
+				});
+
+				new TimingWrapper<Map<State, Integer>>().exec( () -> {
+					return ssn.getTraversedStates();
+				});
+
 			});
 		}
 		
