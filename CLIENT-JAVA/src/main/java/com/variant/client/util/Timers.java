@@ -1,7 +1,7 @@
 package com.variant.client.util;
 
 /**
- * Thread local timer.
+ * Thread local timer. Microsecond precision.
  *
  */
 public class Timers {
@@ -36,7 +36,7 @@ public class Timers {
 		
 		public long stop() {
 			if (lastStart > 0) {
-				runningTotal += (System.currentTimeMillis() - lastStart);
+				runningTotal += (System.nanoTime() - lastStart);
 				lastStart = -1;
 			}
 			return runningTotal;
@@ -49,7 +49,7 @@ public class Timers {
 		public void start() {
 			if (lastStart > 0) 
 				throw new RuntimeException("The timer is already started");
-			lastStart = System.currentTimeMillis();
+			lastStart = System.nanoTime();
 		}
 		
 		/**
@@ -59,7 +59,7 @@ public class Timers {
 		public long getAndClear() {
 			if (lastStart > 0) 
 				throw new RuntimeException("Stop timer first");
-			long result = runningTotal;
+			long result = runningTotal/1000;
 			runningTotal = 0;
 			return result;
 		}

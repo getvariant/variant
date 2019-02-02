@@ -136,19 +136,11 @@ public class TimersTest extends ClientBaseTestWithServerAsync {
 	 */
 	private static class TimingWrapper<T> {
 
-		private int[] expectedLocalBounds = {0, 300};
-		private int[] expectedRemoteBounds = {0, 100};
+		private int[] expectedLocalBounds = {0, 300000};   // Microseconds
+		private int[] expectedRemoteBounds = {0, 30000};   // Ditto
 		private int expectedRemoteCount = 1;
-				
-		TimingWrapper(int[] localBounds, int[] remoteBounds, int remoteCount) {
-			this.expectedLocalBounds = localBounds;
-			this.expectedRemoteBounds = remoteBounds;
-			this.expectedRemoteCount = remoteCount;
-		}
-
-		TimingWrapper() {
-			this(new int[] {0, 300}, new int[] {0, 100}, 1);
-		}
+		
+		TimingWrapper() {}
 
 		TimingWrapper<T> withNoRemoteCalls() {
 			expectedRemoteBounds = new int[] {0, 0};
@@ -166,14 +158,16 @@ public class TimersTest extends ClientBaseTestWithServerAsync {
 
 			T result = op.apply();
 
-			assertEquals(expectedRemoteCount, Timers.remoteTimer.get().getAndClearCount());
+			long remoteOpCount = Timers.remoteTimer.get().getAndClearCount();
+			assertEquals(expectedRemoteCount, remoteOpCount);
 			long remoteTime = Timers.remoteTimer.get().getAndClear();
-			assertTrue(remoteTime >= expectedLocalBounds[0]);
-			assertTrue(remoteTime <= expectedRemoteBounds[1]);
+			assertTrue("" + remoteTime + " was not >= " + expectedLocalBounds[0], remoteTime >= expectedLocalBounds[0]);
+			assertTrue("" + remoteTime + " was not <= " + expectedRemoteBounds[1], remoteTime <= expectedRemoteBounds[1]);
 			long localTime = Timers.localTimer.get().getAndClear();
+			assertTrue("" + remoteTime + " was not < " + localTime, remoteOpCount == 0 ? true: remoteTime < localTime);
 			assertTrue("" + localTime + " was not >= " + expectedLocalBounds[0], localTime >= expectedLocalBounds[0]);
 			assertTrue("" + localTime + " was not <= " + expectedLocalBounds[1], localTime <= expectedLocalBounds[1]);
-
+			
 			return result;
 		}
 		

@@ -45,7 +45,7 @@ class VariantAction @Inject()
     */
    override def invokeBlock[A](request: Request[A], block: (Request[A]) => Future[Result]) = {
    
-      val start = System.currentTimeMillis
+      val start = System.nanoTime
       val req = request.method + " " + request.path      
                   
       if (VariantServer.instance.isUp) {
@@ -55,11 +55,10 @@ class VariantAction @Inject()
          }
          
          try {
-            // Delegate to the concrete action and time for performance testing 
-            val start = System.currentTimeMillis()
-
+            
             block(request).map { res =>
-              if (withTiming) res.withHeaders(HTTP_HEADER_SERVER_TIMIER -> String.valueOf((System.currentTimeMillis - start))) 
+              val newtime = System.nanoTime
+              if (withTiming) res.withHeaders(HTTP_HEADER_SERVER_TIMIER -> String.valueOf(System.nanoTime - start))
               else res
            }
          }
@@ -80,7 +79,7 @@ class VariantAction @Inject()
             if (logger.isTraceEnabled) {
                logger.trace {
                      // Probably doesn't account for a ton of play code.
-                     "Request [%s] completed in %s".format(req, TimeUtils.formatDuration(System.currentTimeMillis - start)) 
+                     "Request [%s] completed in %s µsec".format(req, ((System.nanoTime - start)/1000))
                }
             }
          }

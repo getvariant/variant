@@ -3,7 +3,7 @@ package com.variant.client.util;
 import static com.variant.client.impl.ConfigKeys.SYS_PROP_TIMERS;
 
 /**
- * Execute a timed operation
+ * Execute a timed operation. Timing is in microseconds.
  *
  * @param <T>
  */
