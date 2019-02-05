@@ -9,6 +9,7 @@ import com.variant.core.TraceEvent;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.State;
 import com.variant.core.schema.Variation;
+import com.variant.core.schema.Variation.Experience;
 
 /**
  * Represents a Variant user session. Provides a way to 
@@ -144,6 +145,47 @@ public interface Session {
 	 */
 	public Set<Variation> getDisqualifiedVariations();
 		
+	/**
+	 * <p> The set live experiences to which this session has been targeted and which are still in effect.
+	 * This list is different from he similarly named {@link StateRequest#getLiveExperiences()} in that
+	 * it is cumulative of all the state requests performed by this session and is not pertinent to
+	 * any particular state. 
+	 * 
+	 * @return A set of object of type {@link Experience}.
+	 * 
+	 * @throws SessionExpiredException
+	 * @throws UnknownSchemaException
+	 * 
+	 * @since 0.9
+	 */
+	public Set<Experience> getLiveExperiences(); 
+
+	/**
+	 * <p> Get the live experience in a given variation. Finds, in the {@link Set}, returned by {@link #getLiveExperiences()},
+	 * one from the given variation. 
+	 * 
+	 * @return An {@link Optional} containing the requested experience, if any.
+	 * 
+	 * @throws SessionExpiredException
+	 * @throws UnknownSchemaException
+	 * 
+	 * @since 0.9
+	 */
+	public Optional<Experience> getLiveExperience(Variation variation); 
+
+	/**
+	 * <p> Get the live experience in a given variation given by its name. 
+	 * Finds, in the {@link Set}, returned by {@link #getLiveExperiences()}, one from the given variation. 
+	 * 
+	 * @return An {@link Optional} containing the requested experience, if any.
+	 * 
+	 * @throws SessionExpiredException
+	 * @throws UnknownSchemaException
+	 * 
+	 * @since 0.9
+	 */
+	public Optional<Experience> getLiveExperience(String variationName); 
+
 	/**
 	 * <p>The most recent state request, which may be still in progress or already committed.
 	 * 

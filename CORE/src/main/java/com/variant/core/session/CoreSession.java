@@ -20,17 +20,16 @@ import com.variant.core.impl.VariantException;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.State;
 import com.variant.core.schema.Variation;
+import com.variant.core.schema.Variation.Experience;
 
 /**
  * 
  * @author Igor
  *
  */
+@SuppressWarnings("serial")
 public class CoreSession implements Serializable {
 	
-	///
-	private static final long serialVersionUID = 1L;
-
 	private String sid;
 	private Date createDate = new Date();
 	private LinkedHashMap<String, String> attributes = new LinkedHashMap<String, String>();
@@ -223,6 +222,10 @@ public class CoreSession implements Serializable {
 		return Collections.unmodifiableSet(disqualVariations);
 	}
 
+	public Set<Experience> getLiveExperiences(Schema schema) {
+		return targetingStabile.getAllAsExperiences(schema);
+	}
+	
 	public Map<String,String> getAttributes() {
 		return attributes;
 	}    

@@ -25,6 +25,7 @@ import com.variant.core.impl.StateVisitedEvent;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.State;
 import com.variant.core.schema.Variation;
+import com.variant.core.schema.Variation.Experience;
 import com.variant.core.session.CoreSession;
 import com.variant.core.session.SessionScopedTargetingStabile;
 
@@ -182,6 +183,29 @@ public class SessionImpl implements Session {
 		return new MethodTimingWrapper<Set<Variation>>().exec( () -> {
 			refreshFromServer();
 			return coreSession.getTraversedVariations();
+		});
+	}
+
+	@Override
+	public Set<Experience> getLiveExperiences() {
+		preChecks();
+		return new MethodTimingWrapper<Set<Experience>>().exec( () -> {
+			refreshFromServer();
+			return coreSession.getTargetingStabile().getAllAsExperiences(schema);
+		});
+	}
+
+	@Override
+	public Optional<Experience> getLiveExperience(Variation variation) {
+		return getLiveExperience(variation.getName());
+	}
+
+	@Override
+	public Optional<Experience> getLiveExperience(String variationName) {
+		preChecks();
+		return new MethodTimingWrapper<Optional<Experience>>().exec( () -> {
+			refreshFromServer();
+			return Optional.ofNullable(coreSession.getTargetingStabile().getAsExperience(variationName, schema));
 		});
 	}
 

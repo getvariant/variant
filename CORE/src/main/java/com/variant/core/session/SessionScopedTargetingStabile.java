@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.Set;
 import java.util.function.Predicate;
 
 import com.variant.core.schema.Schema;
@@ -110,8 +112,8 @@ public class SessionScopedTargetingStabile {
 	 * @param schema
 	 * @return
 	 */
-	public Collection<Experience> getAllAsExperiences(Schema schema) {
-		ArrayList<Experience> result = new ArrayList<Experience>();
+	public Set<Experience> getAllAsExperiences(Schema schema) {
+		LinkedHashSet<Experience> result = new LinkedHashSet<Experience>();
 		for (Entry entry: entryMap.values()) {
 			Variation test = schema.getVariation(entry.testName).get();
 			if (test != null) {
@@ -119,7 +121,7 @@ public class SessionScopedTargetingStabile {
 				if (experience != null) result.add(experience);
 			}
 		}
-		return Collections.unmodifiableList(result);
+		return Collections.unmodifiableSet(result);
 	}
 
 	/**
