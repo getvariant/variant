@@ -78,8 +78,6 @@ class VariantServerImpl @Inject() (
 	
 	override val config = playConfig.underlying
 	
-	//override val classloader = new VariantClassLoader()
-   
    override lazy val ssnStore  = _ssnStore
   
 	override def schemata = _schemaDeployer.schemata 

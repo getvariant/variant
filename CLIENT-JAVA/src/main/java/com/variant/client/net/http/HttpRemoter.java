@@ -64,7 +64,7 @@ public class HttpRemoter {
 				Timers.remoteTimer.get().increment();
 				Header[] timerHeaderArr = resp.getHeaders(Constants.HTTP_HEADER_SERVER_TIMIER);
 				String millisString = 
-					timerHeaderArr == null ? "0" : timerHeaderArr[0].getValue();
+					timerHeaderArr == null || timerHeaderArr.length == 0 ? "0" : timerHeaderArr[0].getValue();
 				Timers.remoteTimer.get().increment(Long.parseLong(millisString));
 			}
 			

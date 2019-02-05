@@ -140,7 +140,7 @@ public class ConfigLoader {
 				sysPropsOverride.put(entry.getKey().toString(), entry.getValue());
 			}
 		}
-		
+
 		return ConfigFactory.parseMap(sysPropsOverride).withFallback(result).resolve();
 	}
 	

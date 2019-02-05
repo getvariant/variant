@@ -108,8 +108,8 @@ public class ServerError extends CommonError {
 	public static final ServerError CANNOT_FAIL = 
 			new ServerError(706, "Cannot fail a committed state request.");
 
-	public final static ServerError STATE_UNDEFINED_IN_EXPERIENCE =
-			new ServerError(707, "Currently active experience [%s] is undefined on state [%s]");
+	public final static ServerError STATE_PHANTOM_IN_EXPERIENCE =
+			new ServerError(707, "Cannot target state [%s] because it is phantom in live experience [%s]");
 
 	public static final ServerError EXPERIENCE_WEIGHT_MISSING = 
 			new ServerError(708, "No weight specified for variation [%s], experience [%s] and no targeting hook defined");

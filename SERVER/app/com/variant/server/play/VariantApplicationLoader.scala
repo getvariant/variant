@@ -20,8 +20,13 @@ import com.variant.server.util.ConfigLoader;
  */
 object VariantApplicationLoader {
    
-   val config = ConfigLoader.load("/variant.conf", "/com/variant/server/boot/variant-default.conf");
+	// Normally, this gets loaded once, at build time.
+   lazy val config = loadConfig
 
+   // Tests that need config reloaded should use this.
+   def loadConfig = {
+   	ConfigLoader.load("/variant.conf", "/com/variant/server/boot/variant-default.conf");
+   }
 }
 
 /**

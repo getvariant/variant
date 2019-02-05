@@ -60,9 +60,9 @@ public class StateImpl implements State {
 		
 		ArrayList<Variation> result = new ArrayList<Variation>();
 		
-		for (Variation test: schema.getVariations()) {
-			for (Variation.OnState tov: test.getOnStates()) {
-				if (tov.getState().equals(this)) result.add(test);
+		for (Variation var: schema.getVariations()) {
+			for (Variation.OnState tov: var.getOnStates()) {
+				if (tov.getState().equals(this)) result.add(var);
 			}
 		}
 		return Collections.unmodifiableList(result);

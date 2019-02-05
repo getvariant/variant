@@ -42,8 +42,8 @@ class EventFlusherTest extends PlaySpec with OneAppPerTest {
     */
    "Server should come up with a valid schema" in {
       val server = app.injector.instanceOf[VariantServer]
-      server.schemata.size mustBe 2 
-      server.schemaDeployer.parserResponses.size mustBe 2
+      server.schemata.size mustBe 3
+      server.schemaDeployer.parserResponses.size mustBe 3
       server.schemaDeployer.parserResponses.foreach { _.getMessages.size() mustBe 0 }
    }
 

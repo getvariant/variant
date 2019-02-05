@@ -29,9 +29,10 @@ class RootTest extends EmbeddedServerSpec {
          assertResp(route(app, httpReq(GET, "/")))
             .isOk
             .withBodyText { body =>
+            	println(body)
                var lineCount = 1
                for (char <- body if char == '\n' ) lineCount += 1
-               lineCount mustBe 11
+               lineCount mustBe 16
          }
       }         
    }

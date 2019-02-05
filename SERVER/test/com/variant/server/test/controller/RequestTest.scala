@@ -62,8 +62,9 @@ class RequestTest extends EmbeddedServerSpec {
          assertResp(route(app, httpReq(POST, "/session/monstrosity/" + sid).withBody(emptyTargetingTrackerBody)))
             .isOk         
             .withBodySession { ssn =>
+            	// Server responds with a new sid, if requested one wasn't found.
                ssn.getId mustNot be (sid)
-               sid = ssn.getId
+               sid = ssn.getId  
                ssn.getSchema.getMeta.getName mustBe "monstrosity"
          }
       }

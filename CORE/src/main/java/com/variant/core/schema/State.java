@@ -35,7 +35,8 @@ public interface State {
 	public Map<String,String> getParameters();
 
 	/**
-	 * <p>List, in ordinal order, of variations which are instrumented on this state.
+	 * Immutable List, in ordinal order, of variations which are instrumented on this state. 
+	 * Includes both online and offline variations.
 	 *  
 	 * @return A list of {@link Variation} objects.
 	 * @since 0.5

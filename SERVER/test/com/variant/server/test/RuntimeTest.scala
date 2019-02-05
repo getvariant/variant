@@ -15,7 +15,7 @@ class RuntimeTest extends EmbeddedServerSpec {
    
 	"Runtime" should {
 
-      val schema = server.schemata.get("monstrosity").get.liveGen.get
+		val schema = server.schemata.get("monstrosity").get.liveGen.get
  	   val runtime = RuntimeTestFacade(schema)
 
       val state1 = schema.getState("state1").get
@@ -80,7 +80,7 @@ class RuntimeTest extends EmbeddedServerSpec {
 					test3.getExperience("C").get,   
 					test5.getExperience("B").get)
 					
-			}.getMessage mustBe "Undefined experience [test3.C] in coordinate vector"
+			}.getMessage mustBe "Phantom experience [test3.C] in coordinate vector"
 
          runtime.resolveState(
 				   state1, 
@@ -244,7 +244,7 @@ class RuntimeTest extends EmbeddedServerSpec {
    				test4.getExperience("A").get, 
    				test2.getExperience("A").get,   
    				test5.getExperience("A").get)
-  			}.getMessage mustBe "Undefined experience [test2.A] in coordinate vector"
+  			}.getMessage mustBe "Phantom experience [test2.A] in coordinate vector"
 
    	   runtime.resolveState(
   					state2, 
@@ -257,9 +257,17 @@ class RuntimeTest extends EmbeddedServerSpec {
 
 	   "test isResolvable()" in {
 
-   	   runtime.isResolvable(test1.getExperience("A").get) mustBe true
-		
-         runtime.isResolvable(test1.getExperience("B").get) mustBe true
+	     runtime.isResolvable(test1.getExperience("A").get) mustBe true
+
+	     runtime.isResolvable(test1.getExperience("B").get) mustBe true
+
+	     runtime.isResolvable(
+	    		  test1.getExperience("B").get,
+	    		  test2.getExperience("A").get,
+	    		  test3.getExperience("C").get,
+	    		  test5.getExperience("A").get,
+	    		  test6.getExperience("A").get
+			)
 
          intercept[ServerExceptionInternal] {
 
