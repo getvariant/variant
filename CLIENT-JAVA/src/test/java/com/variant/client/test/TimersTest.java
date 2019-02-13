@@ -54,12 +54,12 @@ public class TimersTest extends ClientBaseTestWithServerAsync {
 				});
 				
 				// Get session attribute map.
-				Map<String,String> attr = new TimingWrapper<Map<String,String>>().exec( () -> {
+				Map<String,String> attr = new TimingWrapper<Map<String,String>>().withNoRemoteCalls().exec( () -> {
 					return ssn.getAttributes();
 				});
 				
 				// Working with attribute map is local
-				String val = new TimingWrapper<String>().withNoRemoteCalls().exec( () -> {
+				String val = new TimingWrapper<String>().exec( () -> {
 					String res = attr.get("foo");
 					return res;
 				});
@@ -73,7 +73,7 @@ public class TimersTest extends ClientBaseTestWithServerAsync {
 
 				assertNull(val);
 
-				val = new TimingWrapper<String>().withNoRemoteCalls().exec( () -> {
+				val = new TimingWrapper<String>().exec( () -> {
 					String res = attr.get("foo");
 					return res;
 				});
@@ -136,7 +136,7 @@ public class TimersTest extends ClientBaseTestWithServerAsync {
 	 */
 	private static class TimingWrapper<T> {
 
-		private int[] expectedLocalBounds = {0, 300000};   // Microseconds
+		private int[] expectedLocalBounds = {0, 1000000};   // Microseconds
 		private int[] expectedRemoteBounds = {0, 30000};   // Ditto
 		private int expectedRemoteCount = 1;
 		

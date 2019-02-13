@@ -25,22 +25,38 @@ public class SessionAttributeMap implements Map<String, String> {
 	
 	@Override
 	public int size() {
-		return ssn.getCoreSession().getAttributes().size();
+		ssn.preChecks();
+		return new MethodTimingWrapper<Integer>().exec( () -> {
+			ssn.refreshFromServer();
+			return ssn.getCoreSession().getAttributes().size();
+		});
 	}
 
 	@Override
 	public boolean isEmpty() {
-		return ssn.getCoreSession().getAttributes().isEmpty();
+		ssn.preChecks();
+		return new MethodTimingWrapper<Boolean>().exec( () -> {
+			ssn.refreshFromServer();
+			return ssn.getCoreSession().getAttributes().isEmpty();
+		});
 	}
 
 	@Override
 	public boolean containsKey(Object key) {
-		return ssn.getCoreSession().getAttributes().containsKey(key);
+		ssn.preChecks();
+		return new MethodTimingWrapper<Boolean>().exec( () -> {
+			ssn.refreshFromServer();
+			return ssn.getCoreSession().getAttributes().containsKey(key);
+		});
 	}
 
 	@Override
 	public boolean containsValue(Object value) {
-		return ssn.getCoreSession().getAttributes().containsValue(value);
+		ssn.preChecks();
+		return new MethodTimingWrapper<Boolean>().exec( () -> {
+			ssn.refreshFromServer();
+			return ssn.getCoreSession().getAttributes().containsValue(value);
+		});
 	}
 
 	@Override
@@ -48,6 +64,7 @@ public class SessionAttributeMap implements Map<String, String> {
 		if (key == null) throw new VariantException(PARAM_CANNOT_BE_NULL, "key");
 		ssn.preChecks();
 		return new MethodTimingWrapper<String>().exec( () -> {
+			ssn.refreshFromServer();
 			return ssn.getCoreSession().getAttributes().get(key);
 		});
 	}
@@ -73,6 +90,7 @@ public class SessionAttributeMap implements Map<String, String> {
 		});
 	}
 
+	// TODO: Optimize
 	@Override
 	public void putAll(Map<? extends String, ? extends String> m) {
 		

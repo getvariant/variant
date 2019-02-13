@@ -241,6 +241,7 @@ public class SessionImpl implements Session {
 	 */
 	@Override
 	public Optional<StateRequest> getStateRequest() {
+		preChecks();
 		return Optional.ofNullable(stateRequest);
 	}
 
@@ -250,10 +251,7 @@ public class SessionImpl implements Session {
 	@Override
 	public Map<String,String> getAttributes() {
 		preChecks();
-		return new MethodTimingWrapper<Map<String,String>>().exec( () -> {
-			refreshFromServer();
-			return new SessionAttributeMap(this);
-		});
+		return new SessionAttributeMap(this);
 	}
 
 	// ---------------------------------------------------------------------------------------------//
