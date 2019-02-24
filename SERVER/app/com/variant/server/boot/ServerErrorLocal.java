@@ -1,6 +1,6 @@
 package com.variant.server.boot;
 
-import com.variant.core.impl.CommonError;
+import com.variant.core.error.CommonError;
 
 /**
  * Local Server Errors, i.e. ones thrown to the server log and not sent back to client.
@@ -68,7 +68,7 @@ public class ServerErrorLocal extends CommonError {
    /**
     * 
     */
-   private ServerErrorLocal(int code, com.variant.core.UserError.Severity severity, String format) {
+   private ServerErrorLocal(int code, Severity severity, String format) {
 		super(code, severity, format);
 	}
 

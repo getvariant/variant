@@ -7,7 +7,7 @@ import scala.collection.mutable
 import scala.concurrent.Future
 
 import com.typesafe.config.Config
-import com.variant.core.UserError.Severity
+import com.variant.core.error.UserError.Severity
 import com.variant.server.api.ServerException
 import com.variant.server.schema.SchemaDeployer
 import com.variant.server.schema.Schemata

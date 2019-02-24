@@ -8,7 +8,7 @@ import java.util.Map;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.variant.core.impl.ServerError;
+import com.variant.core.error.ServerError;
 import com.variant.core.util.IoUtils;
 
 /**

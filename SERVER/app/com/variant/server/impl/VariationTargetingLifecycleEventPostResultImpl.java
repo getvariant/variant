@@ -1,11 +1,10 @@
 package com.variant.server.impl;
 
-import static com.variant.core.impl.ServerError.HOOK_TARGETING_BAD_EXPERIENCE;
+import static com.variant.core.error.ServerError.*;
 
 import com.variant.core.schema.State;
 import com.variant.core.schema.Variation;
 import com.variant.core.schema.Variation.Experience;
-import com.variant.server.api.ServerException;
 import com.variant.server.api.lifecycle.VariationTargetingLifecycleEvent;
 import com.variant.server.boot.ServerExceptionLocal;
 

@@ -6,7 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.typesafe.config.ConfigException;
-import com.variant.core.impl.ServerError;
+import com.variant.core.error.ServerError;
 import com.variant.core.lifecycle.LifecycleEvent;
 import com.variant.core.lifecycle.LifecycleHook;
 import com.variant.core.lifecycle.StateAwareLifecycleEvent;
@@ -14,7 +14,6 @@ import com.variant.core.lifecycle.VariationAwareLifecycleEvent;
 import com.variant.core.schema.Hook;
 import com.variant.core.schema.parser.HooksService;
 import com.variant.core.schema.parser.ParserResponse;
-import com.variant.server.api.ServerException;
 import com.variant.server.api.lifecycle.RuntimeLifecycleEvent;
 import com.variant.server.boot.ServerErrorLocal;
 import com.variant.server.boot.ServerExceptionLocal;

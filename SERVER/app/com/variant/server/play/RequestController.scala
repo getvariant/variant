@@ -6,17 +6,13 @@ import com.variant.core.StateRequestStatus
 import com.variant.core.StateRequestStatus.Committed
 import com.variant.core.StateRequestStatus.Failed
 import com.variant.core.StateRequestStatus.InProgress
-import com.variant.core.impl.ServerError
-import com.variant.core.impl.ServerError.ACTIVE_REQUEST
-import com.variant.core.impl.ServerError.EmptyBody
-import com.variant.core.impl.ServerError.InvalidRequestStatus
-import com.variant.core.impl.ServerError.MissingProperty
-import com.variant.core.impl.StateVisitedEvent
+import com.variant.core.Constants._
+import com.variant.core.error.ServerError._
 import com.variant.core.session.SessionScopedTargetingStabile
 import com.variant.server.boot.ServerExceptionInternal
 import com.variant.server.boot.ServerExceptionRemote
 import com.variant.server.boot.VariantServer
-import com.variant.server.event.ServerTraceEvent
+import com.variant.server.api.TraceEvent
 import com.variant.server.impl.SessionImpl
 import com.variant.server.impl.StateRequestImpl
 import com.variant.server.util.JavaImplicits.оptional2Option
@@ -26,6 +22,7 @@ import play.api.Logger
 import play.api.libs.json.JsObject
 import play.api.libs.json.JsString
 import play.api.mvc.ControllerComponents
+import com.variant.server.impl.TraceEventImpl
 
 //@Singleton -- Is this for non-shared state controllers?
 class RequestController @Inject() (
@@ -126,10 +123,10 @@ class RequestController @Inject() (
       val stateReq = ssn.getStateRequest.get.asInstanceOf[StateRequestImpl]
       
       if (stateReq.getStatus == Committed && status == Failed)
-			throw new ServerExceptionRemote(ServerError.CANNOT_FAIL);
+			throw new ServerExceptionRemote(CANNOT_FAIL);
       
 		else if (stateReq.getStatus == Failed && status == Committed)
-			throw new ServerExceptionRemote(ServerError.CANNOT_COMMIT);
+			throw new ServerExceptionRemote(CANNOT_COMMIT);
 		
 		else if (stateReq.getStatus == InProgress) {
 
@@ -139,8 +136,9 @@ class RequestController @Inject() (
          // at this state. As opposed to custom events, state visited events
          // cannot be orphan because we didn't really visit that state.
          if (!stateReq.getLiveExperiences().isEmpty()) {
-            val sve = new StateVisitedEvent(stateReq.getState, status, attrs.asJava)                  
-      	   ssn.triggerEvent(new ServerTraceEvent(sve));
+         	val sve = new TraceEventImpl(SVE_NAME, attrs.asJava)
+				sve.getAttributes.put("$STATUS", stateReq.getStatus.toString);
+      	   ssn.triggerEvent(sve);
          }
          
       }

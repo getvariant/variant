@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.variant.core.impl.ServerError;
+import com.variant.core.error.ServerError;
 import com.variant.core.util.CollectionsUtils;
 import com.variant.core.util.StringUtils;
 import com.variant.core.session.SessionScopedTargetingStabile;

@@ -6,7 +6,7 @@ import play.api.mvc.Results._
 import play.api.routing.Router
 import scala.concurrent._
 import play.api.http.HttpErrorHandler
-import com.variant.core.impl.ServerError
+import com.variant.core.error.ServerError
 import com.variant.server.boot.ServerErrorRemote
 
 /**

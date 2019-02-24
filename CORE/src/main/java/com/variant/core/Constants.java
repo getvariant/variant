@@ -1,10 +1,13 @@
-package com.variant.core.util;
+package com.variant.core;
 
 /**
  * Shared constants.
  */
 public interface Constants {
 
+	// The name of State Visited Event.
+	final public static String SVE_NAME = "$STATE_VISIT";
+	
 	// Although all our bodies are formatted as JSON, we can't use "application/json"
 	// because Play hiccups reading empty bodies if they are expected to be JSON.
 	final public static String HTTP_HEADER_CONTENT_TYPE = "text/plain; charset=utf-8";

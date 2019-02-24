@@ -603,7 +603,7 @@ class RequestTest extends EmbeddedServerSpec {
          }
          
          val serverSsn = server.ssnStore.get(sid).get.asInstanceOf[SessionImpl]
-         serverSsn.triggerEvent(new ServerTraceEvent("Custom Event", Map("foo"->"bar")));
+         serverSsn.triggerEvent(new TraceEvent("Custom Event", Map("foo"->"bar")));
          
          // Commit the request.
          val reqBody2 = Json.obj(

@@ -1,18 +1,13 @@
 package com.variant.server.impl
 
+import com.variant.core.StateRequestStatus
 import com.variant.core.schema.State
-import com.variant.server.api.StateRequest
-import com.variant.core.session.CoreStateRequest
-import java.util.Date
+import com.variant.core.schema.StateVariant
 import com.variant.core.schema.Variation
 import com.variant.core.schema.Variation.Experience
-import com.variant.core.schema.StateVariant
-import com.variant.core.TraceEvent
-import com.variant.core.StateRequestStatus
-import com.variant.core.schema.impl.StateVariantImpl
+import com.variant.core.session.CoreStateRequest
 import com.variant.server.api.Session
-import com.variant.server.event.ServerTraceEvent
-import com.variant.core.impl.StateVisitedEvent
+import com.variant.server.api.StateRequest
 
 /**
  * 

@@ -1,16 +1,13 @@
-package com.variant.server.event;
+package com.variant.server.impl
 
 import java.util.LinkedList
 import java.util.concurrent.ConcurrentLinkedQueue
-
 import org.apache.commons.lang3.time.DurationFormatUtils
-
 import com.variant.server.api.ConfigKeys.EVENT_WRITER_BUFFER_SIZE
 import com.variant.server.api.ConfigKeys.EVENT_WRITER_MAX_DELAY
 import com.variant.server.api.FlushableTraceEvent
 import com.variant.server.boot.VariantServer
 import com.variant.server.schema.ServerFlusherService
-
 import play.api.Logger
 
 class TraceEventWriter (private val flushService: ServerFlusherService) {

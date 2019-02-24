@@ -5,9 +5,9 @@ import scala.concurrent.Future
 import scala.util.Failure
 import scala.util.Success
 
-import com.variant.core.impl.ServerError
+import com.variant.core.error.ServerError
 import com.variant.core.util.TimeUtils
-import com.variant.core.util.Constants.HTTP_HEADER_SERVER_TIMIER
+import com.variant.core.Constants.HTTP_HEADER_SERVER_TIMIER
 import com.variant.server.boot.ServerErrorRemote
 import com.variant.server.boot.ServerExceptionRemote
 import com.variant.server.boot.VariantServer

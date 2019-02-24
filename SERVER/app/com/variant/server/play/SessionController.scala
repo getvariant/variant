@@ -1,8 +1,7 @@
 package com.variant.server.play
 
-import com.variant.core.impl.ServerError.EmptyBody
 import com.variant.core.session.CoreSession
-import com.variant.core.impl.ServerError._
+import com.variant.core.error.ServerError._
 import com.variant.core.util.StringUtils
 import com.variant.core.session.SessionScopedTargetingStabile
 import com.variant.server.api.ServerException

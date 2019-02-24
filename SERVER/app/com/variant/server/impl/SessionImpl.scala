@@ -10,12 +10,11 @@ import com.variant.core.session.CoreStateRequest
 import com.variant.core.session.SessionScopedTargetingStabile
 import com.variant.server.api.Session
 import com.variant.server.api.StateRequest
-import com.variant.server.event.FlushableTraceEventImpl
-import com.variant.server.event.ServerTraceEvent
 import com.variant.server.schema.SchemaGen
 import com.variant.server.util.JavaImplicits
 import play.api.Logger
 import com.variant.core.schema.StateVariant
+import com.variant.server.api.TraceEvent
 
 /**
  * Server session enriches core session with server side functionality.
@@ -120,7 +119,7 @@ class SessionImpl(val coreSession: CoreSession, val schemaGen: SchemaGen) extend
    /**
     * 
     */
-	def triggerEvent(event: ServerTraceEvent) {
+	def triggerEvent(event: TraceEvent) {
 	   val flushableEvent = new FlushableTraceEventImpl(event, this);
 		schemaGen.eventWriter.write(flushableEvent);
 		logger.trace(s"Triggered event ${flushableEvent}")

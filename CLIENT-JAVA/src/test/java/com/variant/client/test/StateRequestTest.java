@@ -3,7 +3,11 @@ package com.variant.client.test;
 import static com.variant.core.StateRequestStatus.Committed;
 import static com.variant.core.StateRequestStatus.Failed;
 import static com.variant.core.StateRequestStatus.InProgress;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 
@@ -16,7 +20,6 @@ import com.variant.client.VariantClient;
 import com.variant.client.VariantException;
 import com.variant.client.impl.SchemaImpl;
 import com.variant.client.impl.StateVisitedEvent;
-import com.variant.client.impl.TraceEventSupport;
 import com.variant.client.test.util.ClientBaseTestWithServer;
 import com.variant.client.test.util.event.TraceEventFromDatabase;
 import com.variant.client.test.util.event.TraceEventReader;

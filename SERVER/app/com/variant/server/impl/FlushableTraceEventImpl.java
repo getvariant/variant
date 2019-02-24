@@ -1,4 +1,4 @@
-package com.variant.server.event;
+package com.variant.server.impl;
 
 import java.io.Serializable;
 import java.io.StringWriter;
@@ -15,6 +15,7 @@ import com.variant.core.schema.Variation.Experience;
 import com.variant.server.api.FlushableTraceEvent;
 import com.variant.server.api.Session;
 import com.variant.server.api.StateRequest;
+import com.variant.server.api.TraceEvent;
 
 /**
  * Flushable event implementation suitable for the server.
@@ -29,7 +30,7 @@ public class FlushableTraceEventImpl implements FlushableTraceEvent, Serializabl
 	private static final long serialVersionUID = 1L;
 
 	private final String sessionId;
-	private final ServerTraceEvent userEvent;
+	private final TraceEventImpl userEvent;
 	private final Date timestamp = new Date();
 	// Live experiences in effect at the time the event was triggered.
 	private final Set<Experience> liveExperiences = new HashSet<Experience>();
@@ -38,8 +39,8 @@ public class FlushableTraceEventImpl implements FlushableTraceEvent, Serializabl
 	 * Constructor
 	 * @return
 	 */
-	public FlushableTraceEventImpl(ServerTraceEvent event, Session session) {
-		this.userEvent = event;
+	public FlushableTraceEventImpl(TraceEvent event, Session session) {
+		this.userEvent = (TraceEventImpl) event;
 		this.sessionId = session.getId();
 		Optional<StateRequest> reqOpt = session.getStateRequest();
 		if (reqOpt.isPresent()) 
@@ -86,7 +87,7 @@ public class FlushableTraceEventImpl implements FlushableTraceEvent, Serializabl
 	 * The event we're wrapping.
 	 * @return
 	 */
-	public TraceEvent getOriginalEvent() {
+	public TraceEventImpl getOriginalEvent() {
 		return userEvent;
 	}
 	

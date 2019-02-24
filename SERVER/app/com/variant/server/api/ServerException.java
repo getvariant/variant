@@ -1,7 +1,7 @@
 package com.variant.server.api;
 
-import com.variant.core.UserError.Severity;
-import com.variant.core.impl.VariantException;
+import com.variant.core.error.UserError.Severity;
+import com.variant.core.error.VariantException;
 /**
  * The super-type for of Variant server exception. 
  * 

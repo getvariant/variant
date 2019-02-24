@@ -2,11 +2,11 @@ package com.variant.server.play
 
 import scala.collection.JavaConverters.mapAsJavaMapConverter
 
-import com.variant.core.impl.ServerError.EmptyBody
-import com.variant.core.impl.ServerError.MissingProperty
+import com.variant.core.error.ServerError.EmptyBody
+import com.variant.core.error.ServerError.MissingProperty
 import com.variant.server.boot.ServerExceptionRemote
 import com.variant.server.boot.VariantServer
-import com.variant.server.event.ServerTraceEvent
+import com.variant.server.impl.TraceEventImpl
 import com.variant.server.impl.SessionImpl
 
 import javax.inject.Inject
@@ -52,7 +52,7 @@ class EventController @Inject() (
       val ssn = server.ssnStore.getOrBust(sid)
                   
       // Trigger the event. 
-      ssn.asInstanceOf[SessionImpl].triggerEvent(new ServerTraceEvent(name, attrs.asJava))            
+      ssn.asInstanceOf[SessionImpl].triggerEvent(new TraceEventImpl(name, attrs.asJava))            
             
       Ok
  

@@ -5,8 +5,8 @@ import java.nio.file.Path
 
 import scala.io.Source
 
-import com.variant.core.UserError.Severity
-import com.variant.core.impl.CommonError.CONFIG_PROPERTY_NOT_SET
+import com.variant.core.error.UserError.Severity
+import com.variant.core.error.CommonError.CONFIG_PROPERTY_NOT_SET
 import com.variant.server.api.ConfigKeys.SCHEMATA_DIR
 import com.variant.server.boot.ServerErrorLocal
 import com.variant.server.boot.ServerExceptionLocal

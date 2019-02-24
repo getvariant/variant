@@ -2,7 +2,7 @@ package com.variant.server.play
 
 import javax.inject.Inject
 import play.api.Logger
-import com.variant.core.impl.ServerError._
+import com.variant.core.error.ServerError._
 import com.variant.server.boot.ServerErrorRemote
 import play.api.mvc.ControllerComponents
 import com.variant.server.boot.VariantServer

@@ -1,14 +1,13 @@
 package com.variant.server.schema
 
+import scala.collection.JavaConverters.asScalaBufferConverter
 import scala.collection.mutable
-import scala.collection.immutable
-import scala.collection.JavaConverters._
-import play.api.Logger
-import com.variant.core.schema.parser.ParserResponse
-import com.variant.core.schema.parser.FlusherService
-import com.variant.core.schema.parser.HooksService
-import com.variant.core.UserError.Severity
+
+import com.variant.core.error.UserError.Severity
 import com.variant.core.schema.ParserMessage
+import com.variant.core.schema.parser.ParserResponse
+
+import play.api.Logger
 
 abstract class AbstractSchemaDeployer() extends SchemaDeployer {
 

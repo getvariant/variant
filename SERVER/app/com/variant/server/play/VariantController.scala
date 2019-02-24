@@ -1,8 +1,8 @@
 package com.variant.server.play
 
 import com.fasterxml.jackson.core.JsonParseException
-import com.variant.core.impl.ServerError
-import com.variant.core.util.Constants._
+import com.variant.core.error.ServerError
+import com.variant.core.Constants._
 import com.variant.server.api.ServerException
 import com.variant.server.boot.VariantServer
 import javax.inject.Inject

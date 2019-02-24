@@ -1,0 +1,45 @@
+package com.variant.server.impl;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import com.variant.server.api.TraceEvent;
+
+/**
+ * Event received over HTTP and suitable to pass to the Core API.
+ */
+public class TraceEventImpl implements TraceEvent {
+
+	private String name;
+	private Map<String,String> attributes = new HashMap<String,String>();
+	
+	/**
+	 * Construct a trace event from scratch
+	 */
+	public TraceEventImpl(String name) {
+		this.name = name;
+	}
+
+	/**
+	 * Construct a trace event from scratch
+	 */
+	public TraceEventImpl(String name, Map<String,String> attributes) {
+		this(name);
+		this.attributes.putAll(attributes);		
+	}
+	
+	//---------------------------------------------------------------------------------------------//
+	//                                          PUBLIC                                             //
+	//---------------------------------------------------------------------------------------------//
+
+	@Override
+	public String getName() {
+		return name;
+	}
+
+	@Override
+	public Map<String,String> getAttributes() {
+		return attributes;
+	}
+
+}
