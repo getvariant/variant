@@ -7,7 +7,7 @@ import com.variant.client.Session;
 import com.variant.client.VariantClient;
 import com.variant.client.VariantException;
 import com.variant.client.test.util.ClientBaseTestWithServer;
-import com.variant.core.impl.ServerError;
+import com.variant.core.error.ServerError;
 import com.variant.core.util.IoUtils;
 
 /**

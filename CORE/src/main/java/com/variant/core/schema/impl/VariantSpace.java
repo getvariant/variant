@@ -1,4 +1,4 @@
-package com.variant.core.impl;
+package com.variant.core.schema.impl;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -6,11 +6,11 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
+import com.variant.core.error.CoreException;
+import com.variant.core.error.CoreException.Internal;
 import com.variant.core.schema.StateVariant;
 import com.variant.core.schema.Variation;
 import com.variant.core.schema.Variation.Experience;
-import com.variant.core.schema.impl.StateVariantImpl;
-import com.variant.core.schema.impl.VariationOnStateImpl;
 import com.variant.core.util.CollectionsUtils;
 
 /**

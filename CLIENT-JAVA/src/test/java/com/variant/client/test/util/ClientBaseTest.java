@@ -4,7 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import com.variant.client.VariantException;
-import com.variant.core.UserError;
+import com.variant.core.error.UserError;
 import com.variant.core.test.VariantBaseTest;
 
 /**

@@ -135,7 +135,7 @@ class RequestController @Inject() (
 
          stateReq.asInstanceOf[StateRequestImpl].setStatus(status); 
 
-         // Trigger state visited, but only if we have live experiences
+         // Trigger state visited event, but only if we have live experiences
          // at this state. As opposed to custom events, state visited events
          // cannot be orphan because we didn't really visit that state.
          if (!stateReq.getLiveExperiences().isEmpty()) {

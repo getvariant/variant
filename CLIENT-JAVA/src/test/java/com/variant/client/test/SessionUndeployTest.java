@@ -9,9 +9,9 @@ import com.variant.client.VariantClient;
 import com.variant.client.VariantException;
 import com.variant.client.impl.ConnectionImpl;
 import com.variant.client.impl.SessionImpl;
+import com.variant.client.impl.TraceEventSupport;
 import com.variant.client.test.util.ClientBaseTestWithServerAsync;
-import com.variant.core.TraceEvent;
-import com.variant.core.impl.ServerError;
+import com.variant.core.error.ServerError;
 import com.variant.core.schema.State;
 import com.variant.core.util.CollectionsUtils;
 import com.variant.core.util.IoUtils;
@@ -153,7 +153,7 @@ public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 						case 0: ssn.getTraversedStates(); break;
 						case 1: ssn.getTraversedVariations(); break;
 						case 2: ssn.getDisqualifiedVariations(); break;
-						case 3: ssn.triggerTraceEvent(TraceEvent.mkTraceEvent("foo")); break;
+						case 3: ssn.triggerTraceEvent(TraceEventSupport.mkTraceEvent("foo")); break;
 						case 4: ssn.getAttributes().get("foo"); break;
 						case 5: ssn.getAttributes().put("foo", "bar"); break;
 						case 6: ssn.getAttributes().remove("foo"); break;
@@ -192,7 +192,7 @@ public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 						case 0: ssn.getTraversedStates(); break;
 						case 1: ssn.getTraversedVariations(); break;
 						case 2: ssn.getDisqualifiedVariations(); break;
-						case 3: ssn.triggerTraceEvent(TraceEvent.mkTraceEvent("foo")); break;
+						case 3: ssn.triggerTraceEvent(TraceEventSupport.mkTraceEvent("foo")); break;
 						case 4: ssn.getAttributes().get("foo"); break;
 						case 5: ssn.getAttributes().put("foo", "bar"); break;
 						case 6: ssn.getAttributes().remove("foo"); break;
@@ -235,7 +235,7 @@ public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 						case 1: ssn.getTraversedStates(); break;
 						case 2: ssn.getTraversedVariations(); break;
 						case 3: ssn.getDisqualifiedVariations(); break;
-						case 4: ssn.triggerTraceEvent(TraceEvent.mkTraceEvent("foo")); break;
+						case 4: ssn.triggerTraceEvent(TraceEventSupport.mkTraceEvent("foo")); break;
 						case 5: ssn.getAttributes().get("foo"); break;
 						case 6: ssn.getAttributes().put("foo", "bar"); break;
 						case 7: ssn.getAttributes().remove("foo"); break;
@@ -390,7 +390,7 @@ public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 				assertNotNull(ssn.getTraversedStates());
 				assertNotNull(ssn.getTraversedVariations());
 				assertNotNull(ssn.getDisqualifiedVariations());
-				ssn.triggerTraceEvent(TraceEvent.mkTraceEvent("foo"));
+				ssn.triggerTraceEvent(TraceEventSupport.mkTraceEvent("foo"));
 				String key = "key" + _i;
 				String value = "value" + _i;
 				assertNull(ssn.getAttributes().get(key));
@@ -457,7 +457,7 @@ public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 				assertNotNull(ssn.getTraversedStates());
 				assertNotNull(ssn.getTraversedVariations());
 				assertNotNull(ssn.getDisqualifiedVariations());
-				ssn.triggerTraceEvent(TraceEvent.mkTraceEvent("foo"));
+				ssn.triggerTraceEvent(TraceEventSupport.mkTraceEvent("foo"));
 				String key = "key" + _i;
 				String value = "value" + _i;
 				assertEquals(value, ssn.getAttributes().get(key));

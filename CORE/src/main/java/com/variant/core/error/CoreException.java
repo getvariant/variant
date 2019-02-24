@@ -1,8 +1,6 @@
-package com.variant.core.impl;
+package com.variant.core.error;
 
-import com.variant.core.UserError;
-import com.variant.core.UserError.Severity;
-
+import com.variant.core.error.UserError.Severity;
 
 /**
  * The super-type for all Variant server exception. 

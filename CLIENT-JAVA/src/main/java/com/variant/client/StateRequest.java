@@ -5,7 +5,6 @@ import java.util.Optional;
 import java.util.Set;
 
 import com.variant.core.StateRequestStatus;
-import com.variant.core.TraceEvent;
 import com.variant.core.schema.State;
 import com.variant.core.schema.StateVariant;
 import com.variant.core.schema.Variation;

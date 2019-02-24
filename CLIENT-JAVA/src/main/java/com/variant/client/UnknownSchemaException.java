@@ -1,6 +1,6 @@
 package com.variant.client;
 
-import com.variant.core.impl.ServerError;
+import com.variant.core.error.ServerError;
 
 
 /**

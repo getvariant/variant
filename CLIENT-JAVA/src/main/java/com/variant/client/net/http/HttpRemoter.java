@@ -97,7 +97,7 @@ public class HttpRemoter {
 				
 			case HttpStatus.SC_BAD_REQUEST:
 				
-				com.variant.core.impl.VariantException ce = result.toVariantException();
+				com.variant.core.error.VariantException ce = result.toVariantException();
 				if (LOG.isDebugEnabled()) LOG.debug("Server Error " + ce.getMessage());
 				throw ce;
 			

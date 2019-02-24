@@ -17,7 +17,7 @@ import com.variant.client.VariantException;
 import com.variant.client.net.Payload;
 import com.variant.client.util.MethodTimingWrapper;
 import com.variant.client.util.Timers;
-import com.variant.core.UserError.Severity;
+import com.variant.core.error.UserError.Severity;
 import com.variant.core.schema.ParserMessage;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.parser.ParserResponse;

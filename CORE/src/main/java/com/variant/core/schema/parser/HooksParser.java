@@ -13,7 +13,7 @@ import java.util.Map;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.variant.core.impl.CoreException;
+import com.variant.core.error.CoreException;
 import com.variant.core.schema.Hook;
 import com.variant.core.schema.impl.MetaImpl;
 import com.variant.core.schema.impl.SchemaHookImpl;

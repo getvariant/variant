@@ -13,9 +13,9 @@ import com.variant.client.Session;
 import com.variant.client.StateRequest;
 import com.variant.client.VariantClient;
 import com.variant.client.impl.ConnectionImpl;
+import com.variant.client.impl.TraceEventSupport;
 import com.variant.client.test.util.ClientBaseTestWithServerAsync;
 import com.variant.client.util.Timers;
-import com.variant.core.TraceEvent;
 import com.variant.core.schema.State;
 import com.variant.core.schema.Variation;
 import com.variant.core.util.CollectionsUtils;
@@ -108,7 +108,7 @@ public class TimersTest extends ClientBaseTestWithServerAsync {
 
 				// Trigger trace event
 				new TimingWrapper<Object>().exec( () -> {
-					ssn.triggerTraceEvent(TraceEvent.mkTraceEvent("foo"));
+					ssn.triggerTraceEvent(TraceEventSupport.mkTraceEvent("foo"));
 					return null;
 				});
 

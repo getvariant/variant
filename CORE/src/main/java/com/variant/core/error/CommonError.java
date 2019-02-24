@@ -1,7 +1,4 @@
-package com.variant.core.impl;
-
-import com.variant.core.UserError;
-
+package com.variant.core.error;
 
 /**
  * User errors that can be signaled on server or client.

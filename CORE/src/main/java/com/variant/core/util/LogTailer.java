@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import com.variant.core.UserError;
+import com.variant.core.error.UserError;
 import com.variant.core.util.apache.ReversedLinesFileReader;
 
 public class LogTailer {

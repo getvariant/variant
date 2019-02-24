@@ -12,14 +12,15 @@ import java.util.List;
 import com.variant.client.Connection;
 import com.variant.client.Session;
 import com.variant.client.StateRequest;
+import com.variant.client.TraceEvent;
 import com.variant.client.VariantClient;
 import com.variant.client.VariantException;
 import com.variant.client.impl.ClientUserError;
+import com.variant.client.impl.StateVisitedEvent;
+import com.variant.client.impl.TraceEventSupport;
 import com.variant.client.test.util.ClientBaseTestWithServer;
 import com.variant.client.test.util.event.TraceEventFromDatabase;
 import com.variant.client.test.util.event.TraceEventReader;
-import com.variant.core.TraceEvent;
-import com.variant.core.impl.StateVisitedEvent;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.State;
 import com.variant.core.util.CollectionsUtils;
@@ -64,13 +65,13 @@ public class TraceEventsTest extends ClientBaseTestWithServer {
 	   	assertEquals(req1, ssn1.getStateRequest().get());
 		assertEquals(5, req1.getLiveExperiences().size());
 		
-		StateVisitedEvent event1 = (StateVisitedEvent) req1.getStateVisitedEvent();
-		assertEquals(TraceEvent.SVE_NAME, event1.getName());
+		TraceEvent event1 = req1.getStateVisitedEvent();
+		assertEquals(StateVisitedEvent.SVE_NAME, event1.getName());
 		assertEquals(1, event1.getAttributes().size());
-		assertEquals("state2", event1.getAttribute("$STATE"));
+		assertEquals("state2", event1.getAttributes().get("$STATE"));
 		
 		// This won't make it all the way to the server because we'll commit in a parallel session.
-		event1.setAttribute("foo", "bar");
+		event1.getAttributes().put("foo", "bar");
 		
 		// Reget the session.  
 		Session ssn2 = conn.getSessionById(ssn1.getId()).get();
@@ -83,9 +84,9 @@ public class TraceEventsTest extends ClientBaseTestWithServer {
 		assertEquals(event1.getName(), event2.getName());
 		// The SVE is recreated in a local copy, but their attributes are lost, except the $STATE attribute.
 		assertEquals(1, event2.getAttributes().size());
-		assertEquals("state2", event1.getAttribute("$STATE"));
+		assertEquals("state2", event1.getAttributes().get("$STATE"));
 		
-		event2.setAttribute("sve2 atr key", "sve2 attr value");
+		event2.getAttributes().put("sve2 atr key", "sve2 attr value");
 		req2.commit();
 		
 		Thread.sleep(EVENT_WRITER_MAX_DELAY);
@@ -93,7 +94,7 @@ public class TraceEventsTest extends ClientBaseTestWithServer {
 		assertEquals(1, events.size());
 		TraceEventFromDatabase event = events.get(0);
 		//System.out.println(event);
-		assertEquals(TraceEvent.SVE_NAME, event.name);
+		assertEquals(StateVisitedEvent.SVE_NAME, event.name);
 		assertEqualAsSets(
 				CollectionsUtils.pairsToMap(new Pair("$STATE", "state2"), new Pair("$STATUS", "Committed"), new Pair("sve2 atr key", "sve2 attr value")), 
 				event.attributes);
@@ -130,10 +131,10 @@ public class TraceEventsTest extends ClientBaseTestWithServer {
 		assertEquals(5, req1.getLiveExperiences().size());
 		
 		StateVisitedEvent event1 = (StateVisitedEvent) req1.getStateVisitedEvent();
-		assertEquals(TraceEvent.SVE_NAME, event1.getName());
+		assertEquals(StateVisitedEvent.SVE_NAME, event1.getName());
 		assertEquals(1, event1.getAttributes().size());
-		assertEquals("state2", event1.getAttribute("$STATE"));
-		event1.setAttribute("foo", "bar");		
+		assertEquals("state2", event1.getAttributes().get("$STATE"));
+		event1.getAttributes().put("foo", "bar");		
 		req1.commit();
 		
 		Thread.sleep(EVENT_WRITER_MAX_DELAY);
@@ -141,7 +142,7 @@ public class TraceEventsTest extends ClientBaseTestWithServer {
 		assertEquals(1, events.size());
 		TraceEventFromDatabase event = events.get(0);
 		//System.out.println(event);
-		assertEquals(TraceEvent.SVE_NAME, event.name);
+		assertEquals(StateVisitedEvent.SVE_NAME, event.name);
 		assertEqualAsSets(
 				CollectionsUtils.pairsToMap(new Pair("$STATE", "state2"), new Pair("$STATUS", "Committed"), new Pair("foo", "bar")), 
 				event.attributes);
@@ -164,9 +165,9 @@ public class TraceEventsTest extends ClientBaseTestWithServer {
 		
 		StateVisitedEvent event2 = (StateVisitedEvent) req2.getStateVisitedEvent();
 		assertNotNull(event2);
-		assertEquals(TraceEvent.SVE_NAME, event2.getName());
+		assertEquals(StateVisitedEvent.SVE_NAME, event2.getName());
 		assertEquals(1, event2.getAttributes().size());
-		assertEquals("state5", event2.getAttribute("$STATE"));
+		assertEquals("state5", event2.getAttributes().get("$STATE"));
 		req2.commit();
 		
 		Thread.sleep(EVENT_WRITER_MAX_DELAY);
@@ -174,7 +175,7 @@ public class TraceEventsTest extends ClientBaseTestWithServer {
 		assertEquals(2, events.size());
 		event = events.get(1);
 		//System.out.println(event);
-		assertEquals(TraceEvent.SVE_NAME, event.name);
+		assertEquals(StateVisitedEvent.SVE_NAME, event.name);
 		assertEqualAsSets(
 				CollectionsUtils.pairsToMap(new Pair("$STATE", "state5"), new Pair("$STATUS", "Committed")), 
 				event.attributes);
@@ -231,12 +232,12 @@ public class TraceEventsTest extends ClientBaseTestWithServer {
 	   	Schema schema = ssn.getSchema();
 	   	
 	   	// Trigger on untargeted session: produces an orphan (no live experiences) event.
-	   	ssn.triggerTraceEvent(TraceEvent.mkTraceEvent("custom1"));
-	   	ssn.triggerTraceEvent(TraceEvent.mkTraceEvent("custom2", CollectionsUtils.pairsToMap(new Pair("foo", "bar"))));
+	   	ssn.triggerTraceEvent(TraceEventSupport.mkTraceEvent("custom1"));
+	   	ssn.triggerTraceEvent(TraceEventSupport.mkTraceEvent("custom2", CollectionsUtils.pairsToMap(new Pair("foo", "bar"))));
 	   	
 	   	State state3 = schema.getState("state3").get();
 	   	StateRequest req = ssn.targetForState(state3);
-	   	req.getStateVisitedEvent().setAttribute("yin", "yang");
+	   	req.getStateVisitedEvent().getAttributes().put("yin", "yang");
 	   	req.commit();
 	   	
 		Thread.sleep(EVENT_WRITER_MAX_DELAY);
@@ -256,7 +257,7 @@ public class TraceEventsTest extends ClientBaseTestWithServer {
 		assertEquals(0, custom2.eventExperiences.size());
 
 		TraceEventFromDatabase custom3 = events.get(2);
-		assertEquals(TraceEvent.SVE_NAME, custom3.name);
+		assertEquals(StateVisitedEvent.SVE_NAME, custom3.name);
 		assertEquals(3, custom3.attributes.size());
 		assertEquals("state3", custom3.attributes.get("$STATE"));
 		assertEquals("Committed", custom3.attributes.get("$STATUS"));

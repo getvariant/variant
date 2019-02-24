@@ -29,7 +29,6 @@ javadoc -d ${javadoc_dir}  \
     ga('send', 'pageview');                                                            \
   </script>" \
    -bottom "Variant Experience Server release $dot_version. Updated $(date +"%d %b %Y").<br/> Copyright &copy; 2018 <a onclick=\"window.top.location.href='http://getvariant.com';\" href=\"#\">Variant Inc.</a>" \
-   com.variant.core                   \
    com.variant.core.lifecycle         \
    com.variant.core.schema            \
    com.variant.client                 \

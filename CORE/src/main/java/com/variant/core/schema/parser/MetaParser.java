@@ -8,8 +8,8 @@ import static com.variant.core.schema.parser.error.SemanticError.UNSUPPORTED_PRO
 
 import java.util.Map;
 
-import com.variant.core.UserError.Severity;
-import com.variant.core.impl.CoreException;
+import com.variant.core.error.CoreException;
+import com.variant.core.error.UserError.Severity;
 import com.variant.core.schema.Flusher;
 import com.variant.core.schema.impl.MetaImpl;
 import com.variant.core.schema.impl.SchemaImpl;

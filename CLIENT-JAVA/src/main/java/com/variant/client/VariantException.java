@@ -1,6 +1,6 @@
 package com.variant.client;
 
-import com.variant.core.UserError;
+import com.variant.core.error.UserError;
 
 /**
  * Superclass of all user exceptions thrown by Variant Java Client
@@ -8,7 +8,7 @@ import com.variant.core.UserError;
  * @since 0.7
  */
 @SuppressWarnings("serial")
-public class VariantException extends com.variant.core.impl.VariantException {
+public class VariantException extends com.variant.core.error.VariantException {
 	
 	private UserError error = null;
 	private Object[] args = null;

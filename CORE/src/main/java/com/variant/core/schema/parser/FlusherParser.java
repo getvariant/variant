@@ -9,7 +9,7 @@ import java.util.Map;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.variant.core.impl.CoreException;
+import com.variant.core.error.CoreException;
 import com.variant.core.schema.Flusher;
 import com.variant.core.schema.impl.SchemaFlusherImpl;
 import com.variant.core.schema.parser.error.SemanticError.Location;

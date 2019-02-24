@@ -2,8 +2,8 @@ package com.variant.client.impl;
 
 import com.variant.client.SessionIdTracker;
 import com.variant.client.TargetingTracker;
-import com.variant.core.impl.CommonError;
-import com.variant.core.impl.ServerError;
+import com.variant.core.error.CommonError;
+import com.variant.core.error.ServerError;
 
 /**
  * <p>User error emitted by the client and originating on the client. 

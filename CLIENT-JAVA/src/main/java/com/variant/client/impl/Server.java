@@ -16,11 +16,9 @@ import com.variant.client.VariantException;
 import com.variant.client.net.Payload;
 import com.variant.client.net.http.HttpAdapter;
 import com.variant.client.net.http.HttpResponse;
+import com.variant.client.TraceEvent;
 import com.variant.core.StateRequestStatus;
-import com.variant.core.TraceEvent;
-import com.variant.core.impl.ServerError;
-import com.variant.core.impl.StateVisitedEvent;
-import com.variant.core.impl.TraceEventSupport;
+import com.variant.core.error.ServerError;
 import com.variant.core.session.CoreSession;
 
 /**

@@ -1,5 +1,6 @@
 /**
- * Publicly accessible objects in the Core library, shared by Variant client and Variant server code.
+ * This is no longer public.
+ * Only c.v.c.{schema,lifecycle} aree public as of 0.10
  * 
  * @since 0.7
  */

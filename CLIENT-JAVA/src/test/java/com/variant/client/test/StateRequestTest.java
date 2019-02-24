@@ -11,15 +11,16 @@ import com.variant.client.Connection;
 import com.variant.client.Session;
 import com.variant.client.SessionExpiredException;
 import com.variant.client.StateRequest;
+import com.variant.client.TraceEvent;
 import com.variant.client.VariantClient;
 import com.variant.client.VariantException;
 import com.variant.client.impl.SchemaImpl;
+import com.variant.client.impl.StateVisitedEvent;
+import com.variant.client.impl.TraceEventSupport;
 import com.variant.client.test.util.ClientBaseTestWithServer;
 import com.variant.client.test.util.event.TraceEventFromDatabase;
 import com.variant.client.test.util.event.TraceEventReader;
-import com.variant.core.TraceEvent;
-import com.variant.core.impl.ServerError;
-import com.variant.core.impl.StateVisitedEvent;
+import com.variant.core.error.ServerError;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.State;
 import com.variant.core.schema.Variation;
@@ -73,11 +74,11 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 
 		assertEquals(ssn, req.getSession());
 		assertEquals(state3, req.getState());
-		StateVisitedEvent event = (StateVisitedEvent) req.getStateVisitedEvent();
+		TraceEvent event = req.getStateVisitedEvent();
 		assertNotNull(event);
-		assertEquals(TraceEvent.SVE_NAME, event.getName());
+		assertEquals(StateVisitedEvent.SVE_NAME, event.getName());
 		assertEquals(1, event.getAttributes().size());
-		assertEquals(state3.getName(), event.getAttribute("$STATE"));
+		assertEquals(state3.getName(), event.getAttributes().get("$STATE"));
 			
 		assertTrue(req.getStatus() == InProgress);
 		req.commit();
@@ -238,7 +239,7 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 		State state2 = schema.getState("state2").get();
 	   	
 	   	StateRequest req1 = ssn1.targetForState(state2);
-	   	req1.getStateVisitedEvent().setAttribute("foo", "bar");
+	   	req1.getStateVisitedEvent().getAttributes().put("foo", "bar");
 	   	
 	   	assertEquals(InProgress, req1.getStatus());
 	   	

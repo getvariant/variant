@@ -1,7 +1,7 @@
 package com.variant.client;
 
-import com.variant.core.impl.CoreException;
-import com.variant.core.impl.ServerError;
+import com.variant.core.error.CoreException;
+import com.variant.core.error.ServerError;
 
 /**
  * Thrown when a user operation requests an unavailable combination of state and test.
