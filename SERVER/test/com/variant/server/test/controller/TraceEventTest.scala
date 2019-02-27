@@ -107,7 +107,7 @@ class TraceEventTest extends EmbeddedServerSpec {
             .isError(MissingProperty, "name")
       }
 
-      "return  400 and error on POST with non-existent session" in {
+      "return 400 and error on POST with non-existent session" in {
          
          val eventBody = body.expand("sid" -> "foo")
          assertResp(route(app, httpReq(POST, endpoint).withBody(eventBody)))

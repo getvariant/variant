@@ -138,6 +138,7 @@ class RequestController @Inject() (
          if (!stateReq.getLiveExperiences().isEmpty()) {
          	val sve = new TraceEventImpl(SVE_NAME, attrs.asJava)
 				sve.getAttributes.put("$STATUS", stateReq.getStatus.toString);
+				sve.getAttributes.put("$STATE", stateReq.getState.getName);
       	   ssn.triggerEvent(sve);
          }
          

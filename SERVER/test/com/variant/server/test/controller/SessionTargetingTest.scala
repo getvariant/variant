@@ -61,7 +61,7 @@ class SessionTargetingTest extends EmbeddedServerSpec {
                stateReq.getResolvedParameters.size mustBe 1
                stateReq.getSession.getId mustBe sid
                stateReq.getState mustBe schema.getState("state1").get
-               println("*** 1 " + stateReq.getLiveExperiences)
+               //println("*** 1 " + stateReq.getLiveExperiences)
             }
 
          val serverSsn = server.ssnStore.get(sid).get.asInstanceOf[SessionImpl]
@@ -88,7 +88,7 @@ class SessionTargetingTest extends EmbeddedServerSpec {
          }
 
          serverSsn.getStateRequest().get.getStatus mustBe Committed
-         println("*** " + serverSsn.getTargetingStabile().getAll.asScala)
+         //println("*** " + serverSsn.getTargetingStabile().getAll.asScala)
       }
 
       "create and commit state request for state2" in {
@@ -110,7 +110,7 @@ class SessionTargetingTest extends EmbeddedServerSpec {
                stateReq.getResolvedParameters.size mustBe 1
                stateReq.getSession.getId mustBe sid
                stateReq.getState mustBe schema.getState("state2").get
-               println("*** 2 " + stateReq.getLiveExperiences)
+               //println("*** 2 " + stateReq.getLiveExperiences)
             }
 
          val serverSsn = server.ssnStore.get(sid).get.asInstanceOf[SessionImpl]
@@ -137,7 +137,7 @@ class SessionTargetingTest extends EmbeddedServerSpec {
          }
          
          serverSsn.getStateRequest().get.getStatus mustBe Committed
-         println("*** " + serverSsn.coreSession.getTargetingStabile.getAll.asScala)
+         //println("*** " + serverSsn.coreSession.getTargetingStabile.getAll.asScala)
 
       }
 
@@ -160,7 +160,7 @@ class SessionTargetingTest extends EmbeddedServerSpec {
                stateReq.getResolvedParameters.size mustBe 1
                stateReq.getSession.getId mustBe sid
                stateReq.getState mustBe schema.getState("state3").get
-               println("*** 3 " + stateReq.getLiveExperiences)
+               //println("*** 3 " + stateReq.getLiveExperiences)
             }
 
          val serverSsn = server.ssnStore.get(sid).get.asInstanceOf[SessionImpl]

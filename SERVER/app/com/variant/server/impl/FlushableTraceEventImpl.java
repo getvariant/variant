@@ -30,7 +30,7 @@ public class FlushableTraceEventImpl implements FlushableTraceEvent, Serializabl
 	private static final long serialVersionUID = 1L;
 
 	private final String sessionId;
-	private final TraceEventImpl userEvent;
+	private final TraceEvent userEvent;
 	private final Date timestamp = new Date();
 	// Live experiences in effect at the time the event was triggered.
 	private final Set<Experience> liveExperiences = new HashSet<Experience>();
@@ -40,7 +40,7 @@ public class FlushableTraceEventImpl implements FlushableTraceEvent, Serializabl
 	 * @return
 	 */
 	public FlushableTraceEventImpl(TraceEvent event, Session session) {
-		this.userEvent = (TraceEventImpl) event;
+		this.userEvent =  event;
 		this.sessionId = session.getId();
 		Optional<StateRequest> reqOpt = session.getStateRequest();
 		if (reqOpt.isPresent()) 
@@ -87,7 +87,7 @@ public class FlushableTraceEventImpl implements FlushableTraceEvent, Serializabl
 	 * The event we're wrapping.
 	 * @return
 	 */
-	public TraceEventImpl getOriginalEvent() {
+	public TraceEvent getOriginalEvent() {
 		return userEvent;
 	}
 	
