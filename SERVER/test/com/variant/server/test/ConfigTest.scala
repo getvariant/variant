@@ -1,10 +1,10 @@
 package com.variant.server.test
 
-import com.variant.core.impl.CoreException
-import com.variant.server.util.ConfigLoader
+import com.variant.core.error.CoreException._
+import com.variant.core.error.CommonError._
+import com.variant.core.error.CoreException
 import com.variant.server.test.spec.ServerlessSpec
-import com.variant.core.impl.CommonError
-import com.typesafe.config.Config
+import com.variant.server.util.ConfigLoader
 
 class ConfigTest extends ServerlessSpec {
 
@@ -54,7 +54,7 @@ class ConfigTest extends ServerlessSpec {
       val caughtEx = intercept[CoreException.User] {
 				ConfigLoader.load("variant.conf", "/variant-default.conf");
 			}
-      caughtEx.getMessage mustBe CommonError.CONFIG_FILE_NOT_FOUND.asMessage("non-existent");
+      caughtEx.getMessage mustBe CONFIG_FILE_NOT_FOUND.asMessage("non-existent");
     }
     
     "throw user execpetion if override resurce does not exist" in {
@@ -65,12 +65,12 @@ class ConfigTest extends ServerlessSpec {
       val caughtEx1 = intercept[CoreException.User] {
 	  	  ConfigLoader.load("bad.cond", "/variant-default.conf");
 	  	}
-      caughtEx1.getMessage mustBe CommonError.CONFIG_RESOURCE_NOT_FOUND.asMessage("non-existent");
+      caughtEx1.getMessage mustBe CONFIG_RESOURCE_NOT_FOUND.asMessage("non-existent");
 
       val caughtEx2 = intercept[CoreException.User] {
 	  	  ConfigLoader.load("variant.conf", "/variant-default.conf");
 		  }
-      caughtEx2.getMessage mustBe CommonError.CONFIG_RESOURCE_NOT_FOUND.asMessage("non-existent");
+      caughtEx2.getMessage mustBe CONFIG_RESOURCE_NOT_FOUND.asMessage("non-existent");
 	
     }
 

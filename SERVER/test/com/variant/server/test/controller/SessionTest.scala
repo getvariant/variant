@@ -7,11 +7,11 @@ import scala.collection.JavaConversions._
 import com.variant.server.test.util.ParameterizedString
 import com.variant.server.api.ConfigKeys
 import com.variant.server.test.spec.EmbeddedServerSpec
-import com.variant.core.impl.ServerError._
+import com.variant.core.error.ServerError._
 import com.variant.core.util.StringUtils
 import play.api.libs.json._
 import com.variant.server.impl.SessionImpl
-import com.variant.core.util.Constants._
+import com.variant.core.Constants._
 import com.variant.core.schema.impl.SchemaImpl
 import com.variant.server.schema.ServerSchemaParser
 

@@ -1,7 +1,7 @@
 package com.variant.server.test
 
 import scala.sys.process._
-import com.variant.core.UserError.Severity
+import com.variant.core.error.UserError.Severity
 import com.variant.core.schema.parser.error.SyntaxError
 import com.variant.server.boot.ServerErrorLocal
 import com.variant.server.test.spec.EmbeddedServerSpec

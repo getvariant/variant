@@ -1,7 +1,7 @@
 package com.variant.server.test
 
-import com.variant.core.impl.ServerError.SESSION_EXPIRED
-import com.variant.core.UserError.Severity
+import com.variant.core.error.ServerError.SESSION_EXPIRED
+import com.variant.core.error.UserError.Severity
 import com.variant.core.schema.parser.error.SemanticError
 import com.variant.core.schema.parser.error.SyntaxError
 import com.variant.core.util.IoUtils

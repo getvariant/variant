@@ -16,7 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.variant.core.util.StringUtils;
-import com.variant.server.event.TraceEventWriter;
+import com.variant.server.impl.TraceEventWriter;
 
 
 public class JdbcService {

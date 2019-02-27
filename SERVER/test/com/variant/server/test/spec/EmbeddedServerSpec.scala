@@ -5,7 +5,7 @@ import scala.collection.JavaConversions.asScalaBuffer
 import org.scalatest.BeforeAndAfterAll
 import org.scalatestplus.play.OneAppPerSuite
 
-import com.variant.core.UserError.Severity
+import com.variant.core.error.UserError.Severity
 import com.variant.server.play.VariantApplicationLoader
 import com.variant.server.test.util.JdbcService
 

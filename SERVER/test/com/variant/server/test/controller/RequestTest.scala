@@ -2,8 +2,7 @@ package com.variant.server.test.controller
 
 import java.util.Optional
 
-import scala.collection.JavaConversions.`deprecated asScalaSet`
-import scala.collection.JavaConversions.`deprecated mapAsJavaMap`
+import scala.collection.JavaConverters._
 
 import org.scalatestplus.play._
 import play.api.test._
@@ -12,14 +11,9 @@ import play.api.test.Helpers._
 import com.variant.core.StateRequestStatus.Committed
 import com.variant.core.StateRequestStatus.Failed
 import com.variant.core.StateRequestStatus.InProgress
-import com.variant.core.TraceEvent
-import com.variant.core.impl.ServerError.ACTIVE_REQUEST
-import com.variant.core.impl.ServerError.CANNOT_COMMIT
-import com.variant.core.impl.ServerError.CANNOT_FAIL
-import com.variant.core.impl.ServerError.InvalidRequestStatus
+import com.variant.core.error.ServerError._
 import com.variant.core.session.CoreSession
 import com.variant.core.session.CoreStateRequest
-import com.variant.server.event.ServerTraceEvent
 import com.variant.server.impl.SessionImpl
 import com.variant.server.test.spec.EmbeddedServerSpec
 import com.variant.server.test.util.EventExperienceFromDatabase
@@ -31,6 +25,9 @@ import play.api.test.Helpers.GET
 import play.api.test.Helpers.POST
 import play.api.test.Helpers.PUT
 import play.api.test.Helpers.route
+import com.variant.core.Constants
+import com.variant.server.api.TraceEvent
+import com.variant.server.impl.TraceEventImpl
 
 
 /**
@@ -135,13 +132,13 @@ class RequestTest extends EmbeddedServerSpec {
          reader.read(e => e.sessionId == sid).size mustBe 1
          for (e <- reader.read(e => e.sessionId == sid)) {
             e.sessionId mustBe sid
-            e.name mustBe TraceEvent.SVE_NAME
+            e.name mustBe Constants.SVE_NAME
             e.attributes.size mustBe 2
             e.attributes("$STATE") mustBe "state2"
             e.attributes("$STATUS") mustBe "Committed"
             e.eventExperiences.toSet[EventExperienceFromDatabase].map {x => 
                schema.getVariation(x.testName).get.getExperience(x.experienceName).get
-               } mustBe stateReq.getLiveExperiences.toSet
+               } mustBe stateReq.getLiveExperiences.asScala.toSet
          }
          
       }
@@ -216,12 +213,12 @@ class RequestTest extends EmbeddedServerSpec {
          reader.read(e => e.sessionId == sid).size mustBe 1
          for (e <- reader.read(e => e.sessionId == sid)) {
             e.sessionId mustBe sid
-            e.name mustBe TraceEvent.SVE_NAME
+            e.name mustBe Constants.SVE_NAME
             e.attributes.size mustBe 4
             e.attributes mustBe Map("$STATE"->"state3", "$STATUS" -> "Committed", "key1"->"val1", "key2"->"val2")
             e.eventExperiences.toSet[EventExperienceFromDatabase].map {x => 
                schema.getVariation(x.testName).get.getExperience(x.experienceName).get
-               } mustBe stateReq.getLiveExperiences.toSet
+               } mustBe stateReq.getLiveExperiences.asScala.toSet
          }
          
       }
@@ -299,7 +296,7 @@ class RequestTest extends EmbeddedServerSpec {
          events.size mustBe 1
          val sve = events.head
          sve.sessionId mustBe sid
-         sve.name mustBe TraceEvent.SVE_NAME
+         sve.name mustBe Constants.SVE_NAME
          sve.attributes.size mustBe 4
          sve.attributes mustBe Map("$STATE"->"state4", "$STATUS"->"Committed", "key1"->"val1", "key2"->"val2")
 
@@ -376,7 +373,7 @@ class RequestTest extends EmbeddedServerSpec {
          events.size mustBe 1
          val sve = events.head
          sve.sessionId mustBe sid
-         sve.name mustBe TraceEvent.SVE_NAME
+         sve.name mustBe Constants.SVE_NAME
          sve.attributes.size mustBe 4
          sve.attributes mustBe Map("$STATE"->"state5", "$STATUS"->"Failed", "key1"->"val1", "key2"->"val2")
 
@@ -453,7 +450,7 @@ class RequestTest extends EmbeddedServerSpec {
          events.size mustBe 1
          val sve = events.head
          sve.sessionId mustBe sid
-         sve.name mustBe TraceEvent.SVE_NAME
+         sve.name mustBe Constants.SVE_NAME
          sve.attributes.size mustBe 4
          sve.attributes mustBe Map("$STATE"->"state5", "$STATUS"->"Failed", "key1"->"val1", "key2"->"val2")
 
@@ -603,7 +600,7 @@ class RequestTest extends EmbeddedServerSpec {
          }
          
          val serverSsn = server.ssnStore.get(sid).get.asInstanceOf[SessionImpl]
-         serverSsn.triggerEvent(new TraceEvent("Custom Event", Map("foo"->"bar")));
+         serverSsn.triggerEvent(TraceEventImpl.mkTraceEvent("Custom Event", Map("foo"->"bar").asJava))
          
          // Commit the request.
          val reqBody2 = Json.obj(

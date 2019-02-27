@@ -1,7 +1,7 @@
 package com.variant.server.test.hooks;
 
 import com.typesafe.config.Config;
-import com.variant.core.UserError.Severity;
+import com.variant.core.error.UserError.Severity;
 import com.variant.core.lifecycle.LifecycleHook;
 import com.variant.core.lifecycle.StateParsedLifecycleEvent;
 

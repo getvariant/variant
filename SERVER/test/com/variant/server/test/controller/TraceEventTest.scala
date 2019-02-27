@@ -4,11 +4,7 @@ import scala.collection.JavaConversions.mutableSetAsJavaSet
 
 import com.variant.core.StateRequestStatus.Committed
 import com.variant.core.StateRequestStatus.InProgress
-import com.variant.core.TraceEvent
-import com.variant.core.impl.ServerError.EmptyBody
-import com.variant.core.impl.ServerError.JsonParseError
-import com.variant.core.impl.ServerError.MissingProperty
-import com.variant.core.impl.ServerError.SESSION_EXPIRED
+import com.variant.core.error.ServerError._
 import com.variant.server.impl.SessionImpl
 import com.variant.server.test.spec.EmbeddedServerSpec
 import com.variant.server.test.util.ParameterizedString
@@ -25,6 +21,7 @@ import play.api.test.Helpers.PUT
 import play.api.test.Helpers.route
 import play.api.test.Helpers.writeableOf_AnyContentAsEmpty
 import play.api.test.Helpers.writeableOf_AnyContentAsText
+import com.variant.core.Constants
 
 object TraceEventTest {
    
@@ -176,7 +173,7 @@ class TraceEventTest extends EmbeddedServerSpec {
          eventsFromDatabase.size mustBe 1
          
          val event = eventsFromDatabase.head
-         event.name mustBe TraceEvent.SVE_NAME
+         event.name mustBe Constants.SVE_NAME
          event.attributes.size mustBe 2
          event.attributes("$STATE") mustBe "state4"
          event.attributes("$STATUS") mustBe "Committed"
@@ -248,7 +245,7 @@ class TraceEventTest extends EmbeddedServerSpec {
          eventsFromDatabase.size mustBe 1
          
          val event = eventsFromDatabase.head
-         event.name mustBe TraceEvent.SVE_NAME
+         event.name mustBe Constants.SVE_NAME
          event.attributes.size mustBe 5
          event.attributes("$STATE") mustBe "state3"
          event.attributes("$STATUS") mustBe "Committed"

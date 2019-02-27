@@ -4,7 +4,7 @@ import org.scalatest.TestData
 import org.scalatestplus.play.OneAppPerTest
 import org.scalatestplus.play.PlaySpec
 
-import com.variant.core.UserError.Severity.ERROR
+import com.variant.core.error.UserError.Severity.ERROR
 import com.variant.server.api.TraceEventFlusherNull
 import com.variant.server.boot.ServerErrorLocal
 import com.variant.server.boot.VariantServer

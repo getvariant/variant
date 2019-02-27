@@ -1,10 +1,10 @@
 package com.variant.server.test.extapi
 
 import scala.collection.JavaConversions._
-import com.variant.core.UserError.Severity._
+import com.variant.core.error.UserError.Severity._
 import org.scalatest.Assertions._
 import com.variant.server.boot.ServerErrorLocal._
-import com.variant.core.impl.ServerError._
+import com.variant.core.error.ServerError._
 import com.variant.server.test.hooks.StateParsedHook
 import com.variant.core.schema.parser.error.SemanticError
 import com.variant.server.schema.SchemaDeployer

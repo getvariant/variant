@@ -4,15 +4,15 @@ import java.util.Random
 import scala.collection.JavaConversions._
 import scala.collection.mutable
 import scala.sys.process._
-import com.variant.core.UserError.Severity._
-import com.variant.core.impl.CommonError
+import com.variant.core.error.UserError.Severity._
+import com.variant.core.error.CommonError._
+import com.variant.core.error.ServerError._
 import com.variant.server.test.spec.StandaloneServerSpec
 import play.api.test.Helpers._
 import com.variant.server.util.httpc.HttpOperation
 import com.variant.server.test.util.ServerLogTailer
 import java.io.PrintWriter
 import com.variant.server.boot.ServerErrorLocal
-import com.variant.core.impl.ServerError
 import com.variant.server.boot.VariantServer
 import com.variant.core.util.StringUtils
 /**
@@ -52,7 +52,7 @@ class StandaloneServerMysqlTest extends StandaloneServerSpec {
          server.start()
          val resp = HttpOperation.get("http://localhost:5377/connection/petclinic").exec()
          resp.getResponseCode mustBe 400
-         resp.getErrorContent mustBe ServerError.UNKNOWN_SCHEMA.asMessage("petclinic")
+         resp.getErrorContent mustBe UNKNOWN_SCHEMA.asMessage("petclinic")
          
          val lines = ServerLogTailer.last(4, serverDir + "/log/variant.log")
 
@@ -107,7 +107,7 @@ class StandaloneServerMysqlTest extends StandaloneServerSpec {
          
          val resp = HttpOperation.get("http://localhost:5377/connection/petclinic").exec()
          resp.getResponseCode mustBe 400
-         resp.getErrorContent mustBe ServerError.UNKNOWN_SCHEMA.asMessage("petclinic")
+         resp.getErrorContent mustBe UNKNOWN_SCHEMA.asMessage("petclinic")
          val lines = ServerLogTailer.last(4, serverDir + "/log/variant.log")
          lines(0).severity mustBe ERROR
          lines(0).message mustBe ServerErrorLocal.OBJECT_INSTANTIATION_ERROR.asMessage("junk", "java.lang.ClassNotFoundException")
@@ -130,7 +130,7 @@ class StandaloneServerMysqlTest extends StandaloneServerSpec {
          
          val resp = HttpOperation.get("http://localhost:5377/connection/petclinic").exec()
          resp.getResponseCode mustBe 400
-         resp.getErrorContent mustBe ServerError.UNKNOWN_SCHEMA.asMessage("petclinic")
+         resp.getErrorContent mustBe UNKNOWN_SCHEMA.asMessage("petclinic")
          val lines = ServerLogTailer.last(4, serverDir + "/log/variant.log")
 
          lines(0).severity mustBe ERROR
@@ -150,7 +150,7 @@ class StandaloneServerMysqlTest extends StandaloneServerSpec {
                () => {
                   val errLines = server.err.toArray[String](new Array[String](10))
                   errLines(0) must include ("cannot start the server")
-                  errLines(1) must include (CommonError.CONFIG_FILE_NOT_FOUND.asMessage("non-existent"))
+                  errLines(1) must include (CONFIG_FILE_NOT_FOUND.asMessage("non-existent"))
                }
          )         
       }
@@ -165,7 +165,7 @@ class StandaloneServerMysqlTest extends StandaloneServerSpec {
                () => {
                   val errLines = server.err.toArray[String](new Array[String](10))
                   errLines(0) must include ("cannot start the server")
-                  errLines(1) must include (CommonError.CONFIG_RESOURCE_NOT_FOUND.asMessage("non-existent"))
+                  errLines(1) must include (CONFIG_RESOURCE_NOT_FOUND.asMessage("non-existent"))
                }
          )         
       }
@@ -180,7 +180,7 @@ class StandaloneServerMysqlTest extends StandaloneServerSpec {
                () => {
                   val errLines = server.err.toArray[String](new Array[String](10))
                   errLines(0) must include ("cannot start the server")
-                  errLines(1) must include (CommonError.CONFIG_BOTH_FILE_AND_RESOURCE_GIVEN.asMessage())
+                  errLines(1) must include (CONFIG_BOTH_FILE_AND_RESOURCE_GIVEN.asMessage())
                }
          )         
       }

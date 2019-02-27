@@ -5,8 +5,8 @@ import java.util.Date
 import scala.collection.JavaConversions.collectionAsScalaIterable
 import scala.util.Random
 
-import com.variant.server.event.ServerTraceEvent
 import com.variant.server.impl.SessionImpl
+import com.variant.server.impl.TraceEventImpl
 import com.variant.server.test.spec.EmbeddedServerSpec
 import com.variant.server.test.util.TraceEventReader
 import com.variant.server.test.util.ParameterizedString
@@ -60,7 +60,7 @@ class EventWriterTest extends EmbeddedServerSpec {
          val ssn = server.ssnStore.get(sid).get
          
          val name = Random.nextString(5)
-         val se = new ServerTraceEvent(name);
+         val se = TraceEventImpl.mkTraceEvent(name);
          ssn.asInstanceOf[SessionImpl].triggerEvent(se);
          
          // Read events back from the db, but must wait for the asych flusher.
@@ -110,7 +110,7 @@ class EventWriterTest extends EmbeddedServerSpec {
          
          for (i <- 1 to eventWriter.fullSize) { 
             val name = Random.nextString(5)
-            val se = new ServerTraceEvent(name);
+            val se = TraceEventImpl.mkTraceEvent(name);
             ssn.asInstanceOf[SessionImpl].triggerEvent(se);
          }
          
@@ -142,7 +142,7 @@ class EventWriterTest extends EmbeddedServerSpec {
 
          for (i <- 1 to eventWriter.fullSize + 1) { 
             val (name, value, timestamp) = (Random.nextString(5), Random.nextString(5), Random.nextLong())
-            val se = new ServerTraceEvent(name);
+            val se = TraceEventImpl.mkTraceEvent(name);
             ssn.asInstanceOf[SessionImpl].triggerEvent(se);
          }
          

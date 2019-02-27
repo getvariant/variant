@@ -1,6 +1,6 @@
 package com.variant.server.test
 
-import com.variant.core.impl.ServerError.EXPERIENCE_WEIGHT_MISSING
+import com.variant.core.error.ServerError.EXPERIENCE_WEIGHT_MISSING
 import com.variant.server.boot.ServerExceptionLocal
 import com.variant.server.impl.SessionImpl
 import com.variant.server.schema.SchemaDeployer

@@ -3,10 +3,11 @@ package com.variant.server.test.spec
 import java.util.Random
 import scala.concurrent.Future
 import org.scalatestplus.play.PlaySpec
-import com.variant.core.impl.ServerError
+import com.variant.core.error.ServerError
+import com.variant.core.error.UserError
 import com.variant.core.schema.Schema
 import com.variant.core.session.SessionScopedTargetingStabile
-import com.variant.core.util.Constants.HTTP_HEADER_CONTENT_TYPE
+import com.variant.core.Constants.HTTP_HEADER_CONTENT_TYPE
 import com.variant.core.util.StringUtils
 import com.variant.server.impl.SessionImpl
 import com.variant.server.boot.VariantServer
@@ -20,7 +21,6 @@ import com.variant.server.schema.ServerSchemaParser
 import com.variant.server.schema.SchemaGen
 import com.variant.server.api.Session
 import com.variant.core.schema.ParserMessage
-import com.variant.core.UserError
 
 /**
  * Base server spec

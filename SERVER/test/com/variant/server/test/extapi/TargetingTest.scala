@@ -1,6 +1,6 @@
 package com.variant.server.test.extapi
 
-import com.variant.core.impl.ServerError
+import com.variant.core.error.ServerError
 import com.variant.server.boot.ServerExceptionLocal
 import com.variant.server.impl.SessionImpl
 import com.variant.server.schema.SchemaDeployer
