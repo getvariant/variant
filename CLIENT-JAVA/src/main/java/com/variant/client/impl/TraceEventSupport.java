@@ -102,28 +102,6 @@ abstract public class TraceEventSupport implements TraceEvent {
 	}
 	
 	/**
-	 * Deserialize from JSON string.
-	 * We can't instantiate here, so the caller will instantiate and pass us a shell of an
-	 * concrete implemantion object and we'll breath life into it. The SID is already set.
-	 * @param json
-	 * @return
-	 * Don't think we're deserializing events on the client any more. (Local object)
-	public static <T extends TraceEventSupport> T fromJson(T result, Map<String,?> mappedJson) {
-		
-		result.name = (String) mappedJson.get(FIELD_NAME_NAME);
-		result.value = (String) mappedJson.get(FIELD_NAME_VALUE);
-		
-		@SuppressWarnings("unchecked")
-		List<Map<String,String>> params = (List<Map<String,String>>) mappedJson.get(FIELD_NAME_ATTRIBUTES);
-		if (params != null) {
-			for (Map<String,String> p: params) {
-				result.attributes.put(p.get(FIELD_NAME_KEY), p.get(FIELD_NAME_VALUE));
-			}
-		}
-		return result;
-	}
-	*/ 
-	/**
 	 * 
 	 */
 	@Override

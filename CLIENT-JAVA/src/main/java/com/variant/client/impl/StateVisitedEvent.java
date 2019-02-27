@@ -6,15 +6,15 @@ import static com.variant.core.StateRequestStatus.Failed;
 import java.io.Serializable;
 import java.util.Map;
 
+import com.variant.core.Constants;
 import com.variant.core.StateRequestStatus;
 import com.variant.core.error.CoreException;
 import com.variant.core.schema.State;
-import com.variant.core.util.immutable.ImmutableMap;
 
 @SuppressWarnings("serial")
 public class StateVisitedEvent extends TraceEventSupport implements Serializable {
 		
-	public static final String SVE_NAME = "$STATE_VISITED";
+	public static final String SVE_NAME = Constants.SVE_NAME;
 
 	private final StateRequestStatus status;
 	
@@ -48,7 +48,7 @@ public class StateVisitedEvent extends TraceEventSupport implements Serializable
 	 * Flushiers will need to get to the attribute map.
 	 */
 	public Map<String,String> getAttributes() {
-		return new ImmutableMap<String,String>(attributes);
+		return attributes;
 	}
 	
 	/**
