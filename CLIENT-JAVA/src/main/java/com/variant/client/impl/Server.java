@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
+import com.variant.client.SessionAttributeMap;
 import com.variant.client.SessionExpiredException;
 import com.variant.client.TargetingTracker;
 import com.variant.client.UnknownSchemaException;
@@ -231,14 +232,12 @@ public class Server {
 	//---------------------------------------------------------------------------------------------//
 
 	/**
-	 * Set a session attribute.
-	 * @return previous global value of this attribute.
-	 * 
+	 * Put an attribute into the session attribute map.
 	 */
-	public void sessionAttrSet(SessionImpl ssn, String name, String value) {
+	public void sessionAttrMapSync(SessionImpl ssn, SessionAttributeMap map) {
 		
 		if (LOG.isTraceEnabled()) LOG.trace(
-				String.format("sessionAttrSet(%s, %s)", name, value));
+				String.format("sessionAttrMapSync()"));
 
 		// Body
 		StringWriter body = new StringWriter(2048);
@@ -246,8 +245,11 @@ public class Server {
 			JsonGenerator jsonGen = new JsonFactory().createGenerator(body);
 			jsonGen.writeStartObject();
 			jsonGen.writeStringField("sid", ssn.getId());
-			jsonGen.writeStringField("name", name);
-			jsonGen.writeStringField("value", value);
+			jsonGen.writeObjectFieldStart("map");
+			for (Map.Entry<String, String> e: map.entrySet()) {
+				jsonGen.writeStringField(e.getKey(), e.getValue());
+			}
+			jsonGen.writeEndObject();
 			jsonGen.writeEndObject();
 			jsonGen.flush();
 		}
@@ -264,40 +266,6 @@ public class Server {
 		
 		ssn.rewrap(CoreSession.fromJson(response.coreSsnSrc, ssn.getSchema()));
 
-	}
-
-	/**
-	 * Set a session attribute.
-	 * @return previous global value of this attribute.
-	 * 
-	 */
-	public void sessionAttrClear(SessionImpl ssn, String name) {
-		
-		if (LOG.isTraceEnabled()) LOG.trace(
-				String.format("sessionAttrClear(%s)", name));
-
-		// Body
-		StringWriter body = new StringWriter(2048);
-		try {
-			JsonGenerator jsonGen = new JsonFactory().createGenerator(body);
-			jsonGen.writeStartObject();
-			jsonGen.writeStringField("sid", ssn.getId());
-			jsonGen.writeStringField("name", name);
-			jsonGen.writeEndObject();
-			jsonGen.flush();
-		}
-		catch (Exception e) {
-			throw new VariantException.Internal("Unable to serialize payload", e);
-		}
-
-		Payload.Session response = new CommonExceptionHandler<Payload.Session>() {
-			@Override Payload.Session block() throws Exception {
-				HttpResponse resp = adapter.delete(serverUrl + "session/attr", body.toString());
-				return Payload.Session.parse(ssn.getConnection(), resp);
-			}
-		}.run(ssn);
-		
-		ssn.rewrap(CoreSession.fromJson(response.coreSsnSrc, ssn.getSchema()));
 	}
 
 	//---------------------------------------------------------------------------------------------//

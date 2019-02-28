@@ -10,6 +10,7 @@ import java.util.Set;
 import java.util.Optional;
 
 import com.variant.client.Session;
+import com.variant.client.SessionAttributeMap;
 import com.variant.client.StateRequest;
 import com.variant.client.VariantClient;
 import com.variant.client.impl.ConnectionImpl;
@@ -54,7 +55,7 @@ public class TimersTest extends ClientBaseTestWithServerAsync {
 				});
 				
 				// Get session attribute map.
-				Map<String,String> attr = new TimingWrapper<Map<String,String>>().withNoRemoteCalls().exec( () -> {
+				SessionAttributeMap attr = new TimingWrapper<SessionAttributeMap>().withNoRemoteCalls().exec( () -> {
 					return ssn.getAttributes();
 				});
 				

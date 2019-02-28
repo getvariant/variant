@@ -1,5 +1,6 @@
 package com.variant.server.impl
 
+import scala.collection.JavaConverters._
 import java.util.Optional
 import com.variant.core.schema.State
 import com.variant.core.schema.impl.StateImpl
@@ -37,21 +38,16 @@ object SessionImpl {
     * New server session with nothing in it, but the SID.
     */
    def empty(sid: String, schemaGen: SchemaGen) = new SessionImpl(new CoreSession(sid), schemaGen)
-
-   /**
-    * New server session with nothing in it, but the SID - good for tests.
-    *
-   def empty(sid: String, schema: ServerSchema) = {
-      new SessionImpl(new CoreSession(sid), new Connection(schema))
-   }
-*/
 }
 
 /**
- * Construct from session ID.
+ * Construct from an object.
  */
 class SessionImpl(val coreSession: CoreSession, val schemaGen: SchemaGen) extends Session {
    
+	/**
+	 * Construct via deserialization.
+	 */
    def this(json: String, schemaGen: SchemaGen) {
       this(CoreSession.fromJson(json, schemaGen), schemaGen)
    }
@@ -117,7 +113,6 @@ class SessionImpl(val coreSession: CoreSession, val schemaGen: SchemaGen) extend
    }
 
    /**
-    * 
     */
 	def triggerEvent(event: TraceEvent) {
 	   val flushableEvent = new FlushableTraceEventImpl(event, this);
@@ -128,4 +123,10 @@ class SessionImpl(val coreSession: CoreSession, val schemaGen: SchemaGen) extend
 	/*
 	 */
 	def targetingStabile = coreSession.getTargetingStabile
+	
+	def syncAttributeMap(newMap: Map[String,String]) {
+		val attrMap = coreSession.getAttributes
+		attrMap.clear()
+		attrMap.putAll(newMap.asJava)
+	}
 }

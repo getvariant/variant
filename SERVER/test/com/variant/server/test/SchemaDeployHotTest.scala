@@ -267,13 +267,12 @@ class SchemaDeployHotTest extends EmbeddedServerSpec with TempSchemataDir {
 	      
          val body: JsValue = Json.obj(
             "sid" -> sid,
-            "name" -> "foo",
-            "value" -> "bar"
+            "map" -> Map("foo" -> "bar")
          )
          assertResp(route(app, httpReq(PUT, "/session/attr").withBody(body.toString())))
             .isOk
             .withBodySession  { ssn =>
-               ssn.getAttributes.get("foo") mustBe null
+               ssn.getAttributes.get("foo") mustBe "bar"
             }
          server.ssnStore.get(sid).get.getAttributes.get("foo") mustBe "bar"
 	   }

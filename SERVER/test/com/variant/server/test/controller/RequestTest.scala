@@ -560,8 +560,10 @@ class RequestTest extends EmbeddedServerSpec {
          
          val body: JsValue = Json.obj(
             "sid" -> sid,
-            "name" -> "disqual",
-            "value" -> "true"     // this will cause disqualification
+            "map" -> Map(
+                  "disqual" -> "true",  // this will cause disqualification
+                  "foo" -> "bar"
+            )
          )
          assertResp(route(app, httpReq(PUT, "/session/attr").withBody(body.toString())))
             .isOk

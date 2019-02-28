@@ -157,12 +157,12 @@ class SessionController @Inject() (
       
       Ok      
    }
-
    
    /**
-    * 
+    * Client is sending the complete attribute map,
+    * which replaces the existing map.
     */
-   def addAttribute() = action { req =>
+   def syncAttributeMap() = action { req =>
 
       val bodyJson = getBody(req).getOrElse {
          throw new ServerExceptionRemote(EmptyBody)
@@ -171,48 +171,19 @@ class SessionController @Inject() (
       val sid = (bodyJson \ "sid").asOpt[String].getOrElse {
          throw new ServerExceptionRemote(MissingProperty, "sid")         
       }
-      val name = (bodyJson \ "name").asOpt[String].getOrElse {
-         throw new ServerExceptionRemote(MissingProperty, "name")         
+      val attrMap = (bodyJson \ "map").asOpt[Map[String,String]].getOrElse {
+         throw new ServerExceptionRemote(MissingProperty, "map")         
       }
-      val value = (bodyJson \ "value").asOpt[String].getOrElse(null)
 
       val ssn = server.ssnStore.getOrBust(sid)
-
+      ssn.syncAttributeMap(attrMap)
+      
       // Serialize the session before adding the attribute.
       val response = JsObject(Seq(
          "session" -> JsString(ssn.toJson)
       ))
-
-      ssn.getAttributes.put(name, value)
       
       Ok(response.toString())
    }
  
-   /**
-    * Clear an attribute
-    */
-   def clearAttribute() = action { req =>
-
-      val bodyJson = getBody(req).getOrElse {
-         throw new ServerExceptionRemote(EmptyBody)
-      }
-      val sid = (bodyJson \ "sid").asOpt[String].getOrElse {
-         throw new ServerExceptionRemote(MissingProperty, "sid")         
-      }
-      val name = (bodyJson \ "name").asOpt[String].getOrElse {
-         throw new ServerExceptionRemote(MissingProperty, "name")         
-      }
-
-      val ssn = server.ssnStore.getOrBust(sid)
-      
-      // Serialize the session before removing the attribute.
-      val response = JsObject(Seq(
-         "session" -> JsString(ssn.toJson)
-      ))
-
-      ssn.getAttributes.remove(name)
-            
-      Ok(response.toString)
-   }
-
 }

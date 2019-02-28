@@ -53,107 +53,62 @@ class SessionAttributeTest extends EmbeddedServerSpec {
          server.ssnStore.get(sid1).get.getAttributes.size mustBe 2
       }
 
-      "clear non-existent attribute should return noop" in {
+      "clear all attributes" in {
                   
          val body: JsValue = Json.obj(
             "sid" -> sid1,
-            "name" -> "non-existent"
+            "map" -> Map[String,String]()
          )
-         assertResp(route(app, httpReq(DELETE, endpointAttribute).withBody(body.toString())))
+         assertResp(route(app, httpReq(PUT, endpointAttribute).withBody(body.toString())))
             .isOk
             .withBodySession  { ssn =>
-               ssn.getAttributes.size mustBe 2
+               ssn.getAttributes.size mustBe 0
             }         
          
-         server.ssnStore.get(sid1).get.getAttributes.size mustBe 2
+         server.ssnStore.get(sid1).get.getAttributes.size mustBe 0
       }
 
-      "set an attribute" in {
-         
+      "set new attributes" in {
+                  
          val body: JsValue = Json.obj(
             "sid" -> sid1,
-            "name" -> "ATTRIBUTE NAME",
-            "value" -> "ATTRIBUTE VALUE"
+            "map" -> Map("foo"->"bar", "another attribute" -> "another value")
          )
          assertResp(route(app, httpReq(PUT, endpointAttribute).withBody(body.toString())))
             .isOk
             .withBodySession  { ssn =>
                ssn.getAttributes.size mustBe 2
-            }
-         
-         server.ssnStore.get(sid1).get.getAttributes.size mustBe 3   
-         server.ssnStore.get(sid1).get.getAttributes.get("ATTRIBUTE NAME") mustBe "ATTRIBUTE VALUE"
-      }
-
-      "read the attribute " in {
-                  
-         assertResp(route(app, httpReq(POST, endpointSession + "/monstrosity/" + sid1).withBody(emptyTargetingTrackerBody)))
-            .isOk
-            .withBodySession  { ssn =>
-               ssn.getAttributes.get("ATTRIBUTE NAME") mustBe "ATTRIBUTE VALUE"
+               ssn.getAttributes.get("foo") mustBe "bar"
+               ssn.getAttributes.get("another attribute") mustBe "another value"
+               ssn.getAttributes.get("bar") mustBe null
             }         
-
-         server.ssnStore.get(sid1).get.getAttributes.size mustBe 3   
-         server.ssnStore.get(sid1).get.getAttributes.get("ATTRIBUTE NAME") mustBe "ATTRIBUTE VALUE"
+         
+         // Check in the session store too.
+         val attrs = server.ssnStore.get(sid1).get.getAttributes
+         attrs.size mustBe 2
+      	attrs.get("foo") mustBe "bar"
+         attrs.get("another attribute") mustBe "another value"
+         attrs.get("bar") mustBe null
       }
-            
-      "update the attribute " in {
-     
+ 
+      "replace a single attribute" in {
+                  
          val body: JsValue = Json.obj(
             "sid" -> sid1,
-            "name" -> "ATTRIBUTE NAME",
-            "value" -> "SOME OTHER VALUE"
+            "map" -> Map("foo"->"barr")
          )
          assertResp(route(app, httpReq(PUT, endpointAttribute).withBody(body.toString())))
             .isOk
             .withBodySession  { ssn =>
-               ssn.getAttributes.get("ATTRIBUTE NAME") mustBe "ATTRIBUTE VALUE"
-            }
-
-         server.ssnStore.get(sid1).get.getAttributes.size mustBe 3
-         server.ssnStore.get(sid1).get.getAttributes.get("ATTRIBUTE NAME") mustBe "SOME OTHER VALUE"
-      }
-      
-      "read the updated attribute in original session" in {
-                  
-         assertResp(route(app, httpReq(GET, endpointSession + "/monstrosity/" + sid1)))
-            .isOk
-            .withBodySession  { ssn =>
-               ssn.getAttributes.get("ATTRIBUTE NAME") mustBe "SOME OTHER VALUE"
+               ssn.getAttributes.size mustBe 1
+               ssn.getAttributes.get("foo") mustBe "barr"
             }         
-
-         server.ssnStore.get(sid1).get.getAttributes.size mustBe 3
-         server.ssnStore.get(sid1).get.getAttributes.get("ATTRIBUTE NAME") mustBe "SOME OTHER VALUE"
+         
+         // Check in the session store too.
+         val attrs = server.ssnStore.get(sid1).get.getAttributes
+         attrs.size mustBe 1
+      	attrs.get("foo") mustBe "barr"
       }
-
-      "clear the attribute" in {
-                  
-         val body: JsValue = Json.obj(
-            "sid" -> sid1,
-            "name" -> "ATTRIBUTE NAME"
-         )
-         assertResp(route(app, httpReq(DELETE, endpointAttribute).withBody(body.toString())))
-            .isOk
-            .withBodySession  { ssn =>
-               ssn.getAttributes.get("ATTRIBUTE NAME") mustBe "SOME OTHER VALUE"
-            }         
-
-         server.ssnStore.get(sid1).get.getAttributes.size mustBe 2
-         server.ssnStore.get(sid1).get.getAttributes.get("ATTRIBUTE NAME") mustBe null
-      }
-
-      "Confirm that the attribute is gone" in {
-                  
-         assertResp(route(app, httpReq(POST, endpointSession + "/monstrosity/" + sid1).withBody(emptyTargetingTrackerBody)))
-            .isOk
-            .withBodySession  { ssn =>
-               ssn.getAttributes.get("ATTRIBUTE NAME") mustBe null
-               ssn.getAttributes.size mustBe 2
-            }         
-
-         server.ssnStore.get(sid1).get.getAttributes.size mustBe 2
-      }
-
    }
 
 }

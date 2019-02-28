@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 
 import com.variant.client.Connection;
 import com.variant.client.Session;
+import com.variant.client.SessionAttributeMap;
 import com.variant.client.SessionExpiredException;
 import com.variant.client.SessionIdTracker;
 import com.variant.client.StateRequest;
@@ -77,14 +78,6 @@ public class SessionImpl implements Session {
 		return result;
 	}
 	
-	/**
-	 * Sill ok to use this object?
-	 * Package visibility because state request abject needs access.
-	 */
-	void preChecks() {
-		if (isExpired) throw new SessionExpiredException(coreSession.getId());
-	}
-
 	// ---------------------------------------------------------------------------------------------//
 	//                                            PUBLIC                                            //
 	// ---------------------------------------------------------------------------------------------//
@@ -248,15 +241,25 @@ public class SessionImpl implements Session {
 	 * Mutating or mutable state.
 	 */
 	@Override
-	public Map<String,String> getAttributes() {
+	public SessionAttributeMap getAttributes() {
 		preChecks();
-		return new SessionAttributeMap(this);
+		return new MethodTimingWrapper<SessionAttributeMap>().exec( () -> {
+			refreshFromServer();
+			return new SessionAttributeMap(this);
+		});
 	}
 
 	// ---------------------------------------------------------------------------------------------//
 	//                                           PUBLIC EXT                                         //
 	// ---------------------------------------------------------------------------------------------//	
-	
+	/**
+	 * Sill ok to use this object?
+	 * Package visibility because state request abject needs access.
+	 */
+	public void preChecks() {
+		if (isExpired) throw new SessionExpiredException(coreSession.getId());
+	}
+
 	/**
 	 */
 	public void  expire() {

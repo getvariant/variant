@@ -219,7 +219,7 @@ public interface Session {
 	 * server. If you wish to get the most up-to-date attributes without making a mutating
 	 * call, you should call this method again. 
 	 * 
-	 * @return An object of type {@code Map<String,String>}.  
+	 * @return An object of type {@code SessionAttributeMap}.  
 	 *         
 	 * 
 	 * @throws SessionExpiredException
@@ -227,6 +227,6 @@ public interface Session {
 	 * 
 	 * @since 0.6
 	 */
-	public Map<String, String> getAttributes();
+	public SessionAttributeMap getAttributes();
 		
 }
