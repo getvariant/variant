@@ -17,7 +17,8 @@ GET     /connection/:schema      com.variant.server.play.ConnectionController.ge
 # Attributes must go first so as "attr" is not matched as :schema
 # Note that there should not be a problem if schema = "attr" because PUT is only used
 # testing and very infrequently.
-PUT     /session/attr            com.variant.server.play.SessionController.syncAttributeMap()
+PUT     /session/attr            com.variant.server.play.SessionController.sendAttributeMap()
+DELETE  /session/attr            com.variant.server.play.SessionController.deleteAttributes()
 
 GET     /session/:schema/:sid            com.variant.server.play.SessionController.getSession(schema, sid)
 POST    /session/:schema/:sid            com.variant.server.play.SessionController.getOrCreateSession(schema, sid)

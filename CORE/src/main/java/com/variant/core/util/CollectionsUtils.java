@@ -58,6 +58,18 @@ public class CollectionsUtils {
 		return result;
 	}
 
+	@SuppressWarnings("unchecked")
+	public static <K,V> HashMap<K,V> hashMap(Object...args) {
+		if (args.length % 2 == 1)
+			throw new IllegalArgumentException("Number of arguments must be even, but was " + args.length);
+		
+		HashMap<K, V> result = new HashMap<K,V>();
+		
+		for (int i = 0; i < args.length / 2; i++) result.put((K)args[i*2], (V)args[i*2+1]);
+		
+		return result;
+	}
+	
 	/**
 	 * Does collection a contain collection b?
 	 * @param a

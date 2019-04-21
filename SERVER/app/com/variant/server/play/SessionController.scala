@@ -1,5 +1,6 @@
 package com.variant.server.play
 
+import scala.collection.JavaConverters._
 import com.variant.core.session.CoreSession
 import com.variant.core.error.ServerError._
 import com.variant.core.util.StringUtils
@@ -159,10 +160,12 @@ class SessionController @Inject() (
    }
    
    /**
-    * Client is sending the complete attribute map,
-    * which replaces the existing map.
+    * Client is sending a map to be merged with the shared state.
+    * Attributes sent will be added to the map, potentially replacing
+    * existing values. Attributes in the shared state that were not
+    * in the sent map remain in intact. 
     */
-   def syncAttributeMap() = action { req =>
+   def sendAttributeMap() = action { req =>
 
       val bodyJson = getBody(req).getOrElse {
          throw new ServerExceptionRemote(EmptyBody)
@@ -176,7 +179,8 @@ class SessionController @Inject() (
       }
 
       val ssn = server.ssnStore.getOrBust(sid)
-      ssn.syncAttributeMap(attrMap)
+		//ssn.getAttributes.clear()
+		ssn.getAttributes.putAll(attrMap.asJava)
       
       // Serialize the session before adding the attribute.
       val response = JsObject(Seq(
@@ -185,5 +189,32 @@ class SessionController @Inject() (
       
       Ok(response.toString())
    }
- 
+
+   /**
+    * Client is sending a list of attribute names to be removed from this session.
+    */
+   def deleteAttributes() = action { req =>
+
+      val bodyJson = getBody(req).getOrElse {
+         throw new ServerExceptionRemote(EmptyBody)
+      }
+      
+      val sid = (bodyJson \ "sid").asOpt[String].getOrElse {
+         throw new ServerExceptionRemote(MissingProperty, "sid")         
+      }
+      val attrs = (bodyJson \ "attrs").asOpt[Array[String]].getOrElse {
+         throw new ServerExceptionRemote(MissingProperty, "attrs")         
+      }
+
+      val ssn = server.ssnStore.getOrBust(sid)
+      attrs.foreach { ssn.getAttributes.remove _ }
+     
+      // Serialize the session before adding the attribute.
+      val response = JsObject(Seq(
+         "session" -> JsString(ssn.toJson)
+      ))
+      
+      Ok(response.toString())
+   }
+
 }

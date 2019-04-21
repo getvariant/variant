@@ -394,7 +394,7 @@ public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 				String key = "key" + _i;
 				String value = "value" + _i;
 				assertNull(ssn.getAttributes().get(key));
-				assertNull(ssn.getAttributes().put(key, value));
+				ssn.getAttributes().put(key, value);
 				assertEquals(value, ssn.getAttributes().get(key));
 				
 				// Current state request is active
@@ -461,7 +461,7 @@ public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 				String key = "key" + _i;
 				String value = "value" + _i;
 				assertEquals(value, ssn.getAttributes().get(key));
-				assertEquals(value, sessions1[_i].getAttributes().remove(key));
+				sessions1[_i].getAttributes().remove(key);
 				assertNotNull(ssn.targetForState(ssn.getSchema().getState("state" + ((_i % 5) + 1)).get()));
 				req.commit();
 		
@@ -489,7 +489,7 @@ public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 				assertNotNull(ssn.getTraversedVariations());
 				assertNotNull(ssn.getDisqualifiedVariations());
 				// The user-agent attribute should still be set
-				assertEquals("does not matter", ssn.getAttributes().remove("user-agent"));
+				ssn.getAttributes().remove("user-agent");
 				req.commit();
 
 			});

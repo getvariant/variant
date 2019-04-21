@@ -10,7 +10,7 @@ import java.util.Set;
 import java.util.Optional;
 
 import com.variant.client.Session;
-import com.variant.client.SessionAttributeMap;
+import com.variant.client.SessionAttributes;
 import com.variant.client.StateRequest;
 import com.variant.client.VariantClient;
 import com.variant.client.impl.ConnectionImpl;
@@ -24,7 +24,7 @@ import com.variant.core.util.Tuples.Pair;
 
 public class TimersTest extends ClientBaseTestWithServerAsync {
 
-	private int SESSIONS = 20;
+	private int SESSIONS = 1;
 	
 	// Sole client
 	private VariantClient client = new VariantClient.Builder()
@@ -55,12 +55,12 @@ public class TimersTest extends ClientBaseTestWithServerAsync {
 				});
 				
 				// Get session attribute map.
-				SessionAttributeMap attr = new TimingWrapper<SessionAttributeMap>().withNoRemoteCalls().exec( () -> {
+				SessionAttributes attr = new TimingWrapper<SessionAttributes>().exec( () -> {
 					return ssn.getAttributes();
 				});
 				
 				// Working with attribute map is local
-				String val = new TimingWrapper<String>().exec( () -> {
+				String val = new TimingWrapper<String>().withNoRemoteCalls().exec( () -> {
 					String res = attr.get("foo");
 					return res;
 				});
@@ -68,13 +68,13 @@ public class TimersTest extends ClientBaseTestWithServerAsync {
 				assertNull(val);
 
 				val = new TimingWrapper<String>().exec( () -> {
-					String res = attr.put("foo", "bar");
-					return res;
+					attr.put("foo", "bar");
+					return null;
 				});
 
 				assertNull(val);
 
-				val = new TimingWrapper<String>().exec( () -> {
+				val = new TimingWrapper<String>().withNoRemoteCalls().exec( () -> {
 					String res = attr.get("foo");
 					return res;
 				});
@@ -82,11 +82,16 @@ public class TimersTest extends ClientBaseTestWithServerAsync {
 				assertEquals("bar", val);
 
 				val = new TimingWrapper<String>().exec( () -> {
-					String res = attr.remove("foo");
-					return res;
+					attr.remove("foo");
+					return null;
 				});
 
-				assertEquals("bar", val);
+				// Get session attribute map.
+				val = new TimingWrapper<String>().exec( () -> {
+					return ssn.getAttributes().get("foo");
+				});
+				
+				assertEquals(null, val);
 
 				StateRequest req = new TimingWrapper<StateRequest>().exec( () -> {
 					State state = ssn.getSchema().getState("state" + ((_i % 5) + 1)).get();				

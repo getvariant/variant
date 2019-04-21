@@ -124,9 +124,4 @@ class SessionImpl(val coreSession: CoreSession, val schemaGen: SchemaGen) extend
 	 */
 	def targetingStabile = coreSession.getTargetingStabile
 	
-	def syncAttributeMap(newMap: Map[String,String]) {
-		val attrMap = coreSession.getAttributes
-		attrMap.clear()
-		attrMap.putAll(newMap.asJava)
-	}
 }

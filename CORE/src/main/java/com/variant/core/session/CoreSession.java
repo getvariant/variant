@@ -50,147 +50,6 @@ public class CoreSession implements Serializable {
 	public CoreSession(String id) {
 		this.sid = id;		
 	}
-	
-	/**
-	 * Deserialized session from annotated JSON.
-	 * @param json
-	 * @return
-	 */
-	@SuppressWarnings("unchecked")
-	public static CoreSession fromJson(String annotatedJson, Schema schema) {
-		try {
-			ObjectMapper mapper = new ObjectMapper();		
-			Map<String,?> mappedJson = mapper.readValue(annotatedJson, Map.class);
-			return fromJson(mappedJson, schema);
-		}
-		catch (VariantException e) {
-			throw e;
-		}
-		catch (Exception e) {
-			throw new CoreException.Internal("Unable to deserialzie session: [" + annotatedJson + "]", e);
-		}
-
-	}
-
-	/**
-	 * Deserialize from parsed JSON
-	 * @param json
-	 * @return
-	 */
-	@SuppressWarnings("unchecked")
-	public static CoreSession fromJson(Map<String,?> parsedJson, Schema schema) {
-		
-		CoreSession result = new CoreSession(null);
-		
-		Object idObj = parsedJson.get(FIELD_NAME_ID);
-		if (idObj == null) 
-			throw new CoreException.Internal("No id");
-		if (!(idObj instanceof String)) 
-			throw new CoreException.Internal("id not string");
-		result.sid = (String)idObj;
-		
-		Object tsObj = parsedJson.get(FIELD_NAME_TIMESTAMP);
-		if (tsObj == null) 
-			throw new CoreException.Internal("No timestamp");
-		if (!(tsObj instanceof Number)) 
-			throw new CoreException.Internal("Timestamp is not number");
-
-		result.createDate = new Date(((Long)tsObj).longValue());
-		
-		Object currentRequestObj = parsedJson.get(FIELD_NAME_CURRENT_REQUEST);
-		if (currentRequestObj != null) {
-			if (!(currentRequestObj instanceof Map<?,?>)) 
-			throw new CoreException.Internal("currentRequest not map");
-			result.currentRequest = CoreStateRequest.fromJson(schema, result, (Map<String,?>)currentRequestObj);
-		}
-		
-		SessionScopedTargetingStabile targetingStabile = new SessionScopedTargetingStabile();
-		Object stabileObj = parsedJson.get(FIELD_NAME_TARGETING_STABILE);
-		if (stabileObj != null) {
-			try {
-				List<?> listRaw = (List<?>) stabileObj; 
-				for (Object obj: listRaw) {
-					String entryString = (String) obj;
-					String[] tokens = entryString.split("\\.");
-					targetingStabile.add(
-							tokens[0], 
-							tokens[1], 
-							Long.parseLong(tokens[2]));
-				}
-			}
-			catch (Exception e) {
-				throw new CoreException.Internal("Unable to deserialzie session: bad stabil spec", e);
-			}
-		}
-		result.setTargetingStabile(targetingStabile);
-
-		Object statesObj = parsedJson.get(FIELD_NAME_TRAVERSED_STATES);
-		if (statesObj != null) {
-			LinkedHashMap<State,Integer> statesMap = new LinkedHashMap<State, Integer>();
-			try {
-				List<?> statesListRaw = (List<?>) statesObj; 
-				for (Object obj: statesListRaw) {
-					Map<?,?> objMap = (Map<?,?>) obj;
-					String stateName = (String) objMap.get(FIELD_NAME_STATE);
-					State state = schema.getState(stateName).get();
-					Integer count =  (Integer) objMap.get(FIELD_NAME_COUNT);
-					statesMap.put(state, count);
-				}
-			}
-			catch (Exception e) {
-				throw new CoreException.Internal("Unable to deserialzie session: bad states spec", e);
-			}
-			result.traversedStates = statesMap;
-		}
-	
-		
-		Object attributesObj = parsedJson.get(FIELD_NAME_ATTRIBUTES);
-		if (attributesObj != null) {
-			try {
-				Map<String,String> attributesMap = (Map<String,String>) attributesObj; 
-				for (Map.Entry<String, String> attribute: attributesMap.entrySet()) {
-					result.attributes.put(attribute.getKey(), attribute.getValue());
-				}
-			}
-			catch (Exception e) {
-				throw new CoreException.Internal("Unable to deserialzie session: bad attributes spec", e);
-			}
-		}
-
-		
-		
-		Object testsObj = parsedJson.get(FIELD_NAME_TRAVERSED_TESTS);
-		if (testsObj != null) {
-			LinkedHashSet<Variation> vars = new LinkedHashSet<Variation>();
-			try {
-				List<String> testList = (List<String>) testsObj; 
-				for (String test: testList) {
-					vars.add(schema.getVariation(test).get());
-				}
-			}
-			catch (Exception e) {
-				throw new CoreException.Internal("Unable to deserialzie session: bad tests spec", e);
-			}
-			result.traversedVariations = vars;
-		}
-		
-		testsObj = parsedJson.get(FIELD_NAME_DISQUAL_TESTS);
-		if (testsObj != null) {
-			LinkedHashSet<Variation> vars = new LinkedHashSet<Variation>();
-			try {
-				List<String> testList = (List<String>) testsObj; 
-				for (String testName: testList) {
-					vars.add(schema.getVariation(testName).get());
-				
-				}
-			}
-			catch (Exception e) {
-				throw new CoreException.Internal("Unable to deserialzie session: bad disqual tests spec", e);
-			}
-			result.disqualVariations = vars;
-		}
-		return result;
-	}
 
 	//---------------------------------------------------------------------------------------------//
 	//                                          PUBLIC                                             //
@@ -378,6 +237,146 @@ public class CoreSession implements Serializable {
 		}
 	}
 	
+	/**
+	 * Deserialized session from annotated JSON.
+	 * @param json
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	public static CoreSession fromJson(String annotatedJson, Schema schema) {
+		try {
+			ObjectMapper mapper = new ObjectMapper();		
+			Map<String,?> mappedJson = mapper.readValue(annotatedJson, Map.class);
+			return fromJson(mappedJson, schema);
+		}
+		catch (VariantException e) {
+			throw e;
+		}
+		catch (Exception e) {
+			throw new CoreException.Internal("Unable to deserialzie session: [" + annotatedJson + "]", e);
+		}
+
+	}
+
+	/**
+	 * Deserialize from parsed JSON
+	 * @param json
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	public static CoreSession fromJson(Map<String,?> parsedJson, Schema schema) {
+		
+		CoreSession result = new CoreSession(null);
+		
+		Object idObj = parsedJson.get(FIELD_NAME_ID);
+		if (idObj == null) 
+			throw new CoreException.Internal("No id");
+		if (!(idObj instanceof String)) 
+			throw new CoreException.Internal("id not string");
+		result.sid = (String)idObj;
+		
+		Object tsObj = parsedJson.get(FIELD_NAME_TIMESTAMP);
+		if (tsObj == null) 
+			throw new CoreException.Internal("No timestamp");
+		if (!(tsObj instanceof Number)) 
+			throw new CoreException.Internal("Timestamp is not number");
+
+		result.createDate = new Date(((Long)tsObj).longValue());
+		
+		Object currentRequestObj = parsedJson.get(FIELD_NAME_CURRENT_REQUEST);
+		if (currentRequestObj != null) {
+			if (!(currentRequestObj instanceof Map<?,?>)) 
+			throw new CoreException.Internal("currentRequest not map");
+			result.currentRequest = CoreStateRequest.fromJson(schema, result, (Map<String,?>)currentRequestObj);
+		}
+		
+		SessionScopedTargetingStabile targetingStabile = new SessionScopedTargetingStabile();
+		Object stabileObj = parsedJson.get(FIELD_NAME_TARGETING_STABILE);
+		if (stabileObj != null) {
+			try {
+				List<?> listRaw = (List<?>) stabileObj; 
+				for (Object obj: listRaw) {
+					String entryString = (String) obj;
+					String[] tokens = entryString.split("\\.");
+					targetingStabile.add(
+							tokens[0], 
+							tokens[1], 
+							Long.parseLong(tokens[2]));
+				}
+			}
+			catch (Exception e) {
+				throw new CoreException.Internal("Unable to deserialzie session: bad stabil spec", e);
+			}
+		}
+		result.setTargetingStabile(targetingStabile);
+
+		Object statesObj = parsedJson.get(FIELD_NAME_TRAVERSED_STATES);
+		if (statesObj != null) {
+			LinkedHashMap<State,Integer> statesMap = new LinkedHashMap<State, Integer>();
+			try {
+				List<?> statesListRaw = (List<?>) statesObj; 
+				for (Object obj: statesListRaw) {
+					Map<?,?> objMap = (Map<?,?>) obj;
+					String stateName = (String) objMap.get(FIELD_NAME_STATE);
+					State state = schema.getState(stateName).get();
+					Integer count =  (Integer) objMap.get(FIELD_NAME_COUNT);
+					statesMap.put(state, count);
+				}
+			}
+			catch (Exception e) {
+				throw new CoreException.Internal("Unable to deserialzie session: bad states spec", e);
+			}
+			result.traversedStates = statesMap;
+		}
+	
+		
+		Object attributesObj = parsedJson.get(FIELD_NAME_ATTRIBUTES);
+		if (attributesObj != null) {
+			try {
+				Map<String,String> attributesMap = (Map<String,String>) attributesObj; 
+				for (Map.Entry<String, String> attribute: attributesMap.entrySet()) {
+					result.attributes.put(attribute.getKey(), attribute.getValue());
+				}
+			}
+			catch (Exception e) {
+				throw new CoreException.Internal("Unable to deserialzie session: bad attributes spec", e);
+			}
+		}
+
+		
+		
+		Object testsObj = parsedJson.get(FIELD_NAME_TRAVERSED_TESTS);
+		if (testsObj != null) {
+			LinkedHashSet<Variation> vars = new LinkedHashSet<Variation>();
+			try {
+				List<String> testList = (List<String>) testsObj; 
+				for (String test: testList) {
+					vars.add(schema.getVariation(test).get());
+				}
+			}
+			catch (Exception e) {
+				throw new CoreException.Internal("Unable to deserialzie session: bad tests spec", e);
+			}
+			result.traversedVariations = vars;
+		}
+		
+		testsObj = parsedJson.get(FIELD_NAME_DISQUAL_TESTS);
+		if (testsObj != null) {
+			LinkedHashSet<Variation> vars = new LinkedHashSet<Variation>();
+			try {
+				List<String> testList = (List<String>) testsObj; 
+				for (String testName: testList) {
+					vars.add(schema.getVariation(testName).get());
+				
+				}
+			}
+			catch (Exception e) {
+				throw new CoreException.Internal("Unable to deserialzie session: bad disqual tests spec", e);
+			}
+			result.disqualVariations = vars;
+		}
+		return result;
+	}
 	@Override
 	public boolean equals(Object o) {
 		try {

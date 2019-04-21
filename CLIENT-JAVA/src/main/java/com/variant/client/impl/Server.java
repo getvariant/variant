@@ -9,15 +9,14 @@ import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
-import com.variant.client.SessionAttributeMap;
 import com.variant.client.SessionExpiredException;
 import com.variant.client.TargetingTracker;
+import com.variant.client.TraceEvent;
 import com.variant.client.UnknownSchemaException;
 import com.variant.client.VariantException;
 import com.variant.client.net.Payload;
 import com.variant.client.net.http.HttpAdapter;
 import com.variant.client.net.http.HttpResponse;
-import com.variant.client.TraceEvent;
 import com.variant.core.StateRequestStatus;
 import com.variant.core.error.ServerError;
 import com.variant.core.session.CoreSession;
@@ -232,12 +231,12 @@ public class Server {
 	//---------------------------------------------------------------------------------------------//
 
 	/**
-	 * Put an attribute into the session attribute map.
+	 * Send given session's attribute map to the shared state.
 	 */
-	public void sessionAttrMapSync(SessionImpl ssn, SessionAttributeMap map) {
+	public void sessionAttrMapSend(SessionImpl ssn) {
 		
 		if (LOG.isTraceEnabled()) LOG.trace(
-				String.format("sessionAttrMapSync()"));
+				String.format("sessionAttrMapSend()"));
 
 		// Body
 		StringWriter body = new StringWriter(2048);
@@ -246,7 +245,7 @@ public class Server {
 			jsonGen.writeStartObject();
 			jsonGen.writeStringField("sid", ssn.getId());
 			jsonGen.writeObjectFieldStart("map");
-			for (Map.Entry<String, String> e: map.entrySet()) {
+			for (Map.Entry<String, String> e: ssn.getCoreSession().getAttributes().entrySet()) {
 				jsonGen.writeStringField(e.getKey(), e.getValue());
 			}
 			jsonGen.writeEndObject();
@@ -265,9 +264,42 @@ public class Server {
 		}.run(ssn);
 		
 		ssn.rewrap(CoreSession.fromJson(response.coreSsnSrc, ssn.getSchema()));
-
 	}
 
+	/**
+	 * Remove given attributes from the shares state.
+	 */
+	public void sessionAttrRemoveAll(SessionImpl ssn, String...names) {
+		
+		if (LOG.isTraceEnabled()) LOG.trace(
+				String.format("sessionAttrMapSync()"));
+
+		// Body
+		StringWriter body = new StringWriter(2048);
+		try {
+			JsonGenerator jsonGen = new JsonFactory().createGenerator(body);
+			jsonGen.writeStartObject();
+			jsonGen.writeStringField("sid", ssn.getId());
+			jsonGen.writeArrayFieldStart("attrs");
+			for (String name: names) {
+				jsonGen.writeString(name);
+			}
+			jsonGen.writeEndArray();
+			jsonGen.writeEndObject();
+			jsonGen.flush();
+		}
+		catch (Exception e) {
+			throw new VariantException.Internal("Unable to serialize payload", e);
+		}
+		Payload.Session response = new CommonExceptionHandler<Payload.Session>() {
+			@Override Payload.Session block() throws Exception {
+				HttpResponse resp = adapter.delete(serverUrl + "session/attr", body.toString());
+				return Payload.Session.parse(ssn.getConnection(), resp);
+			}
+		}.run(ssn);
+		
+		ssn.rewrap(CoreSession.fromJson(response.coreSsnSrc, ssn.getSchema()));
+	}
 	//---------------------------------------------------------------------------------------------//
 	//                                         /REQUEST                                            //
 	//---------------------------------------------------------------------------------------------//
@@ -402,12 +434,5 @@ public class Server {
 			}
 		}.run(ssn);
 	}
-
-	public static void main(String[] args) {
-		URI uri = URI.create("//localhost/connect/bad_schema");
-		System.out.println(uri.getScheme());
-		System.out.println(uri.getHost());
-		System.out.println(uri.getPort());
-		System.out.println(uri.getPath());
-	}
+	
 }

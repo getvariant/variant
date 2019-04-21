@@ -14,7 +14,7 @@ import org.slf4j.LoggerFactory;
 
 import com.variant.client.Connection;
 import com.variant.client.Session;
-import com.variant.client.SessionAttributeMap;
+import com.variant.client.SessionAttributes;
 import com.variant.client.SessionExpiredException;
 import com.variant.client.SessionIdTracker;
 import com.variant.client.StateRequest;
@@ -241,11 +241,11 @@ public class SessionImpl implements Session {
 	 * Mutating or mutable state.
 	 */
 	@Override
-	public SessionAttributeMap getAttributes() {
+	public SessionAttributes getAttributes() {
 		preChecks();
-		return new MethodTimingWrapper<SessionAttributeMap>().exec( () -> {
+		return new MethodTimingWrapper<SessionAttributes>().exec( () -> {
 			refreshFromServer();
-			return new SessionAttributeMap(this);
+			return new SessionAttributesImpl(this);
 		});
 	}
 

@@ -57,9 +57,9 @@ class SessionAttributeTest extends EmbeddedServerSpec {
                   
          val body: JsValue = Json.obj(
             "sid" -> sid1,
-            "map" -> Map[String,String]()
+            "attrs" -> List("NAME1", "NAME2")
          )
-         assertResp(route(app, httpReq(PUT, endpointAttribute).withBody(body.toString())))
+         assertResp(route(app, httpReq(DELETE, endpointAttribute).withBody(body.toString())))
             .isOk
             .withBodySession  { ssn =>
                ssn.getAttributes.size mustBe 0
@@ -100,14 +100,16 @@ class SessionAttributeTest extends EmbeddedServerSpec {
          assertResp(route(app, httpReq(PUT, endpointAttribute).withBody(body.toString())))
             .isOk
             .withBodySession  { ssn =>
-               ssn.getAttributes.size mustBe 1
+               ssn.getAttributes.size mustBe 2
                ssn.getAttributes.get("foo") mustBe "barr"
+		         ssn.getAttributes.get("another attribute") mustBe "another value"
             }         
          
          // Check in the session store too.
          val attrs = server.ssnStore.get(sid1).get.getAttributes
-         attrs.size mustBe 1
+         attrs.size mustBe 2
       	attrs.get("foo") mustBe "barr"
+         attrs.get("another attribute") mustBe "another value"
       }
    }
 

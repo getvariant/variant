@@ -4,6 +4,7 @@ import static org.junit.Assert.*;
 
 import com.variant.client.Connection;
 import com.variant.client.Session;
+import com.variant.client.SessionAttributes;
 import com.variant.client.SessionExpiredException;
 import com.variant.client.VariantClient;
 import com.variant.client.VariantException;
@@ -11,6 +12,7 @@ import com.variant.client.impl.SessionImpl;
 import com.variant.client.test.util.ClientBaseTestWithServer;
 import com.variant.core.error.ServerError;
 import com.variant.core.schema.State;
+import com.variant.core.util.CollectionsUtils;
 
 public class SessionTest extends ClientBaseTestWithServer {
 
@@ -115,42 +117,108 @@ public class SessionTest extends ClientBaseTestWithServer {
 
 		restartServer();
 
-		// Open two parallel connections
 		Connection conn1 = client.connectTo("variant://localhost:5377/monstrosity");		
-		Connection conn2 = client.connectTo("variant://localhost:5377/monstrosity");		
-		assertNotNull(conn1);
-		assertNotNull(conn2);
-
-		// Open a session.
-		String sid = newSid();
-		assertFalse(conn1.getSessionById(sid).isPresent());
-		Session ssn1 = conn1.getOrCreateSession(sid);
+		Session ssn1 = conn1.getOrCreateSession(newSid());
 		assertNotNull(ssn1);
-		assertNotEquals(sid, ssn1.getId());
-		Session ssn2 = conn2.getSessionById(ssn1.getId()).get();
+
+		Connection conn2 = client.connectTo("variant://localhost:5377/monstrosity");		
+		Session ssn2 = conn2.getOrCreateSession(ssn1.getId());
 		assertNotNull(ssn2);
-		assertEquals(ssn1.getId(), ssn2.getId());
-		assertEquals(
-				((SessionImpl)ssn1).getCoreSession().toJson(), 
-				((SessionImpl)ssn2).getCoreSession().toJson());
+	
+		assertEquals(0, ssn1.getAttributes().size());
+		assertEquals(0, ssn1.getAttributes().size());
+		
+		// Delete non-existent
+		ssn1.getAttributes().remove("foo");
+		assertEquals(0, ssn1.getAttributes().size());
+		assertEquals(0, ssn1.getAttributes().size());
 		
 		// Set attribute in ssn1
-		assertNull(ssn1.getAttributes().get("foo"));
-		assertNull(ssn1.getAttributes().remove("foo"));
-		String attr = "VALUE";
-		ssn1.getAttributes().put("foo", attr);
+		final String val1 = "VALUE1";		
+		final String val2 = "VALUE2";		
+		final String val3 = "VALUE3";		
+		SessionAttributes attrs1 = ssn1.getAttributes();
+		SessionAttributes attrs2 = ssn2.getAttributes();
 
-		// read back in ssn1 and ssn2
-		assertEquals(attr, ssn1.getAttributes().get("foo"));
-		assertEquals(attr, ssn2.getAttributes().get("foo"));
+		// Should be reflected in attrs1 but not attrs2
+		attrs1.put("foo", val1);
+		assertEquals(1, attrs1.size());
+		assertEquals(0, attrs2.size());
+		assertEquals(val1, attrs1.get("foo"));
+		assertNull(attrs2.get("foo"));
 		
-		// Clear in ssn2
-		assertEquals(attr, ssn2.getAttributes().remove("foo"));
+		// Should be reflected in both sessions.
+		assertEquals(val1, ssn1.getAttributes().get("foo"));
+		assertEquals(val1, ssn2.getAttributes().get("foo"));
 		
-		// Read back in ssn1 and ssn2
-		assertNull(ssn1.getAttributes().get("foo"));
-		assertNull(ssn2.getAttributes().get("foo"));
+		// Clear the attribute in the other session.
+		attrs1 = ssn1.getAttributes();
+		attrs2 = ssn2.getAttributes();
+		assertEquals(1, attrs1.size());
+		assertEquals(1, attrs2.size());
+		attrs2.remove("foo");
+		
+		// Should be reflected in attrs2 but not in attrs1
+		assertEquals(1, attrs1.size());
+		assertEquals(val1, attrs1.get("foo"));
+		assertEquals(0, attrs2.size());
 
+		// should be reflected in both sessions.
+		assertEquals(0, ssn1.getAttributes().size());
+		assertEquals(0, ssn2.getAttributes().size());
+
+		// Add several.
+		attrs1 = ssn1.getAttributes();
+		attrs2 = ssn2.getAttributes();
+		attrs1.putAll(CollectionsUtils.hashMap("one", val1, "two", val2, "three", val3));
+
+		// Should be reflected in attrs1 but not attrs2
+		assertEquals(3, attrs1.size());		
+		assertEquals(0, attrs2.size());		
+		assertEquals(val1, attrs1.get("one"));		
+		assertEquals(val2, attrs1.get("two"));		
+		assertEquals(val3, attrs1.get("three"));		
+
+		attrs1 = ssn1.getAttributes();
+		attrs2 = ssn2.getAttributes();
+
+		assertEquals(3, attrs1.size());		
+		assertEquals(3, attrs2.size());		
+
+		// Delete 2
+		attrs2.remove("three", "two", "non existent");
+		assertEquals(1, attrs2.size());		
+		assertEquals(val3, attrs1.get("three"));		
+		assertEquals(3, attrs1.size());		
+		
+		// Add 2 more
+		final String newVal1 = "VALUE1new";
+		final String val4 = "VALUE4";
+		final String val5 = "VALUE5";
+		attrs2.putAll(CollectionsUtils.hashMap("one", newVal1, "four", val4, "five", val5));
+		assertEquals(3, attrs1.size());		
+		assertEquals(val1, attrs1.get("one"));		
+		assertEquals(val2, attrs1.get("two"));		
+		assertEquals(val3, attrs1.get("three"));		
+		assertEquals(3, attrs2.size());
+		assertEquals(newVal1, attrs2.get("one"));		
+		assertEquals(val4, attrs2.get("four"));		
+		assertEquals(val5, attrs2.get("five"));		
+		
+		// Refresh from server.
+		attrs1 = ssn1.getAttributes();
+		attrs2 = ssn2.getAttributes();
+		
+		assertEquals(3, attrs1.size());
+		assertEquals(newVal1, attrs1.get("one"));		
+		assertEquals(val4, attrs1.get("four"));		
+		assertEquals(val5, attrs1.get("five"));
+		
+		assertEquals(3, attrs2.size());
+		assertEquals(newVal1, attrs2.get("one"));		
+		assertEquals(val4, attrs2.get("four"));		
+		assertEquals(val5, attrs2.get("five"));		
+		
 	}
 
 }

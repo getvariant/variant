@@ -211,22 +211,15 @@ public interface Session {
 	public void triggerTraceEvent(TraceEvent event);
 		
 	/**
-	 * The mutable map containing the most recent snapshot of this session's attributes. 
-	 * All non-mutating operations on the returned map are local and do not result in a 
-	 * remote call to Variant server. The mutating operations, e.g. {@code put(String, String)},
-	 * {@code remove(String)} or {@code clear()} result in a remote call and hence are more expensive.
-	 * All such calls will refresh the local state to reflect the current state attributes from the
-	 * server. If you wish to get the most up-to-date attributes without making a mutating
-	 * call, you should call this method again. 
+	 * Get object representing this session's attributes. 
 	 * 
 	 * @return An object of type {@code SessionAttributeMap}.  
-	 *         
 	 * 
 	 * @throws SessionExpiredException
 	 * @throws UnknownSchemaException
 	 * 
 	 * @since 0.6
 	 */
-	public SessionAttributeMap getAttributes();
+	public SessionAttributes getAttributes();
 		
 }
