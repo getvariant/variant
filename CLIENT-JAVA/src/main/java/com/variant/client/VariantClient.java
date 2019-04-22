@@ -32,19 +32,19 @@ public interface VariantClient {
 	 * @throws UnknownSchemaException if given schema does not exist on the server.
 	 * @since 0.7
 	 */
-	
 	Connection connectTo(String uri);
 	
 	/**
 	 * Variant client builder helper class. Implements the builder design pattern.
+	 * Subclasses of the containing {@link VariantClient} class can simply extend
+	 * the builder as is, though most likely override the {@link #build()} method.
 	 * 
-	 * @since 0.9
+	 * @since 0.10
 	 */
 	public static class Builder {
 		
-		// Init with defaults.
 		@SuppressWarnings("serial")
-		HashMap<String, Object> props = new HashMap<String, Object>() {{
+		private HashMap<String, Object> props = new HashMap<String, Object>() {{
 			put(TARGETING_STABILITY_DAYS, 0);
 		}};
 
@@ -57,7 +57,7 @@ public interface VariantClient {
 		 * Set targeting stability days. Must be 0 or greater.
 		 * @param days
 		 * @return this object.
-		 * @since 0.9
+		 * @since 0.10
 		 */
 		public Builder withTargetingStabilityDays(int days) {
 			props.put(TARGETING_STABILITY_DAYS, days);
@@ -68,7 +68,7 @@ public interface VariantClient {
 		 * Set targeting tracker class.
 		 * @param Class implementing the {@link TargetingTracker} interface.
 		 * @return this object.
-		 * @since 0.9
+		 * @since 0.10
 		 */
 		public Builder withTargetingTrackerClass(Class<? extends TargetingTracker> klass) {
 
@@ -83,7 +83,7 @@ public interface VariantClient {
 		 * Set session ID tracker class.
 		 * @param Class implementing the {@link SessionIdTracker} interface.
 		 * @return this object.
-		 * @since 0.9
+		 * @since 0.10
 		 */
 		public Builder withSessionIdTrackerClass(Class<? extends SessionIdTracker> klass) {
 
@@ -101,7 +101,7 @@ public interface VariantClient {
 		 * In most cases, one {@link VariantClient} instance per application should be sufficient.
 		 * 
 		 * @return Instance of the {@link VariantClient} type.
-		 * @since 0.9
+		 * @since 0.10
 		 */
 		public VariantClient build() {
 			
