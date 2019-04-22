@@ -1,6 +1,8 @@
 package com.variant.client;
 
+import java.util.Collection;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * A map-like collection of session attributes, returned by {@link Session#getAttributes()}.
@@ -56,7 +58,7 @@ public interface SessionAttributes {
 	 * @since 0.10
 	 * @param attributes A map of name/value pairs.  Neither names nor values can be nulls.
 	 */
-	public void putAll(Map<String, String> attributes);
+	void putAll(Map<String, String> attributes);
 
 	/**
 	 * Remove one or more attributes from the underlying session.
@@ -66,6 +68,44 @@ public interface SessionAttributes {
 	 * @since 0.10
 	 * @param names The names of the attributes to be removed.
 	 */
-	public void remove(String... names);
+	void remove(String... names);
+	
+	/**
+	 * Remove all session attributes. 
+	 * This operation updates the shared state on the server. By the time it returns,
+     * this object is refreshed with the current shared state.
+	 * 
+	 * @since 0.10
+	 */
+	void removeAll();
+
+	/**
+	 * Get the names of all existing session attributes.
+	 * Does not refresh from the server.
+	 * 
+	 * @since 0.10
+	 * @return An immutable set of non-null strings.
+	 */
+	Set<String> names();
+
+	/**
+ 	 * Get the values of all existing session attributes.
+	 * Does not refresh from the server.
+	 * 
+	 * @since 0.10
+	 * @return An immutable collection of non-null strings.
+	 */
+	Collection<String> values();
+
+	/**
+	 * Get all existing session attributes as a set of {@code Map.Entry<String,String>}s.
+	 * Does not refresh from the server.
+	 * 
+	 * @since 0.10
+	 * @param name The attribute name.
+	 * @return An immutable set of objects of type {@code Map.Entry<String,String>}.
+	 */
+	Set<java.util.Map.Entry<String, String>> entries();
+
 
 }

@@ -219,6 +219,9 @@ public class SessionTest extends ClientBaseTestWithServer {
 		assertEquals(val4, attrs2.get("four"));		
 		assertEquals(val5, attrs2.get("five"));		
 		
+		assertEquals(3, attrs1.values().size());
+		assertEquals(3, attrs1.names().size());
+		assertEquals(3, attrs1.entries().size());
 	}
 
 }

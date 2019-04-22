@@ -2,12 +2,16 @@ package com.variant.client.impl;
 
 import static com.variant.client.impl.ClientUserError.PARAM_CANNOT_BE_NULL;
 
+import java.util.Collection;
 import java.util.Map;
+import java.util.Set;
 
 import com.variant.client.SessionAttributes;
 import com.variant.client.VariantException;
-import com.variant.client.impl.SessionImpl;
+import com.variant.client.net.Payload.Session;
 import com.variant.client.util.MethodTimingWrapper;
+import com.variant.core.util.immutable.ImmutableCollection;
+import com.variant.core.util.immutable.ImmutableSet;
 
 /**
  * A map-like collection of session attributes, returned by {@link Session#getAttributes()}. 
@@ -106,5 +110,29 @@ class SessionAttributesImpl implements SessionAttributes {
 			return null;
 		});
 	}
+	
+	@Override
+	public void removeAll() {
+		String[] names = new String[size()];
+		int i = 0;
+		for (String name: names()) names[i++] = name;
+		remove(names);
+	}
+
+	@Override
+	public Set<String> names() {
+		return new ImmutableSet<String>(ssn.getCoreSession().getAttributes().keySet());
+	}
+
+	@Override
+	public Collection<String> values() {
+		return new ImmutableCollection<String>(ssn.getCoreSession().getAttributes().values());
+	}
+
+	@Override
+	public Set<Map.Entry<String, String>> entries() {
+		return new ImmutableSet<Map.Entry<String,String>>(ssn.getCoreSession().getAttributes().entrySet());
+	}
+
 
 }
