@@ -19,7 +19,7 @@ if [[ x != "x$1" ]]; then
 fi
 
 variant_root=$(cd $(dirname $0)/../..; pwd)
-variant_pub_root=$(cd $variant_root/../variant-pub; pwd)
+variant_pub_root=$(cd $variant_root/../pub; pwd)
 extapi_root=$variant_pub_root/variant-extapi-standard
 servlet_adapter_root=$variant_pub_root/variant-java-servlet-adapter
 release_dir=${variant_root}/RELEASE
@@ -52,7 +52,6 @@ cd ${variant_root}/CLIENT-JAVA
 mvn clean package -DskipTests
 cp target/variant-java-client*.jar ${stage_dir}/java
 cp target/variant-java-client*.jar $servlet_adapter_root/lib
-cp distr/variant.conf ${stage_dir}/java
 
 #
 # PACKAGE
