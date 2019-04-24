@@ -39,7 +39,7 @@
 
     3.1. Create new release branch in variant-java-servlet-adapter
     3.2. Update version in pom.xml and make code changes
-    3.3. 'mvn clean install'.  (This requires a running server with schemata from remote-schemata/*
+    3.3. 'mvn clean install'.  (This requires a running server with schemata from test/resources/schemata/*
     3.4. The new jars should have already been copied to lib/. Delete old jars from lib/.
     3.5. copy /target/variant-java-client-servlet-adapter-<release>.jar to lib/.
     3.5. Build javadoc by running bin/javadoc.sh. Will install it in /docs, which is where github pages will look for it.
