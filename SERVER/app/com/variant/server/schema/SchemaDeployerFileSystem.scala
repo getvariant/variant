@@ -72,7 +72,7 @@ class SchemaDeployerFileSystem() extends AbstractSchemaDeployer {
           logger.debug(s"Ignoring special file ${file.getName}")  
       } 
       else {
-         logger.info("Deploying schema from file [%s]".format(file.getAbsolutePath))
+         logger.info(ServerErrorLocal.SCHEMA_DEPLOYING.asMessage(file.getAbsolutePath))
             
          // Parse
          val parserResp = parse(Source.fromFile(file).mkString)
@@ -95,13 +95,7 @@ class SchemaDeployerFileSystem() extends AbstractSchemaDeployer {
       }
    }
 
-   /**
-    * Undeploy a single schema from a FS file.
-    */
-   private def undeployFrom(file: File) = {
-      logger.info("Undeploying schema from file [%s]".format(file.getAbsolutePath))
-      schemata.undeploy(file.getName)
-   }
+      
 
    /**
     * Directory watcher receives events form the file system and processes them asynchronously.
@@ -117,7 +111,7 @@ class SchemaDeployerFileSystem() extends AbstractSchemaDeployer {
       override def onDelete(file: Path): Unit = {
          val inFile = dir.toPath.resolve(file).toFile()
          logger.debug(s"Detected deleted file [${inFile}]")
-         undeployFrom(inFile)
+         schemata.undeploy(inFile.getName)
       }
       
       override def onModify(file: Path): Unit = {
