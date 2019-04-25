@@ -205,8 +205,12 @@ class EventFlusherCsvTest extends EmbeddedServerSpec {
 	   	schema.getMeta.getFlusher.getClassName mustBe "com.variant.extapi.std.flush.TraceEventFlusherCsv"
 	   	schema.getMeta.getFlusher.getInit mustBe s"""{"header":true,"file":"${fileName}"}"""
 	
-	      // The csv file should have already been created.
-	   	Source.fromFile(fileName).getLines().mkString mustBe ""
+	      // The csv file should have already been created with the header in it.
+	      var lines = Source.fromFile(fileName).getLines()
+
+	      val header = lines.next()
+	      header must fullyMatch regex
+				""""event_name","created_on","session_id","attributes","variation","experience","is_control""""
 	
 	      // create a new session.
 	 		var sid = newSid
@@ -256,11 +260,8 @@ class EventFlusherCsvTest extends EmbeddedServerSpec {
 	      
 	      Thread.sleep(eventWriterMaxDelayMillis * 2)
 	
-	      val lines = Source.fromFile(fileName).getLines()
-
-	      val header = lines.next()
-	      header must fullyMatch regex
-				""""event_name","created_on","session_id","attributes","variation","experience","is_control""""
+	      lines = Source.fromFile(fileName).getLines()
+	      lines.next() // skip the header we alread checked.
 
 			val event1 = lines.next()
 	      event1 must startWith regex
