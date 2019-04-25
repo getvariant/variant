@@ -5,7 +5,7 @@ import org.scalatestplus.play.OneAppPerTest
 import org.scalatestplus.play.PlaySpec
 
 import com.variant.core.error.UserError.Severity.ERROR
-import com.variant.server.api.TraceEventFlusherNull
+import com.variant.extapi.std.flush.TraceEventFlusherNull
 import com.variant.server.boot.ServerErrorLocal
 import com.variant.server.boot.VariantServer
 import com.variant.server.play.VariantApplicationLoader
@@ -85,7 +85,6 @@ class EventFlusherTest extends PlaySpec with OneAppPerTest {
 	   }
    ]                                                                   
 }"""
-
 	   //-\\
     "default to one defined in conf." in {    
 
@@ -99,7 +98,7 @@ class EventFlusherTest extends PlaySpec with OneAppPerTest {
    		schema.getMeta.getFlusher() mustBe null
    		
    		// As defined in conf-test/variant.conf
-   		schema.eventWriter.flusher.getClass.getName mustBe "com.variant.extapi.standard.flush.jdbc.TraceEventFlusherH2"
+   		schema.eventWriter.flusher.getClass.getName mustBe "com.variant.extapi.std.flush.jdbc.TraceEventFlusherH2"
    		
     }
 
@@ -131,7 +130,7 @@ class EventFlusherTest extends PlaySpec with OneAppPerTest {
    'meta':{                                                             		    	    
       'name':'FlusherTest',
       'flusher': {
-        'class':'com.variant.server.api.TraceEventFlusherNull'  
+        'class':'com.variant.extapi.std.flush.TraceEventFlusherNull'  
        }
    },                                                                   
 	'states':[ 
@@ -176,7 +175,7 @@ class EventFlusherTest extends PlaySpec with OneAppPerTest {
    		schema.getMeta.getFlusher() mustNot be (null)
    		
    		// As defined in conf-test/variant.conf
-   		schema.eventWriter.flusher.getClass mustBe classOf[com.variant.server.api.TraceEventFlusherNull]
+   		schema.eventWriter.flusher.getClass mustBe classOf[com.variant.extapi.std.flush.TraceEventFlusherNull]
    		
     }
 

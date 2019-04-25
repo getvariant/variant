@@ -57,11 +57,11 @@ class StandaloneServerMysqlTest extends StandaloneServerSpec {
          val lines = ServerLogTailer.last(4, serverDir + "/log/variant.log")
 
          lines(0).severity mustBe ERROR
-         lines(0).message mustBe ServerErrorLocal.OBJECT_INSTANTIATION_ERROR.asMessage("com.variant.extapi.standard.flush.jdbc.TraceEventFlusherMysql", "java.lang.reflect.InvocationTargetException")
+         lines(0).message mustBe ServerErrorLocal.OBJECT_INSTANTIATION_ERROR.asMessage("com.variant.extapi.std.flush.jdbc.TraceEventFlusherMysql", "java.lang.reflect.InvocationTargetException")
 
          // This error goes in the log twice: the first instance has the call stack.
          lines(1).severity mustBe ERROR
-         lines(1).message mustBe ServerErrorLocal.OBJECT_INSTANTIATION_ERROR.asMessage("com.variant.extapi.standard.flush.jdbc.TraceEventFlusherMysql", "java.lang.reflect.InvocationTargetException")
+         lines(1).message mustBe ServerErrorLocal.OBJECT_INSTANTIATION_ERROR.asMessage("com.variant.extapi.std.flush.jdbc.TraceEventFlusherMysql", "java.lang.reflect.InvocationTargetException")
 
          lines(2).severity mustBe WARN
          lines(2).message mustBe ServerErrorLocal.SCHEMA_FAILED.asMessage("petclinic", s"${serverDir}/schemata/petclinic.schema")

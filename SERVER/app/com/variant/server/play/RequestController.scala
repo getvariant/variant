@@ -35,7 +35,7 @@ class RequestController @Inject() (
    
    /**
     * POST
-    * Create state request by targeting a session.
+    * Create state request by targeting a session for a state.
     */
    def create() = action { req =>
       
