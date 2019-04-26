@@ -66,7 +66,8 @@ sourceGenerators in Compile += (sourceManaged in Compile, version, name) map { (
 
 //fork := true  // without this JVM options won't hold
 
-testOptions in Test += Tests.Argument("-oF")  // Full stack traces (truncagted by default)
+// Full stack traces (truncated by default)
+testOptions in Test += Tests.Argument("-oF") 
 
 // Test scoped classpath directory - need this for tests that deploy schema from classpath.
 unmanagedClasspath in Test += baseDirectory.value / "conf-test"

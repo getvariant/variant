@@ -128,6 +128,7 @@ public class ServerHooksService implements HooksService {
 			}
 		}
 		catch (ConfigException.Parse e) {
+			LOG.error(ServerErrorLocal.OBJECT_INSTANTIATION_ERROR.asMessage(hookDef.getClassName(), e.getClass().getName()), e);
 			parserResponse.addMessage(ServerErrorLocal.OBJECT_INSTANTIATION_ERROR, hookDef.getClassName(), e.getClass().getName());
 		}
 		catch (Exception e) {

@@ -98,6 +98,7 @@ public class ServerFlusherService implements FlusherService {
 						
 		}
 		catch (ConfigException.Parse e) {
+			logger.error(ServerErrorLocal.OBJECT_INSTANTIATION_ERROR.asMessage(flusher.getClassName(), e.getClass().getName()), e);
 			response.addMessage(ServerErrorLocal.OBJECT_INSTANTIATION_ERROR, flusher.getClassName(), e.getClass().getName());
 		}
 		catch (Exception e) {

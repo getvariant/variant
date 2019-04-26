@@ -12,10 +12,11 @@ import java.util.Set;
  * cookie, but this approach is not reliable as the user may return on a different device.
  * <p>
  * The implementation will have request scoped life-cycle, i.e. Variant will re-instantiate the 
- * implementing class at the start of each state request.
- * <p>
- * By contract, an implementation must provide a no-argument constructor. To inject initial state, 
- * use {@link #init(Object...)}.
+ * implementing class at the start of each state request. By contract, an implementation must 
+ * provide the constructor with the following signature <code>ImplClassName(Object...)</code>.
+ * Variant will use this constructor to instantiate a concrete implementation within the scope 
+ * of {@link Connection#getSession(Object...)} or {@link Connection#getOrCreateSession(Session, Object...)} 
+ * methods by passing it these arguments without interpretation.
  * <p>
  * Configured by <code>targeting.tracker.class.name</code> configuration property.
  *
@@ -24,19 +25,6 @@ import java.util.Set;
 
 public interface TargetingTracker {
 	
-	/**
-	 * Initialize this tracker to reflect the state contained in external persistence mechanism.
-	 * Called by Variant to initialize a newly instantiated concrete implementation, 
-	 * within the scope of {@link Connection#getSession(Object...)}
-	 * or {@link Connection#getOrCreateSession(Session, Object...)} methods.
-	 * 
-	 * @param userData  An array of zero or more opaque objects, which the enclosing call to {@link Connection#getSession(Object...) }
-	 *                  or {@link Connection#getOrCreateSession(Object...)} will pass here without interpretation. 
-	 * 
-	 * @since 0.6
-	 */
-	void init(Object...userData);
-
 	/**
 	 * All currently tracked experiences. The implementation must guarantee 
 	 * consistency of this operation, i.e. that the returned set does not contain two entries
@@ -110,25 +98,25 @@ public interface TargetingTracker {
 	 * 
 	 * @since 0.9
 	 * @return
-	 */
+	 *
 	public static TargetingTracker empty() {
 		
-		return new TargetingTracker() {
-
-			@Override
-			public void init(Object... userData) {}
-
-			@Override
-			public Set<Entry> get() {
-				return new HashSet<Entry>();
-			}
-
-			@Override
-			public void set(Set<Entry> entries) {}
-
-			@Override
-			public void save(Object... userData) {}
-			
-		};
 	}
+	
+	public static class TargetingTrackerEmpty {
+			
+		}
+		@Override
+		public Set<Entry> get() {
+			return new HashSet<Entry>();
+		}
+
+		@Override
+		public void set(Set<Entry> entries) {}
+
+		@Override
+		public void save(Object... userData) {}
+		
+	}
+*/
 }

@@ -20,6 +20,7 @@ import com.variant.core.schema.ParserMessage;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.parser.ParserResponse;
 import com.variant.core.session.CoreSession;
+import com.variant.core.util.ReflectUtils;
 import com.variant.core.util.StringUtils;
 import com.variant.core.util.Tuples.Pair;
 
@@ -63,9 +64,7 @@ public class ConnectionImpl implements Connection {
 		@SuppressWarnings("unchecked")
 		Class<SessionIdTracker> klass = (Class<SessionIdTracker>) client.props.get(SESSION_ID_TRACKER_CLASS);
 		try {
-			SessionIdTracker result = klass.newInstance();
-			result.init(userData);
-			return result;
+			return (SessionIdTracker) ReflectUtils.instantiate(klass, Object[].class, userData);
 		}
 		catch (Exception e) {
 			throw new VariantException.Internal("Unable to instantiate session ID tracker class [" + klass.getName() +"]", e);
@@ -83,9 +82,7 @@ public class ConnectionImpl implements Connection {
 		@SuppressWarnings("unchecked")
 		Class<TargetingTracker> klass = (Class<TargetingTracker>) client.props.get(TARGETING_TRACKER_CLASS);
 		try {
-			TargetingTracker result = klass.newInstance();
-			result.init(userData);
-			return result;
+			return (TargetingTracker) ReflectUtils.instantiate(klass, Object[].class, userData);
 		}
 		catch (Exception e) {
 			throw new VariantException.Internal("Unable to instantiate targeting tracker class [" + klass.getName() +"]", e);

@@ -1,6 +1,8 @@
 package com.variant.server.boot;
 
 import com.variant.core.error.CommonError;
+// Miraculously, scala compiler fails on this file without this line.
+import com.variant.core.error.UserError.Severity;
 
 /**
  * Local Server Errors, i.e. ones thrown to the server log and not sent back to client.

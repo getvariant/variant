@@ -141,7 +141,7 @@ class StandaloneServer(serverDir: String, flusher: String) {
             onTimeout()
             failed = true
          }
-         else if (line.matches(".*\\[432\\].*bootstrapped.*")) started = true;
+         else if (line.matches(".*\\[" + ServerErrorLocal.SERVER_BOOT_OK.getCode() + "\\].*")) started = true;
       }
       
       if (!failed) {

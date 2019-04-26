@@ -7,10 +7,11 @@ package com.variant.client;
  * just like the HTTP session ID.
  * <p>
  * The implementation will have request scoped life-cycle, i.e. Variant will re-instantiate the 
- * implementing class at the start of each state request.
- * <p>
- * By contract, an implementation must provide a no-argument constructor. To inject initial state, 
- * use {@link #init(Object...)}.
+ * implementing class at the start of each state request.By contract, an implementation must 
+ * provide the constructor with the following signature <code>ImplClassName(Object...)</code>.
+ * Variant will use this constructor to instantiate a concrete implementation within the scope 
+ * of {@link Connection#getSession(Object...)} or {@link Connection#getOrCreateSession(Session, Object...)} 
+ * methods by passing it these arguments without interpretation.
  * <p>
  * Configured by <code>session.id.tracker.class.name</code> configuration property.
  *
@@ -18,18 +19,6 @@ package com.variant.client;
  */
 
 public interface SessionIdTracker {
-
-	/**
-	 * <p>Called by Variant to initialize a newly instantiated concrete implementation,
-	 * within the scope of {@link Connection#getSession(Object...)}
-	 * or {@link Connection#getOrCreateSession(Object...)} methods.
-	 * 
-	 * @param userData  An array of zero or more opaque objects, which the enclosing call to {@link Connection#getSession(Object...) }
-	 *                  or {@link Connection#getOrCreateSession(Object...)} will pass here without interpretation. 
-	 * 
-	 * @since 0.6
-	 */
-	public void init(Object...userData);
 
 	/**
 	 * <p>Retrieve the current value of the session ID from the tracker. 
