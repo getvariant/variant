@@ -1,6 +1,5 @@
 package com.variant.server.test
 
-import java.util.Date
 
 import scala.collection.JavaConversions.collectionAsScalaIterable
 import scala.util.Random
@@ -20,20 +19,22 @@ import play.api.test.Helpers.defaultAwaitTimeout
 import play.api.test.Helpers.route
 import play.api.test.Helpers.status
 import play.api.test.Helpers.writeableOf_AnyContentAsEmpty
+import java.time.format.DateTimeFormatter
+import java.time.Instant
 		
 class EventWriterTest extends EmbeddedServerSpec {
 
    val sessionJson = ParameterizedString("""
       {"sid":"${sid:}",
-       "ts": ${ts:%d}, 
+       "ts":"${ts:%s}", 
        "request": {"state": "state1", "status": 1, 
                   "params": [{"name": "PARAM ONE", "value": "Param One Value"},{"name": "PARAM TWO", "value": "Param Two Value"}], 
                   "exps": ["test1.A.true","test2.B.false","test3.C.false"]},
         "states": [{"state": "state1","count": 23}, {"state": "state2","count": 32}],
         "tests": ["test1","test2"]
       }
-   """.format(System.currentTimeMillis()))
-   
+   """.format(DateTimeFormatter.ISO_INSTANT.format(Instant.now())))
+
    "Event writer" should {
 
       val schema = server.schemata.get("monstrosity").get.liveGen.get
@@ -69,7 +70,7 @@ class EventWriterTest extends EmbeddedServerSpec {
          val eventsFromDatabase = eventReader.read(e => e.sessionId == sid)
          eventsFromDatabase.size mustBe 1
          val event = eventsFromDatabase.head
-         event.createdOn.getTime mustBe (System.currentTimeMillis() - millisWaited) +- 100
+         event.createdOn.toEpochMilli mustBe (System.currentTimeMillis() - millisWaited) +- 100
          event.name mustBe name
          event.sessionId mustBe sid
          event.eventExperiences.size mustBe 3

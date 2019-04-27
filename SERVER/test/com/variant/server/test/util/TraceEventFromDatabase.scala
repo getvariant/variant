@@ -1,8 +1,9 @@
 package com.variant.server.test.util
 
-import java.util.Date
+import java.time.Instant
 import scala.collection.mutable
 import play.api.libs.json._
+import java.time.format.DateTimeFormatter
 
 //import com.fasterxml.jackson.databind.ObjectMapper;
 //import com.fasterxml.jackson.databind.SerializationFeature;
@@ -10,7 +11,7 @@ import play.api.libs.json._
 class TraceEventFromDatabase (
 		val id: Long,
 		val sessionId: String,
-		val createdOn: Date,
+		val createdOn: Instant,
 		val name: String
 	) {
 
@@ -36,7 +37,7 @@ class TraceEventFromDatabase (
    	   Json.obj(
    		  "id" -> id,
    		  "sessionId" -> sessionId,
-   		  "createdOn" -> createdOn.getTime,
+   		  "createdOn" -> DateTimeFormatter.ISO_INSTANT.format(createdOn),
    		  "name" -> name,
    		  "attrs" -> attributes,
    		  "expList" -> eventExperiences

@@ -14,6 +14,8 @@ import com.variant.server.impl.SessionImpl
 import com.variant.core.Constants._
 import com.variant.core.schema.impl.SchemaImpl
 import com.variant.server.schema.ServerSchemaParser
+import java.time.format.DateTimeFormatter
+import java.time.Instant
 
 /**
  * Session Controller Tests
@@ -21,7 +23,7 @@ import com.variant.server.schema.ServerSchemaParser
 object SessionTest {
    val sessionJsonBigCovarPrototype = """
      {"sid":"${sid:SID}",
-      "ts": ${ts:%d}, 
+      "ts": "${ts:%s}", 
       "request": {"state": "state1", "status": 1,
             "params": [{"name": "PARAM ONE", "value": "Param One Value"},{"name": "PARAM TWO", "value": "Param Two Value"}], 
             "exps": ["test1.A.true","test2.B.false","test3.C.false"]},
@@ -32,7 +34,7 @@ object SessionTest {
    """
    val sessionJsonPetclinicPrototype = """
       {"sid":"${sid:SID}",
-       "ts": ${ts:%d}, 
+       "ts": "${ts:%s}", 
        "request": {"state": "newVisit", "status": 0,
                   "params": [{"name": "PARAM ONE", "value": "Param One Value"},{"name": "PARAM TWO", "value": "Param Two Value"}],
                   "exps": ["ScheduleVisitTest.withLink.false"]},
@@ -48,10 +50,10 @@ class SessionTest extends EmbeddedServerSpec {
    val endpoint = "/session"
    
    val sessionJsonBigCovar = ParameterizedString(
-         sessionJsonBigCovarPrototype.format(System.currentTimeMillis()))
+         sessionJsonBigCovarPrototype.format(DateTimeFormatter.ISO_INSTANT.format(Instant.now())))
          
    val sessionJsonPetclinic = ParameterizedString(
-         sessionJsonPetclinicPrototype.format(System.currentTimeMillis()))
+         sessionJsonPetclinicPrototype.format(DateTimeFormatter.ISO_INSTANT.format(Instant.now())))
    
    val sessionTimeoutMillis = server.config.getLong(ConfigKeys.SESSION_TIMEOUT) * 1000
    sessionTimeoutMillis mustEqual 1000
@@ -173,16 +175,16 @@ class SessionTest extends EmbeddedServerSpec {
       "deserialize payload into session object" in {
        
          val sid = newSid()
-         val ts = System.currentTimeMillis()
+         val ts = Instant.now()
          val body = sessionJsonBigCovar.expand("sid" -> sid, "ts" -> ts)
          assertResp(route(app, httpReq(PUT, endpoint + "/monstrosity").withBody(body)))
             .isOk
             .withNoBody
 
          val ssnJson = server.ssnStore.get(sid).get.asInstanceOf[SessionImpl].toJson
-         ssnJson mustBe normalJson(sessionJsonBigCovar.expand("sid" -> sid, "ts" -> ts))
+         ssnJson mustBe normalJson(sessionJsonBigCovar.expand("sid" -> sid, "ts" -> DateTimeFormatter.ISO_INSTANT.format(ts)))
          val ssn = server.ssnStore.get(sid).get
-         ssn.getCreateDate.getTime mustBe ts
+         ssn.getTimestamp mustBe ts
          ssn.getId mustBe sid
       
          Thread.sleep(2000);

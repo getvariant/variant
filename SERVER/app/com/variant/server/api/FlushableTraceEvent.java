@@ -1,6 +1,6 @@
 package com.variant.server.api;
 
-import java.util.Date;
+import java.time.Instant;
 import java.util.Map;
 import java.util.Set;
 
@@ -26,11 +26,12 @@ public interface FlushableTraceEvent {
 	 * 
 	 * @since 0.7
 	 */
-	public Date getCreateDate();
+	public Instant getTimestamp();
 	
 	/**
 	 * A read-only map of event attributes
 	 * @return
+	 * @since 0.7
 	 */
 	public Map<String, String> getAttributes();
 	

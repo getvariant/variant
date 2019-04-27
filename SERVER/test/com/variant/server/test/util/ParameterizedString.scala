@@ -55,7 +55,8 @@ class ParameterizedString (private val prototype: String) {
                if (inBraces) {
                   // end of variable expansion.
                   inBraces = false
-                  var tokens = variable.toString.split("\\:", -1)
+                  // if the expansion value itself contains colons, we don't want the expansion value to split.
+                  var tokens = variable.toString.split("\\:", 2)
                   val varName = tokens(0)
                   val varValue = {
                      var symbol = bindings.filter(_._1 == varName)

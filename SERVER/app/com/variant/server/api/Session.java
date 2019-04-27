@@ -1,6 +1,6 @@
 package com.variant.server.api;
 
-import java.util.Date;
+import java.time.Instant;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -29,13 +29,13 @@ public interface Session {
 	String getId();
 
 	/**
-     * <p>This session's creation date. 
+     * <p>This session's creation timestamp. 
      *  
 	 * @return Creation timestamp.
 	 *
 	 * @since 0.7
 	 */
-	public Date getCreateDate();
+	public Instant getTimestamp();
 
 	/**
 	 * <p> The collection of states, traversed by this session so far, and their respective visit counts. 

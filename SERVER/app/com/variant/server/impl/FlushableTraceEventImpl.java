@@ -2,7 +2,8 @@ package com.variant.server.impl;
 
 import java.io.Serializable;
 import java.io.StringWriter;
-import java.util.Date;
+import java.time.Instant;
+import java.time.format.DateTimeFormatter;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Optional;
@@ -31,7 +32,7 @@ public class FlushableTraceEventImpl implements FlushableTraceEvent, Serializabl
 
 	private final String sessionId;
 	private final TraceEvent userEvent;
-	private final Date timestamp = new Date();
+	private final Instant timestamp = Instant.now();
 	// Live experiences in effect at the time the event was triggered.
 	private final Set<Experience> liveExperiences = new HashSet<Experience>();
 
@@ -76,7 +77,8 @@ public class FlushableTraceEventImpl implements FlushableTraceEvent, Serializabl
 	/**
 	 * Add creation ts.
 	 */
-	public Date getCreateDate() {
+	@Override
+	public Instant getTimestamp() {
 		return timestamp;
 	}
 
@@ -103,7 +105,7 @@ public class FlushableTraceEventImpl implements FlushableTraceEvent, Serializabl
 		try {
 			JsonGenerator jsonGen = new JsonFactory().createGenerator(result);
 			jsonGen.writeStartObject();
-			jsonGen.writeNumberField("createdOn", getCreateDate().getTime());
+			jsonGen.writeStringField("createdOn", DateTimeFormatter.ISO_ZONED_DATE_TIME.format(timestamp));
 			jsonGen.writeStringField("name", getName());
 			jsonGen.writeObjectFieldStart("attrs");
 			for (Map.Entry<String, String> attr: getAttributes().entrySet()) {

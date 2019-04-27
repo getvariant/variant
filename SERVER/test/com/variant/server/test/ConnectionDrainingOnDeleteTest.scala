@@ -16,6 +16,8 @@ import com.variant.core.util.StringUtils
 import scala.util.Random
 import play.api.libs.json._
 import com.variant.server.impl.SessionImpl
+import java.time.format.DateTimeFormatter
+import java.time.Instant
 
 
 /**
@@ -163,8 +165,8 @@ class ConnectionDrainingOnDeleteTest extends EmbeddedServerAsyncSpec with TempSc
 
       "permit session updates over dead generations " in {
      
-         val sessionJsonBig = ParameterizedString(SessionTest.sessionJsonBigCovarPrototype.format(System.currentTimeMillis()))
-         val sessionJsonPet = ParameterizedString(SessionTest.sessionJsonPetclinicPrototype.format(System.currentTimeMillis()))
+         val sessionJsonBig = ParameterizedString(SessionTest.sessionJsonBigCovarPrototype.format(DateTimeFormatter.ISO_INSTANT.format(Instant.now())))
+         val sessionJsonPet = ParameterizedString(SessionTest.sessionJsonPetclinicPrototype.format(DateTimeFormatter.ISO_INSTANT.format(Instant.now())))
    
          for (i <- 0 until SESSIONS) {
 	         val body = sessionJsonBig.expand("sid" -> ssnId2Big(i))

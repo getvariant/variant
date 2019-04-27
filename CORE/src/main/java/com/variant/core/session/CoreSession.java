@@ -2,8 +2,9 @@ package com.variant.core.session;
 
 import java.io.Serializable;
 import java.io.StringWriter;
+import java.time.Instant;
+import java.time.format.DateTimeFormatter;
 import java.util.Collections;
-import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -31,7 +32,7 @@ import com.variant.core.schema.Variation.Experience;
 public class CoreSession implements Serializable {
 	
 	private String sid;
-	private Date createDate = new Date();
+	private Instant timestamp = Instant.now();
 	private LinkedHashMap<String, String> attributes = new LinkedHashMap<String, String>();
 	private CoreStateRequest currentRequest = null;
 	private LinkedHashMap<State, Integer> traversedStates = new LinkedHashMap<State, Integer>();
@@ -61,8 +62,8 @@ public class CoreSession implements Serializable {
 		return sid;
 	}
 
-	public Date createDate() {
-		return createDate;
+	public Instant getTimestamp() {
+		return timestamp;
 	}
 	
 	public Optional<CoreStateRequest> getStateRequest() {
@@ -179,7 +180,7 @@ public class CoreSession implements Serializable {
 			JsonGenerator jsonGen = new JsonFactory().createGenerator(result);
 			jsonGen.writeStartObject();
 			jsonGen.writeStringField(FIELD_NAME_ID, sid);
-			jsonGen.writeNumberField(FIELD_NAME_TIMESTAMP, createDate.getTime());
+			jsonGen.writeStringField(FIELD_NAME_TIMESTAMP, DateTimeFormatter.ISO_INSTANT.format(timestamp));
 			
 			if (currentRequest != null) {
 				jsonGen.writeFieldName(FIELD_NAME_CURRENT_REQUEST);
@@ -278,10 +279,10 @@ public class CoreSession implements Serializable {
 		Object tsObj = parsedJson.get(FIELD_NAME_TIMESTAMP);
 		if (tsObj == null) 
 			throw new CoreException.Internal("No timestamp");
-		if (!(tsObj instanceof Number)) 
-			throw new CoreException.Internal("Timestamp is not number");
+		if (!(tsObj instanceof String)) 
+			throw new CoreException.Internal("Timestamp is not string");
 
-		result.createDate = new Date(((Long)tsObj).longValue());
+		result.timestamp = Instant.parse((String)tsObj);
 		
 		Object currentRequestObj = parsedJson.get(FIELD_NAME_CURRENT_REQUEST);
 		if (currentRequestObj != null) {
@@ -393,4 +394,8 @@ public class CoreSession implements Serializable {
 		return sid.hashCode();
 	}
 	
+	public static void main(String[] args) {
+		System.out.println(Instant.now().toString());
+		System.out.println(DateTimeFormatter.ISO_INSTANT.format(Instant.now()));
+	}
 }

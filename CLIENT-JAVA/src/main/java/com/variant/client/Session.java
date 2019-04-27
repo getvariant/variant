@@ -1,6 +1,6 @@
 package com.variant.client;
 
-import java.util.Date;
+import java.time.Instant;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -45,13 +45,13 @@ public interface Session {
 	String getId();
 
 	/**
-     * <p>This session's creation date. 
+     * <p>This session's creation time stamp. 
      *  
 	 * @return This session's creation date.
 	 *
 	 * @since 0.7
 	 */
-	public Date getCreateDate();
+	public Instant getCreateInstant();
 
 	/**
      * <p>The connection object, which originally created this session via {@link Connection#getSession(Object...)}.

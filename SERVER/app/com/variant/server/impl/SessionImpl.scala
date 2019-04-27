@@ -58,7 +58,7 @@ class SessionImpl(val coreSession: CoreSession, val schemaGen: SchemaGen) extend
    /*                                        PUBLIC                                          */
    /*----------------------------------------------------------------------------------------*/
 
-   override def getCreateDate = coreSession.createDate
+   override def getTimestamp = coreSession.getTimestamp
    
    override def getDisqualifiedVariations = coreSession.getDisqualifiedVariations
    

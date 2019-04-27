@@ -20,6 +20,8 @@ import play.api.test.Helpers._
 import play.api.test.Helpers.route
 import play.api.test.Helpers.writeableOf_AnyContentAsEmpty
 import com.variant.server.schema.SchemaGen.State._
+import java.time.format.DateTimeFormatter
+import java.time.Instant
 
 
 
@@ -303,7 +305,7 @@ class SchemaDeployHotTest extends EmbeddedServerSpec with TempSchemataDir {
          
 	   }
 
-      val sessionJsonBigCovar = ParameterizedString(SessionTest.sessionJsonBigCovarPrototype.format(System.currentTimeMillis()))
+      val sessionJsonBigCovar = ParameterizedString(SessionTest.sessionJsonBigCovarPrototype.format(DateTimeFormatter.ISO_INSTANT.format(Instant.now())))
 	   
 	   val sid1 = newSid()
 	   

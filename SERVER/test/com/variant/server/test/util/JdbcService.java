@@ -1,8 +1,9 @@
 package com.variant.server.test.util;
 
+import java.io.BufferedReader;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -15,6 +16,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.variant.core.util.IoUtils;
 import com.variant.core.util.StringUtils;
 import com.variant.server.impl.TraceEventWriter;
 
@@ -22,21 +24,16 @@ import com.variant.server.impl.TraceEventWriter;
 public class JdbcService {
 
 	private static final Logger LOG = LoggerFactory.getLogger(JdbcService.class);
-	
-	/**
-	 * Read a SQL script from a resource file, discard comments and parse it out into
-	 * individual statements that can be executed via JDBC.
-	 * 
-	 * @param name
-	 * @return
-	 * @throws IOException
-	 */
-	private static List<String> statementsFromFile(String path) throws IOException {
+
+	// Comment .....
+	private static List<String> parseSQLScript(InputStream is) throws IOException {
 		
-		List<String> input = Files.readAllLines(Paths.get(path));
+		BufferedReader lines = new BufferedReader(new InputStreamReader(is));
+		
 		ArrayList<String> result = new ArrayList<String>();
 		StringBuilder currentStatement = new StringBuilder();
-		for (String line: input) {
+		String line = lines.readLine();
+		while (line != null) {
 			//System.out.println("*** " + line);
 			// skip comments.
 			String[] tokens = line.split("\\-\\-");
@@ -48,6 +45,7 @@ public class JdbcService {
 				currentStatement.setLength(0);
 				currentStatement.append(' ').append(tokens[i]);
 			}
+			line = lines.readLine();
 		} 
 		if (currentStatement.length() > 0) {
 			String stmt = currentStatement.toString().trim();
@@ -56,7 +54,7 @@ public class JdbcService {
 
 		return result;
 	}
-		
+
 	/**
 	 * Exception parser.
 	 * @param e
@@ -148,7 +146,7 @@ public class JdbcService {
 	 */
 	public void dropSchema() throws Exception {
 				
-		List<String> statements = statementsFromFile("test/db/h2/drop-schema.sql");
+		List<String> statements = parseSQLScript(IoUtils.openResourceAsStream("/db/h2/drop-schema.sql")._1());
 		Statement jdbcStmt = getConnection().createStatement();
 
 		for (String stmt: statements) {
@@ -173,7 +171,7 @@ public class JdbcService {
 	 */
 	public void createSchema() throws Exception {
 		
-		List<String> statements = statementsFromFile("test/db/h2/create-schema.sql");
+		List<String> statements = parseSQLScript(IoUtils.openResourceAsStream("/db/h2/create-schema.sql")._1());
 		Statement jdbcStmt = getConnection().createStatement();
 		for (String stmt: statements) {
 			try {

@@ -178,7 +178,7 @@ class TraceEventTest extends EmbeddedServerSpec {
          event.attributes("$STATE") mustBe "state4"
          event.attributes("$STATUS") mustBe "Committed"
          event.sessionId mustBe sid
-         event.createdOn.getTime mustBe (System.currentTimeMillis() - millisToSleep) +- 100   
+         event.createdOn.toEpochMilli mustBe (System.currentTimeMillis() - millisToSleep) +- 100   
          event.eventExperiences.size() mustBe 4
          // Test4 is not instrumented.
          event.eventExperiences.exists {_.testName == "test6"} mustBe false
@@ -253,7 +253,7 @@ class TraceEventTest extends EmbeddedServerSpec {
          event.attributes("key2") mustBe "val2"
          event.attributes("key3") mustBe "val3"
          event.sessionId mustBe sid
-         event.createdOn.getTime mustBe (System.currentTimeMillis() - millisToSleep) +- 100   
+         event.createdOn.toEpochMilli mustBe (System.currentTimeMillis() - millisToSleep) +- 100   
          event.eventExperiences.size() mustBe 5
          // Test4 is not instrumented.
          event.eventExperiences.exists {_.testName == "test4"} mustBe false
@@ -287,7 +287,7 @@ class TraceEventTest extends EmbeddedServerSpec {
          val event = eventsFromDatabase.head
 
          event.sessionId mustBe sid
-         event.createdOn.getTime mustBe (System.currentTimeMillis() - millisToSleep) +- 100
+         event.createdOn.toEpochMilli mustBe (System.currentTimeMillis() - millisToSleep) +- 100
          event.name mustBe eventName
          event.eventExperiences mustBe empty
          event.attributes.size mustBe 2
@@ -340,7 +340,7 @@ class TraceEventTest extends EmbeddedServerSpec {
          val event = eventsFromDatabase.head
 
          event.sessionId mustBe sid
-         event.createdOn.getTime mustBe (System.currentTimeMillis() - millisToSleep) +- 100
+         event.createdOn.toEpochMilli mustBe (System.currentTimeMillis() - millisToSleep) +- 100
          event.name mustBe eventName
          event.eventExperiences.size() mustBe 4
          event.attributes mustBe empty
@@ -401,7 +401,7 @@ class TraceEventTest extends EmbeddedServerSpec {
          val event = eventsFromDatabase.head
          
          event.sessionId mustBe sid
-         event.createdOn.getTime mustBe (System.currentTimeMillis() - millisToSleep) +- 100
+         event.createdOn.toEpochMilli mustBe (System.currentTimeMillis() - millisToSleep) +- 100
          event.name mustBe eventName
          event.eventExperiences.size() mustBe 4
          event.attributes.size mustBe 2

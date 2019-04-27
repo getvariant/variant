@@ -13,6 +13,8 @@ import com.variant.core.util.StringUtils
 import play.api.libs.json._
 import com.variant.server.impl.SessionImpl
 import com.variant.core.Constants._
+import java.time.format.DateTimeFormatter
+import java.time.Instant
 
 /**
  * Session Attribute Tests
@@ -23,10 +25,10 @@ class SessionAttributeTest extends EmbeddedServerSpec {
    val endpointAttribute = "/session/attr"
    
    val sessionJsonBigCovar = ParameterizedString(
-      sessionJsonBigCovarPrototype.format(System.currentTimeMillis()))
+      sessionJsonBigCovarPrototype.format(DateTimeFormatter.ISO_INSTANT.format(Instant.now())))
          
    val sessionJsonPetclinic = ParameterizedString(
-         sessionJsonPetclinicPrototype.format(System.currentTimeMillis()))
+         sessionJsonPetclinicPrototype.format(DateTimeFormatter.ISO_INSTANT.format(Instant.now())))
 
    val emptyTargetingTrackerBody = "{\"tt\":[]}"
 

@@ -9,6 +9,7 @@ import scala.collection.JavaConversions._
 import org.junit.runners.model.Statement
 import com.variant.server.impl.TraceEventWriter
 import com.variant.core.util.JdbcAdapter
+import java.time.Instant
 
 
 /**
@@ -65,7 +66,7 @@ class TraceEventReader (eventWriter: TraceEventWriter) {
 							event = new TraceEventFromDatabase(
 							   id, 
 							   eventsRresulSet.getString(2).trim(),  // Fixed width in DB.
-							   eventsRresulSet.getTimestamp(3),
+							   eventsRresulSet.getTimestamp(3).toInstant,
 							   eventsRresulSet.getString(4))
 							eventMap.put(id, event);
 						}
