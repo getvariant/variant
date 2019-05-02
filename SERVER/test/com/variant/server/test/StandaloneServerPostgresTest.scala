@@ -30,19 +30,19 @@ class StandaloneServerPostgresTest extends StandaloneServerSpec {
       "send 404 on a bad request" in  {
          
          HttpOperation.get("http://localhost:5377/variant").exec()
-            .getResponseCode mustBe 404
+            .getResponseCode mustBe NOT_FOUND
 
          HttpOperation.get("http://localhost:5377/bad").exec()
-            .getResponseCode mustBe 404
+            .getResponseCode mustBe NOT_FOUND
 
          HttpOperation.get("http://localhost:5377/variant/bad").exec()
-            .getResponseCode mustBe 404
+            .getResponseCode mustBe NOT_FOUND
 
       }
     
       "send health on a root request" in  {
          val resp = HttpOperation.get("http://localhost:5377").exec() 
-         resp.getResponseCode mustBe 200
+         resp.getResponseCode mustBe OK
          resp.getStringContent must startWith (VariantServer.productName)
       }
 
@@ -51,12 +51,17 @@ class StandaloneServerPostgresTest extends StandaloneServerSpec {
          server.stop()
          s"rm ${postgresDriverJar}" ! ;
          server.start()
-         val resp = HttpOperation.get("http://localhost:5377/connection/petclinic").exec()
-         resp.getResponseCode mustBe 400
-         resp.getErrorContent mustBe UNKNOWN_SCHEMA.asMessage("petclinic")
-         
-         val lines = ServerLogTailer.last(4, serverDir + "/log/variant.log")
 
+         val resp1 = HttpOperation.get("http://localhost:5377/connection/monstrosity").exec()
+	      resp1.getResponseCode mustBe BAD_REQUEST
+   	   resp1.getErrorContent mustBe UNKNOWN_SCHEMA.asMessage("monstrosity")   
+         
+         val resp2 = HttpOperation.get("http://localhost:5377/connection/monstrosity0").exec()
+		   resp2.getResponseCode mustBe BAD_REQUEST
+   	   resp2.getErrorContent mustBe UNKNOWN_SCHEMA.asMessage("monstrosity0")
+         
+         val lines = ServerLogTailer.last(11, serverDir + "/log/variant.log")
+         		
          lines(0).severity mustBe ERROR
          lines(0).message mustBe ServerErrorLocal.OBJECT_INSTANTIATION_ERROR.asMessage("com.variant.extapi.std.flush.jdbc.TraceEventFlusherPostgres", "java.lang.reflect.InvocationTargetException")
 
@@ -65,7 +70,21 @@ class StandaloneServerPostgresTest extends StandaloneServerSpec {
          lines(1).message mustBe ServerErrorLocal.OBJECT_INSTANTIATION_ERROR.asMessage("com.variant.extapi.std.flush.jdbc.TraceEventFlusherPostgres", "java.lang.reflect.InvocationTargetException")
 
          lines(2).severity mustBe WARN
-         lines(2).message mustBe ServerErrorLocal.SCHEMA_FAILED.asMessage("petclinic", s"${serverDir}/schemata/petclinic.schema")
+         lines(2).message mustBe ServerErrorLocal.SCHEMA_FAILED.asMessage("monstrosity", s"${serverDir}/schemata/monster.schema")
+
+         lines(4).severity mustBe ERROR
+         lines(4).message mustBe ServerErrorLocal.OBJECT_INSTANTIATION_ERROR.asMessage("com.variant.extapi.std.flush.jdbc.TraceEventFlusherPostgres", "java.lang.reflect.InvocationTargetException")
+
+         // This error goes in the log twice: the first instance has the call stack.
+         lines(5).severity mustBe ERROR
+         lines(5).message mustBe ServerErrorLocal.OBJECT_INSTANTIATION_ERROR.asMessage("com.variant.extapi.std.flush.jdbc.TraceEventFlusherPostgres", "java.lang.reflect.InvocationTargetException")
+
+         lines(6).severity mustBe WARN
+         lines(6).message mustBe ServerErrorLocal.SCHEMA_FAILED.asMessage("monstrosity0", s"${serverDir}/schemata/monster0.schema")
+
+         // But petclinic should be ok
+	      val resp3 = HttpOperation.get("http://localhost:5377/connection/petclinic").exec()
+         resp3.getResponseCode mustBe OK
 
       }
    }

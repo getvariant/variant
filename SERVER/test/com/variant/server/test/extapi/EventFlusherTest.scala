@@ -15,13 +15,15 @@ import play.api.Application
 import play.api.Configuration
 import play.api.inject.guice.GuiceApplicationBuilder
 import com.variant.server.api.ConfigKeys
+import org.scalatestplus.play.guice.GuiceOneAppPerTest
+import com.variant.server.boot.ServerExceptionLocal
 
 /**
  * TODO: Need to also test annotations.
  * @author Igor
  * 
  */
-class EventFlusherTest extends PlaySpec with OneAppPerTest {
+class EventFlusherTest extends PlaySpec with GuiceOneAppPerTest {
 
   /**
    * This will implicitely rebuild the server before each test.
@@ -103,20 +105,18 @@ class EventFlusherTest extends PlaySpec with OneAppPerTest {
    		
     }
 
-    //-\\
+    //-\\ This rebuilds the server with the config missing path variant.event.flusher.class
     "emit EVENT_FLUSHER_CLASS_NAME if none defined in conf." in {    
 
-      val schemaDeployer = SchemaDeployer.fromString(schemaNoFlusherSrc)
-      val server = VariantServer.instance
-      server.useSchemaDeployer(schemaDeployer)
-      val response = schemaDeployer.parserResponses(0)
-   		response.getMessages.size mustBe 1
-   		server.schemata.size mustBe 0
-   		
-     	var msg = response.getMessages.get(0)
-     	msg.getSeverity mustBe ERROR
-     	msg.getText mustBe ServerErrorLocal.CONFIG_RESOURCE_NOT_FOUND.asMessage(ConfigKeys.EVENT_FLUSHER_CLASS_NAME)
-   		
+   	 
+      val caughtEx = intercept[ServerExceptionLocal] {
+      	SchemaDeployer.fromString(schemaNoFlusherSrc)
+      }
+      caughtEx.getMessage mustBe (
+                     new ServerExceptionLocal(
+                           ServerErrorLocal.CONFIG_PROPERTY_NOT_SET, "variant.event.flusher.class.name").getMessage)
+      
+       VariantServer.instance.isUp mustBe false   		
     }
 
   }

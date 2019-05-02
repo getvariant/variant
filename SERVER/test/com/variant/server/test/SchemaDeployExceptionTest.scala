@@ -83,7 +83,7 @@ class SchemaDeployExceptionTest extends BaseServerSpec with OneAppPerTest {
       
       "throw CONFIG_PROPERTY_NOT_SET" in {
          val server = app.injector.instanceOf[VariantServer]
-         server.schemata.size mustBe 0
+         server.schemata mustBe (null)
          server.startupErrorLog.size mustEqual 1
          val ex = server.startupErrorLog.head
          ex.getMessage mustEqual

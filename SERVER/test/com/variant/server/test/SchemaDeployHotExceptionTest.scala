@@ -37,8 +37,8 @@ class SchemaDeployHotExceptionTest extends EmbeddedServerSpec with TempSchemataD
 	      
 	      server.schemata.size mustBe 1
 	      	      
-         val logLines = ServerLogTailer.last(8)
-         // logLines.foreach {l => println(s"********* [$l]") }
+         val logLines = ServerLogTailer.last(7)
+         //logLines.foreach {l => println(s"********* [$l]") }
          logLines(0).severity mustBe Severity.INFO
          logLines(0).message mustBe ServerErrorLocal.SCHEMA_DEPLOYING.asMessage("/tmp/schemata/monster-error.schema")
          logLines(1).severity mustBe Severity.ERROR
