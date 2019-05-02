@@ -9,15 +9,16 @@ import scala.concurrent.Future
 import com.typesafe.config.Config
 import com.variant.core.error.UserError.Severity
 import com.variant.server.api.ServerException
+import com.variant.server.api.Configuration
 import com.variant.server.schema.SchemaDeployer
 import com.variant.server.schema.Schemata
 
 import javax.inject.Inject
 import javax.inject.Singleton
-import play.api.Configuration
 import play.api.Logger
 import play.api.inject.ApplicationLifecycle
 import com.variant.core.util.TimeUtils
+import com.variant.server.impl.ConfigurationImpl
 
 
 /**
@@ -26,7 +27,7 @@ import com.variant.core.util.TimeUtils
 trait VariantServer {
    
    val isUp: Boolean 
-   val config: Config // Do not expose Play's Configuration
+   val config: Configuration  // Our own Config wrapper, not play.api
    //val classloader: VariantClassLoader
    val startupErrorLog = mutable.ArrayBuffer[ServerException]()
    // Read-only snapshot
@@ -56,7 +57,7 @@ object VariantServer {
  */
 @Singleton
 class VariantServerImpl @Inject() (
-      playConfig: Configuration, 
+      playConfig: play.api.Configuration, 
       lifecycle: ApplicationLifecycle
       // We ask for the provider instead of the application, because application itself won't be available until
       // all eager singletons are constructed, including this class.
@@ -70,17 +71,17 @@ class VariantServerImpl @Inject() (
    private[this] var _isUp = false
    private[this] var _ssnStore: SessionStore = null
    private[this] var _vacThread: VacuumThread = null
-  
+   
 	// Make this instance statically discoverable
 	_instance = this	
 
 	override lazy val isUp = _isUp
 	
-	override val config = playConfig.underlying
+	override val config = new ConfigurationImpl(playConfig.underlying)
 	
    override lazy val ssnStore  = _ssnStore
   
-	override def schemata = _schemaDeployer.schemata 
+	override def schemata = if (_schemaDeployer == null) null else _schemaDeployer.schemata 
 	
 	override def schemaDeployer = _schemaDeployer
 		
@@ -92,11 +93,10 @@ class VariantServerImpl @Inject() (
    def bootup() {
       
       try {
-         // Echo all config keys if debug
-      	if (logger.isDebugEnabled) {
-           config.entrySet().asScala.filter(x => x.getKey.startsWith("variant.")).foreach(e => logger.debug("  %s => [%s]".format(e.getKey, e.getValue())))
-         }
-            	
+      	// Create and eagerly validate the config by touching every parameter.
+			config.asMap.entrySet.asScala
+				.filter {_.getKey.startsWith("variant.") }
+				.foreach {e => logger.debug("  %s => [%s]".format(e.getKey, e.getValue()))}            	
       	
       	_ssnStore = new SessionStore(this)
 
@@ -109,7 +109,8 @@ class VariantServerImpl @Inject() (
       }
       catch {
          case se: ServerException => startupErrorLog += se
-         case e: Throwable => throw new RuntimeException("Uncaught exception", e) // This will be uncaught and crash the server.
+         case e: Throwable => throw new RuntimeException("Uncaught exception", e) // This will be uncaught and crash the server with an ugly error stack.
+                                                                                  // Perhaps we should try calling shutdown instead?
       }
       
       if (startupErrorLog.exists { _.getSeverity == Severity.FATAL }) {
@@ -127,8 +128,7 @@ class VariantServerImpl @Inject() (
    	else {
          logger.info(ServerErrorLocal.SERVER_BOOT_OK.asMessage(
                productName,
-               config.getString("http.port"),
-               config.getString("play.http.context"),
+               config.getNetworkPort,
       			TimeUtils.formatDuration(ManagementFactory.getRuntimeMXBean().getUptime())))   	
 
          _isUp = true
@@ -152,12 +152,11 @@ class VariantServerImpl @Inject() (
       logger.info(s"${productName} is shutting down")
       
       // Undeploy all schemata
-      schemata.undeployAll()
+      if (schemata != null) schemata.undeployAll()
       
       logger.info(ServerErrorLocal.SERVER_SHUTDOWN.asMessage(
             productName,
-            config.getString("http.port"),
-            config.getString("play.http.context"),
+            config.getNetworkPort,
    			TimeUtils.formatDuration(ManagementFactory.getRuntimeMXBean().getUptime())))
    			   			
       // System.exit(0)  << DO NOT DO THIS! Messes up tests.

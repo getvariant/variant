@@ -76,12 +76,22 @@ class StandaloneServerSpec extends PlaySpec with BeforeAndAfterAll {
  */
 class StandaloneServer(serverDir: String, flusher: String) {
 
-   println(s"Building server in ${serverDir}. Takes a few seconds...")
-
+   private val logger = Logger(this.getClass)
+   logger.info(s"Building server in ${serverDir}. Takes a few seconds...")
+   
+   // sbt, bless its soul, puts errors on standard out.
+   val procLogger = ProcessLogger(
+   	l => if (l.matches(".*error.*")) logger.info("<standaloneServer.sh OUT> " + l),
+   	l => logger.error("<standaloneServer.sh ERR> " + l))
+   
    // Build standalone server in serverDir.
    // Stdout is ignored. Stderr is sent to console.
    // Blocks until process terminates.
-   Seq("mbin/standaloneServer.sh", serverDir, flusher).!!
+   var cc = Seq("mbin/standaloneServer.sh", serverDir, flusher).!(procLogger)
+   
+   if (cc != 0)
+   	throw new RuntimeException(s"mbin/standaloneServer.sh crashed with cc [${cc}]")
+   
    println(s"Built server in ${serverDir}")
 
    private[this] var svrProc: Process = _

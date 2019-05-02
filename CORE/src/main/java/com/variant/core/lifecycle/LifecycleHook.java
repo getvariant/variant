@@ -1,5 +1,7 @@
 package com.variant.core.lifecycle;
 
+import java.util.function.Supplier;
+
 /**
  * The interface to be implemented by a server life-cycle hook, which wants to be posted by one or more life-cycle events.
  * Whenever Variant raises a life cycle event of (sub)type returned by {@link #getLifecycleEventClass()},
@@ -73,4 +75,5 @@ public interface LifecycleHook<E extends LifecycleEvent> {
 	 * @since 0.7
 	 */
 	public interface PostResult {}
+	
 }

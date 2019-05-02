@@ -3,7 +3,7 @@ package com.variant.core.error;
 /**
  * User errors that can be signaled on server or client.
  * @author Igor
- */
+ *
 public class CommonError extends UserError {
 
 	// 
@@ -25,9 +25,10 @@ public class CommonError extends UserError {
 	 * 
 	 * @param severity
 	 * @param format
-	 */
+	 *
 	protected CommonError(int code, Severity severity, String format) {
 		super(code, severity, format);
 	}
 
 }
+*/

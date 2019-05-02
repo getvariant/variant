@@ -9,7 +9,7 @@ import com.variant.core.util.ReflectUtils;
  * 
  * @author Igor
  */
-public class ServerError extends CommonError {
+public class ServerError extends UserError {
 	
 	//
 	// 601-620 Internal, Payload syntax error

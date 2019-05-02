@@ -2,7 +2,6 @@ package com.variant.server.test.hooks;
 
 import com.typesafe.config.Config;
 import com.variant.core.lifecycle.LifecycleHook;
-import com.variant.server.api.lifecycle.PostResultFactory;
 import com.variant.server.api.lifecycle.VariationQualificationLifecycleEvent;
 
 public class TestQualificationHookDisqual implements LifecycleHook<VariationQualificationLifecycleEvent>{
@@ -24,7 +23,7 @@ public class TestQualificationHookDisqual implements LifecycleHook<VariationQual
    
 	@Override
 	public PostResult post(VariationQualificationLifecycleEvent event) {
-		VariationQualificationLifecycleEvent.PostResult result = PostResultFactory.mkPostResult(event);
+		VariationQualificationLifecycleEvent.PostResult result = event.newPostResult();
 		result.setQualified(false);
 		result.setRemoveFromTargetingTracker(removeFromTargetingTracker);
 		return result;

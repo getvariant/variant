@@ -3,12 +3,13 @@ package com.variant.server.test
 import java.io.PrintWriter
 import java.util.Random
 
+import play.api.http.Status._
 import com.variant.core.util.StringUtils
-import com.variant.core.error.CommonError._
 import com.variant.core.error.ServerError._
 import com.variant.core.error.UserError.Severity._
 
 import com.variant.server.boot.VariantServer
+import com.variant.server.boot.ServerErrorLocal._
 import com.variant.server.test.spec.StandaloneServerSpec
 import com.variant.server.test.util.ServerLogTailer
 import com.variant.server.util.httpc.HttpOperation
@@ -23,22 +24,22 @@ class StandaloneServerDefaultsTest extends StandaloneServerSpec {
    
    "Server" should {
 
-      "send 404 on a bad request" in  {
+      "send NOT_FOUND on a bad request" in  {
          
          HttpOperation.get("http://localhost:5377/variant").exec()
-            .getResponseCode mustBe 404
+            .getResponseCode mustBe NOT_FOUND
 
          HttpOperation.get("http://localhost:5377/bad").exec()
-            .getResponseCode mustBe 404
+            .getResponseCode mustBe NOT_FOUND
 
          HttpOperation.get("http://localhost:5377/variant/bad").exec()
-            .getResponseCode mustBe 404
+            .getResponseCode mustBe NOT_FOUND
       }
     
       "deploy petclinic and write to the application log" in  {
             
          HttpOperation.get("http://localhost:5377/connection/petclinic")
-            .exec().getResponseCode mustBe 200
+            .exec().getResponseCode mustBe OK
 
          val lines = ServerLogTailer.last(2, serverDir + "/log/variant.log")
          lines(0).severity mustBe INFO
@@ -51,40 +52,50 @@ class StandaloneServerDefaultsTest extends StandaloneServerSpec {
       "send health on a root request" in  {
          
          val resp = HttpOperation.get("http://localhost:5377").exec() 
-         resp.getResponseCode mustBe 200
+         resp.getResponseCode mustBe OK
          resp.getStringContent must startWith (VariantServer.productName)
       }
 
-      "Start on a non-default port 1234" in  {
+      "start on a non-default port 1234" in  {
          
          server.stop()
          server.start(Map("http.port" -> "1234"))
          
          HttpOperation.get("http://localhost:1234/connection/petclinic")
-            .exec().getResponseCode mustBe 200
+            .exec().getResponseCode mustBe OK
          
       }
 
-      "Start with alternate config as file" in  {
+      "fail to start with alternate config as file because of bad param type." in  {
          
          server.stop()
          
          val fileName = "/tmp/" + StringUtils.random64BitString(rand)
          new PrintWriter(fileName) {
-            write("variant.event.flusher.class.name = junk")
+            write("variant.session.timeout = invalid")  // String instead of number
             close 
          } 
          
-         server.start(Map("variant.config.file"->fileName))
+         var started: Boolean = true;
+         
+         server.start(
+         		commandLineParams = Map("variant.config.file"->fileName),
+         		onTimeout = () => started = false)
+
+         started mustBe false
          
          val resp = HttpOperation.get("http://localhost:5377/connection/petclinic").exec()
-         resp.getResponseCode mustBe 400
-         resp.getErrorContent mustBe UNKNOWN_SCHEMA.asMessage("petclinic")
+         resp.getResponseCode mustBe SERVICE_UNAVAILABLE
+
          val lines = ServerLogTailer.last(4, serverDir + "/log/variant.log")
          lines(0).severity mustBe ERROR
-         lines(0).message mustBe ServerErrorLocal.OBJECT_INSTANTIATION_ERROR.asMessage("junk", "java.lang.ClassNotFoundException")
-         lines(2).severity mustBe WARN
-         lines(2).message mustBe ServerErrorLocal.SCHEMA_FAILED.asMessage("petclinic", s"${serverDir}/schemata/petclinic.schema")
+         lines(0).message mustBe ServerErrorLocal.SERVER_BOOT_FAILED.asMessage(VariantServer.productName)
+         lines(1).severity mustBe ERROR
+         lines(1).message mustBe ServerErrorLocal.CONFIG_PROPERTY_WRONG_TYPE.asMessage("variant.session.timeout", "NUMBER", "STRING")
+         lines(2).severity mustBe INFO
+         lines(2).message mustBe VariantServer.productName + " is shutting down"
+         lines(3).severity mustBe INFO
+         lines(3).message must startWith (s"[${ServerErrorLocal.SERVER_SHUTDOWN.getCode}]")
 
       }
 
@@ -98,17 +109,30 @@ class StandaloneServerDefaultsTest extends StandaloneServerSpec {
             close 
          } 
          
+         // This will cause monster schemas to fail because they don't specity their own flushers.
          server.start(Map("variant.config.resource" -> ("/" + resourceName)))
-         
-         val resp = HttpOperation.get("http://localhost:5377/connection/petclinic").exec()
-         resp.getResponseCode mustBe 400
-         resp.getErrorContent mustBe UNKNOWN_SCHEMA.asMessage("petclinic")
-         val lines = ServerLogTailer.last(4, serverDir + "/log/variant.log")
+			val lines = ServerLogTailer.last(12, serverDir + "/log/variant.log")
 
-         lines(0).severity mustBe ERROR
-         lines(0).message mustBe ServerErrorLocal.OBJECT_INSTANTIATION_ERROR.asMessage("junk", "java.lang.ClassNotFoundException")
-         lines(2).severity mustBe WARN
-         lines(2).message mustBe ServerErrorLocal.SCHEMA_FAILED.asMessage("petclinic", s"${serverDir}/schemata/petclinic.schema")
+         lines(0).severity mustBe INFO
+			lines(0).message mustBe ServerErrorLocal.SCHEMA_DEPLOYING.asMessage(s"${serverDir}/schemata/monster.schema")
+         lines(1).severity mustBe ERROR
+         lines(1).message mustBe ServerErrorLocal.OBJECT_INSTANTIATION_ERROR.asMessage("junk", "java.lang.ClassNotFoundException")
+         lines(2).severity mustBe ERROR
+         lines(2).message mustBe ServerErrorLocal.OBJECT_INSTANTIATION_ERROR.asMessage("junk", "java.lang.ClassNotFoundException")
+         lines(3).severity mustBe WARN
+         lines(3).message mustBe ServerErrorLocal.SCHEMA_FAILED.asMessage("monstrosity", s"${serverDir}/schemata/monster.schema")
+         lines(4).severity mustBe INFO
+			lines(4).message mustBe ServerErrorLocal.SCHEMA_DEPLOYING.asMessage(s"${serverDir}/schemata/monster0.schema")
+         lines(5).severity mustBe ERROR
+         lines(5).message mustBe ServerErrorLocal.OBJECT_INSTANTIATION_ERROR.asMessage("junk", "java.lang.ClassNotFoundException")
+         lines(6).severity mustBe ERROR
+         lines(6).message mustBe ServerErrorLocal.OBJECT_INSTANTIATION_ERROR.asMessage("junk", "java.lang.ClassNotFoundException")
+         lines(7).severity mustBe WARN
+         lines(7).message mustBe ServerErrorLocal.SCHEMA_FAILED.asMessage("monstrosity0", s"${serverDir}/schemata/monster0.schema")
+         
+         val resp = HttpOperation.get("http://localhost:5377/connection/monstrosity").exec()
+         resp.getResponseCode mustBe BAD_REQUEST
+         resp.getErrorContent mustBe UNKNOWN_SCHEMA.asMessage("monstrosity")
 
       }
 

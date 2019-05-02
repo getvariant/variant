@@ -1,6 +1,5 @@
 package com.variant.server.boot
 
-import com.variant.server.api.ConfigKeys._
 import play.api.Logger
 import scala.collection.concurrent.TrieMap
 import com.variant.server.impl.SessionImpl
@@ -51,7 +50,7 @@ trait SessionStore {
 class SessionStore (private val server: VariantServer) {
    
    // Session timeout interval.
-	val sessionTimeoutMillis = server.config.getInt(SESSION_TIMEOUT) * 1000
+	val sessionTimeoutMillis = server.config.getSessionTimeout * 1000
 
    /**
     * Store entry

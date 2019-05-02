@@ -30,4 +30,9 @@ public class VariationQualificationLifecycleEventImpl  implements VariationQuali
 		return session;
 	}
 
+	@Override
+	public VariationQualificationLifecycleEvent.PostResult newPostResult() {
+		return new VariationQualificationLifecycleEventPostResultImpl(this);
+	}
+
 }

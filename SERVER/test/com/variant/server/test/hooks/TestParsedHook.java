@@ -4,7 +4,6 @@ import com.typesafe.config.Config;
 import com.variant.core.error.UserError.Severity;
 import com.variant.core.lifecycle.LifecycleHook;
 import com.variant.core.lifecycle.VariationParsedLifecycleEvent;
-import com.variant.server.api.lifecycle.PostResultFactory;
 
 public class TestParsedHook implements LifecycleHook<VariationParsedLifecycleEvent> {
 	
@@ -40,6 +39,6 @@ public class TestParsedHook implements LifecycleHook<VariationParsedLifecycleEve
 			event.addMessage(Severity.WARN, String.format(WARN_MESSAGE_FORMAT, hookName, event.getVariation().getName()));
 			event.addMessage(Severity.ERROR, String.format(ERROR_MESSAGE_FORMAT, hookName, event.getVariation().getName()));
 		}
-		return clipChain ? PostResultFactory.mkPostResult(event) : null;
+		return clipChain ? event.newPostResult() : null;
 	}
 }

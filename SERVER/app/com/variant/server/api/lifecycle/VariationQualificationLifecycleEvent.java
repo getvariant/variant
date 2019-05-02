@@ -2,6 +2,7 @@ package com.variant.server.api.lifecycle;
 
 import com.variant.core.lifecycle.LifecycleHook;
 import com.variant.core.lifecycle.VariationAwareLifecycleEvent;
+import com.variant.server.api.lifecycle.VariationTargetingLifecycleEvent.PostResult;
 
 
 /**
@@ -54,5 +55,14 @@ public interface VariationQualificationLifecycleEvent extends RuntimeLifecycleEv
        */
       public void setRemoveFromTargetingTracker(boolean remove);
    }
+
+	/**
+	 * Override the return type with the narrower one, suitable for this concrete lifecycle event.
+	 * This avoid unnecessary casts in the client code.
+	 * 
+	 * @since 0.10
+	 */
+	@Override
+	public PostResult newPostResult();
 
 }

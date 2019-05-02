@@ -41,6 +41,11 @@ public class VariationTargetingLifecycleEventImpl implements VariationTargetingL
 	public Session getSession() {
 		return session;
 	}
+
+	@Override
+	public VariationTargetingLifecycleEvent.PostResult newPostResult() {
+		return new VariationTargetingLifecycleEventPostResultImpl(this);
+	}
 	
 
 }		

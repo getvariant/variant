@@ -42,8 +42,17 @@ public interface VariationTargetingLifecycleEvent extends RuntimeLifecycleEvent,
 	    * @param experience Targeted experience.
 	    * @since 0.7
 	    */
-	   public void setTargetedExperience(Experience experience);   
+	    public void setTargetedExperience(Experience experience);   
 
 	}
+
+	/**
+	 * Override the return type with the narrower one, suitable for this concrete lifecycle event.
+	 * This avoid unnecessary casts in the client code.
+	 * 
+	 * @since 0.10
+	 */
+	@Override
+	public PostResult newPostResult();
 
 }

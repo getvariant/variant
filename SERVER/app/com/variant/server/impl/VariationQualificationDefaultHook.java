@@ -1,7 +1,6 @@
 package com.variant.server.impl;
 
 import com.variant.core.lifecycle.LifecycleHook;
-import com.variant.server.api.lifecycle.PostResultFactory;
 import com.variant.server.api.lifecycle.VariationQualificationLifecycleEvent;
 
 class VariationQualificationDefaultHook implements LifecycleHook<VariationQualificationLifecycleEvent> {
@@ -27,7 +26,7 @@ class VariationQualificationDefaultHook implements LifecycleHook<VariationQualif
 	@Override
 	public LifecycleHook.PostResult post(VariationQualificationLifecycleEvent event) throws Exception {
 		
-		VariationQualificationLifecycleEvent.PostResult result = PostResultFactory.mkPostResult(event);				
+		VariationQualificationLifecycleEvent.PostResult result = event.newPostResult();				
 		result.setQualified(true);
 		return result;
 	}

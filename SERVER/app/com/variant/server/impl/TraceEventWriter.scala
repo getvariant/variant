@@ -3,8 +3,7 @@ package com.variant.server.impl
 import java.util.LinkedList
 import java.util.concurrent.ConcurrentLinkedQueue
 import org.apache.commons.lang3.time.DurationFormatUtils
-import com.variant.server.api.ConfigKeys.EVENT_WRITER_BUFFER_SIZE
-import com.variant.server.api.ConfigKeys.EVENT_WRITER_MAX_DELAY
+import com.variant.server.api.ConfigKeys._
 import com.variant.server.api.FlushableTraceEvent
 import com.variant.server.boot.VariantServer
 import com.variant.server.schema.ServerFlusherService
@@ -18,7 +17,7 @@ class TraceEventWriter (private val flushService: ServerFlusherService) {
    
    val flusher = flushService.getFlusher
    
-   val maxBufferSize = config.getInt(EVENT_WRITER_BUFFER_SIZE)
+   val maxBufferSize = config.getEventWriterBufferSize
    
    // We're full if 50% or more of max buffer is taken.
    val fullSize = math.round(maxBufferSize * 0.5F)
@@ -27,7 +26,7 @@ class TraceEventWriter (private val flushService: ServerFlusherService) {
 	 val emptySize = math.round(maxBufferSize * 0.01F)
 	 
 	 // Force flush after this long, even if still empty.
-	 val maxDelayMillis = config.getInt(EVENT_WRITER_MAX_DELAY) * 1000
+	 val maxDelayMillis = config.getEventWriterMaxDelay * 1000
 
  	 // The underlying buffer is a non-blocking, unbounded queue. We will enforce the soft upper bound,
 	 // refusing inserts that will put the queue size over the limit, but not worrying about

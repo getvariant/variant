@@ -7,7 +7,9 @@ public class VariationQualificationLifecycleEventPostResultImpl implements Varia
 	private boolean qualified = false;
 	private boolean removeFromTT = false;
 	
-	public VariationQualificationLifecycleEventPostResultImpl(VariationQualificationLifecycleEvent event) {}
+	public VariationQualificationLifecycleEventPostResultImpl(VariationQualificationLifecycleEvent event) {
+		// Nothing so far. Taking events as the arg for consistency with sister-types.
+	}
 	
 	@Override
 	public void setQualified(boolean qualified) {

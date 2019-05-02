@@ -1,6 +1,4 @@
-package com.variant.server.util;
-
-import static com.variant.core.error.CommonError.*;
+package com.variant.server.boot;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -15,6 +13,7 @@ import com.typesafe.config.ConfigFactory;
 import com.variant.core.error.CoreException;
 import com.variant.core.util.IoUtils;
 import com.variant.core.util.Tuples.Pair;
+import static com.variant.server.boot.ServerErrorLocal.*;
 
 /**
  * Variant Configuration. A Typesafe Config based implementation.

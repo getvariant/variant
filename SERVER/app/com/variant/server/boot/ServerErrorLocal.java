@@ -1,14 +1,31 @@
 package com.variant.server.boot;
 
-import com.variant.core.error.CommonError;
-// Miraculously, scala compiler fails on this file without this line.
+import com.variant.core.error.UserError;
 import com.variant.core.error.UserError.Severity;
 
 /**
  * Local Server Errors, i.e. ones thrown to the server log and not sent back to client.
  * These are raised by UserErrorException.
  */
-public class ServerErrorLocal extends CommonError {
+public class ServerErrorLocal extends UserError {
+
+	// 
+	// 201-220              Configuration
+	//
+	public final static ServerErrorLocal CONFIG_BOTH_FILE_AND_RESOURCE_GIVEN = 
+			new ServerErrorLocal(201, Severity.FATAL, "Cannot set both [variant.config.resource] and [variant.config.file] system parameters");
+
+	public final static ServerErrorLocal CONFIG_RESOURCE_NOT_FOUND =
+			new ServerErrorLocal(202, Severity.FATAL, "Config resource [%s] could not be found"); 
+	
+	public final static ServerErrorLocal CONFIG_FILE_NOT_FOUND =
+			new ServerErrorLocal(203, Severity.FATAL, "Config file [%s] could not be found"); 
+
+	public final static ServerErrorLocal CONFIG_PROPERTY_NOT_SET = 
+			new ServerErrorLocal(204, Severity.FATAL, "Required configuration property [%s] is not set");
+
+	public final static ServerErrorLocal CONFIG_PROPERTY_WRONG_TYPE = 
+			new ServerErrorLocal(205, Severity.FATAL, "Configuration property [%s] must be of type [%s] but was of type [%s]");
 
 	//
 	// 401-420 Server bootstrap
@@ -49,9 +66,9 @@ public class ServerErrorLocal extends CommonError {
 	public final static ServerErrorLocal HOOK_TEST_SCOPE_VIOLATION = 
 			new ServerErrorLocal(428, Severity.ERROR, "Lifecycle hook [%s], defined at test [%s] cannot listen to life cycle event [%s]");
 
-	public final static ServerErrorLocal FLUSHER_NOT_CONFIGURED = 
+/*	public final static ServerErrorLocal FLUSHER_NOT_CONFIGURED = 
 			new ServerErrorLocal(429, Severity.ERROR, "No event flusher defined in experiment schema, and no default event flusher is configured");
-
+*/
 	public final static ServerErrorLocal FLUSHER_CLASS_NO_INTERFACE = 
 			new ServerErrorLocal(430, Severity.ERROR, "Event flusher class [%s] must implement interface [%s]");
 
@@ -62,13 +79,13 @@ public class ServerErrorLocal extends CommonError {
 			new ServerErrorLocal(432, Severity.INFO, "No schemata found in [%s]");
 
 	public final static ServerErrorLocal SERVER_BOOT_OK = 
-			new ServerErrorLocal(433, Severity.INFO, "%s bootstrapped on :%s%s in %s");
+			new ServerErrorLocal(433, Severity.INFO, "%s bootstapped on port [%s] in %s");
 
 	public final static ServerErrorLocal SERVER_BOOT_FAILED = 
 			new ServerErrorLocal(434, Severity.INFO, "%s failed to bootstrap due to following errors:");
 
 	public final static ServerErrorLocal SERVER_SHUTDOWN = 
-			new ServerErrorLocal(435, Severity.INFO, "%s shutdown on :%s%s, uptime %s.");
+			new ServerErrorLocal(435, Severity.INFO, "%s shutdown on  port [%s], uptime %s.");
 	
    /**
     * 

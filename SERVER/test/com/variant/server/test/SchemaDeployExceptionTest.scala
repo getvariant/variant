@@ -6,7 +6,6 @@ import scala.util.Try
 import org.apache.commons.io.FileUtils
 import org.scalatest.TestData
 import org.scalatestplus.play.OneAppPerTest
-import com.variant.core.error.CommonError.CONFIG_PROPERTY_NOT_SET
 import com.variant.core.error.UserError.Severity._
 import com.variant.server.api.ConfigKeys
 import com.variant.server.api.ServerException

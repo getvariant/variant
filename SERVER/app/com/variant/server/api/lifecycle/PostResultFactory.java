@@ -1,10 +1,10 @@
 package com.variant.server.api.lifecycle;
-
+/*
+import com.variant.core.impl.StateParsedLifecycleEventPostResultImpl;
 import com.variant.core.lifecycle.LifecycleEvent;
 import com.variant.core.lifecycle.LifecycleHook.PostResult;
 import com.variant.core.lifecycle.StateParsedLifecycleEvent;
 import com.variant.core.lifecycle.VariationParsedLifecycleEvent;
-import com.variant.server.impl.StateParsedLifecycleEventPostResultImpl;
 import com.variant.server.impl.VariationParsedLifecycleEventPostResultImpl;
 import com.variant.server.impl.VariationQualificationLifecycleEventPostResultImpl;
 import com.variant.server.impl.VariationTargetingLifecycleEventPostResultImpl;
@@ -20,7 +20,7 @@ import com.variant.server.impl.VariationTargetingLifecycleEventPostResultImpl;
  * 
  * @since 0.7
  *
- */
+ *
 
 public class PostResultFactory {
    
@@ -34,7 +34,7 @@ public class PostResultFactory {
 	 *         method(s) of this object to pass additional state back to server. 
 	 * 
     * @since 0.7
-	 */
+	 *
 	public static StateParsedLifecycleEvent.PostResult mkPostResult(StateParsedLifecycleEvent event) {
 		return new StateParsedLifecycleEventPostResultImpl(event);
 	}
@@ -47,7 +47,7 @@ public class PostResultFactory {
     *         method(s) of this object to pass additional state back to server. 
     * 
     * @since 0.7
-    */
+    *
 	public static VariationParsedLifecycleEvent.PostResult mkPostResult(VariationParsedLifecycleEvent event) {
 		return new VariationParsedLifecycleEventPostResultImpl(event);
 	}
@@ -60,7 +60,7 @@ public class PostResultFactory {
     *         method(s) of this object to pass additional state back to server. 
     * 
     * @since 0.7
-    */
+    *
 	public static VariationQualificationLifecycleEvent.PostResult mkPostResult(VariationQualificationLifecycleEvent event) {
 		return new VariationQualificationLifecycleEventPostResultImpl(event);
 	}
@@ -73,10 +73,10 @@ public class PostResultFactory {
     *         method(s) of this object to pass additional state back to server. 
     * 
     * @since 0.7
-    */
+    *
 	public static VariationTargetingLifecycleEvent.PostResult mkPostResult(VariationTargetingLifecycleEvent event) {
 		return new VariationTargetingLifecycleEventPostResultImpl(event);	
 	}
 
 }
-
+*/

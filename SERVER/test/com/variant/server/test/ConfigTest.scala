@@ -1,10 +1,10 @@
 package com.variant.server.test
 
 import com.variant.core.error.CoreException._
-import com.variant.core.error.CommonError._
 import com.variant.core.error.CoreException
+import com.variant.server.boot.ConfigLoader
+import com.variant.server.boot.ServerErrorLocal._
 import com.variant.server.test.spec.ServerlessSpec
-import com.variant.server.util.ConfigLoader
 
 class ConfigTest extends ServerlessSpec {
 

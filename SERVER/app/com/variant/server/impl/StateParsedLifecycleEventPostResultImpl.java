@@ -1,5 +1,5 @@
 package com.variant.server.impl;
-
+/*
 import com.variant.core.lifecycle.StateParsedLifecycleEvent;
 import com.variant.core.schema.parser.StateParsedLifecycleEventImpl;
 
@@ -13,3 +13,4 @@ public class StateParsedLifecycleEventPostResultImpl implements StateParsedLifec
 	
 
 }
+*/

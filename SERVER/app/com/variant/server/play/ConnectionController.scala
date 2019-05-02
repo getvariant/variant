@@ -30,7 +30,7 @@ class ConnectionController @Inject() (
             logger.debug("Schema [%s] found".format(name))
             
             val response = JsObject(Seq(
-               "ssnto" -> JsNumber(VariantServer.instance.config.getInt(ConfigKeys.SESSION_TIMEOUT))
+               "ssnto" -> JsNumber(VariantServer.instance.config.getSessionTimeout)
             ))
             
             Ok(response.toString())

@@ -1,8 +1,9 @@
 #! /bin/bash
 
 #
-# BUILD A PRODUCTION SERVER IN A GIVEN DIRECTORY
-# USED FOR TESTING.
+# BUILD A PRODUCTION SERVER IN A GIVEN DIRECTORY.
+# GETS ALL SCHEATA FROM SCHEMATA-TEST
+# USED FOR TESTING.  
 #
 
 cd `dirname $0`/../../SERVER
@@ -46,7 +47,7 @@ fi
 cp standalone-server/ext/* ${server_dir}/ext
 
 mkdir ${server_dir}/schemata
-cp standalone-server/schemata/* ${server_dir}/schemata
+cp schemata-test/* ${server_dir}/schemata
 
 # Restore the target directory.
 if [ -e /tmp/target ]; then

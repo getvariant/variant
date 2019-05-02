@@ -7,7 +7,6 @@ import com.variant.core.lifecycle.LifecycleHook;
 import com.variant.core.schema.State;
 import com.variant.core.schema.Variation;
 import com.variant.core.schema.Variation.Experience;
-import com.variant.server.api.lifecycle.PostResultFactory;
 import com.variant.server.api.lifecycle.VariationTargetingLifecycleEvent;
 import com.variant.server.boot.ServerExceptionInternal;
 import com.variant.server.boot.ServerExceptionLocal;
@@ -62,7 +61,7 @@ class VariationTargetingDefaultHook implements LifecycleHook<VariationTargetingL
 			if (e.isPhantom(state)) continue;
 			weightSum += e.getWeight().get().doubleValue();
 			if (randVal < weightSum) {
-				VariationTargetingLifecycleEvent.PostResult result = PostResultFactory.mkPostResult(event);
+				VariationTargetingLifecycleEvent.PostResult result = event.newPostResult();
 				result.setTargetedExperience(e);
 				return result;
 			}

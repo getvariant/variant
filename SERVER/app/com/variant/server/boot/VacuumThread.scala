@@ -2,7 +2,6 @@ package com.variant.server.boot
 
 import scala.collection.mutable
 import play.api.Logger
-import com.variant.server.api.ConfigKeys._
 
 /**
  * Background vacuum thread.
@@ -13,7 +12,7 @@ class VacuumThread(server: VariantServer) extends Thread {
 
    private val logger = Logger(this.getClass)
    
-   private val vacuumingFrequencyMillis = server.config.getInt(SESSION_VACUUM_INTERVAL) * 1000
+   private val vacuumingFrequencyMillis = server.config.getVacuumInterval * 1000
 	setName("Vacuum");
    setDaemon(true);
 

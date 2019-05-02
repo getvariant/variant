@@ -61,7 +61,7 @@ public class VariantException extends RuntimeException {
 			super(msg, t);
 		}
 		
-		public Internal(CommonError error, Object...args) {
+		public Internal(UserError error, Object...args) {
 			super(error.asMessage(args));
 		}
 

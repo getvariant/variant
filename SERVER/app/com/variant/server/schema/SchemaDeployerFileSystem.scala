@@ -6,7 +6,6 @@ import java.nio.file.Path
 import scala.io.Source
 
 import com.variant.core.error.UserError.Severity
-import com.variant.core.error.CommonError.CONFIG_PROPERTY_NOT_SET
 import com.variant.server.api.ConfigKeys.SCHEMATA_DIR
 import com.variant.server.boot.ServerErrorLocal
 import com.variant.server.boot.ServerExceptionLocal
@@ -28,11 +27,8 @@ class SchemaDeployerFileSystem() extends AbstractSchemaDeployer {
   // Don't evaluate during instantiation because this singleton class is instantiated
   // by Play during application startup and we don't want a user error to derail that.
   lazy val dir = {
-     
-     if (!VariantServer.instance.config.hasPath(SCHEMATA_DIR))
-        throw new ServerExceptionLocal(CONFIG_PROPERTY_NOT_SET, SCHEMATA_DIR);
-      
-     val dirName = Option(VariantServer.instance.config.getString(SCHEMATA_DIR))
+           
+     val dirName = Option(VariantServer.instance.config.getSchemataDir)
 
      val result = new File(dirName.get)
      if (!result.exists)

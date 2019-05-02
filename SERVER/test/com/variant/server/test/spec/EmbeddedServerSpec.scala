@@ -45,11 +45,13 @@ class EmbeddedServerSpec extends BaseServerSpec with OneAppPerSuite with BeforeA
 	 * 
 	 */
 	private def recreateDatabase() {
-	   // Assuming the there's always the petclinic_experiments schema and that it has the right event writer.
-	   server.schemata.getLiveGen("petclinic") match {
-	      
-	      case Some(schema) =>
-      		val jdbc = new JdbcService(schema.eventWriter)
+	   // Assuming the there's always the monstrosity schema and that it has the right event writer.
+	   server.schemata.getLiveGen("monstrosity") match {
+
+	   	case Some(schema) =>
+
+	   		val jdbc = new JdbcService(schema.eventWriter)
+
       		try {			
       			jdbc.getVendor match {
          			case JdbcService.Vendor.POSTGRES =>

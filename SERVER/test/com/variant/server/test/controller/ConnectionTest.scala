@@ -69,7 +69,7 @@ class ConnectionTest extends EmbeddedServerAsyncSpec {
          assertResp(route(app, httpReq(GET, endpoint + "/monstrosity")))
             .isOk
             .withBodyJson { json =>
-               (json \ "ssnto").as[Long] mustBe server.config.getInt(SESSION_TIMEOUT)
+               (json \ "ssnto").as[Long] mustBe server.config.getSessionTimeout
             }
       }         
    }

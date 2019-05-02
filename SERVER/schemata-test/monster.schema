@@ -19,7 +19,7 @@
 {
    'meta':{
       'name':'monstrosity', 
-      'comment':'Schema for okay big test!'
+      'comment':'DO NOT ADD A FLUSHER HERE AS WE USE THIS SCHEMA TO FOR JDBC SERVICE, SO RELY THAT IT USES A DEFAULT JDBC ONE.'
    },
    'states':[                                                             
      {  'name':'state1',

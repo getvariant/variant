@@ -55,10 +55,11 @@ class SessionTest extends EmbeddedServerSpec {
    val sessionJsonPetclinic = ParameterizedString(
          sessionJsonPetclinicPrototype.format(DateTimeFormatter.ISO_INSTANT.format(Instant.now())))
    
-   val sessionTimeoutMillis = server.config.getLong(ConfigKeys.SESSION_TIMEOUT) * 1000
+   val sessionTimeoutMillis = server.config.getSessionTimeout * 1000
    sessionTimeoutMillis mustEqual 1000
    
-   val vacuumIntervalMillis = server.config.getLong(ConfigKeys.SESSION_VACUUM_INTERVAL) * 1000
+   val vacuumIntervalMillis = server.config.getVacuumInterval * 1000
+  
    vacuumIntervalMillis  mustEqual 1000
 
    val emptyTargetingTrackerBody = "{\"tt\":[]}"

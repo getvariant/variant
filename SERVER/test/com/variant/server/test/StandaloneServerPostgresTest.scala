@@ -5,7 +5,6 @@ import scala.collection.JavaConversions._
 import scala.collection.mutable
 import scala.sys.process._
 import com.variant.core.error.UserError.Severity._
-import com.variant.core.error.CommonError._
 import com.variant.core.error.ServerError._
 import com.variant.server.test.spec.StandaloneServerSpec
 import play.api.test.Helpers._
@@ -14,6 +13,7 @@ import com.variant.server.test.util.ServerLogTailer
 import java.io.PrintWriter
 import com.variant.server.boot.ServerErrorLocal
 import com.variant.server.boot.VariantServer
+import com.variant.server.boot.ServerErrorLocal._
 import com.variant.core.util.StringUtils
 /**
  * Test the server running in a separate process.

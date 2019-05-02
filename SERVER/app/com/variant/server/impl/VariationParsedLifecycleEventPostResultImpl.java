@@ -1,5 +1,5 @@
 package com.variant.server.impl;
-
+/*
 import com.variant.core.lifecycle.VariationParsedLifecycleEvent;
 import com.variant.core.schema.parser.TestParsedLifecycleEventImpl;
 
@@ -12,3 +12,4 @@ public class VariationParsedLifecycleEventPostResultImpl implements VariationPar
 	}
 	
 }
+*/

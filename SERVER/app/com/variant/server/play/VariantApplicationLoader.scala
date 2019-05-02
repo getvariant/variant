@@ -6,7 +6,7 @@ import play.api.inject._
 import play.api.inject.guice._
 import play.api.Logger
 
-import com.variant.server.util.ConfigLoader;
+import com.variant.server.boot.ConfigLoader;
 
 /**
  * Inject Variant configuration into the application loader so that it has

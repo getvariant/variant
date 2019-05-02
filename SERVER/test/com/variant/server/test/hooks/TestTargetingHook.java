@@ -10,7 +10,6 @@ import com.variant.core.schema.Variation;
 import com.variant.core.schema.Variation.Experience;
 import com.variant.server.api.ServerException;
 import com.variant.server.api.Session;
-import com.variant.server.api.lifecycle.PostResultFactory;
 import com.variant.server.api.lifecycle.VariationTargetingLifecycleEvent;
 import com.variant.server.boot.ServerExceptionInternal;
 
@@ -56,7 +55,7 @@ public class TestTargetingHook implements LifecycleHook<VariationTargetingLifecy
 	public PostResult post(VariationTargetingLifecycleEvent event) {
 
 		Session ssn = event.getSession();
-		VariationTargetingLifecycleEvent.PostResult result = PostResultFactory.mkPostResult(event);
+		VariationTargetingLifecycleEvent.PostResult result = event.newPostResult();
 		
 		if (experienceToReturn != null) {
 			String[] tokens = experienceToReturn.split("\\.");

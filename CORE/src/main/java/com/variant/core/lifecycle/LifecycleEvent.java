@@ -9,8 +9,17 @@ package com.variant.core.lifecycle;
  * and client with custom semantics via callback methods, which can augment defaultt functionality
  * with application specific semantics.
  *  
- * @author Igor Urisman.
  * @since 0.5
  */
 
-public interface LifecycleEvent {}
+public interface LifecycleEvent {
+	
+	/**
+	 * <p>Make a new object of the right type, suitable as the return type of Implementations of the
+	 * {@link LifecycleHook#post(LifecycleEvent)} method. Concrete lifecycle events will override this
+	 * with a suitable narrower return type.
+	 *  
+	 * @since 0.10
+	 */
+	public LifecycleHook.PostResult newPostResult();
+}
