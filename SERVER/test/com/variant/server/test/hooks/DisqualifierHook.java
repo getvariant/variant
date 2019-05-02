@@ -1,7 +1,11 @@
 package com.variant.server.test.hooks;
 
+import java.util.Optional;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.variant.core.lifecycle.LifecycleEvent;
 import com.variant.core.lifecycle.LifecycleHook;
 import com.variant.server.api.lifecycle.VariationQualificationLifecycleEvent;
 
@@ -15,7 +19,7 @@ public class DisqualifierHook implements LifecycleHook<VariationQualificationLif
     }
    
 	@Override
-	public PostResult post(VariationQualificationLifecycleEvent event) {
+	public Optional<LifecycleEvent.PostResult> post(VariationQualificationLifecycleEvent event) {
 
 		VariationQualificationLifecycleEvent.PostResult result = null;
 		String attrValue = event.getSession().getAttributes().get("disqual");
@@ -24,7 +28,7 @@ public class DisqualifierHook implements LifecycleHook<VariationQualificationLif
 			result.setQualified(false);
 			LOG.info(String.format("Disqulified session ID [%s] form variation [%s]", event.getSession().getId(), event.getVariation().getName()));
 		}
-		return result;
+		return Optional.of(result);
 	}
 	
 }

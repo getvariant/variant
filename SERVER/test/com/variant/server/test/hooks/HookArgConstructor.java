@@ -2,23 +2,26 @@ package com.variant.server.test.hooks;
 
 import java.util.Optional;
 
+import com.typesafe.config.Config;
 import com.variant.core.lifecycle.LifecycleEvent;
+import com.variant.core.lifecycle.LifecycleHook;
 import com.variant.server.api.lifecycle.VariationQualificationLifecycleEvent;
 
-/**
- * This class does not implement the required interface.
- */
-public class HookNoInterface {
-
-	public static String ATTR_KEY = TestQualificationHookNil.class.getName();;
+public class HookArgConstructor implements LifecycleHook<VariationQualificationLifecycleEvent> {
+		
+	/**
+	 * Non nullary constructor
+	 * @param config
+	 */
+	public HookArgConstructor(Config conf) {}
 	
-	public void foo(String bar) {}
-
+	@Override
     public Class<VariationQualificationLifecycleEvent> getLifecycleEventClass() {
 		return VariationQualificationLifecycleEvent.class;
     }
    
+	@Override
 	public Optional<LifecycleEvent.PostResult> post(VariationQualificationLifecycleEvent event) {
-		return null;
+		return Optional.empty();
 	}
 }

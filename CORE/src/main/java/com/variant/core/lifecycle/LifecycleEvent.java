@@ -21,5 +21,16 @@ public interface LifecycleEvent {
 	 *  
 	 * @since 0.10
 	 */
-	public LifecycleHook.PostResult newPostResult();
+	public PostResult newPostResult();
+	
+	/**
+	 * The result of the {@link LifecycleHook#post(LifecycleEvent)} callback. Concrete implementations will have methods
+	 * for the user code to set the details of the outcome of the post operation expected by the server. Call the
+	 * appropriate method of {@code com.variant.server.api.lifecycle.PostResultFactory} to obtain a post result to be
+	 * returned by your code.
+	 * 
+	 * @since 0.7
+	 */
+	public interface PostResult {}
+
 }

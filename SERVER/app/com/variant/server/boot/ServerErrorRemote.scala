@@ -30,7 +30,7 @@ class ServerErrorRemote(error: ServerError) extends Results {
    def asResult(args:String*): Result = {
        
       val bodyJson : JsObject = Json.obj(
-         "isInternal" -> JsBoolean(error.isInternal),
+         "isInternal" -> JsBoolean(error.isInternal), 
          "code" -> error.getCode,
          "args" -> JsArray(args.map {JsString(_)}))
      

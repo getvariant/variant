@@ -31,9 +31,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.variant.core.error.CoreException;
-import com.variant.core.error.ServerError;
 import com.variant.core.error.UserError.Severity;
-import com.variant.core.lifecycle.impl.VariationParsedLifecycleEventImpl;
 import com.variant.core.schema.Hook;
 import com.variant.core.schema.ParserMessage;
 import com.variant.core.schema.State;
@@ -103,15 +101,6 @@ public class VariationsParser implements Keywords {
 			// If no errors, register test scoped hooks.
 			if (errorCount.intValue() == 0) {
 				for (Hook hook: var.getHooks()) hooksService.initHook(hook, response);
-
-				// Post the test parsed event.
-				try {
-					hooksService.post(new VariationParsedLifecycleEventImpl(var, response));
-				}
-				catch (Exception e) {
-					response.addMessage(ServerError.HOOK_UNHANDLED_EXCEPTION, VariationParsedLifecycleEventImpl.class.getName(), e.getMessage());
-					LOG.error(ServerError.HOOK_UNHANDLED_EXCEPTION.asMessage(VariationParsedLifecycleEventImpl.class.getName(), e.getMessage()), e);
-				}
 			}
 			response.setMessageListener(null);
 

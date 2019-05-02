@@ -1,6 +1,7 @@
 package com.variant.server.schema;
 
 import java.util.ArrayList;
+import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -146,7 +147,7 @@ public class ServerHooksService implements HooksService {
 	 */
    @SuppressWarnings("unchecked")
    @Override
-   public LifecycleHook.PostResult post(LifecycleEvent event) {
+   public LifecycleEvent.PostResult post(LifecycleEvent event) {
 			   	   	   
 	   // 1. Build the hook chain, i.e. all hooks eligible for posting, in order.
 	   
@@ -206,13 +207,13 @@ public class ServerHooksService implements HooksService {
 			   hookDef = hle.hookDef;
 				   												
 			   LifecycleHook<LifecycleEvent> hook = (LifecycleHook<LifecycleEvent>) ClassUtil.instantiate(hle.hookDef.getClassName(), hle.hookDef.getInit());
-			   LifecycleHook.PostResult result = hook.post(event);
+			   Optional<? extends LifecycleEvent.PostResult> result = hook.post(event);
 			   
 			   if (LOG.isTraceEnabled())
 				   LOG.trace("Posted user hook [" + hle.hookDef.getName() + "] with [" + event + "]. Result: [" + result + "]");
 						
 			   // If user hook returned a result, clip the chain.
-			   if (result != null) return result;
+			   if (result.isPresent()) return result.get();
 		
 		   }
 
@@ -220,7 +221,7 @@ public class ServerHooksService implements HooksService {
 		   // If this is a server event, post the default hook.
 		   if (event instanceof RuntimeLifecycleEvent) {
 			   RuntimeLifecycleEvent sle = (RuntimeLifecycleEvent) event;
-			   return ((LifecycleHook<RuntimeLifecycleEvent>) sle.getDefaultHook()).post(sle);
+			   return ((LifecycleHook<RuntimeLifecycleEvent>) sle.getDefaultHook()).post(sle).get();
 		   }
 		   
 		   return null;

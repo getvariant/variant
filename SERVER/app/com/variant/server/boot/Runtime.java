@@ -204,8 +204,8 @@ public class Runtime {
 			if (isTargetable(ft, state, vector)) {
 				// Target this test. First post targeting hooks.
 				VariationTargetingLifecycleEventImpl event = new VariationTargetingLifecycleEventImpl(session, ft, state);
-				VariationTargetingLifecycleEventPostResultImpl hookResult = (VariationTargetingLifecycleEventPostResultImpl) schema.hooksService().post(event);
-				Experience targetedExperience = hookResult.getTargetedExperience();
+				VariationTargetingLifecycleEventPostResultImpl postResult = (VariationTargetingLifecycleEventPostResultImpl) schema.hooksService().post(event);
+				Experience targetedExperience = postResult.getTargetedExperience();
 
 				if (LOG.isTraceEnabled()) {
 					LOG.trace(
@@ -255,14 +255,14 @@ public class Runtime {
 		
 
 		VariationQualificationLifecycleEvent event = new VariationQualificationLifecycleEventImpl(session, var);
-		VariationQualificationLifecycleEventPostResultImpl hookResult = (VariationQualificationLifecycleEventPostResultImpl) schema.hooksService().post(event);
+		VariationQualificationLifecycleEventPostResultImpl postResult = (VariationQualificationLifecycleEventPostResultImpl) schema.hooksService().post(event);
 
-		if (!hookResult.isQualified()) {
+		if (!postResult.isQualified()) {
 			session.addDisqualifiedTest(var);
-			if (hookResult.isRemoveFromTT()) session.getTargetingStabile().remove(var.getName());
+			if (postResult.isRemoveFromTT()) session.getTargetingStabile().remove(var.getName());
 		}				
 		
-		return hookResult.isQualified();
+		return postResult.isQualified();
 	}
 	
 	/**

@@ -1,5 +1,8 @@
 package com.variant.server.test.hooks;
 
+import java.util.Optional;
+
+import com.variant.core.lifecycle.LifecycleEvent;
 import com.variant.core.lifecycle.LifecycleHook;
 import com.variant.server.api.Session;
 import com.variant.server.api.lifecycle.VariationQualificationLifecycleEvent;
@@ -20,11 +23,11 @@ public class TestQualificationHookNil implements LifecycleHook<VariationQualific
 	 * Append triggering test name to a session attribute.
 	 */
 	@Override
-	public PostResult post(VariationQualificationLifecycleEvent event) {
+	public Optional<LifecycleEvent.PostResult> post(VariationQualificationLifecycleEvent event) {
 		Session ssn = event.getSession();
 		String curVal = ssn.getAttributes().get(ATTR_KEY);
 		if (curVal == null) curVal = ""; else curVal += " ";
 		ssn.getAttributes().put(ATTR_KEY,  curVal + event.getVariation().getName());
-		return null;
+		return Optional.empty();
 	}
 }

@@ -14,9 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.variant.core.error.CoreException;
-import com.variant.core.error.ServerError;
 import com.variant.core.error.UserError.Severity;
-import com.variant.core.lifecycle.impl.StateParsedLifecycleEventImpl;
 import com.variant.core.schema.Hook;
 import com.variant.core.schema.ParserMessage;
 import com.variant.core.schema.State;
@@ -76,17 +74,7 @@ public class StatesParser implements Keywords {
 				
 				// If no errors, register state scoped hooks.
 				if (errorCount.intValue() == 0) {
-					for (Hook hook: state.getHooks()) hooksService.initHook(hook, response);
-	
-					// Post the state parsed event.
-					try {
-						hooksService.post(new StateParsedLifecycleEventImpl(state, response));
-					}
-					catch (Exception e) {
-						response.addMessage(ServerError.HOOK_UNHANDLED_EXCEPTION, StateParsedLifecycleEventImpl.class.getName(), e.getMessage());
-						LOG.error(ServerError.HOOK_UNHANDLED_EXCEPTION.asMessage(StateParsedLifecycleEventImpl.class.getName(), e.getMessage()), e);
-
-					}
+					for (Hook hook: state.getHooks()) hooksService.initHook(hook, response);	
 				}
 				response.setMessageListener(null);
 			}

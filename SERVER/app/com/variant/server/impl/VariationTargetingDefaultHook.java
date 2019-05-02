@@ -1,5 +1,6 @@
 package com.variant.server.impl;
 
+import java.util.Optional;
 import java.util.Random;
 
 import com.variant.core.error.ServerError;
@@ -34,7 +35,7 @@ class VariationTargetingDefaultHook implements LifecycleHook<VariationTargetingL
 	 * 
 	 */
 	@Override
-	public VariationTargetingLifecycleEvent.PostResult post(VariationTargetingLifecycleEvent event) throws Exception {
+	public Optional<VariationTargetingLifecycleEvent.PostResult> post(VariationTargetingLifecycleEvent event) throws Exception {
 		
 		Variation var = event.getVariation();
 		State state = event.getState();
@@ -63,7 +64,7 @@ class VariationTargetingDefaultHook implements LifecycleHook<VariationTargetingL
 			if (randVal < weightSum) {
 				VariationTargetingLifecycleEvent.PostResult result = event.newPostResult();
 				result.setTargetedExperience(e);
-				return result;
+				return Optional.of(result);
 			}
 		}
 		

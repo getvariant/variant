@@ -1,4 +1,4 @@
-package com.variant.server.test.extapi
+package com.variant.server.test.api
 
 
 import com.variant.core.StateRequestStatus._

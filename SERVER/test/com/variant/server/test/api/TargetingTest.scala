@@ -1,4 +1,4 @@
-package com.variant.server.test.extapi
+package com.variant.server.test.api
 
 import com.variant.core.error.ServerError
 import com.variant.server.boot.ServerExceptionLocal

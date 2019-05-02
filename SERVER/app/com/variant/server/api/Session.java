@@ -96,7 +96,7 @@ public interface Session {
 	public Optional<StateRequest> getStateRequest();
 
 	/**
-	 * <p>Get the map, containing session attributes.
+	 * <p>Get this session's attributes as a map
 	 * 
 	 * @return A mutable {@link Map}.
 	 * @since 0.7

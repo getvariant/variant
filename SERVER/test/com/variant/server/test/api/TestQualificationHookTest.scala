@@ -1,4 +1,4 @@
-package com.variant.server.test.extapi
+package com.variant.server.test.api
 
 import scala.io.Source
 import scala.collection.JavaConversions._

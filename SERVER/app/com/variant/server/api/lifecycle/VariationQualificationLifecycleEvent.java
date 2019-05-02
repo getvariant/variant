@@ -2,7 +2,6 @@ package com.variant.server.api.lifecycle;
 
 import com.variant.core.lifecycle.LifecycleHook;
 import com.variant.core.lifecycle.VariationAwareLifecycleEvent;
-import com.variant.server.api.lifecycle.VariationTargetingLifecycleEvent.PostResult;
 
 
 /**
@@ -30,7 +29,7 @@ public interface VariationQualificationLifecycleEvent extends RuntimeLifecycleEv
     * 
     * @since 0.7
     */
-   public interface PostResult extends LifecycleHook.PostResult {
+   public interface PostResult extends RuntimeLifecycleEvent.PostResult {
       
       /**
        * Set whether the session is qualified for the associated test.

@@ -1,9 +1,11 @@
 package com.variant.server.test.hooks;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Random;
 
 import com.typesafe.config.Config;
+import com.variant.core.lifecycle.LifecycleEvent;
 import com.variant.core.lifecycle.LifecycleHook;
 import com.variant.core.schema.State;
 import com.variant.core.schema.Variation;
@@ -52,7 +54,7 @@ public class TestTargetingHook implements LifecycleHook<VariationTargetingLifecy
     }
    
 	@Override
-	public PostResult post(VariationTargetingLifecycleEvent event) {
+	public Optional<LifecycleEvent.PostResult> post(VariationTargetingLifecycleEvent event) {
 
 		Session ssn = event.getSession();
 		VariationTargetingLifecycleEvent.PostResult result = event.newPostResult();
@@ -61,7 +63,7 @@ public class TestTargetingHook implements LifecycleHook<VariationTargetingLifecy
 			String[] tokens = experienceToReturn.split("\\.");
 			Experience exp = event.getSession().getSchema().getVariation(tokens[0]).get().getExperience(tokens[1]).get();			
 			result.setTargetedExperience(exp);
-			return result;
+			return Optional.of(result);
 		} 
 		
 		Variation test = event.getVariation();
@@ -98,7 +100,7 @@ public class TestTargetingHook implements LifecycleHook<VariationTargetingLifecy
 			weightSum += weights[i];
 			if (randVal < weightSum) {
 				result.setTargetedExperience(e);
-				return result;
+				return Optional.of(result);
 			}
 		}
 		// Should never happen.

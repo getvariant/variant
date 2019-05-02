@@ -1,5 +1,7 @@
 package com.variant.server.impl;
 
+import java.util.Optional;
+
 import com.variant.core.lifecycle.LifecycleHook;
 import com.variant.server.api.lifecycle.VariationQualificationLifecycleEvent;
 
@@ -24,11 +26,11 @@ class VariationQualificationDefaultHook implements LifecycleHook<VariationQualif
 	 * 
 	 */
 	@Override
-	public LifecycleHook.PostResult post(VariationQualificationLifecycleEvent event) throws Exception {
+	public Optional<VariationQualificationLifecycleEvent.PostResult> post(VariationQualificationLifecycleEvent event) throws Exception {
 		
 		VariationQualificationLifecycleEvent.PostResult result = event.newPostResult();				
 		result.setQualified(true);
-		return result;
+		return Optional.of(result);
 	}
 
 }

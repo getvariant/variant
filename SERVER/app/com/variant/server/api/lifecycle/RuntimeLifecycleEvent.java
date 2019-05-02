@@ -34,5 +34,11 @@ public interface RuntimeLifecycleEvent extends LifecycleEvent {
 	 *  @since 0.7
 	 */
 	LifecycleHook<? extends RuntimeLifecycleEvent> getDefaultHook();
-	
+
+	/**
+	 * ...
+	 * @author Igor
+	 *
+	 */
+	public interface PostResult extends LifecycleEvent.PostResult {}
 }

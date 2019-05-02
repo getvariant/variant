@@ -1,6 +1,6 @@
 package com.variant.core.lifecycle;
 
-import java.util.function.Supplier;
+import java.util.Optional;
 
 /**
  * The interface to be implemented by a server life-cycle hook, which wants to be posted by one or more life-cycle events.
@@ -63,17 +63,6 @@ public interface LifecycleHook<E extends LifecycleEvent> {
 	 * @see com.variant.server.api.hook.PostResultFactory
     * @since 0.7
 	 */
-	public PostResult post(E event) throws Exception;
-
-	
-	/**
-	 * The result of the {@link LifecycleHook#post(LifecycleEvent)} callback. Concrete implementations will have methods
-	 * for the user code to set the details of the outcome of the post operation expected by the server. Call the
-	 * appropriate method of {@code com.variant.server.api.lifecycle.PostResultFactory} to obtain a post result to be
-	 * returned by your code.
-	 * 
-	 * @since 0.7
-	 */
-	public interface PostResult {}
+	public Optional<? extends E.PostResult> post(E event) throws Exception;
 	
 }

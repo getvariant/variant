@@ -11,9 +11,7 @@ import org.scalatest.Assertions._
 import com.variant.server.boot.ServerErrorLocal._
 import com.variant.server.api.ServerException
 import com.variant.core.schema.parser.ParserMessageImpl
-import com.variant.server.test.hooks.StateParsedHook
 import com.variant.server.boot.ServerErrorLocal
-import com.variant.server.test.hooks.TestParsedHook
 import com.variant.server.impl.SessionImpl
 import com.variant.server.test.hooks.TestTargetingHookNil
 import com.variant.server.test.hooks.TestQualificationHookNil
@@ -43,16 +41,6 @@ class HookScopeTest extends EmbeddedServerSpec {
    'meta':{                                                             		    	    
       'name':'$schemaName',
       'hooks':[
-         {                                                              
-            'name':'testParsed',                                       
-            'class':'com.variant.server.test.hooks.TestParsedHook',
-            'init':{'hookName':'testParsed', 'infoOnly':true}
-   	   },
-         {                                                              
-   		     'name':'stateParsed',                                       
-   			   'class':'com.variant.server.test.hooks.StateParsedHook',    
-           'init':{'hookName':'stateParsed', 'infoOnly':true}
-   	   },                                                             
          {                                                              
    		     'name':'testQualifier',                                       
    			   'class':'com.variant.server.test.hooks.TestQualificationHookNil'
@@ -147,7 +135,8 @@ class HookScopeTest extends EmbeddedServerSpec {
    		response.getMessages(ERROR).size() mustBe 0
    		response.getMessages(WARN).size() mustBe 0
    		response.getMessages(INFO).size() mustBe 5
-   		
+
+/*   		
    		// Confirm parse time hooks were posted. Note that compile time hooks fire for off tests.
    		var msg = response.getMessages.get(0)
    		msg.getSeverity mustBe INFO
@@ -164,7 +153,7 @@ class HookScopeTest extends EmbeddedServerSpec {
    		msg = response.getMessages.get(4)
    		msg.getSeverity mustBe INFO
    		msg.getText must include (HOOK_USER_MESSAGE_INFO.asMessage(String.format(TestParsedHook.INFO_MESSAGE_FORMAT, "testParsed", "test3")))
-
+*/
    		server.schemata.get(schemaName).isDefined mustBe true
    		
    		// Confirm runtime hooks were posted.
@@ -261,7 +250,7 @@ class HookScopeTest extends EmbeddedServerSpec {
    		response.getMessages(ERROR).size() mustBe 2
    		response.getMessages(WARN).size() mustBe 3
    		response.getMessages(INFO).size() mustBe 4
-   		
+/*   		
    		// Confirm parse time hooks were posted. Note that compile time hooks fire for off tests.
    		var msg = response.getMessages.get(0)
    		msg.getSeverity mustBe INFO
@@ -275,7 +264,7 @@ class HookScopeTest extends EmbeddedServerSpec {
    		msg = response.getMessages.get(3)
    		msg.getSeverity mustBe ERROR
    		msg.getText must include (ServerErrorLocal.HOOK_TEST_SCOPE_VIOLATION.asMessage("stateParsed", "test1", "com.variant.core.lifecycle.StateParsedLifecycleEvent"))
-
+*/
    		server.schemata.get(schemaName).isDefined mustBe false
    		
 	   }
@@ -351,7 +340,7 @@ class HookScopeTest extends EmbeddedServerSpec {
    		response.getMessages(ERROR).size() mustBe 2
    		response.getMessages(WARN).size() mustBe 3
    		response.getMessages(INFO).size() mustBe 4
-   		
+/*   		
    		// Confirm parse time hooks were posted. Note that compile time hooks fire for off tests.
    		var msg = response.getMessages.get(0)
    		msg.getSeverity mustBe ERROR
@@ -365,7 +354,7 @@ class HookScopeTest extends EmbeddedServerSpec {
    		msg = response.getMessages.get(3)
    		msg.getSeverity mustBe ERROR
    		msg.getText must include (HOOK_USER_MESSAGE_ERROR.asMessage(String.format(TestParsedHook.ERROR_MESSAGE_FORMAT, "testParsedT1", "test1")))
-
+*/
    		server.schemata.get(schemaName).isDefined mustBe false
    		
 	   }

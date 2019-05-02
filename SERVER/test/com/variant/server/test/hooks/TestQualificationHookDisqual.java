@@ -1,6 +1,9 @@
 package com.variant.server.test.hooks;
 
+import java.util.Optional;
+
 import com.typesafe.config.Config;
+import com.variant.core.lifecycle.LifecycleEvent;
 import com.variant.core.lifecycle.LifecycleHook;
 import com.variant.server.api.lifecycle.VariationQualificationLifecycleEvent;
 
@@ -22,11 +25,11 @@ public class TestQualificationHookDisqual implements LifecycleHook<VariationQual
     }
    
 	@Override
-	public PostResult post(VariationQualificationLifecycleEvent event) {
+	public Optional<LifecycleEvent.PostResult> post(VariationQualificationLifecycleEvent event) {
 		VariationQualificationLifecycleEvent.PostResult result = event.newPostResult();
 		result.setQualified(false);
 		result.setRemoveFromTargetingTracker(removeFromTargetingTracker);
-		return result;
+		return Optional.of(result);
 	}
 	
 }

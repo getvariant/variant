@@ -34,7 +34,7 @@ public interface VariationTargetingLifecycleEvent extends RuntimeLifecycleEvent,
     * 
     * @since 0.7
     */
-	public interface PostResult extends LifecycleHook.PostResult {
+	public interface PostResult extends RuntimeLifecycleEvent.PostResult {
 	   
 	   /**
 	    * Set the test experience for this session in this test.

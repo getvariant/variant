@@ -1,7 +1,6 @@
 package com.variant.core.schema.parser;
 
 import com.variant.core.lifecycle.LifecycleEvent;
-import com.variant.core.lifecycle.LifecycleHook;
 import com.variant.core.schema.Hook;
 
 /**
@@ -22,13 +21,15 @@ public interface HooksService {
 	 * assignable to the passed type, i.e. all of its subtypes.
 	 * 
 	 * @param event
-	 * @return the event passed in as argument.
+	 * @return Optional containing the first non-empty post result from the chain, or an empty Optional,
+	 *         if none of the posted hooks returned a non-empty Optional.
+	 * 
 	 */
-	public LifecycleHook.PostResult post(LifecycleEvent event);
+	public LifecycleEvent.PostResult post(LifecycleEvent event);
 
 	/**
 	 * Null hooker, which does nothing whatsoever.
-	 * Good enough for core tests and for the client side (there are no hooks on the client).
+	 * Good enough for core tests and for the client side parsing (there are no hooks on the client).
 	 * 
 	 * @author Igor
 	 *
@@ -39,7 +40,7 @@ public interface HooksService {
 		public void initHook(Hook hook, ParserResponse parserResponse) {}
 		
 		@Override
-		public LifecycleHook.PostResult post(LifecycleEvent hook) {return null;}
+		public LifecycleEvent.PostResult post(LifecycleEvent hook) {return null;}
 	};
 }
 
