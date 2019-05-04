@@ -29,7 +29,7 @@ public class Hook2Constructors implements LifecycleHook<VariationQualificationLi
 	@Override
 	public Optional<VariationQualificationLifecycleEvent.PostResult> post(VariationQualificationLifecycleEvent event) {
 	
-		event.getSession().getAttributes().put("HookWith2Constructors", msg);
+		event.getSession().getAttributes().put(String.valueOf(hashCode()), msg);
 		return Optional.empty();
 	}
 }

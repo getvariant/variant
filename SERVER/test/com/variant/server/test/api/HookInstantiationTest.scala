@@ -9,6 +9,8 @@ import com.variant.server.boot.ServerErrorLocal
 import com.variant.server.boot.ServerErrorLocal._
 import com.variant.server.schema.SchemaDeployer
 import com.variant.server.test.spec.EmbeddedServerSpec
+import com.variant.server.impl.SessionImpl
+import com.variant.server.test.hooks.Hook2Constructors
 
 /**
  * TODO: Need to also test annotations.
@@ -146,7 +148,7 @@ class HookInstantiationTest extends EmbeddedServerSpec {
 	   ////////////////
       "initialize from nullary constructor if both available" in {
 	      
-   	    val schema = s"""
+   	    val schemaSrc = s"""
 {                                                                              
    'meta':{                                                             		    	    
       'name':'$schemaName',
@@ -192,21 +194,24 @@ class HookInstantiationTest extends EmbeddedServerSpec {
    ]                                                                   
 }"""
 
-         val schemaDeployer = SchemaDeployer.fromString(schema)
+         val schemaDeployer = SchemaDeployer.fromString(schemaSrc)
          server.useSchemaDeployer(schemaDeployer)
          val response = schemaDeployer.parserResponses(0)
-         response.getMessages.size mustBe 2
-
+         response.getMessages.size mustBe 0
          server.schemata.get(schemaName).isDefined mustBe true
-/*         
-         var msg = response.getMessages.get(0)
-   		msg.getSeverity mustBe INFO
-   		msg.getText must include (StateParsedHook2Constructors.MSG_NULLARY)
+         
+         // Confirm runtime hooks were posted.
+   		val schema = server.schemata.get(schemaName).get.liveGen.get
+         val state1 = schema.getState("state1").get
+         val test = schema.getVariation("test1").get
+         val ssn = SessionImpl.empty(newSid(), schema)         
+   		ssn.getAttributes.size mustBe 0
 
-         msg = response.getMessages.get(1)
-   		msg.getSeverity mustBe INFO
-         msg.getText must include (StateParsedHook2Constructors.MSG_NULLARY)
-*/
+   		// This should add two attrs with random keys but same values
+   	   val req = ssn.targetForState(state1)
+   	   ssn.getAttributes.size mustBe 2
+   		ssn.getAttributes.values.forEach(_ mustBe Hook2Constructors.MSG_NULLARY)
+
 	   }
 
       	   ////////////////
@@ -219,7 +224,7 @@ class HookInstantiationTest extends EmbeddedServerSpec {
       'hooks':[
          {                                                              
    		   'name':'nullaryOnlyEmptyInit',                                       
-   			'class':'com.variant.server.test.hooks.StateParsedHookNullaryOnly',
+   			'class':'com.variant.server.test.hooks.HookNullaryConstructor',
             'init':{}
    	   }
       ]                                                                
@@ -261,7 +266,7 @@ class HookInstantiationTest extends EmbeddedServerSpec {
          
          var msg = response.getMessages.get(0)
          msg.getSeverity mustBe ERROR
-         msg.getText mustBe ServerErrorLocal.OBJECT_CONSTRUCTOR_ERROR.asMessage("com.variant.server.test.hooks.StateParsedHookNullaryOnly")
+         msg.getText mustBe ServerErrorLocal.OBJECT_CONSTRUCTOR_ERROR.asMessage("com.variant.server.test.hooks.HookNullaryConstructor")
          msg.getLocation mustBe null  // This should not be null -- bug 99
 	   }
 
@@ -282,12 +287,12 @@ class HookInstantiationTest extends EmbeddedServerSpec {
       'hooks':[
          {                                                              
    		   'name':'soleOneArgConstructor',                                       
-   			'class':'com.variant.server.test.hooks.StateParsedHookSingleArgOnly',
-            'init':{}            
+   			'class':'com.variant.server.test.hooks.HookNullaryConstructor',
+            'init':{}   // Won't work
    	   },
          {                                                              
    		   'name':'bothConstructors',
-   			'class':'com.variant.server.test.hooks.StateParsedHook2Constructors',    
+   			'class':'com.variant.server.test.hooks.Hook2Constructors',    
             'init': {}
    	   }                                                         
       ]                                                                
@@ -326,12 +331,13 @@ class HookInstantiationTest extends EmbeddedServerSpec {
          val response = schemaDeployer.parserResponses(0)
          response.getMessages.size mustBe 1
 
-         server.schemata.get(schemaName).isDefined mustBe true
-/*   	   
+         server.schemata.get(schemaName).isDefined mustBe false
+
          var msg = response.getMessages.get(0)
-   		msg.getSeverity mustBe INFO
-   		msg.getText must include (StateParsedHook2Constructors.MSG_SINGLE_ARG)
-*/
+   		msg.getSeverity mustBe ERROR
+   		msg.getText mustBe ServerErrorLocal.OBJECT_CONSTRUCTOR_ERROR.asMessage("com.variant.server.test.hooks.HookNullaryConstructor")
+         msg.getLocation mustBe null  // This should not be null -- bug 99
+
       }
 	   
 	   ////////////////
@@ -344,7 +350,7 @@ class HookInstantiationTest extends EmbeddedServerSpec {
       'hooks':[
          {                                                              
    		   'name':'soleOneArgConstructor',                                       
-   			'class':'com.variant.server.test.hooks.StateParsedHookNullaryOnly',
+   			'class':'com.variant.server.test.hooks.HookNullaryConstructor',
             'init':{'foo':'bar'}            
    	   }
       ]                                                                
@@ -383,11 +389,13 @@ class HookInstantiationTest extends EmbeddedServerSpec {
          val response = schemaDeployer.parserResponses(0)
          response.getMessages.size mustBe 1
 
+         response.getMessages.size mustBe 1
+
          server.schemata.get(schemaName).isDefined mustBe false
-   	   
+
          var msg = response.getMessages.get(0)
-         msg.getSeverity mustBe ERROR
-         msg.getText mustBe ServerErrorLocal.OBJECT_CONSTRUCTOR_ERROR.asMessage("com.variant.server.test.hooks.StateParsedHookNullaryOnly")
+   		msg.getSeverity mustBe ERROR
+   		msg.getText mustBe ServerErrorLocal.OBJECT_CONSTRUCTOR_ERROR.asMessage("com.variant.server.test.hooks.HookNullaryConstructor")
          msg.getLocation mustBe null  // This should not be null -- bug 99
 
       }
