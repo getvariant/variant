@@ -2,7 +2,7 @@ package com.variant.core.schema.impl;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.List;
 
 import com.variant.core.schema.Flusher;
@@ -19,7 +19,7 @@ public class MetaImpl implements Meta {
 	private Flusher flusher = null;
 	
 	// Hooks are keyed by name.
-	private LinkedHashSet<Hook> hooks = new LinkedHashSet<Hook>();
+	private LinkedList<Hook> hooks = new LinkedList<Hook>();
 
 	/**
 	 */
@@ -62,8 +62,8 @@ public class MetaImpl implements Meta {
 	 * @param hook
 	 * @return true if hook didn't exist, false if did.
 	 */
-	public boolean addHook(Hook hook) {
-		return hooks.add(hook);
+	public void addHook(Hook hook) {
+		hooks.add(hook);
 	}
 
 	/**

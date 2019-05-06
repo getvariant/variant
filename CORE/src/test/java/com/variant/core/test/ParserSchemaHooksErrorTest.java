@@ -1,12 +1,6 @@
 package com.variant.core.test;
 
-import static com.variant.core.schema.parser.error.SemanticError.DUPE_OBJECT;
-import static com.variant.core.schema.parser.error.SemanticError.ELEMENT_NOT_OBJECT;
-import static com.variant.core.schema.parser.error.SemanticError.NAME_INVALID;
-import static com.variant.core.schema.parser.error.SemanticError.NAME_MISSING;
-import static com.variant.core.schema.parser.error.SemanticError.PROPERTY_MISSING;
-import static com.variant.core.schema.parser.error.SemanticError.PROPERTY_NOT_LIST;
-import static com.variant.core.schema.parser.error.SemanticError.UNSUPPORTED_PROPERTY;
+import static com.variant.core.schema.parser.error.SemanticError.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -158,7 +152,7 @@ public class ParserSchemaHooksErrorTest extends BaseTestCore {
 	}
 
 	/**
-	 * HOOK_UNSUPPORTED_PROPERTY, HOOK_CLASS_NAME_MISSING
+	 * HOOK_UNSUPPORTED_PROPERTY, ATTRIBUTE_NOT_OBJECT
 	 * @throws Exception
 	 */
 	@Test
@@ -169,7 +163,10 @@ public class ParserSchemaHooksErrorTest extends BaseTestCore {
 			    "  'meta':{                                                    \n" +		    	    
 			    "      'name':'_schema_name',                                  \n" +
 			    "      'comment':'a comment *&^',                              \n" +
-			    "      'hooks':[{'nameE':'foo', 'class':'bar'}]                \n" +
+			    "      'hooks':[                                               \n" +
+			    "         {'name':'foo', 'class':'bar'},                       \n" +
+			    "         {'class':'bar', 'INIT':123}                          \n" +
+			    "      ]                                                       \n" +
 			    "  },                                                          \n" +
 			    "   'states':[                                                 \n" +
 			    "     { 'name':'state1' }                                      \n" +
@@ -210,12 +207,14 @@ public class ParserSchemaHooksErrorTest extends BaseTestCore {
 		
 		SchemaParser parser = getSchemaParser();
 		ParserResponse response = parser.parse(config);
-
+		//response.getMessages().forEach(m -> System.out.println("*** " + m));
 		assertFalse(response.hasMessages(Severity.FATAL));
-		assertTrue(response.hasMessages(Severity.ERROR));
-		assertEquals(1, response.getMessages().size());
+		assertEquals(2, response.getMessages().size());
 		ParserMessage actual = response.getMessages().get(0);
-		ParserMessage expected = new ParserMessageImpl(new Location("/meta/hooks[0]/"), NAME_MISSING);
+		ParserMessage expected = new ParserMessageImpl(new Location("/meta/hooks[0]/name"), UNSUPPORTED_PROPERTY, "name");
+		assertMessageEqual(expected, actual);
+		actual = response.getMessages().get(1);
+		expected = new ParserMessageImpl(new Location("/meta/hooks[1]/init"), PROPERTY_NOT_OBJECT, "init");
 		assertMessageEqual(expected, actual);
 
 	}
@@ -232,7 +231,7 @@ public class ParserSchemaHooksErrorTest extends BaseTestCore {
 			    "  'meta':{                                                    \n" +		    	    
 			    "      'name':'_schema_name',                                  \n" +
 			    "      'comment':'a comment *&^',                              \n" +
-			    "      'hooks':[{'name':'bar', 'class-Name':'c.v.s'}]          \n" +
+			    "      'hooks':[{'class-Name':'c.v.s'}]                        \n" +
 			    "  },                                                          \n" +
 			    "   'states':[                                                 \n" +
 			    "     { 'name':'state1' }                                      \n" +
@@ -297,7 +296,7 @@ public class ParserSchemaHooksErrorTest extends BaseTestCore {
 			    "  'meta':{                                                    \n" +		    	    
 			    "      'name':'_schema_name',                                  \n" +
 			    "      'comment':'a comment *&^',                              \n" +
-			    "      'hooks':[{'name':'bar', 'class':'c.v.s', 'foo':true}]   \n" +
+			    "      'hooks':[{'class':'c.v.s', 'foo':true}]   \n" +
 			    "  },                                                          \n" +
 			    "   'states':[                                                 \n" +
 			    "     { 'name':'state1' }                                      \n" +
@@ -344,135 +343,6 @@ public class ParserSchemaHooksErrorTest extends BaseTestCore {
 		assertEquals(1, response.getMessages().size());
 		ParserMessage actual = response.getMessages().get(0);
 		ParserMessage expected = new ParserMessageImpl(new Location("/meta/hooks[0]/foo"), UNSUPPORTED_PROPERTY, "foo");
-		assertMessageEqual(expected, actual);
-	}
-
-	/**
-	 * HOOK_NAME_INVALID
-	 * @throws Exception
-	 */
-	@Test
-	public void hookNameInvalidTest() throws Exception {
-		
-		String config = 
-				"{                                                             \n" +
-			    "  'meta':{                                                    \n" +		    	    
-			    "     'name':'_schema_name',                                   \n" +
-			    "     'comment':'a comment *&^',                               \n" +
-			    "     'hooks':[                                                \n" +
-			    "        {'name':'2cents', 'class':'c.v.s'}                    \n" +
-			    "      ]                                                       \n" +
-			    "  },                                                          \n" +
-			    "   'states':[                                                 \n" +
-			    "     { 'name':'state1' }                                      \n" +
-			    "  ],                                                          \n" +
-				"  'variations':[                                              \n" +
-			    "     {                                                        \n" +
-			    "        'name':'TEST',                                        \n" +
-			    "        'experiences':[                                       \n" +
-			    "           {                                                  \n" +
-			    "              'name':'A',                                     \n" +
-			    "              'weight':50,                                    \n" +
-			    "              'isControl':true                                \n" +
-			    "           },                                                 \n" +
-			    "           {                                                  \n" +
-			    "              'name':'B',                                     \n" +
-			    "              'weight':50                                     \n" +
-			    "           }                                                  \n" +
-			    "        ],                                                    \n" +
-			    "        'onStates':[                                          \n" +
-			    "           {                                                  \n" +
-			    "              'stateRef':'state1',                            \n" +
-			    "              'variants':[                                    \n" +
-			    "                 {                                            \n" +
-			    "                    'experienceRef': 'B',                     \n" +
-				"                    'parameters': [                           \n" +
-				"                       {                                      \n" +
-				"                          'name':'path',                      \n" +
-				"                          'value':'/path/to/state1/test1.B'   \n" +
-				"                       }                                      \n" +
-				"                    ]                                         \n" +
-			    "                 }                                            \n" +
-			    "              ]                                               \n" +
-			    "           }                                                  \n" +
-			    "        ]                                                     \n" +
-			    "     }                                                        \n" +
-			    "  ]                                                           \n" +
-			    "}                                                             \n";
-		
-		SchemaParser parser = getSchemaParser();
-		ParserResponse response = parser.parse(config);
-
-		assertFalse(response.hasMessages(Severity.FATAL));
-		assertTrue(response.hasMessages(Severity.ERROR));
-		assertEquals(1, response.getMessages().size());
-		ParserMessage actual = response.getMessages().get(0);
-		ParserMessage expected = new ParserMessageImpl(new Location("/meta/hooks[0]/name"), NAME_INVALID);
-		assertMessageEqual(expected, actual);
-	}
-
-	/**
-	 * HOOK_NAME_DUPE
-	 * @throws Exception
-	 */
-	@Test
-	public void hookNameDupeTest() throws Exception {
-		
-		String config = 
-				"{                                                             \n" +
-			    "  'meta':{                                                    \n" +		    	    
-			    "     'name':'_schema_name',                                   \n" +
-			    "     'comment':'a comment *&^',                               \n" +
-			    "     'hooks':[                                                \n" +
-			    "        {'name':'bar', 'class':'c.v.s'},                      \n" +
-			    "        {'name':'bar', 'class':'c.v.s.two'}                   \n" +
-			    "      ]                                                       \n" +
-			    "  },                                                          \n" +
-			    "   'states':[                                                 \n" +
-			    "     { 'name':'state1' }                                      \n" +
-			    "  ],                                                          \n" +
-				"  'variations':[                                              \n" +
-			    "     {                                                        \n" +
-			    "        'name':'TEST',                                        \n" +
-			    "        'experiences':[                                       \n" +
-			    "           {                                                  \n" +
-			    "              'name':'A',                                     \n" +
-			    "              'weight':50,                                    \n" +
-			    "              'isControl':true                                \n" +
-			    "           },                                                 \n" +
-			    "           {                                                  \n" +
-			    "              'name':'B',                                     \n" +
-			    "              'weight':50                                     \n" +
-			    "           }                                                  \n" +
-			    "        ],                                                    \n" +
-			    "        'onStates':[                                          \n" +
-			    "           {                                                  \n" +
-			    "              'stateRef':'state1',                            \n" +
-			    "              'variants':[                                    \n" +
-			    "                 {                                            \n" +
-			    "                    'experienceRef': 'B',                     \n" +
-				"                    'parameters': [                           \n" +
-				"                       {                                      \n" +
-				"                          'name':'path',                      \n" +
-				"                          'value':'/path/to/state1/test1.B'   \n" +
-				"                       }                                      \n" +
-				"                    ]                                         \n" +
-			    "                 }                                            \n" +
-			    "              ]                                               \n" +
-			    "           }                                                  \n" +
-			    "        ]                                                     \n" +
-			    "     }                                                        \n" +
-			    "  ]                                                           \n" +
-			    "}                                                             \n";
-		
-		SchemaParser parser = getSchemaParser();
-		ParserResponse response = parser.parse(config);
-
-		assertFalse(response.hasMessages(Severity.FATAL));
-		assertTrue(response.hasMessages(Severity.ERROR));
-		assertEquals(1, response.getMessages().size());
-		ParserMessage actual = response.getMessages().get(0);
-		ParserMessage expected = new ParserMessageImpl(new Location("/meta/hooks[1]/"), DUPE_OBJECT, "bar");
 		assertMessageEqual(expected, actual);
 	}
 

@@ -3,7 +3,7 @@ package com.variant.core.schema.impl;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -24,7 +24,7 @@ public class StateImpl implements State {
 	private final LinkedHashMap<String, String> parameters = new LinkedHashMap<String, String>();
     
 	// Hooks are keyed by name.
-	private LinkedHashSet<Hook> hooks = new LinkedHashSet<Hook>();
+	private LinkedList<Hook> hooks = new LinkedList<Hook>();
 
 	/**
 	 * Package scoped constructor;
@@ -103,8 +103,8 @@ public class StateImpl implements State {
 	 * @param hook
 	 * @return true if hook didn't exist, false if did.
 	 */
-	public boolean addHook(Hook hook) {
-		return hooks.add(hook);
+	public void addHook(Hook hook) {
+		hooks.add(hook);
 	}
 	
 	/**

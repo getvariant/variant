@@ -45,10 +45,7 @@ public class FlusherParser implements Keywords {
 		
 		for(Map.Entry<String, ?> entry: rawMap.entrySet()) {
 
-			if (entry.getKey().equalsIgnoreCase(KEYWORD_NAME)) {
-				continue;
-			} 
-			else if (entry.getKey().equalsIgnoreCase(KEYWORD_CLASS)) {
+			if (entry.getKey().equalsIgnoreCase(KEYWORD_CLASS)) {
 				Object classNameObject = entry.getValue();
 				if (! (classNameObject instanceof String)) {
 					response.addMessage(flusherLocation, NAME_INVALID);

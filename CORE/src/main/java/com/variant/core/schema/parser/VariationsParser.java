@@ -253,7 +253,7 @@ public class VariationsParser implements Keywords {
 				}
 			}
 			else if (entry.getKey().equalsIgnoreCase(KEYWORD_HOOKS)) {
-				HooksParser.parseTestHook(entry.getValue(), result, testLocation.plusObj(KEYWORD_HOOKS), response);
+				HooksParser.parseVariationHook(entry.getValue(), result, testLocation.plusObj(KEYWORD_HOOKS), response);
 			}
 
 		}

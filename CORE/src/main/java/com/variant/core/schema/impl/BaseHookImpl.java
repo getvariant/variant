@@ -9,12 +9,10 @@ import com.variant.core.schema.Hook;
  */
 abstract class BaseHookImpl implements Hook {
 
-	protected final String name;
     protected final String className;
 	protected final String init;
 	
-	public BaseHookImpl(String name, String className, String init) {
-		this.name = name;
+	public BaseHookImpl(String className, String init) {
 		this.className = className;
 		this.init = init;
 	}
@@ -22,11 +20,6 @@ abstract class BaseHookImpl implements Hook {
 	//---------------------------------------------------------------------------------------------//
 	//                                          PUBLIC                                             //
 	//---------------------------------------------------------------------------------------------//
-
-	@Override
-	public String getName() {
-		return name;
-	}
 
 	@Override
 	public String getClassName() {

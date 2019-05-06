@@ -1,12 +1,6 @@
 package com.variant.core.schema.parser;
 
-import static com.variant.core.schema.parser.error.SemanticError.DUPE_OBJECT;
-import static com.variant.core.schema.parser.error.SemanticError.ELEMENT_NOT_OBJECT;
-import static com.variant.core.schema.parser.error.SemanticError.NAME_INVALID;
-import static com.variant.core.schema.parser.error.SemanticError.NAME_MISSING;
-import static com.variant.core.schema.parser.error.SemanticError.PROPERTY_MISSING;
-import static com.variant.core.schema.parser.error.SemanticError.PROPERTY_NOT_LIST;
-import static com.variant.core.schema.parser.error.SemanticError.UNSUPPORTED_PROPERTY;
+import static com.variant.core.schema.parser.error.SemanticError.*;
 
 import java.util.List;
 import java.util.Map;
@@ -19,7 +13,7 @@ import com.variant.core.schema.impl.MetaImpl;
 import com.variant.core.schema.impl.SchemaHookImpl;
 import com.variant.core.schema.impl.StateHookImpl;
 import com.variant.core.schema.impl.StateImpl;
-import com.variant.core.schema.impl.TestHookImpl;
+import com.variant.core.schema.impl.VariationHookImpl;
 import com.variant.core.schema.impl.VariationImpl;
 import com.variant.core.schema.parser.error.SemanticError.Location;
 /**
@@ -47,10 +41,7 @@ public class HooksParser implements Keywords {
 				
 				Location hookLocation = hooksLocation.plusIx(i++);
 				Hook hook = parseHook(rawHook, hookLocation, response);
-				
-				if (hook != null && !meta.addHook(hook)) {
-					response.addMessage(hookLocation, DUPE_OBJECT, hook.getName());
-				}
+				if (hook != null) meta.addHook(hook); 
 			}
 		}
 		catch (ClassCastException e) {
@@ -70,13 +61,9 @@ public class HooksParser implements Keywords {
 	@SuppressWarnings("unchecked")
 	private static Hook parseHook(Object rawHook, Location hookLocation, ParserResponse response) {
 		
-		String name = null;
 		String className = null;
 		String init = null;
-		
-		// Pass 1: figure out the name.
-		boolean nameFound = false;
-		
+				
 		Map<String, ?> rawMap;
 		try {
 			rawMap = (Map<String,?>) rawHook;
@@ -86,59 +73,37 @@ public class HooksParser implements Keywords {
 			return null;
 		}
 		
-		for (Map.Entry<String, ?> entry: rawMap.entrySet()) {
-
-			if (entry.getKey().equalsIgnoreCase(KEYWORD_NAME)) {
-				nameFound = true;
-				Object nameObject = entry.getValue();
-				if (! (nameObject instanceof String)) {
-					response.addMessage(hookLocation.plusProp(KEYWORD_NAME), NAME_INVALID);
-				}
-				else {
-					name = (String) nameObject;
-					if (!SemanticChecks.isName(name)) {
-						response.addMessage( hookLocation.plusProp(KEYWORD_NAME), NAME_INVALID);
-					}
-				}
-				break;
-			}
-		}
-
-		if (name == null) {
-			if (!nameFound) {
-				response.addMessage(hookLocation, NAME_MISSING);
-			}
-			return null;
-		}
-
-		// Pass 2: figure out the rest.
 		for(Map.Entry<String, ?> entry: rawMap.entrySet()) {
 
-			if (entry.getKey().equalsIgnoreCase(KEYWORD_NAME)) {
-				continue;
-			} 
-			else if (entry.getKey().equalsIgnoreCase(KEYWORD_CLASS)) {
+			if (entry.getKey().equalsIgnoreCase(KEYWORD_CLASS)) {
 				Object classNameObject = entry.getValue();
 				if (! (classNameObject instanceof String)) {
-					response.addMessage(hookLocation.plusProp(KEYWORD_CLASS), NAME_INVALID);
+					response.addMessage(hookLocation.plusProp(KEYWORD_CLASS), PROPERTY_NOT_STRING);
 				}
 				else {
 					className = (String) classNameObject;
 				}
 			}
 			else if (entry.getKey().equalsIgnoreCase(KEYWORD_INIT)) {
-				// Init is an arbitrary json object. Simply convert it to string
-				// and let server repackage it as typesafe config.
-				ObjectMapper mapper = new ObjectMapper();
-				mapper.configure(JsonParser.Feature.ALLOW_SINGLE_QUOTES, true);
-
-				try {
-					init = mapper.writeValueAsString(entry.getValue());
-					//String jsonToReparse = "{'init':" + init + "}";
-					//mapper.readValue(jsonToReparse, Map.class); // attempt to re-parse.
-				}
-	 			catch (Exception e) {
-	 				throw new CoreException.Internal("Unable to re-serialize hook init [" + entry.getValue().toString() + "]", e);
+				Object initObject = entry.getValue();
+				// value will be null if null was explicitely given, i.e. 'init':null.  We treat that as no init at all.
+				if (initObject != null) {
+					if (! (initObject instanceof Map)) {
+						System.out.println("******** " + initObject.getClass().getName());
+						response.addMessage(hookLocation.plusProp(KEYWORD_INIT), PROPERTY_NOT_OBJECT, "init");
+					}
+					else {
+						// Init is an arbitrary json object. Simply convert it to string
+						// and let server repackage it as typesafe config.
+						ObjectMapper mapper = new ObjectMapper();
+						mapper.configure(JsonParser.Feature.ALLOW_SINGLE_QUOTES, true);
+						try {
+							init = mapper.writeValueAsString(entry.getValue());
+						}
+						catch (Exception e) {
+							throw new CoreException.Internal("Unable to re-serialize hook init [" + entry.getValue().toString() + "]", e);
+						}
+					}
 				}
 			}
 			else {
@@ -151,7 +116,7 @@ public class HooksParser implements Keywords {
 			return null;
 		}
 		else {
-			return new SchemaHookImpl(name, className, init);
+			return new SchemaHookImpl(className, init);
 		}
 	}
 	
@@ -174,10 +139,7 @@ public class HooksParser implements Keywords {
 				if (hook != null) {
 					// The method above created a schema level hook, but in this case we need a test
 					// domian hook.
-					hook = new StateHookImpl(hook.getName(), hook.getClassName(), hook.getInit(), state);
-					if (!state.addHook(hook)) {
-						response.addMessage(hookLocation, DUPE_OBJECT, hook.getName());
-					}
+					state.addHook(new StateHookImpl(hook.getClassName(), hook.getInit(), state));
 				}	
 			}
 		}
@@ -194,7 +156,7 @@ public class HooksParser implements Keywords {
 	 * @param hooksObject
 	 * @param response
 	 */
-	static void parseTestHook(Object hooksObject, VariationImpl test, Location testLocation, ParserResponse response) {		
+	static void parseVariationHook(Object hooksObject, VariationImpl test, Location testLocation, ParserResponse response) {		
 		try {
 			List<?> rawHooks = (List<?>) hooksObject;
 						
@@ -208,10 +170,7 @@ public class HooksParser implements Keywords {
 				if (hook != null) {
 					// The method above created a schema level hook, but in this case we need a test
 					// domian hook.
-					hook = new TestHookImpl(hook.getName(), hook.getClassName(), hook.getInit(), test);
-					if (!test.addHook(hook)) {
-						response.addMessage(hookLocation, DUPE_OBJECT, hook.getName());
-					}
+					test.addHook(new VariationHookImpl(hook.getClassName(), hook.getInit(), test));
 				}	
 			}
 		}

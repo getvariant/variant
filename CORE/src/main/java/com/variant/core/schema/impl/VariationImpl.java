@@ -3,7 +3,7 @@ package com.variant.core.schema.impl;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
@@ -30,7 +30,7 @@ public class VariationImpl implements Variation {
 	private List<VariationOnStateImpl> onStates;
 	
 	// Hooks are keyed by name.
-	private LinkedHashSet<Hook> hooks = new LinkedHashSet<Hook>();
+	private LinkedList<Hook> hooks = new LinkedList<Hook>();
 
 	// Runtime will cache stuff in this instance.
 	private HashMap<String, Object> runtimeAttributes = new HashMap<String, Object>();
@@ -199,8 +199,8 @@ public class VariationImpl implements Variation {
 	 * @param hook
 	 * @return true if hook didn't exist, false if did.
 	 */
-	public boolean addHook(Hook hook) {
-		return hooks.add(hook);
+	public void addHook(Hook hook) {
+		hooks.add(hook);
 	}
 
 	/**
