@@ -10,7 +10,7 @@ import com.variant.server.api.lifecycle.VariationQualificationLifecycleEvent;
  */
 public class HookNoInterface {
 
-	public static String ATTR_KEY = TestQualificationHookNil.class.getName();;
+	public static String ATTR_KEY = TestQualificationHookSimple.class.getName();;
 	
 	public void foo(String bar) {}
 

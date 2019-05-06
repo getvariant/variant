@@ -10,13 +10,12 @@ import com.variant.core.lifecycle.LifecycleHook;
 import com.variant.core.schema.State;
 import com.variant.core.schema.Variation;
 import com.variant.core.schema.Variation.Experience;
-import com.variant.server.api.ServerException;
 import com.variant.server.api.Session;
 import com.variant.server.api.lifecycle.VariationTargetingLifecycleEvent;
 import com.variant.server.boot.ServerExceptionInternal;
 
 /**
- * Test targeter hook.
+ * Test targeting hook.  Used by the targeting test.
  * if weights is given as array if doubles, they are interpreted as random weights.
  * otherwise, if experience is given, attempt to find that experience.
  * 

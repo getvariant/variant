@@ -5,7 +5,7 @@ import com.variant.server.boot.ServerExceptionLocal
 import com.variant.server.impl.SessionImpl
 import com.variant.server.schema.SchemaDeployer
 import com.variant.server.test.hooks.TestTargetingHook
-import com.variant.server.test.hooks.TestTargetingHookNil
+import com.variant.server.test.hooks.TestTargetingHookSimple
 import com.variant.server.test.spec.EmbeddedServerAsyncSpec
 import com.variant.server.test.util.ParameterizedString
 
@@ -107,8 +107,7 @@ class TargetingTest extends EmbeddedServerAsyncSpec {
          "schemaName" -> schemaNames(1),
          "hooks" -> 
          """ {
-               'name' :'nullTargetingHook',
-               'class':'com.variant.server.test.hooks.TestTargetingHookNil'
+               'class':'com.variant.server.test.hooks.TestTargetingHookSimple'
              }
          """)
          
@@ -116,12 +115,10 @@ class TargetingTest extends EmbeddedServerAsyncSpec {
          "schemaName" -> schemaNames(2),
          "hooks" -> 
          """ {
-               'name' :'nullTargetingHook1',
-               'class':'com.variant.server.test.hooks.TestTargetingHookNil'
+               'class':'com.variant.server.test.hooks.TestTargetingHookSimple'
              },
              {
-               'name' :'nullTargetingHook2',
-               'class':'com.variant.server.test.hooks.TestTargetingHookNil'
+               'class':'com.variant.server.test.hooks.TestTargetingHookSimple'
              }
          """)
 
@@ -129,11 +126,9 @@ class TargetingTest extends EmbeddedServerAsyncSpec {
          "schemaName" -> schemaNames(3),
          "hooks" -> 
          """ {
-               'name' :'nullHook',
-               'class':'com.variant.server.test.hooks.TestTargetingHookNil'
+               'class':'com.variant.server.test.hooks.TestTargetingHookSimple'
              },
              {
-               'name' :'A_B_Hook',
                'class':'com.variant.server.test.hooks.TestTargetingHook',
                'init': {'weights':[1,1,0]}
              }
@@ -143,11 +138,9 @@ class TargetingTest extends EmbeddedServerAsyncSpec {
          "schemaName" -> schemaNames(4),
          "hooks" -> 
          """ {
-               'name' :'nullHook',
-               'class':'com.variant.server.test.hooks.TestTargetingHookNil'
+               'class':'com.variant.server.test.hooks.TestTargetingHookSimple'
              },
              {
-               'name' :'A_B_CHook',
                'class':'com.variant.server.test.hooks.TestTargetingHook',
                'init': {'weights':[1,1,1]}
              }
@@ -198,9 +191,9 @@ class TargetingTest extends EmbeddedServerAsyncSpec {
       		val counts = Array(0, 0, 0)
       		for (i <- 1 to trials) {
       			val ssn = SessionImpl.empty("sid" + i, schema)
-      			ssn.getAttributes.get(TestTargetingHookNil.ATTR_KEY) mustBe null
+      			ssn.getAttributes.get(TestTargetingHookSimple.ATTR_NAME) mustBe null
       			val req = ssn.targetForState(state)
-      			ssn.getAttributes.get(TestTargetingHookNil.ATTR_KEY) mustBe "test1"
+      			ssn.getAttributes.get(TestTargetingHookSimple.ATTR_NAME) mustBe "test1"
       			val expName = req.getLiveExperience(test).get.getName()
       			expName match {
       			   case "A" => counts(0) += 1
@@ -223,9 +216,9 @@ class TargetingTest extends EmbeddedServerAsyncSpec {
       		val counts = Array(0, 0, 0)
       		for (i <- 1 to trials) {
       			val ssn = SessionImpl.empty("sid" + i, schema)
-      			ssn.getAttributes.get(TestTargetingHookNil.ATTR_KEY) mustBe null
+      			ssn.getAttributes.get(TestTargetingHookSimple.ATTR_NAME) mustBe null
       			val req = ssn.targetForState(state)
-      			ssn.getAttributes.get(TestTargetingHookNil.ATTR_KEY) mustBe "test1 test1"
+      			ssn.getAttributes.get(TestTargetingHookSimple.ATTR_NAME) mustBe "test1 test1"
       			val expName = req.getLiveExperience(test).get.getName()
       			expName match {
       			   case "A" => counts(0) += 1
@@ -249,10 +242,10 @@ class TargetingTest extends EmbeddedServerAsyncSpec {
       		val counts = Array(0, 0, 0)
       		for (i <- 1 to trials) {
       			val ssn = SessionImpl.empty("sid" + i, schema)
-      			ssn.getAttributes.get(TestTargetingHookNil.ATTR_KEY) mustBe null
+      			ssn.getAttributes.get(TestTargetingHookSimple.ATTR_NAME) mustBe null
       			ssn.getAttributes.get(TestTargetingHook.ATTR_KEY) mustBe null
       			val req = ssn.targetForState(state)
-      			ssn.getAttributes.get(TestTargetingHookNil.ATTR_KEY) mustBe "test1"
+      			ssn.getAttributes.get(TestTargetingHookSimple.ATTR_NAME) mustBe "test1"
       			ssn.getAttributes.get(TestTargetingHook.ATTR_KEY) mustBe "test1"
       			val expName = req.getLiveExperience(test).get.getName()
       			expName match {
@@ -276,10 +269,10 @@ class TargetingTest extends EmbeddedServerAsyncSpec {
       		val counts = Array(0, 0, 0)
       		for (i <- 1 to trials) {
       			val ssn = SessionImpl.empty("sid" + i, schema)
-      			ssn.getAttributes.get(TestTargetingHookNil.ATTR_KEY) mustBe null
+      			ssn.getAttributes.get(TestTargetingHookSimple.ATTR_NAME) mustBe null
       			ssn.getAttributes.get(TestTargetingHook.ATTR_KEY) mustBe null
       			val req = ssn.targetForState(state)
-      			ssn.getAttributes.get(TestTargetingHookNil.ATTR_KEY) mustBe "test1"
+      			ssn.getAttributes.get(TestTargetingHookSimple.ATTR_NAME) mustBe "test1"
       			ssn.getAttributes.get(TestTargetingHook.ATTR_KEY) mustBe "test1"
       			val expName = req.getLiveExperience(test).get.getName()
       			expName match {
@@ -304,7 +297,7 @@ class TargetingTest extends EmbeddedServerAsyncSpec {
                "hooks" -> 
                """ {
                      'name' :'nullHook',
-                     'class':'com.variant.server.test.hooks.TestTargetingHookNil'
+                     'class':'com.variant.server.test.hooks.TestTargetingHookSimple'
                    },
                    {
                      'name' :'A_B_CHook',

@@ -5,7 +5,7 @@ import scala.collection.JavaConversions._
 import com.variant.core.StateRequestStatus._
 import com.variant.server.impl.SessionImpl
 import com.variant.server.test.util.ParameterizedString
-import com.variant.server.test.hooks.TestQualificationHookNil
+import com.variant.server.test.hooks.TestQualificationHookSimple
 import com.variant.server.schema.SchemaDeployer
 import com.variant.server.test.spec.EmbeddedServerSpec
 import com.variant.server.impl.StateRequestImpl
@@ -52,19 +52,19 @@ class TestQualificationHookTest extends EmbeddedServerSpec {
                "test1-hooks" -> 
                """ {
                      'name' :'nullQualificationHookT1',
-                     'class':'com.variant.server.test.hooks.TestQualificationHookNil'
+                     'class':'com.variant.server.test.hooks.TestQualificationHookSimple'
                    }
                """,
                "test2-hooks" -> 
                """ {
                      'name' :'nullQualificationHookT2',
-                     'class':'com.variant.server.test.hooks.TestQualificationHookNil'
+                     'class':'com.variant.server.test.hooks.TestQualificationHookSimple'
                    }
                """,
                "test3-hooks" -> 
                """ {
                      'name' :'nullQualificationHookT3',
-                     'class':'com.variant.server.test.hooks.TestQualificationHookNil'
+                     'class':'com.variant.server.test.hooks.TestQualificationHookSimple'
                    }
                """
             )
@@ -91,24 +91,24 @@ class TestQualificationHookTest extends EmbeddedServerSpec {
    	   test1.getHooks.size mustBe 1
    	   val h1 = test1.getHooks.get(0)
    	   h1.getName mustBe "nullQualificationHookT1"
-   	   h1.getClassName mustBe "com.variant.server.test.hooks.TestQualificationHookNil"
+   	   h1.getClassName mustBe "com.variant.server.test.hooks.TestQualificationHookSimple"
    	   h1.getInit mustBe null
    	   test2.getHooks.size mustBe 1
    	   val h2 = test2.getHooks.get(0)
    	   h2.getName mustBe "nullQualificationHookT2"
-   	   h2.getClassName mustBe "com.variant.server.test.hooks.TestQualificationHookNil"
+   	   h2.getClassName mustBe "com.variant.server.test.hooks.TestQualificationHookSimple"
    	   h2.getInit mustBe null
    	   test3.getHooks.size mustBe 1
    	   val h3 = test3.getHooks.get(0)
    	   h3.getName mustBe "nullQualificationHookT3"
-   	   h3.getClassName mustBe "com.variant.server.test.hooks.TestQualificationHookNil"
+   	   h3.getClassName mustBe "com.variant.server.test.hooks.TestQualificationHookSimple"
    	   h3.getInit mustBe null
    	   test4.getHooks.size mustBe 0
    	   test5.getHooks.size mustBe 0
    	   test6.getHooks.size mustBe 0
    	   
    	   // qualification hooks will not be called before targeting.
-   	   ssn.getAttributes.get(TestQualificationHookNil.ATTR_KEY) mustBe null 
+   	   ssn.getAttributes.get(TestQualificationHookSimple.ATTR_NAME) mustBe null 
    	   
    		val req = ssn.targetForState(state1);
 		   ssn.getTraversedStates.size() mustEqual 1
@@ -123,7 +123,7 @@ class TestQualificationHookTest extends EmbeddedServerSpec {
 		   stabile.get("test4") mustNot be (null)
 		   stabile.get("test5") mustNot be (null)
 		   stabile.get("test6") mustNot be (null)
-		   ssn.getAttributes.get(TestQualificationHookNil.ATTR_KEY) mustBe "test3"
+		   ssn.getAttributes.get(TestQualificationHookSimple.ATTR_NAME) mustBe "test3"
 		   req.asInstanceOf[StateRequestImpl].setStatus(Committed)
 
 	   }
@@ -139,8 +139,8 @@ class TestQualificationHookTest extends EmbeddedServerSpec {
    	   val test4 = schema.getVariation("test4").get
    	   val test5 = schema.getVariation("test5").get
    	   val test6 = schema.getVariation("test6").get
-   	   ssn.getAttributes.remove(TestQualificationHookNil.ATTR_KEY)
-   	   ssn.getAttributes.get(TestQualificationHookNil.ATTR_KEY) mustBe null
+   	   ssn.getAttributes.remove(TestQualificationHookSimple.ATTR_NAME)
+   	   ssn.getAttributes.get(TestQualificationHookSimple.ATTR_NAME) mustBe null
    	   
 	      val req = ssn.targetForState(state2)
 		   ssn.getTraversedStates.size() mustEqual 2
@@ -156,7 +156,7 @@ class TestQualificationHookTest extends EmbeddedServerSpec {
 		   stabile.get("test4") mustNot be (null)
 		   stabile.get("test5") mustNot be (null)
 		   stabile.get("test6") mustNot be (null)
-		   ssn.getAttributes.get(TestQualificationHookNil.ATTR_KEY) mustBe "test1"
+		   ssn.getAttributes.get(TestQualificationHookSimple.ATTR_NAME) mustBe "test1"
 
 	   }
 
@@ -341,7 +341,7 @@ class TestQualificationHookTest extends EmbeddedServerSpec {
                "test2-hooks" -> 
                """ {
                      'name' :'nullQualificationHook',
-                     'class':'com.variant.server.test.hooks.TestQualificationHookNil'
+                     'class':'com.variant.server.test.hooks.TestQualificationHookSimple'
                    }
                """
             )
@@ -360,7 +360,7 @@ class TestQualificationHookTest extends EmbeddedServerSpec {
    		 // New session.
        ssn = SessionImpl.empty(newSid(), schema)
 		   ssn.targetForState(state1)
-		   ssn.getAttributes.get(TestQualificationHookNil.ATTR_KEY) mustBe null
+		   ssn.getAttributes.get(TestQualificationHookSimple.ATTR_NAME) mustBe null
 	   }
 	}
 	

@@ -13,8 +13,8 @@ import com.variant.server.api.ServerException
 import com.variant.core.schema.parser.ParserMessageImpl
 import com.variant.server.boot.ServerErrorLocal
 import com.variant.server.impl.SessionImpl
-import com.variant.server.test.hooks.TestTargetingHookNil
-import com.variant.server.test.hooks.TestQualificationHookNil
+import com.variant.server.test.hooks.TestTargetingHookSimple
+import com.variant.server.test.hooks.TestQualificationHookSimple
 import com.variant.server.schema.SchemaDeployer.fromString
 import com.variant.server.schema.SchemaDeployer
 import com.variant.server.test.spec.EmbeddedServerSpec
@@ -31,10 +31,10 @@ class HookScopeTest extends EmbeddedServerSpec {
   /*
    * 
    */
-	"Schema scoped hook" should {
+	"Schema scoped hooks" should {
 	   
 	   ////////////////
-	   "never violate scoping rules" in {
+	   "be posted in ordinal order" in {
 	      
    	    val schemaSrc = s"""
 {                                                                              
@@ -42,12 +42,20 @@ class HookScopeTest extends EmbeddedServerSpec {
       'name':'$schemaName',
       'hooks':[
          {                                                              
-   		     'name':'testQualifier',                                       
-   			   'class':'com.variant.server.test.hooks.TestQualificationHookNil'
+   		    'init':{'value':'one'},                                       
+   			 'class':'com.variant.server.test.hooks.TestTargetingHookSimple'
    	   },                                                             
          {                                                              
-   		     'name':'testTargeter',                                       
-   			   'class':'com.variant.server.test.hooks.TestTargetingHookNil'
+   		    'init':{'value':'two'},                                       
+   			 'class':'com.variant.server.test.hooks.TestTargetingHookSimple'
+          },                                                             
+         {                                                              
+   		    'init':{'value':'three'},                                       
+   			 'class':'com.variant.server.test.hooks.TestTargetingHookSimple'
+   	   },                                                             
+         {                                                              
+   		    'init':{'value':'four'},                                       
+   			 'class':'com.variant.server.test.hooks.TestTargetingHookSimple'
           }                                                              
       ]                                                                
    },                                                                   
@@ -129,53 +137,26 @@ class HookScopeTest extends EmbeddedServerSpec {
       val schemaDeployer = SchemaDeployer.fromString(schemaSrc)
       server.useSchemaDeployer(schemaDeployer)
       val response = schemaDeployer.parserResponses(0)
-      response.getMessages.foreach(println _)
-   		response.getMessages.size mustBe 5
-   		response.getMessages(FATAL) mustBe empty
-   		response.getMessages(ERROR).size() mustBe 0
-   		response.getMessages(WARN).size() mustBe 0
-   		response.getMessages(INFO).size() mustBe 5
 
-/*   		
-   		// Confirm parse time hooks were posted. Note that compile time hooks fire for off tests.
-   		var msg = response.getMessages.get(0)
-   		msg.getSeverity mustBe INFO
-   		msg.getText must include (HOOK_USER_MESSAGE_INFO.asMessage(String.format(StateParsedHook.INFO_MESSAGE_FORMAT, "stateParsed", "state1")))
-   		msg = response.getMessages.get(1)
-   		msg.getSeverity mustBe INFO
-   		msg.getText must include (HOOK_USER_MESSAGE_INFO.asMessage(String.format(StateParsedHook.INFO_MESSAGE_FORMAT, "stateParsed", "state2")))
-   		msg = response.getMessages.get(2)
-   		msg.getSeverity mustBe INFO
-   		msg.getText must include (HOOK_USER_MESSAGE_INFO.asMessage(String.format(TestParsedHook.INFO_MESSAGE_FORMAT, "testParsed", "test1")))
-   		msg = response.getMessages.get(3)
-   		msg.getSeverity mustBe INFO
-   		msg.getText must include (HOOK_USER_MESSAGE_INFO.asMessage(String.format(TestParsedHook.INFO_MESSAGE_FORMAT, "testParsed", "test2")))
-   		msg = response.getMessages.get(4)
-   		msg.getSeverity mustBe INFO
-   		msg.getText must include (HOOK_USER_MESSAGE_INFO.asMessage(String.format(TestParsedHook.INFO_MESSAGE_FORMAT, "testParsed", "test3")))
-*/
    		server.schemata.get(schemaName).isDefined mustBe true
    		
-   		// Confirm runtime hooks were posted.
    		val schema = server.schemata.get(schemaName).get.liveGen.get
          val state1 = schema.getState("state1").get
          val state2 = schema.getState("state2").get
          val test = schema.getVariation("test1").get
          val ssn = SessionImpl.empty(newSid(), schema)
-   		ssn.getAttributes.get(TestQualificationHookNil.ATTR_KEY) mustBe null
-   		ssn.getAttributes.get(TestTargetingHookNil.ATTR_KEY) mustBe null
+   		ssn.getAttributes.get(TestTargetingHookSimple.ATTR_NAME) mustBe null
 
    	   val req = ssn.targetForState(state1)
    		// Only test1 is instrumented on state1
-     		ssn.getAttributes.get(TestQualificationHookNil.ATTR_KEY) mustBe "test1"
-   		ssn.getAttributes.get(TestTargetingHookNil.ATTR_KEY) mustBe "test1"
+     		println("********** "  + ssn.getAttributes.get(TestQualificationHookSimple.ATTR_NAME))
    		// commit before targeting again.
    		req.asInstanceOf[StateRequestImpl].setStatus(Committed);	
 
    		// Test3 is instrumented on state2
    		ssn.targetForState(state2)
-         ssn.getAttributes.get(TestQualificationHookNil.ATTR_KEY) mustBe "test1 test3"
-   		ssn.getAttributes.get(TestTargetingHookNil.ATTR_KEY) mustBe "test1 test3"	   
+         ssn.getAttributes.get(TestQualificationHookSimple.ATTR_NAME) mustBe "test1 test3"
+   		ssn.getAttributes.get(TestTargetingHookSimple.ATTR_NAME) mustBe "test1 test3"	   
    		
 	   }
    }
@@ -197,10 +178,9 @@ class HookScopeTest extends EmbeddedServerSpec {
     {
       'name':'state1',
       'hooks':[
-         {                                                              
-   		     'name':'stateParsed',                                       
-   			   'class':'com.variant.server.test.hooks.StateParsedHook',
-           'init':{'hookName':'stateParsedS1'}
+         {
+   		'class':'com.variant.server.test.hooks.TestQualificationHookSimple',
+           'init':{'value':'stateParsedS1'}
    	     }
       ]
     },
@@ -375,7 +355,7 @@ class HookScopeTest extends EmbeddedServerSpec {
       'hooks':[
         {                                                              
    		     'name':'testTargeter',                                       
-   			   'class':'com.variant.server.test.hooks.TestTargetingHookNil'
+   			   'class':'com.variant.server.test.hooks.TestTargetingHookSimple'
    	     }                                                              
       ]                                                                
    },                                                                   
@@ -384,7 +364,7 @@ class HookScopeTest extends EmbeddedServerSpec {
       'hooks':[
         {                                                              
    		     'name':'testTargeter',                                       
-   			   'class':'com.variant.server.test.hooks.TestTargetingHookNil'
+   			   'class':'com.variant.server.test.hooks.TestTargetingHookSimple'
    	     }                                                              
       ]                                                                
 
@@ -408,7 +388,7 @@ class HookScopeTest extends EmbeddedServerSpec {
       'hooks':[
         {                                                              
    		     'name':'testTargeter',                                       
-   			   'class':'com.variant.server.test.hooks.TestTargetingHookNil'
+   			   'class':'com.variant.server.test.hooks.TestTargetingHookSimple'
    	     }                                                              
       ],                                                            
 			'onStates':[                                                   
@@ -437,10 +417,10 @@ class HookScopeTest extends EmbeddedServerSpec {
          val state1 = schema.getState("state1").get
          val test = schema.getVariation("test1").get
          val ssn = SessionImpl.empty(newSid(), schema)
-   		ssn.getAttributes.get(TestTargetingHookNil.ATTR_KEY) mustBe null
+   		ssn.getAttributes.get(TestTargetingHookSimple.ATTR_NAME) mustBe null
    		ssn.targetForState(state1)
    		// Only test1 is instrumented on state1
-   		ssn.getAttributes.get(TestTargetingHookNil.ATTR_KEY) mustBe "test1 test1 test1"  // All three should fire!
+   		ssn.getAttributes.get(TestTargetingHookSimple.ATTR_NAME) mustBe "test1 test1 test1"  // All three should fire!
    		   		
 	   }
    }
@@ -460,7 +440,7 @@ class HookScopeTest extends EmbeddedServerSpec {
       'hooks': [
         {                                                              
    		     'name':'$schemaName',                                       
-   			   'class':'com.variant.server.test.hooks.TestQualificationHookNil'
+   			   'class':'com.variant.server.test.hooks.TestQualificationHookSimple'
    	     }
       ]                                                                
    },                                                                   
@@ -470,7 +450,7 @@ class HookScopeTest extends EmbeddedServerSpec {
        'hooks': [
          {                                                              
    		     'name':'testQualifier',                                       
-   			   'class':'com.variant.server.test.hooks.TestQualificationHookNil'
+   			   'class':'com.variant.server.test.hooks.TestQualificationHookSimple'
    	     }
        ]                                                                
      },
@@ -493,7 +473,7 @@ class HookScopeTest extends EmbeddedServerSpec {
        'hooks': [
          {                                                              
    		     'name':'testQualifier',                                       
-   			   'class':'com.variant.server.test.hooks.TestQualificationHookNil'
+   			   'class':'com.variant.server.test.hooks.TestQualificationHookSimple'
    	     }
        ],
 			'onStates':[                                                   
