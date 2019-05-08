@@ -22,6 +22,14 @@ public interface FlushableTraceEvent {
 	public String getName();
 
 	/**
+	 * The reasonably unique id of this event that is safe to use as unique key for external storage.
+	 *
+	 * @returns Randomly generated 128 bit number converted to a hexadecimal string.
+	 * @since 0.10
+	 */
+	public String getId();
+
+	/**
 	 * Event creation timestamp.
 	 * 
 	 * @since 0.7

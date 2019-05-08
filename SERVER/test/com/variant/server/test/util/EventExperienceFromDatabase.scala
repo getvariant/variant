@@ -11,7 +11,6 @@ object EventExperienceFromDatabase {
      
       def writes(exp: EventExperienceFromDatabase) = 
          Json.obj(
-            "id" -> exp.id,
             "eventId" -> exp.eventId,
             "testName" -> exp.testName,
             "expName" -> exp.experienceName,
@@ -20,8 +19,7 @@ object EventExperienceFromDatabase {
 }
 }
 class EventExperienceFromDatabase (
-		val id: Long,
-		val eventId: Long,
+		val eventId: String,
 		val testName: String,
 		val experienceName: String,
 		val isControl: Boolean
