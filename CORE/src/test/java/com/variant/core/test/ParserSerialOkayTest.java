@@ -374,6 +374,9 @@ public class ParserSerialOkayTest extends BaseTestCore {
 		assertFalse(test1.isConjointWith(test2));
 		assertFalse(test2.isConjointWith(test1));
 
+		assertEquals(Optional.empty(), test1.getExperience("A").get().getWeight());
+		assertEquals(Optional.empty(), test1.getExperience("B").get().getWeight());
+
 	}
 
 	/**

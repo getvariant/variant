@@ -122,8 +122,7 @@ public class ParserConjointOkay1Test extends BaseTestCore {
 	    	    "              'isControl':true                                           \n" +
 	    	    "           },                                                            \n" +
 	    	    "           {                                                             \n" +
-	    	    "              'name':'B',                                                \n" +
-	    	    "              'weight':20                                                \n" +
+	    	    "              'name':'B'                                                 \n" +
 	    	    "           },                                                            \n" +
 	    	    "           {                                                             \n" +
 	    	    "              'name':'C',                                                \n" +
