@@ -78,7 +78,6 @@ public class ParserSerialOkayTest extends BaseTestCore {
 			    	    "        'experiences':[                                                  \n" +
 			    	    "           {                                                             \n" +
 			    	    "              'name':'A',                                                \n" +
-			    	    "              'weight':10,                                               \n" +
 			    	    "              'isControl':true                                           \n" +
 			    	    "           },                                                            \n" +
 			    	    "           {                                                             \n" +
@@ -215,6 +214,9 @@ public class ParserSerialOkayTest extends BaseTestCore {
 		assertEquals(Optional.of("{\"foo\":\"a string\",\"bar\":[1,2],\"obj\":{}}"), hook.getInit());
 
 		assertTrue(test2.getHooks().isEmpty());
+		
+		assertEquals(Optional.empty(), test1.getExperience("A").get().getWeight());
+		assertEquals(Optional.of(20), test1.getExperience("B").get().getWeight());
 	}
 
 	/**
@@ -271,12 +273,10 @@ public class ParserSerialOkayTest extends BaseTestCore {
 			    	    "        'experiences':[                                                  \n" +
 			    	    "           {                                                             \n" +
 			    	    "              'name':'A',                                                \n" +
-			    	    "              'weight':10,                                               \n" +
 			    	    "              'isControl':true                                           \n" +
 			    	    "           },                                                            \n" +
 			    	    "           {                                                             \n" +
-			    	    "              'name':'B',                                                \n" +
-			    	    "              'weight':20                                                \n" +
+			    	    "              'name':'B'                                                 \n" +
 			    	    "           }                                                             \n" +
 			    	    "        ],                                                               \n" +
 			    	    "        'onStates':[                                                      \n" +

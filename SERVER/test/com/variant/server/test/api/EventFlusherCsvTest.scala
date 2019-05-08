@@ -9,6 +9,7 @@ import play.api.test.Helpers._
 import play.api.libs.json._
 import scala.io.Source
 import java.io.File
+import java.util.Optional
 
 /**
  * TODO: Need to also test annotations.
@@ -75,7 +76,7 @@ class EventFlusherCsvTest extends EmbeddedServerSpec {
 	   	server.schemata.get("FlusherTest").isDefined mustBe true
 	   	val schema = server.schemata.get("FlusherTest").get.liveGen.get
 	   	schema.getMeta.getFlusher.getClassName mustBe "com.variant.extapi.std.flush.TraceEventFlusherCsv"
-	   	schema.getMeta.getFlusher.getInit mustBe null
+	   	schema.getMeta.getFlusher.getInit mustBe Optional.empty
 	
 	      // the default csv file should have already been created.
 	   	Source.fromFile(defaultFileName).getLines().mkString mustBe ""
@@ -203,7 +204,7 @@ class EventFlusherCsvTest extends EmbeddedServerSpec {
 	   	server.schemata.get("FlusherTest").isDefined mustBe true
 	   	val schema = server.schemata.get("FlusherTest").get.liveGen.get
 	   	schema.getMeta.getFlusher.getClassName mustBe "com.variant.extapi.std.flush.TraceEventFlusherCsv"
-	   	schema.getMeta.getFlusher.getInit mustBe s"""{"header":true,"file":"${fileName}"}"""
+	   	schema.getMeta.getFlusher.getInit mustBe Optional.of(s"""{"header":true,"file":"${fileName}"}""")
 	
 	      // The csv file should have already been created with the header in it.
 	      var lines = Source.fromFile(fileName).getLines()

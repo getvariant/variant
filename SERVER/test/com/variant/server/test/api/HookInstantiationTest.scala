@@ -34,13 +34,11 @@ class HookInstantiationTest extends EmbeddedServerSpec {
    'meta':{                                                             		    	    
       'name':'$schemaName',
       'hooks':[
-         {                                                              
-   		   'name':'nullaryOnlyNoInit',                                       
+         {                           
    			'class':'com.variant.server.test.hooks.HookNullaryConstructor'
             // no init property ok
    	   },
          {                                                              
-   		   'name':'nullaryOnlyNullInit',
    			'class':'com.variant.server.test.hooks.HookNullaryConstructor',    
             'init': null // explicit null ok
    	   }                                                         
@@ -91,18 +89,15 @@ class HookInstantiationTest extends EmbeddedServerSpec {
    'meta':{                                                             		    	    
       'name':'$schemaName',
       'hooks':[
-         {                                                              
-   		   'name':'singleArgNoInit',                                       
+         {                                  
    			'class':'com.variant.server.test.hooks.HookArgConstructor'
             // no init property ok
    	   },
          {                                                              
-   		   'name':'singleArgNullInit',
    			'class':'com.variant.server.test.hooks.HookArgConstructor',    
             'init': null // explicit null ok
    	   },
          {                                                              
-   		   'name':'singleArgNonNullInit',
    			'class':'com.variant.server.test.hooks.HookArgConstructor',    
             'init': {'foo':'bar'}
    	   }                                                         
@@ -154,12 +149,10 @@ class HookInstantiationTest extends EmbeddedServerSpec {
       'name':'$schemaName',
       'hooks':[
          {                                                              
-   		   'name':'bothNoInit',                                       
    			'class':'com.variant.server.test.hooks.Hook2Constructors'
             // no init property ok
    	   },
          {                                                              
-   		   'name':'bothOnlyNullInit',
    			'class':'com.variant.server.test.hooks.Hook2Constructors',    
             'init': null // explicit null ok
    	   }                                                         
@@ -223,7 +216,6 @@ class HookInstantiationTest extends EmbeddedServerSpec {
       'name':'$schemaName',
       'hooks':[
          {                                                              
-   		   'name':'nullaryOnlyEmptyInit',                                       
    			'class':'com.variant.server.test.hooks.HookNullaryConstructor',
             'init':{}
    	   }
@@ -286,12 +278,10 @@ class HookInstantiationTest extends EmbeddedServerSpec {
       'name':'$schemaName',
       'hooks':[
          {                                                              
-   		   'name':'soleOneArgConstructor',                                       
    			'class':'com.variant.server.test.hooks.HookNullaryConstructor',
             'init':{}   // Won't work
    	   },
          {                                                              
-   		   'name':'bothConstructors',
    			'class':'com.variant.server.test.hooks.Hook2Constructors',    
             'init': {}
    	   }                                                         
@@ -349,7 +339,6 @@ class HookInstantiationTest extends EmbeddedServerSpec {
       'name':'$schemaName',
       'hooks':[
          {                                                              
-   		   'name':'soleOneArgConstructor',                                       
    			'class':'com.variant.server.test.hooks.HookNullaryConstructor',
             'init':{'foo':'bar'}            
    	   }

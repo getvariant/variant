@@ -107,6 +107,7 @@ class TargetingTest extends EmbeddedServerAsyncSpec {
          "schemaName" -> schemaNames(1),
          "hooks" -> 
          """ {
+               'init':{'value':'h1'},
                'class':'com.variant.server.test.hooks.TestTargetingHookSimple'
              }
          """)
@@ -115,9 +116,11 @@ class TargetingTest extends EmbeddedServerAsyncSpec {
          "schemaName" -> schemaNames(2),
          "hooks" -> 
          """ {
+               'init':{'value':'h2'},
                'class':'com.variant.server.test.hooks.TestTargetingHookSimple'
              },
              {
+               'init':{'value':'h3'},
                'class':'com.variant.server.test.hooks.TestTargetingHookSimple'
              }
          """)
@@ -126,6 +129,7 @@ class TargetingTest extends EmbeddedServerAsyncSpec {
          "schemaName" -> schemaNames(3),
          "hooks" -> 
          """ {
+               'init':{'value':'h4'},
                'class':'com.variant.server.test.hooks.TestTargetingHookSimple'
              },
              {
@@ -138,6 +142,7 @@ class TargetingTest extends EmbeddedServerAsyncSpec {
          "schemaName" -> schemaNames(4),
          "hooks" -> 
          """ {
+               'init':{'value':'h5'},
                'class':'com.variant.server.test.hooks.TestTargetingHookSimple'
              },
              {
@@ -193,7 +198,7 @@ class TargetingTest extends EmbeddedServerAsyncSpec {
       			val ssn = SessionImpl.empty("sid" + i, schema)
       			ssn.getAttributes.get(TestTargetingHookSimple.ATTR_NAME) mustBe null
       			val req = ssn.targetForState(state)
-      			ssn.getAttributes.get(TestTargetingHookSimple.ATTR_NAME) mustBe "test1"
+      			ssn.getAttributes.get(TestTargetingHookSimple.ATTR_NAME) mustBe "h1.test1.state1"
       			val expName = req.getLiveExperience(test).get.getName()
       			expName match {
       			   case "A" => counts(0) += 1
@@ -218,7 +223,7 @@ class TargetingTest extends EmbeddedServerAsyncSpec {
       			val ssn = SessionImpl.empty("sid" + i, schema)
       			ssn.getAttributes.get(TestTargetingHookSimple.ATTR_NAME) mustBe null
       			val req = ssn.targetForState(state)
-      			ssn.getAttributes.get(TestTargetingHookSimple.ATTR_NAME) mustBe "test1 test1"
+      			ssn.getAttributes.get(TestTargetingHookSimple.ATTR_NAME) mustBe "h2.test1.state1 h3.test1.state1"
       			val expName = req.getLiveExperience(test).get.getName()
       			expName match {
       			   case "A" => counts(0) += 1
@@ -245,7 +250,7 @@ class TargetingTest extends EmbeddedServerAsyncSpec {
       			ssn.getAttributes.get(TestTargetingHookSimple.ATTR_NAME) mustBe null
       			ssn.getAttributes.get(TestTargetingHook.ATTR_KEY) mustBe null
       			val req = ssn.targetForState(state)
-      			ssn.getAttributes.get(TestTargetingHookSimple.ATTR_NAME) mustBe "test1"
+      			ssn.getAttributes.get(TestTargetingHookSimple.ATTR_NAME) mustBe "h4.test1.state1"
       			ssn.getAttributes.get(TestTargetingHook.ATTR_KEY) mustBe "test1"
       			val expName = req.getLiveExperience(test).get.getName()
       			expName match {
@@ -272,7 +277,7 @@ class TargetingTest extends EmbeddedServerAsyncSpec {
       			ssn.getAttributes.get(TestTargetingHookSimple.ATTR_NAME) mustBe null
       			ssn.getAttributes.get(TestTargetingHook.ATTR_KEY) mustBe null
       			val req = ssn.targetForState(state)
-      			ssn.getAttributes.get(TestTargetingHookSimple.ATTR_NAME) mustBe "test1"
+      			ssn.getAttributes.get(TestTargetingHookSimple.ATTR_NAME) mustBe "h5.test1.state1"
       			ssn.getAttributes.get(TestTargetingHook.ATTR_KEY) mustBe "test1"
       			val expName = req.getLiveExperience(test).get.getName()
       			expName match {
@@ -296,7 +301,7 @@ class TargetingTest extends EmbeddedServerAsyncSpec {
                "schemaName" -> schemaName,
                "hooks" -> 
                """ {
-                     'name' :'nullHook',
+                     'init':{'value':'h6'},
                      'class':'com.variant.server.test.hooks.TestTargetingHookSimple'
                    },
                    {
