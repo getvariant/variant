@@ -1,7 +1,7 @@
 package com.variant.server.test;
 
 import com.variant.core.error.UserError.Severity._
-import com.variant.server.boot.ServerErrorLocal
+import com.variant.server.boot.ServerErrorLocal._
 import com.variant.server.schema.SchemaDeployer
 import com.variant.server.test.spec.EmbeddedServerSpec
 
@@ -25,10 +25,9 @@ class HookInstantiationExceptionTest extends EmbeddedServerSpec {
    'meta':{                                                             		    	    
       'name':'allTestsOffTest',
       'hooks':[                                                         
-         {                                                              
-   		     'name':'stateParsed',                                       
-   			   'class':'com.variant.server.test.hooks.HookNoInterface'     
-   	     }                                                              
+         {                         
+   			'class':'com.variant.server.test.hooks.HookNoInterface'     
+   	   }                                                              
       ]                                                                
    },                                                                   
 	'states':[{'name':'state1'}],                                                                   
@@ -64,7 +63,7 @@ class HookInstantiationExceptionTest extends EmbeddedServerSpec {
      		 response.getMessages(ERROR).size() mustBe 1
      		 var msg = response.getMessages.get(0)
      	   msg.getSeverity mustBe ERROR
-     	   msg.getText mustBe ServerErrorLocal.HOOK_CLASS_NO_INTERFACE.asMessage("com.variant.server.test.hooks.HookNoInterface", "com.variant.core.lifecycle.LifecycleHook")
+     	   msg.getText mustBe HOOK_CLASS_NO_INTERFACE.asMessage("com.variant.server.test.hooks.HookNoInterface", "com.variant.core.lifecycle.LifecycleHook")
       }
    }
 	
@@ -81,8 +80,7 @@ class HookInstantiationExceptionTest extends EmbeddedServerSpec {
    'meta':{                                                             		    	    
       'name':'allTestsOffTest',
       'hooks':[                                                         
-         {                                                              
-   		   'name':'stateParsed',                                       
+         {                                                                                   
    			'class':'com.foo.bar'     
    	   }                                                              
       ]                                                                
@@ -120,7 +118,7 @@ class HookInstantiationExceptionTest extends EmbeddedServerSpec {
    		response.getMessages(ERROR).size() mustBe 1
    		var msg = response.getMessages.get(0)
    		msg.getSeverity mustBe ERROR
-   		msg.getText mustBe ServerErrorLocal.OBJECT_INSTANTIATION_ERROR.asMessage("com.foo.bar", "java.lang.ClassNotFoundException")
+   		msg.getText mustBe OBJECT_INSTANTIATION_ERROR.asMessage("com.foo.bar", "java.lang.ClassNotFoundException")
    }
 
 	   ////////////////////
@@ -131,9 +129,8 @@ class HookInstantiationExceptionTest extends EmbeddedServerSpec {
    'meta':{                                                             		    	    
       'name':'allTestsOffTest',
       'hooks':[                                                         
-         {                                                              
-   		   'name':'stateParsed',                                       
-   			'class':'com.variant.server.test.hooks.StateParsedHookPrivateConstructor'     
+         {                                                                                                   
+   			'class':'com.variant.server.test.hooks.HookPrivateConstructor'     
    	   }                                                              
       ]                                                                
    },                                                                   
@@ -170,11 +167,11 @@ class HookInstantiationExceptionTest extends EmbeddedServerSpec {
    		response.getMessages(ERROR).size() mustBe 1
    		var msg = response.getMessages.get(0)
    		msg.getSeverity mustBe ERROR
-   		msg.getText mustBe ServerErrorLocal.OBJECT_CONSTRUCTOR_ERROR.asMessage("com.variant.server.test.hooks.StateParsedHookPrivateConstructor", "java.lang.IllegalAccessException")
+   		msg.getText mustBe OBJECT_CONSTRUCTOR_ERROR.asMessage("com.variant.server.test.hooks.HookPrivateConstructor", "java.lang.IllegalAccessException")
       }
 	   
 	   ////////////////////
-	   "emit OBJECT_CONSTRUCTION_ERROR for an existing hook class with no nullary or config constructor" in {
+	   "emit OBJECT_CONSTRUCTION_ERROR for an existing hook class with wrong signature constructor" in {
 	      
    	    val schema = """
 {                                                                              
@@ -182,8 +179,7 @@ class HookInstantiationExceptionTest extends EmbeddedServerSpec {
       'name':'allTestsOffTest',
       'hooks':[                                                         
          {                                                              
-   		   'name':'stateParsed',                                       
-   			'class':'com.variant.server.test.hooks.StateParsedHookArgumentConstructor'     
+   			'class':'com.variant.server.test.hooks.HookWrongSignatureConstructor'     
    	   }                                                              
       ]                                                                
    },                                                                   
@@ -220,27 +216,31 @@ class HookInstantiationExceptionTest extends EmbeddedServerSpec {
    		response.getMessages(ERROR).size() mustBe 1
    		var msg = response.getMessages.get(0)
    		msg.getSeverity mustBe ERROR
-   		msg.getText mustBe ServerErrorLocal.OBJECT_CONSTRUCTOR_ERROR.asMessage("com.variant.server.test.hooks.StateParsedHookArgumentConstructor", "java.lang.InstantiationException")
+   		msg.getText mustBe OBJECT_CONSTRUCTOR_ERROR.asMessage("com.variant.server.test.hooks.HookWrongSignatureConstructor")
       }
 	   
 	   ////////////////////
-	   "emit HOOK_SCHEMA_DOMAIN_DEFINED_AT_TEST when defined at Test level" in {
+	   "emit HOOK_STATE_SCOPE_VIOLATION when qualification hoook is defined at state level" in {
 	      
    	    val schema = """
 {                                                                              
    'meta':{                                                             		    	    
       'name':'allTestsOffTest'
    },                                                                   
-	'states':[{'name':'state1'}],                                                                   
+	'states':[
+		{
+			'name':'state1',
+         'hooks':[                                                         
+            {                                                            
+      			'class':'com.variant.server.test.hooks.TestQualificationHookSimple',
+      			'init':{'value':'should crash'}
+      	   }                                                              
+         ]
+		}
+	],                                                                   
 	'variations':[                                                           
 	   {                                                                
 		   'name':'test1',
-         'hooks':[                                                         
-            {                                                              
-      		   'name':'stateParsed',                                       
-      			'class':'com.variant.server.test.hooks.StateParsedHook'     
-      	   }                                                              
-         ],
 	      'experiences':[                                               
             {                                                          
 				   'name':'A',                                             
@@ -270,7 +270,7 @@ class HookInstantiationExceptionTest extends EmbeddedServerSpec {
    		response.getMessages(ERROR).size() mustBe 1
    		var msg = response.getMessages.get(0)
    		msg.getSeverity mustBe ERROR
-   		///msg.getText mustBe ServerErrorLocal.HOOK_SCHEMA_DOMAIN_DEFINED_AT_TEST.asMessage("stateParsed", "com.variant.core.schema.StateParsedLifecycleEvent", "test1")
+   		msg.getText mustBe (HOOK_STATE_SCOPE_VIOLATION.asMessage("/states[0]/hooks[0]/", "com.variant.server.api.lifecycle.VariationQualificationLifecycleEvent"))
       }
 	}
 		

@@ -1,6 +1,9 @@
 package com.variant.core.schema.impl;
 
+import java.util.Optional;
+
 import com.variant.core.schema.Hook;
+import com.variant.core.schema.parser.error.SemanticError.Location;
 
 /**
  * 
@@ -9,8 +12,8 @@ import com.variant.core.schema.Hook;
  */
 public class SchemaHookImpl extends BaseHookImpl implements Hook.Schema {
 	
-	public SchemaHookImpl(String className, String init) {
-		super(className, init);
+	public SchemaHookImpl(String className, Optional<String> init, Location location) {
+		super(className, init, location);
 	}
 
 }

@@ -4,6 +4,7 @@ import static com.variant.core.schema.parser.error.SemanticError.*;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -62,7 +63,7 @@ public class HooksParser implements Keywords {
 	private static Hook parseHook(Object rawHook, Location hookLocation, ParserResponse response) {
 		
 		String className = null;
-		String init = null;
+		Optional<String> init = Optional.empty();
 				
 		Map<String, ?> rawMap;
 		try {
@@ -86,10 +87,13 @@ public class HooksParser implements Keywords {
 			}
 			else if (entry.getKey().equalsIgnoreCase(KEYWORD_INIT)) {
 				Object initObject = entry.getValue();
-				// value will be null if null was explicitely given, i.e. 'init':null.  We treat that as no init at all.
-				if (initObject != null) {
+				if (initObject == null) {
+					// Explicit null
+					init = Optional.of("null");
+				}
+				else {
+					// Non-null
 					if (! (initObject instanceof Map)) {
-						System.out.println("******** " + initObject.getClass().getName());
 						response.addMessage(hookLocation.plusProp(KEYWORD_INIT), PROPERTY_NOT_OBJECT, "init");
 					}
 					else {
@@ -98,7 +102,7 @@ public class HooksParser implements Keywords {
 						ObjectMapper mapper = new ObjectMapper();
 						mapper.configure(JsonParser.Feature.ALLOW_SINGLE_QUOTES, true);
 						try {
-							init = mapper.writeValueAsString(entry.getValue());
+							init = Optional.of(mapper.writeValueAsString(entry.getValue()));
 						}
 						catch (Exception e) {
 							throw new CoreException.Internal("Unable to re-serialize hook init [" + entry.getValue().toString() + "]", e);
@@ -116,7 +120,7 @@ public class HooksParser implements Keywords {
 			return null;
 		}
 		else {
-			return new SchemaHookImpl(className, init);
+			return new SchemaHookImpl(className, init, hookLocation);
 		}
 	}
 	
@@ -139,7 +143,7 @@ public class HooksParser implements Keywords {
 				if (hook != null) {
 					// The method above created a schema level hook, but in this case we need a test
 					// domian hook.
-					state.addHook(new StateHookImpl(hook.getClassName(), hook.getInit(), state));
+					state.addHook(new StateHookImpl(hook.getClassName(), hook.getInit(), hookLocation, state));
 				}	
 			}
 		}
@@ -170,7 +174,7 @@ public class HooksParser implements Keywords {
 				if (hook != null) {
 					// The method above created a schema level hook, but in this case we need a test
 					// domian hook.
-					test.addHook(new VariationHookImpl(hook.getClassName(), hook.getInit(), test));
+					test.addHook(new VariationHookImpl(hook.getClassName(), hook.getInit(), hookLocation, test));
 				}	
 			}
 		}

@@ -120,8 +120,8 @@ public class ConfigurationImpl implements Configuration, ConfigKeys {
 	}
 
 	@Override
-	public String getEventFlusherClassInit() {
-		return getConfigValue(EVENT_FLUSHER_CLASS_INIT).map( val -> val.render()).orElse("null");
+	public Optional<String> getEventFlusherClassInit() {
+		return getConfigValue(EVENT_FLUSHER_CLASS_INIT).map( val -> val.render());
 	}
 
 	@Override

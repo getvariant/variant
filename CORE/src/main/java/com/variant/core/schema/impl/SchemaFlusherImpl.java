@@ -1,5 +1,7 @@
 package com.variant.core.schema.impl;
 
+import java.util.Optional;
+
 import com.variant.core.schema.Flusher;
 
 /**
@@ -10,9 +12,9 @@ import com.variant.core.schema.Flusher;
 public class SchemaFlusherImpl implements Flusher {
 
 	private final String className;
-	private final String init;
+	private final Optional<String> init;
 	
-	public SchemaFlusherImpl(String className, String init) {
+	public SchemaFlusherImpl(String className, Optional<String> init) {
 		this.className = className;
 		this.init = init;
 	}
@@ -27,7 +29,7 @@ public class SchemaFlusherImpl implements Flusher {
 	}
 
 	@Override
-	public String getInit() {
+	public Optional<String> getInit() {
 		return init;
 	}
 

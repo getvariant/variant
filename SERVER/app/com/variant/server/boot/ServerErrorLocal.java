@@ -61,10 +61,10 @@ public class ServerErrorLocal extends UserError {
 			new ServerErrorLocal(426, Severity.ERROR, "Lifecycle hook class [%s] must implement interface [%s]");
 
 	public final static ServerErrorLocal HOOK_STATE_SCOPE_VIOLATION = 
-			new ServerErrorLocal(427, Severity.ERROR, "Lifecycle hook [%s], defined at state [%s] cannot listen to life cycle event [%s]");
+			new ServerErrorLocal(427, Severity.ERROR, "Lifecycle hook defined at [%s], cannot listen to lifecycle event [%s]");
 	
 	public final static ServerErrorLocal HOOK_TEST_SCOPE_VIOLATION = 
-			new ServerErrorLocal(428, Severity.ERROR, "Lifecycle hook [%s], defined at test [%s] cannot listen to life cycle event [%s]");
+			new ServerErrorLocal(428, Severity.ERROR, "Lifecycle hook defined at [%s], cannot listen to lifecycle event [%s]");
 
 /*	public final static ServerErrorLocal FLUSHER_NOT_CONFIGURED = 
 			new ServerErrorLocal(429, Severity.ERROR, "No event flusher defined in experiment schema, and no default event flusher is configured");

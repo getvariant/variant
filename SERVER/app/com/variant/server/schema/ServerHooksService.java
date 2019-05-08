@@ -13,6 +13,9 @@ import com.variant.core.lifecycle.LifecycleHook;
 import com.variant.core.lifecycle.StateAwareLifecycleEvent;
 import com.variant.core.lifecycle.VariationAwareLifecycleEvent;
 import com.variant.core.schema.Hook;
+import com.variant.core.schema.impl.SchemaHookImpl;
+import com.variant.core.schema.impl.StateHookImpl;
+import com.variant.core.schema.impl.VariationHookImpl;
 import com.variant.core.schema.parser.HooksService;
 import com.variant.core.schema.parser.ParserResponse;
 import com.variant.server.api.lifecycle.RuntimeLifecycleEvent;
@@ -96,13 +99,13 @@ public class ServerHooksService implements HooksService {
 			if (hookDef instanceof Hook.State && ! StateAwareLifecycleEvent.class.isAssignableFrom(hookImpl.getLifecycleEventClass())) {
 				parserResponse.addMessage(
 						ServerErrorLocal.HOOK_STATE_SCOPE_VIOLATION, 
-						hookDef.getName(), ((Hook.State)hookDef).getState().getName(), hookImpl.getLifecycleEventClass().getName());				
+						((StateHookImpl)hookDef).location.getPath(), hookImpl.getLifecycleEventClass().getName());				
 			}
 			// 2. State-scoped hookDef must define an implementation which listens to a state aware event.
 			if (hookDef instanceof Hook.Variation && ! VariationAwareLifecycleEvent.class.isAssignableFrom(hookImpl.getLifecycleEventClass())) {
 				parserResponse.addMessage(
 						ServerErrorLocal.HOOK_TEST_SCOPE_VIOLATION, 
-						hookDef.getName(), ((Hook.Variation)hookDef).getVariation().getName(), hookImpl.getLifecycleEventClass().getName());				
+						((VariationHookImpl)hookDef).location.getPath(), hookImpl.getLifecycleEventClass().getName());				
 			}
 
 						
@@ -112,20 +115,20 @@ public class ServerHooksService implements HooksService {
 			if (hookDef instanceof Hook.Schema) {
 				schemaHooks.add(hle);
 				if (LOG.isDebugEnabled()) 
-					LOG.debug(String.format("Registered schema-scoped hook [%s] [%s]", 
-							hookDef.getName() , hookDef.getClass()));
+					LOG.debug(String.format("Registered schema-scoped hook class [%s] at [%s]", 
+							hookDef.getClass(), ((SchemaHookImpl)hookDef).location.getPath()));
 			}
 			else if (hookDef instanceof Hook.State) {
 				stateHooks.add(hle);
 				if (LOG.isDebugEnabled()) 
-					LOG.debug(String.format("Registered state-scoped hook [%s] [%s] for state [%s]", 
-							hookDef.getName() , hookDef.getClassName(), ((Hook.State)hookDef).getState()));
+					LOG.debug(String.format("Registered state-scoped hook [%s] at [%s]", 
+							hookDef.getClassName(), ((StateHookImpl)hookDef).location.getPath()));
 			}
 			else if (hookDef instanceof Hook.Variation) {
 				testHooks.add(hle);
 				if (LOG.isDebugEnabled()) 
-					LOG.debug(String.format("Registered test-scoped hook [%s] [%s] for test [%s]", 
-							hookDef.getName() , hookDef.getClassName(), ((Hook.Variation)hookDef).getVariation()));
+					LOG.debug(String.format("Registered test-scoped hook [%s] at [%s]", 
+							hookDef.getClassName(), ((VariationHookImpl)hookDef).location.getPath()));
 			}
 		}
 		catch (ConfigException.Parse e) {
@@ -153,6 +156,18 @@ public class ServerHooksService implements HooksService {
 	   
 	   ArrayList<HookListEntry> chain = new ArrayList<HookListEntry>();
 	   
+	   if (event instanceof VariationAwareLifecycleEvent) {
+
+		   for (HookListEntry hle : testHooks) {
+				
+			   if (hle.lseClass.isAssignableFrom(event.getClass()) &&
+					   ((VariationAwareLifecycleEvent) event).getVariation().equals(((Hook.Variation)hle.hookDef).getVariation())) {
+											
+				   chain.add(hle);
+				}				   
+			}
+	   }
+
 	   if (event instanceof StateAwareLifecycleEvent) {
 		   
 		   for (HookListEntry hle : stateHooks) {
@@ -163,18 +178,6 @@ public class ServerHooksService implements HooksService {
 				   
 				   chain.add(hle);
 	
-				}				   
-			}
-	   }
-
-	   if (event instanceof VariationAwareLifecycleEvent) {
-
-		   for (HookListEntry hle : testHooks) {
-				
-			   if (hle.lseClass.isAssignableFrom(event.getClass()) &&
-					   ((VariationAwareLifecycleEvent) event).getVariation().equals(((Hook.Variation)hle.hookDef).getVariation())) {
-											
-				   chain.add(hle);
 				}				   
 			}
 	   }
@@ -191,7 +194,7 @@ public class ServerHooksService implements HooksService {
 		   boolean first = true;
 		   for (HookListEntry hle: chain) {
 			   if (first) first = false; else buff.append(", ");
-			   buff.append(hle.hookDef.getName());
+			   buff.append(((SchemaHookImpl) hle.hookDef).location.getPath());
 		   }
 		   LOG.trace(buff.toString());
 	   }
@@ -210,7 +213,7 @@ public class ServerHooksService implements HooksService {
 			   Optional<? extends LifecycleEvent.PostResult> result = hook.post(event);
 			   
 			   if (LOG.isTraceEnabled())
-				   LOG.trace("Posted user hook [" + hle.hookDef.getName() + "] with [" + event + "]. Result: [" + result + "]");
+				   LOG.trace("Posted user hook [" + ((SchemaHookImpl) hle.hookDef).location.getPath() + "] with [" + event + "]. Result: [" + result + "]");
 						
 			   // If user hook returned a result, clip the chain.
 			   if (result.isPresent()) return result.get();

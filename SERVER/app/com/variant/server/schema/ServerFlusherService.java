@@ -1,5 +1,7 @@
 package com.variant.server.schema;
 
+import java.util.Optional;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,7 +42,7 @@ public class ServerFlusherService implements FlusherService {
 						return config.getEventFlusherClassName();
 					}
 					
-					@Override public String getInit() {
+					@Override public Optional<String> getInit() {
 						return config.getEventFlusherClassInit();
 					}			
 		};

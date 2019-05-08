@@ -42,20 +42,20 @@ class HookScopeTest extends EmbeddedServerSpec {
       'name':'$schemaName',
       'hooks':[
          {                                                              
-   		    'init':{'value':'one'},                                       
+   		    'init':{'value':'h1'},                                       
    			 'class':'com.variant.server.test.hooks.TestTargetingHookSimple'
    	   },                                                             
          {                                                              
-   		    'init':{'value':'two'},                                       
-   			 'class':'com.variant.server.test.hooks.TestTargetingHookSimple'
+   		    'init':{'value':'h2'},                                       
+   			 'class':'com.variant.server.test.hooks.TestQualificationHookSimple'
           },                                                             
          {                                                              
-   		    'init':{'value':'three'},                                       
+   		    'init':{'value':'h3'},                                       
    			 'class':'com.variant.server.test.hooks.TestTargetingHookSimple'
    	   },                                                             
          {                                                              
-   		    'init':{'value':'four'},                                       
-   			 'class':'com.variant.server.test.hooks.TestTargetingHookSimple'
+   		    'init':{'value':'h4'},                                       
+   			 'class':'com.variant.server.test.hooks.TestQualificationHookSimple'
           }                                                              
       ]                                                                
    },                                                                   
@@ -77,13 +77,9 @@ class HookScopeTest extends EmbeddedServerSpec {
 				   'weight':20                                             
 				}                                                          
 	      ],                                                            
-			'onStates':[                                                   
-			   {                                                          
-				   'stateRef':'state1',                                     
-				   'variants':[                                            
-				      {'experienceRef':'B'}
-			      ]                                                       
-	         }                                                          
+			'onStates':[                        
+			    {'stateRef':'state1'},
+			    {'stateRef':'state2'}                                                      
 	      ]                                                             
 	   }, 
 	   {                                                                
@@ -102,15 +98,12 @@ class HookScopeTest extends EmbeddedServerSpec {
 	      ],                                                            
 			'onStates':[                                                   
 			   {                                                          
-				   'stateRef':'state1',                                     
-				   'variants':[                                            
-				      {'experienceRef':'B'}  
-			      ]                                                       
+				   'stateRef':'state1' 
 	         }                                                          
 	      ]                                                             
 	   },                                                              
 	   {                                                                
-		   'name':'test3',
+		 'name':'test3',
        'experiences':[                                               
             {                                                          
 				   'name':'A',                                             
@@ -124,11 +117,8 @@ class HookScopeTest extends EmbeddedServerSpec {
 	      ],                                                            
 			'onStates':[                                                   
 			   {                                                          
-				   'stateRef':'state2',                                     
-				   'variants':[                                            
-				      {'experienceRef':'B'}  
-			      ]                                                       
-	         }                                                          
+				   'stateRef':'state2'
+				}                                                          
 	      ]                                                             
 	   }                                                               
    ]                                                                   
@@ -143,20 +133,34 @@ class HookScopeTest extends EmbeddedServerSpec {
    		val schema = server.schemata.get(schemaName).get.liveGen.get
          val state1 = schema.getState("state1").get
          val state2 = schema.getState("state2").get
-         val test = schema.getVariation("test1").get
+         val test1 = schema.getVariation("test1").get
          val ssn = SessionImpl.empty(newSid(), schema)
-   		ssn.getAttributes.get(TestTargetingHookSimple.ATTR_NAME) mustBe null
+   		ssn.getAttributes.size mustBe 0
 
    	   val req = ssn.targetForState(state1)
-   		// Only test1 is instrumented on state1
-     		println("********** "  + ssn.getAttributes.get(TestQualificationHookSimple.ATTR_NAME))
-   		// commit before targeting again.
+   		// test1 and test2 are instrumented on state1, but test2 is off
+   	   println (ssn.getAttributes.get(TestQualificationHookSimple.ATTR_NAME))
+   	   println (ssn.getAttributes.get(TestTargetingHookSimple.ATTR_NAME))
+     		
+   	   ssn.getAttributes.get(TestQualificationHookSimple.ATTR_NAME) mustBe "h2.test1 h4.test1"
+     		ssn.getAttributes.get(TestTargetingHookSimple.ATTR_NAME) mustBe "h1.test1.state1 h3.test1.state1"
+    
+     		// commit before targeting again.
    		req.asInstanceOf[StateRequestImpl].setStatus(Committed);	
 
-   		// Test3 is instrumented on state2
+   	   ssn.getAttributes.clear()
+   	   
+   		// test1 and test3 are instrumented on state2, but they are disjoint, so test3 should always
+   	   // raise qualification event, but only raise targeting event if test1 got targeted to control.
    		ssn.targetForState(state2)
-         ssn.getAttributes.get(TestQualificationHookSimple.ATTR_NAME) mustBe "test1 test3"
-   		ssn.getAttributes.get(TestTargetingHookSimple.ATTR_NAME) mustBe "test1 test3"	   
+         ssn.getAttributes.get(TestQualificationHookSimple.ATTR_NAME) mustBe "h2.test3 h4.test3"
+         
+   		ssn.getAttributes.get(TestTargetingHookSimple.ATTR_NAME) mustBe {
+   	   	if (req.getLiveExperience(test1).get == test1.getControlExperience)
+   	   		"h1.test3.state2 h3.test3.state2"
+   	   	else
+   	   		null
+   	   }
    		
 	   }
    }
@@ -164,96 +168,7 @@ class HookScopeTest extends EmbeddedServerSpec {
   /*
    * 
    */
-	"State parsed hook" should {
-	   
-	   ////////////////
-	   "throw state scope violation error if defined at test scope" in {
-	      
-   	    val schemaSrc = s"""
-{                                                                              
-   'meta':{                                                             		    	    
-      'name':'$schemaName'
-   },                                                                   
-	'states':[ 
-    {
-      'name':'state1',
-      'hooks':[
-         {
-   		'class':'com.variant.server.test.hooks.TestQualificationHookSimple',
-           'init':{'value':'stateParsedS1'}
-   	     }
-      ]
-    },
-	  {
-      'name':'state2'
-    }                                                 
-   ],                                                                   
-	'variations':[
-	   {                                                                
-		   'name':'test1',
-        'hooks':[
-           {                                                              
-     		     'name':'stateParsed',                                       
-     			   'class':'com.variant.server.test.hooks.StateParsedHook',
-             'init':{'hookName':'stateParsedT1'}
-     	     }
-        ],
-	      'experiences':[                                               
-            {                                                          
-				   'name':'A',                                             
-				   'weight':10,                                            
-				   'isControl':true                                        
-	         },                                                         
-		      {                                                          
-		         'name':'B',                                             
-				   'weight':20                                             
-				}                                                          
-	      ],                                                            
-			'onStates':[                                                   
-			   {                                                          
-				   'stateRef':'state1',                                     
-				   'variants':[                                            
-				      {'experienceRef':'B'}
-			      ]                                                       
-	         }                                                          
-	      ]                                                             
-	   }
-   ]                                                                   
-}"""
-
-      val schemaDeployer = SchemaDeployer.fromString(schemaSrc)
-      server.useSchemaDeployer(schemaDeployer)
-      val response = schemaDeployer.parserResponses(0)
-   		//response.getMessages.foreach(println(_))
-   		response.getMessages.size mustBe 4
-   		response.getMessages(FATAL) mustBe empty
-   		response.getMessages(ERROR).size() mustBe 2
-   		response.getMessages(WARN).size() mustBe 3
-   		response.getMessages(INFO).size() mustBe 4
-/*   		
-   		// Confirm parse time hooks were posted. Note that compile time hooks fire for off tests.
-   		var msg = response.getMessages.get(0)
-   		msg.getSeverity mustBe INFO
-   		msg.getText must include (HOOK_USER_MESSAGE_INFO.asMessage(String.format(StateParsedHook.INFO_MESSAGE_FORMAT, "stateParsedS1", "state1")))
-   		msg = response.getMessages.get(1)
-   		msg.getSeverity mustBe WARN
-   		msg.getText must include (HOOK_USER_MESSAGE_WARN.asMessage(String.format(StateParsedHook.WARN_MESSAGE_FORMAT, "stateParsedS1", "state1")))
-   		msg = response.getMessages.get(2)
-   		msg.getSeverity mustBe ERROR
-   		msg.getText must include (HOOK_USER_MESSAGE_ERROR.asMessage(String.format(StateParsedHook.ERROR_MESSAGE_FORMAT, "stateParsedS1", "state1")))
-   		msg = response.getMessages.get(3)
-   		msg.getSeverity mustBe ERROR
-   		msg.getText must include (ServerErrorLocal.HOOK_TEST_SCOPE_VIOLATION.asMessage("stateParsed", "test1", "com.variant.core.lifecycle.StateParsedLifecycleEvent"))
-*/
-   		server.schemata.get(schemaName).isDefined mustBe false
-   		
-	   }
-   }
-
-  /*
-   * 
-   */
-	"Test parsed hook" should {
+	"Variation qualification hook" should {
 	   
 	   ////////////////
 	   "throw state scope violation error if defined at state scope" in {
@@ -265,17 +180,16 @@ class HookScopeTest extends EmbeddedServerSpec {
    },                                                                   
 	'states':[ 
     {
-      'name':'state1'
+      'name':'state1',
+      'hooks':[
+         {
+   			'class':'com.variant.server.test.hooks.TestQualificationHookSimple',
+         	'init':{'value':'should not work'}
+   	   }
+      ]
     },
 	  {
-      'name':'state2',
-      'hooks':[
-         {                                                              
-   		     'name':'testParsed',                                       
-   			   'class':'com.variant.server.test.hooks.TestParsedHook',
-           'init':{'hookName':'testParsedS1'}
-   	     }
-      ]
+      'name':'state2'
     }                                                 
    ],                                                                   
 	'variations':[
@@ -283,9 +197,8 @@ class HookScopeTest extends EmbeddedServerSpec {
 		   'name':'test1',
         'hooks':[
            {                                                              
-     		     'name':'testParsed',                                       
-     			   'class':'com.variant.server.test.hooks.TestParsedHook',
-             'init':{'hookName':'testParsedT1'}
+     			 'class':'com.variant.server.test.hooks.TestQualificationHookSimple',
+             'init':{'value':'should work'}
      	     }
         ],
 	      'experiences':[                                               
@@ -315,27 +228,12 @@ class HookScopeTest extends EmbeddedServerSpec {
       server.useSchemaDeployer(schemaDeployer)
       val response = schemaDeployer.parserResponses(0)
    		//response.getMessages.foreach(println(_))
-   		response.getMessages.size mustBe 4
-   		response.getMessages(FATAL) mustBe empty
-   		response.getMessages(ERROR).size() mustBe 2
-   		response.getMessages(WARN).size() mustBe 3
-   		response.getMessages(INFO).size() mustBe 4
-/*   		
+   		response.getMessages.size mustBe 1
+
    		// Confirm parse time hooks were posted. Note that compile time hooks fire for off tests.
    		var msg = response.getMessages.get(0)
    		msg.getSeverity mustBe ERROR
-   		msg.getText must include (ServerErrorLocal.HOOK_STATE_SCOPE_VIOLATION.asMessage("testParsed", "state2", "com.variant.core.lifecycle.VariationParsedLifecycleEvent"))
-   		msg = response.getMessages.get(1)
-   		msg.getSeverity mustBe INFO
-   		msg.getText must include (HOOK_USER_MESSAGE_INFO.asMessage(String.format(TestParsedHook.INFO_MESSAGE_FORMAT, "testParsedT1", "test1")))
-   		msg = response.getMessages.get(2)
-   		msg.getSeverity mustBe WARN
-   		msg.getText must include (HOOK_USER_MESSAGE_WARN.asMessage(String.format(TestParsedHook.WARN_MESSAGE_FORMAT, "testParsedT1", "test1")))
-   		msg = response.getMessages.get(3)
-   		msg.getSeverity mustBe ERROR
-   		msg.getText must include (HOOK_USER_MESSAGE_ERROR.asMessage(String.format(TestParsedHook.ERROR_MESSAGE_FORMAT, "testParsedT1", "test1")))
-*/
-   		server.schemata.get(schemaName).isDefined mustBe false
+   		msg.getText must include (HOOK_STATE_SCOPE_VIOLATION.asMessage("/states[0]/hooks[0]/", "com.variant.server.api.lifecycle.VariationQualificationLifecycleEvent"))
    		
 	   }
    }
@@ -353,18 +251,18 @@ class HookScopeTest extends EmbeddedServerSpec {
    'meta':{                                                             		    	    
       'name':'$schemaName',
       'hooks':[
-        {                                                              
-   		     'name':'testTargeter',                                       
-   			   'class':'com.variant.server.test.hooks.TestTargetingHookSimple'
-   	     }                                                              
+        {    
+   		  'init':{'value':'meta'},                                       
+   		  'class':'com.variant.server.test.hooks.TestTargetingHookSimple'
+   	  }                                                              
       ]                                                                
    },                                                                   
 	'states':[ 
 	   {'name':'state1',
       'hooks':[
         {                                                              
-   		     'name':'testTargeter',                                       
-   			   'class':'com.variant.server.test.hooks.TestTargetingHookSimple'
+   		  'init':{'value':'state'},                                       
+   		  'class':'com.variant.server.test.hooks.TestTargetingHookSimple'
    	     }                                                              
       ]                                                                
 
@@ -387,8 +285,8 @@ class HookScopeTest extends EmbeddedServerSpec {
 	    ],
       'hooks':[
         {                                                              
-   		     'name':'testTargeter',                                       
-   			   'class':'com.variant.server.test.hooks.TestTargetingHookSimple'
+      		  'init':{'value':'variation'},                                       
+   			  'class':'com.variant.server.test.hooks.TestTargetingHookSimple'
    	     }                                                              
       ],                                                            
 			'onStates':[                                                   
@@ -419,91 +317,9 @@ class HookScopeTest extends EmbeddedServerSpec {
          val ssn = SessionImpl.empty(newSid(), schema)
    		ssn.getAttributes.get(TestTargetingHookSimple.ATTR_NAME) mustBe null
    		ssn.targetForState(state1)
-   		// Only test1 is instrumented on state1
-   		ssn.getAttributes.get(TestTargetingHookSimple.ATTR_NAME) mustBe "test1 test1 test1"  // All three should fire!
+   		// Only test1 is instrumented on state1. All 3 should fire in the right order: test -> state -> meta
+   		ssn.getAttributes.get(TestTargetingHookSimple.ATTR_NAME) mustBe "variation.test1.state1 state.test1.state1 meta.test1.state1" 
    		   		
 	   }
    }
-
-		/*
-   * 
-   */
-	"Test qualifying hook" should {
-	   
-	   ////////////////
-	   "throw state scope violation error if defined at state scope" in {
-	      
-   	    val schemaSrc = s"""
-{                                                                              
-   'meta':{                                                             		    	    
-      'name':'_',
-      'hooks': [
-        {                                                              
-   		     'name':'$schemaName',                                       
-   			   'class':'com.variant.server.test.hooks.TestQualificationHookSimple'
-   	     }
-      ]                                                                
-   },                                                                   
-	'states':[ 
-	   {
-       'name':'state1',
-       'hooks': [
-         {                                                              
-   		     'name':'testQualifier',                                       
-   			   'class':'com.variant.server.test.hooks.TestQualificationHookSimple'
-   	     }
-       ]                                                                
-     },
-	   {'name':'state2'}                                                 
-   ],                                                                   
-	'variations':[
-	   {                                                                
-		   'name':'test1',
-	     'experiences':[                                               
-            {                                                          
-				   'name':'A',                                             
-				   'weight':10,                                            
-				   'isControl':true                                        
-	         },                                                         
-		      {                                                          
-		         'name':'B',                                             
-				   'weight':20                                             
-				  }                                                          
-	    ],
-       'hooks': [
-         {                                                              
-   		     'name':'testQualifier',                                       
-   			   'class':'com.variant.server.test.hooks.TestQualificationHookSimple'
-   	     }
-       ],
-			'onStates':[                                                   
-			   {                                                          
-				   'stateRef':'state1',                                     
-				   'variants':[                                            
-				      {'experienceRef':'B'}
-			      ]                                                       
-	         }                                                          
-	      ]                                                             
-	   } 
-   ]                                                                   
-}"""
-
-      val schemaDeployer = SchemaDeployer.fromString(schemaSrc)
-      server.useSchemaDeployer(schemaDeployer)
-      val response = schemaDeployer.parserResponses(0)
-
-      //response.getMessages.foreach(println(_))
-   		response.getMessages.size mustBe 1
-
-   		var msg = response.getMessages.get(0)
-   		msg.getSeverity mustBe ERROR
-   		msg.getText must include (ServerErrorLocal.HOOK_STATE_SCOPE_VIOLATION.asMessage("testQualifier", "state1", "com.variant.server.api.lifecycle.VariationQualificationLifecycleEvent"))
-
-   		server.schemata.get(schemaName).isDefined mustBe false
-   		
-   		   		
-	   }
-   }
-
-
 }

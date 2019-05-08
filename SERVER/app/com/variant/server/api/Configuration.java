@@ -1,6 +1,7 @@
 package com.variant.server.api;
 
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Effective server configuration.
@@ -15,7 +16,7 @@ public interface Configuration {
 
 	String getEventFlusherClassName();
 
-	String getEventFlusherClassInit();
+	Optional<String> getEventFlusherClassInit();
 
 	int getEventWriterBufferSize();
 

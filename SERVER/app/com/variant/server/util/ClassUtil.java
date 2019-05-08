@@ -1,5 +1,7 @@
 package com.variant.server.util;
 
+import java.util.Optional;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,9 +23,10 @@ public class ClassUtil  {
 	 * @return null if proper constructor could not be found, i.e. nullary if initArg was null,
 	 *         or the single arg constructor of type ConfigObject otherwise.
 	 */
-	public static Object instantiate(String className, String initArg) throws Exception {
+	public static Object instantiate(String className, Optional<String> init) throws Exception {
 
-		Config config  = initArg == null || initArg.equals("null") ? null : ConfigFactory.parseString(initArg); 
+		// Java reflection API does not understand optionals, so translate.
+		Config config  = !init.isPresent() || init.get().equals("null") ? null : ConfigFactory.parseString(init.get()); 
 
 		Object result = ReflectUtils.instantiate(className, Config.class, config);
 		

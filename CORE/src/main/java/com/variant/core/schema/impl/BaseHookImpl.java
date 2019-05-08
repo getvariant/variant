@@ -1,6 +1,9 @@
 package com.variant.core.schema.impl;
 
+import java.util.Optional;
+
 import com.variant.core.schema.Hook;
+import com.variant.core.schema.parser.error.SemanticError.Location;
 
 /**
  * 
@@ -9,12 +12,15 @@ import com.variant.core.schema.Hook;
  */
 abstract class BaseHookImpl implements Hook {
 
-    protected final String className;
-	protected final String init;
+	public final Location location;
+
+	protected final String className;
+	protected final Optional<String> init;
 	
-	public BaseHookImpl(String className, String init) {
+	public BaseHookImpl(String className, Optional<String> init, Location location) {
 		this.className = className;
 		this.init = init;
+		this.location = location;
 	}
 	
 	//---------------------------------------------------------------------------------------------//
@@ -27,7 +33,7 @@ abstract class BaseHookImpl implements Hook {
 	}
 
 	@Override
-	public String getInit() {
+	public Optional<String> getInit() {
 		return init;
 	}
 

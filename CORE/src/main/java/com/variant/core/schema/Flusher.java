@@ -1,5 +1,7 @@
 package com.variant.core.schema;
 
+import java.util.Optional;
+
 /**
  * Representation of the event flusher schema property.
  * 
@@ -20,9 +22,10 @@ public interface Flusher {
 	/**
 	 * The initialization string.
 	 * 
-	 * @return The string value of the "init" property. Null, if omitted.
+	 * @return The <code>Optional</code> container, with the string value of the "init" property,
+	 *         if provided in the schema, or empty if no <code>'init'</code> property was set.
 	 * @since 0.8
 	 */
-	public String getInit();
+	public Optional<String> getInit();
 		
 }

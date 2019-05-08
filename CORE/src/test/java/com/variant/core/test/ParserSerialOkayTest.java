@@ -8,6 +8,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import com.variant.core.schema.Flusher;
 import com.variant.core.schema.Hook;
@@ -167,7 +168,7 @@ public class ParserSerialOkayTest extends BaseTestCore {
 		Flusher flusher = schema.getMeta().getFlusher();
 		assertNotNull(flusher);
 		assertEquals("flusher.class.Foo", flusher.getClassName());
-		assertEquals("{\"url\":\"jdbc:postgresql://localhost/variant\",\"user\":\"variant\",\"password\":\"variant\"}", flusher.getInit());
+		assertEquals(Optional.of("{\"url\":\"jdbc:postgresql://localhost/variant\",\"user\":\"variant\",\"password\":\"variant\"}"), flusher.getInit());
 
 		Variation test1 = schema.getVariation("test1").get();
 		Variation test2 = schema.getVariation("test2").get();
@@ -184,34 +185,34 @@ public class ParserSerialOkayTest extends BaseTestCore {
 		assertEquals(6, hooks.size());
 		Hook hook = hooks.get(0);
 		assertEquals("c.v.s.one", hook.getClassName());
-		assertNull(hook.getInit());
+		assertEquals(Optional.empty(), hook.getInit());
 		hook = hooks.get(1);
 		assertEquals("c.v.s.two", hook.getClassName());
-		assertNull(hook.getInit());
+		assertEquals(Optional.empty(), hook.getInit());
 		hook = hooks.get(2);
 		assertEquals("c.v.s.one", hook.getClassName());
-		assertNull(hook.getInit());
+		assertEquals(Optional.empty(), hook.getInit());
 		hook = hooks.get(3);
 		assertEquals("c.v.s.three", hook.getClassName());
-		assertNull(hook.getInit());
+		assertEquals(Optional.empty(), hook.getInit());
 		hook = hooks.get(4);
 		assertEquals("c.v.s.four", hook.getClassName());
-		assertNull(hook.getInit());
+		assertEquals(Optional.empty(), hook.getInit());
 		hook = hooks.get(5);
 		assertEquals("c.v.s.four", hook.getClassName());
-		assertNull(hook.getInit());
+		assertEquals(Optional.empty(), hook.getInit());
 
 		hooks = test1.getHooks();
 		assertEquals(3, hooks.size());
 		hook = hooks.get(0);
 		assertEquals("c.v.s.one", hook.getClassName());
-		assertEquals("{}", hook.getInit());
+		assertEquals(Optional.of("{}"), hook.getInit());
 		hook = hooks.get(1);
 		assertEquals("c.v.s.two", hook.getClassName());
-		assertNull(hook.getInit());
+		assertEquals(Optional.of("null"), hook.getInit());
 		hook = hooks.get(2);
 		assertEquals("c.v.s.three", hook.getClassName());
-		assertEquals("{\"foo\":\"a string\",\"bar\":[1,2],\"obj\":{}}", hook.getInit());
+		assertEquals(Optional.of("{\"foo\":\"a string\",\"bar\":[1,2],\"obj\":{}}"), hook.getInit());
 
 		assertTrue(test2.getHooks().isEmpty());
 	}
@@ -360,7 +361,7 @@ public class ParserSerialOkayTest extends BaseTestCore {
 		Flusher flusher = schema.getMeta().getFlusher();
 		assertNotNull(flusher);
 		assertEquals("flusher.class.Foo", flusher.getClassName());
-		assertNull(flusher.getInit());
+		assertEquals(Optional.empty(), flusher.getInit());
 
 		Variation test1 = schema.getVariation("test1").get();
 		Variation test2 = schema.getVariation("test2").get();

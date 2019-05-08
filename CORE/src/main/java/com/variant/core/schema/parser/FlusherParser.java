@@ -6,6 +6,7 @@ import static com.variant.core.schema.parser.error.SemanticError.PROPERTY_NOT_OB
 import static com.variant.core.schema.parser.error.SemanticError.UNSUPPORTED_PROPERTY;
 
 import java.util.Map;
+import java.util.Optional;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -31,7 +32,7 @@ public class FlusherParser implements Keywords {
 	public static Flusher parse(Object rawFlusher, Location metaLocation, ParserResponse response) {
 
 		String className = null;
-		String init = null;
+		Optional<String> init = Optional.empty();
 		Location flusherLocation = metaLocation.plusObj(KEYWORD_FLUSHER);
 		
 		Map<String, ?> rawMap;
@@ -56,18 +57,23 @@ public class FlusherParser implements Keywords {
 				}
 			}
 			else if (entry.getKey().equalsIgnoreCase(KEYWORD_INIT)) {
-				// Init is an arbitrary json object. Simply convert it to string
-				// and let server repackage it as typesafe config.
-				ObjectMapper mapper = new ObjectMapper();
-				mapper.configure(JsonParser.Feature.ALLOW_SINGLE_QUOTES, true);
-
-				try {
-					init = mapper.writeValueAsString(entry.getValue());
-					//String jsonToReparse = "{'init':" + init + "}";
-					//mapper.readValue(jsonToReparse, Map.class); // attempt to re-parse.
+				
+				if (entry.getValue() == null) {
+					// Explicit null
+					init = Optional.of("null");
 				}
-	 			catch (Exception e) {
-	 				throw new CoreException.Internal("Unable to re-serialize hook init [" + entry.getValue().toString() + "]", e);
+				else {
+					// Non null init. An arbitrary json object. Simply convert it to string
+					// and let server repackage it as typesafe config.
+					ObjectMapper mapper = new ObjectMapper();
+					mapper.configure(JsonParser.Feature.ALLOW_SINGLE_QUOTES, true);
+	
+					try {
+						init = Optional.of(mapper.writeValueAsString(entry.getValue()));
+					}
+		 			catch (Exception e) {
+		 				throw new CoreException.Internal("Unable to re-serialize hook init [" + entry.getValue().toString() + "]", e);
+					}
 				}
 			}
 			else {

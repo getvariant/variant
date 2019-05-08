@@ -32,7 +32,8 @@ public class TestTargetingHookSimple implements LifecycleHook<VariationTargeting
 	public Optional<LifecycleEvent.PostResult> post(VariationTargetingLifecycleEvent event) {
 		Session ssn = event.getSession();
 		String curVal = ssn.getAttributes().get(ATTR_NAME);
-		ssn.getAttributes().put(ATTR_NAME,  curVal == null ? attrValue : curVal + " " + attrValue);
+		String newVal = attrValue + '.' + event.getVariation().getName() + "." + event.getState().getName();
+		ssn.getAttributes().put(ATTR_NAME,  curVal == null ? newVal : curVal + " " + newVal);
 		return Optional.empty();
 	}
 

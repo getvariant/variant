@@ -1,5 +1,7 @@
 package com.variant.core.schema;
 
+import java.util.Optional;
+
 /**
  * Representation of the schema <code>hook</code> property. Depending on the definition context,
  * a hook can have the scope of the entire schema, a particular state, or a particular test.
@@ -20,10 +22,11 @@ public interface Hook {
 	/**
 	 * The initialization string.
 	 * 
-	 * @return The string value of the "init" property. Null, if omitted.
+	 * @return The <code>Optional</code> container, with the string value of the "init" property,
+	 *         if provided in the schema, or empty if no <code>'init'</code> property was set.
 	 * @since 0.7
 	 */
-	public String getInit();
+	public Optional<String> getInit();
 	
 	
 	/**

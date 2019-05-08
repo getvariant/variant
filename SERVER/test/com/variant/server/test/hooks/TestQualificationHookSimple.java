@@ -31,7 +31,8 @@ public class TestQualificationHookSimple implements LifecycleHook<VariationQuali
 	public Optional<LifecycleEvent.PostResult> post(VariationQualificationLifecycleEvent event) {
 		Session ssn = event.getSession();
 		String curVal = ssn.getAttributes().get(ATTR_NAME);
-		ssn.getAttributes().put(ATTR_NAME,  curVal == null ? attrValue : curVal + " " + attrValue);
+		String newVal = attrValue + '.' + event.getVariation().getName();
+		ssn.getAttributes().put(ATTR_NAME,  curVal == null ? newVal : curVal + " " + newVal);
 		return Optional.empty();
 	}
 }
