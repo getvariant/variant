@@ -1,4 +1,4 @@
-package com.variant.server.test.api
+package com.variant.server.test
 
 import com.variant.core.error.ServerError
 import com.variant.server.boot.ServerExceptionLocal
@@ -48,15 +48,7 @@ class TargetingTest extends EmbeddedServerAsyncSpec {
          ],
          'onStates':[ 
             { 
-               'stateRef':'state1',
-               'variants':[ 
-                  {
-                     'experienceRef': 'B'
-                  },
-                  { 
-                     'experienceRef': 'C'
-                  }
-               ] 
+               'stateRef':'state1' 
             }
          ]
       },
@@ -79,15 +71,7 @@ class TargetingTest extends EmbeddedServerAsyncSpec {
          ],
          'onStates':[ 
             { 
-               'stateRef':'state1',
-               'variants':[ 
-                  {
-                     'experienceRef': 'B'
-                  },
-                  { 
-                     'experienceRef': 'C'
-                  }
-               ] 
+               'stateRef':'state1'
             }
          ]
       } 
@@ -294,9 +278,9 @@ class TargetingTest extends EmbeddedServerAsyncSpec {
          joinAll(60000)  
       }
 		
-	   "Throw exception if targeting hook sets bad experience" in {
+	   "Throw exception if targeting hook sets wrong experience" in {
 
-	      val schemaName = "bad_experience"
+	      val schemaName = "bad_experiencee"
          val schemaSrc = ParameterizedString(schemaJson).expand(
                "schemaName" -> schemaName,
                "hooks" -> 
@@ -305,7 +289,6 @@ class TargetingTest extends EmbeddedServerAsyncSpec {
                      'class':'com.variant.server.test.hooks.TestTargetingHookSimple'
                    },
                    {
-                     'name' :'A_B_CHook',
                      'class':'com.variant.server.test.hooks.TestTargetingHook',
                      'init': {'experience':'test2.A'}
                    }
@@ -314,6 +297,8 @@ class TargetingTest extends EmbeddedServerAsyncSpec {
          val schemaDeployer = SchemaDeployer.fromString(schemaSrc)
          server.useSchemaDeployer(schemaDeployer)
          val response = schemaDeployer.parserResponses(0)
+         response.getMessages.forEach { m => println(m) }
+         response.getMessages.size mustBe 0
          
          server.schemata.get(schemaName).isDefined mustBe true
          
@@ -322,19 +307,19 @@ class TargetingTest extends EmbeddedServerAsyncSpec {
 		   
 	
 		   var ssn = SessionImpl.empty(newSid(), schema)
-   	   
-   	   val caughtEx = intercept[ServerExceptionLocal] {
-             ssn.targetForState(state1)   // targeting hook returns an experience not from test1
+
+		   // targeting hook returns an experience not from the wrong test.
+		   val caughtEx = intercept[ServerExceptionLocal] {
+             ssn.targetForState(state1)
          }
-         caughtEx.getMessage mustBe (
-                     new ServerExceptionLocal(
-                           ServerError.HOOK_TARGETING_BAD_EXPERIENCE, classOf[TestTargetingHook].getName, "test1", "test2.A"
-                     ).getMessage)
+         caughtEx.getMessage mustBe 
+         	ServerError.HOOK_TARGETING_BAD_EXPERIENCE.asMessage(classOf[TestTargetingHook].getName, "test1", "test2.A")
+                     
  
 	   }
 
 	}
-	
+
 	/**
 	 * 
 	 * @param counts
