@@ -1,7 +1,6 @@
 package com.variant.server.test
 
 import org.scalatest.TestData
-import org.scalatestplus.play.OneAppPerTest
 import org.scalatestplus.play.PlaySpec
 
 import com.variant.server.boot.VariantServer
@@ -10,11 +9,12 @@ import com.variant.server.play.VariantApplicationLoader
 import play.api.Application
 import play.api.Configuration
 import play.api.inject.guice.GuiceApplicationBuilder
+import org.scalatestplus.play.guice.GuiceOneAppPerTest
 
 /**
  * Test various schema deployment scenarios
  */
-class SchemaDeployColdTest extends PlaySpec with OneAppPerTest {
+class SchemaDeployColdTest extends PlaySpec with GuiceOneAppPerTest {
    
    implicit override def newAppForTest(testData: TestData): Application = {
       

@@ -1,6 +1,6 @@
 package com.variant.server.test.controller
 
-import scala.collection.JavaConversions.mutableSetAsJavaSet
+import scala.collection.JavaConverters._
 
 import com.variant.core.StateRequestStatus.Committed
 import com.variant.core.StateRequestStatus.InProgress
@@ -179,7 +179,7 @@ class TraceEventTest extends EmbeddedServerSpec {
          event.attributes("$STATUS") mustBe "Committed"
          event.sessionId mustBe sid
          event.createdOn.toEpochMilli mustBe (System.currentTimeMillis() - millisToSleep) +- 100   
-         event.eventExperiences.size() mustBe 4
+         event.eventExperiences.size mustBe 4
          // Test4 is not instrumented.
          event.eventExperiences.exists {_.testName == "test6"} mustBe false
 
@@ -254,7 +254,7 @@ class TraceEventTest extends EmbeddedServerSpec {
          event.attributes("key3") mustBe "val3"
          event.sessionId mustBe sid
          event.createdOn.toEpochMilli mustBe (System.currentTimeMillis() - millisToSleep) +- 100   
-         event.eventExperiences.size() mustBe 5
+         event.eventExperiences.size mustBe 5
          // Test4 is not instrumented.
          event.eventExperiences.exists {_.testName == "test4"} mustBe false
 
@@ -342,7 +342,7 @@ class TraceEventTest extends EmbeddedServerSpec {
          event.sessionId mustBe sid
          event.createdOn.toEpochMilli mustBe (System.currentTimeMillis() - millisToSleep) +- 100
          event.name mustBe eventName
-         event.eventExperiences.size() mustBe 4
+         event.eventExperiences.size mustBe 4
          event.attributes mustBe empty
          event.eventExperiences.exists(_.testName == "test1") mustBe true
          event.eventExperiences.exists(_.testName == "test2") mustBe false
@@ -403,7 +403,7 @@ class TraceEventTest extends EmbeddedServerSpec {
          event.sessionId mustBe sid
          event.createdOn.toEpochMilli mustBe (System.currentTimeMillis() - millisToSleep) +- 100
          event.name mustBe eventName
-         event.eventExperiences.size() mustBe 4
+         event.eventExperiences.size mustBe 4
          event.attributes.size mustBe 2
          event.eventExperiences.exists(_.testName == "test1") mustBe true
          event.eventExperiences.exists(_.testName == "test2") mustBe true

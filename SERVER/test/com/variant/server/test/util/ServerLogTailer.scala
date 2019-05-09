@@ -1,6 +1,6 @@
 package com.variant.server.test.util
 
-import scala.collection.JavaConversions._;
+import scala.collection.JavaConverters._
 import com.variant.core.util.LogTailer
 import com.variant.core.util.LogTailer.Entry
 
@@ -9,5 +9,5 @@ import com.variant.core.util.LogTailer.Entry
  */
 object ServerLogTailer {
   
-   def last(n: Integer, fileName: String = "log/variant.log"): Seq[Entry] = LogTailer.last(n, fileName).toSeq
+   def last(n: Integer, fileName: String = "log/variant.log"): Seq[Entry] = LogTailer.last(n, fileName).asScala.toSeq
 }

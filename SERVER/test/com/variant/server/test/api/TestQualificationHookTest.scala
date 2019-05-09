@@ -1,7 +1,7 @@
 package com.variant.server.test.api
 
 import scala.io.Source
-import scala.collection.JavaConversions._
+import scala.collection.JavaConverters._
 import com.variant.core.StateRequestStatus._
 import com.variant.server.impl.SessionImpl
 import com.variant.server.test.util.ParameterizedString
@@ -76,7 +76,7 @@ class TestQualificationHookTest extends EmbeddedServerSpec {
        server.useSchemaDeployer(schemaDeployer)
        val response = schemaDeployer.parserResponses(0)
        
-       response.getMessages.foreach(println(_))
+       response.getMessages.asScala.foreach(println(_))
    	 response.hasMessages() mustBe false
        server.schemata.get(schemaName).isDefined mustBe true
    	 val schema = server.schemata.get(schemaName).get.liveGen.get
@@ -115,7 +115,7 @@ class TestQualificationHookTest extends EmbeddedServerSpec {
    		val req = ssn.targetForState(state1);
 		   ssn.getTraversedStates.size() mustEqual 1
 		   ssn.getTraversedStates.get(state1) mustEqual 1
-		   ssn.getTraversedVariations.toSet mustEqual Set(test3, test4, test5, test6)
+		   ssn.getTraversedVariations.asScala.toSet mustEqual Set(test3, test4, test5, test6)
 		   ssn.getDisqualifiedVariations.size() mustEqual 0
 		   val stabile = ssn.targetingStabile
 		   stabile.getAll().size() mustEqual 4
@@ -148,7 +148,7 @@ class TestQualificationHookTest extends EmbeddedServerSpec {
 		   ssn.getTraversedStates.size() mustEqual 2
 		   ssn.getTraversedStates.get(state1) mustEqual 1
 		   ssn.getTraversedStates.get(state2) mustEqual 1
-		   ssn.getTraversedVariations.toSet mustEqual Set(test1, test3, test4, test5, test6)
+		   ssn.getTraversedVariations.asScala.toSet mustEqual Set(test1, test3, test4, test5, test6)
 		   ssn.getDisqualifiedVariations.size() mustEqual 0
 		   val stabile = ssn.targetingStabile
 		   stabile.getAll().size() mustEqual 5
@@ -229,9 +229,9 @@ class TestQualificationHookTest extends EmbeddedServerSpec {
 		   ssn = SessionImpl.empty(newSid(), schema)
 		   setTargetingStabile(ssn, "test6.B", "test2.C", "test1.A")
 		   val req = ssn.targetForState(state1);
-		   ssn.getTraversedStates.toSet mustEqual Set((state1, 1))
-		   ssn.getTraversedVariations.toSet mustEqual Set(test3, test4, test5)
-		   ssn.getDisqualifiedVariations.toSet mustEqual Set(test6)
+		   ssn.getTraversedStates.asScala.toSet mustEqual Set((state1, 1))
+		   ssn.getTraversedVariations.asScala.toSet mustEqual Set(test3, test4, test5)
+		   ssn.getDisqualifiedVariations.asScala.toSet mustEqual Set(test6)
 
 		   val stabile = ssn.targetingStabile
 		   stabile.getAll().size() mustEqual 6  
@@ -284,9 +284,9 @@ class TestQualificationHookTest extends EmbeddedServerSpec {
    	   setTargetingStabile(ssn, "test6.B", "test2.C", "test1.A")
    	 
 		   val req = ssn.targetForState(state2);
-		   ssn.getTraversedStates.toSet mustEqual Set((state2,1))
-		   ssn.getTraversedVariations.toSet mustEqual Set(test3, test4, test5)
-		   ssn.getDisqualifiedVariations.toSet mustEqual Set(test1, test6)
+		   ssn.getTraversedStates.asScala.toSet mustEqual Set((state2,1))
+		   ssn.getTraversedVariations.asScala.toSet mustEqual Set(test3, test4, test5)
+		   ssn.getDisqualifiedVariations.asScala.toSet mustEqual Set(test1, test6)
 
 		   val stabile = ssn.targetingStabile
 		   stabile.getAll().size() mustEqual 5  
@@ -314,9 +314,9 @@ class TestQualificationHookTest extends EmbeddedServerSpec {
    	   val test6 = schema.getVariation("test6").get
 
 		   val req = ssn.targetForState(state3);
-		   ssn.getTraversedStates.toSet mustEqual Set((state2,1), (state3,1))
-		   ssn.getTraversedVariations.toSet mustEqual Set(test3, test4, test5)
-		   ssn.getDisqualifiedVariations.toSet mustEqual Set(test1, test6)
+		   ssn.getTraversedStates.asScala.toSet mustEqual Set((state2,1), (state3,1))
+		   ssn.getTraversedVariations.asScala.toSet mustEqual Set(test3, test4, test5)
+		   ssn.getDisqualifiedVariations.asScala.toSet mustEqual Set(test1, test6)
 
 		   val stabile = ssn.targetingStabile
 		   stabile.getAll().size() mustEqual 5

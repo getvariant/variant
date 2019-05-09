@@ -1,9 +1,8 @@
 package com.variant.server.test.spec
 
-import scala.collection.JavaConversions.asScalaBuffer
+import scala.collection.JavaConverters._
 
 import org.scalatest.BeforeAndAfterAll
-import org.scalatestplus.play.OneAppPerSuite
 
 import com.variant.core.error.UserError.Severity
 import com.variant.server.play.VariantApplicationLoader
@@ -13,6 +12,7 @@ import play.api.Application
 import play.api.Configuration
 import play.api.Logger
 import play.api.inject.guice.GuiceApplicationBuilder
+import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 
 /**
  * All tests using an embedded server inherint from here.
@@ -21,7 +21,7 @@ object EmbeddedServerSpec {
    private var sqlSchemaCreated = false
 }
 
-class EmbeddedServerSpec extends BaseServerSpec with OneAppPerSuite with BeforeAndAfterAll {
+class EmbeddedServerSpec extends BaseServerSpec with GuiceOneAppPerSuite with BeforeAndAfterAll {
 
    import EmbeddedServerSpec._
    
@@ -62,6 +62,10 @@ class EmbeddedServerSpec extends BaseServerSpec with OneAppPerSuite with BeforeA
       	   		   jdbc.createSchema()
          			   logger.info("Recreated H2 schema")
          			   
+      	   		case JdbcService.Vendor.MYSQL => 
+      	   		   jdbc.createSchema()
+         			   logger.info("Recreated MySQL schema")
+         			 
       		   }
 
       		}
@@ -80,7 +84,7 @@ class EmbeddedServerSpec extends BaseServerSpec with OneAppPerSuite with BeforeA
    server.schemaDeployer.parserResponses.foreach { resp =>
 	   if (resp.hasMessages(Severity.ERROR)) {
 	      println(s"***** PARSE ERRORS IN SCHEMA [${resp.getSchemaName}] *****")
-         resp.getMessages.foreach {println(_)}
+         resp.getMessages.asScala.foreach {println(_)}
 	   }
    }
    

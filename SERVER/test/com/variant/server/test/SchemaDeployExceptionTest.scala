@@ -5,7 +5,6 @@ import scala.reflect.io.Path
 import scala.util.Try
 import org.apache.commons.io.FileUtils
 import org.scalatest.TestData
-import org.scalatestplus.play.OneAppPerTest
 import com.variant.core.error.UserError.Severity._
 import com.variant.server.api.ConfigKeys
 import com.variant.server.api.ServerException
@@ -23,11 +22,12 @@ import play.api.test.Helpers.route
 import play.api.test.Helpers.writeableOf_AnyContentAsEmpty
 import play.api.libs.json.Json
 import com.variant.server.boot.ServerExceptionLocal
+import org.scalatestplus.play.guice.GuiceOneAppPerTest
 
 /**
  * Test various schema deployment error scenarios
  */
-class SchemaDeployExceptionTest extends BaseServerSpec with OneAppPerTest {
+class SchemaDeployExceptionTest extends BaseServerSpec with GuiceOneAppPerTest {
    
   /**
    * This will implicitly rebuild the server before each test.

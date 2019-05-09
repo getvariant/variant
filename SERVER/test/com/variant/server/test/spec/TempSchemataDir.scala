@@ -3,7 +3,6 @@ package com.variant.server.test.spec
 import scala.sys.process._
 
 import org.scalatest.BeforeAndAfterAll
-import org.scalatestplus.play.OneAppPerSuite
 import org.scalatestplus.play.PlaySpec
 
 import com.variant.core.util.IoUtils
@@ -12,6 +11,7 @@ import com.variant.server.play.VariantApplicationLoader
 import play.api.Application
 import play.api.Configuration
 import play.api.inject.guice.GuiceApplicationBuilder
+import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 
 /**
  * 
@@ -27,7 +27,7 @@ object TempSchemataDir {
  * Tests which wish to operate on a temporary schemata directory
  * should mix this in.
  */
-trait TempSchemataDir extends PlaySpec with OneAppPerSuite with BeforeAndAfterAll {
+trait TempSchemataDir extends PlaySpec with GuiceOneAppPerSuite with BeforeAndAfterAll {
             
    val schemataDir = TempSchemataDir.schemataDir 
 
