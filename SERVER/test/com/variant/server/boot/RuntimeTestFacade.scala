@@ -51,6 +51,9 @@ class RuntimeTestFacade(schemaGen: SchemaGen)  extends Runtime(schemaGen) {
       super.isTargetable(test, state, bufferAsJavaList(ArrayBuffer(alreadyTargetedExperiences:_*)))
    }
    
+   /* I can't figure out how to convert immutable scala Array to a mutable java List
+    * using the JavaConverters routines, so writing my own.
+    */
    private[this] def toJavaList[V](arr: Array[V]): java.util.List[V] = {
    	val result = new java.util.ArrayList[V]()
    	arr.foreach { result.add(_) }
