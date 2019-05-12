@@ -79,7 +79,7 @@ public class ServerErrorLocal extends UserError {
 			new ServerErrorLocal(432, Severity.INFO, "No schemata found in [%s]");
 
 	public final static ServerErrorLocal SERVER_BOOT_OK = 
-			new ServerErrorLocal(433, Severity.INFO, "%s bootstapped on port [%s] in %s");
+			new ServerErrorLocal(433, Severity.INFO, "%s bootstrapped on port [%s] in %s");
 
 	public final static ServerErrorLocal SERVER_BOOT_FAILED = 
 			new ServerErrorLocal(434, Severity.INFO, "%s failed to bootstrap due to following errors:");
