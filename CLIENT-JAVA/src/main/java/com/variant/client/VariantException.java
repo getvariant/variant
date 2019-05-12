@@ -38,8 +38,8 @@ public class VariantException extends com.variant.core.error.VariantException {
 	 * @param t
 	 * @param args
 	 */
-	public VariantException(UserError error, Throwable t, Object...args) {
-		super(t);
+	public VariantException(Throwable t, UserError error, Object...args) {
+		super.initCause(t);
 		this.error = error;
 		this.args = args;
 	}
