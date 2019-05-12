@@ -12,7 +12,7 @@
     
 	<properties>
     	<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>	
-		<jackson.version>2.5.3</jackson.version>
+		<jackson.version>2.9.8</jackson.version>
 		<variant.version>0.10.0</variant.version>
     </properties>
 
@@ -37,7 +37,7 @@
             <version>1.2.1</version>
         </dependency>
         
-        <!-- Jackson JSON parser -->
+      <!-- Jackson JSON parser -->
 		<!-- the core, which includes Streaming API, shared low-level abstractions (but NOT data-binding) -->
  		<dependency>
    			<groupId>com.fasterxml.jackson.core</groupId>
