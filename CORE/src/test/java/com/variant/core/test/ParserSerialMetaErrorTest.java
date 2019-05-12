@@ -80,7 +80,7 @@ public class ParserSerialMetaErrorTest extends BaseTestCore {
 		assertTrue(response.hasMessages());
 		assertEquals(1, response.getMessages().size());
 		ParserMessage actual = response.getMessages().get(0);
-		ParserMessage expected = new ParserMessageImpl(new SyntaxError.Location(schema, 10, 4), JSON_SYNTAX_ERROR, "Unexpected character (''' (code 39)): was expecting comma to separate OBJECT entries");
+		ParserMessage expected = new ParserMessageImpl(new SyntaxError.Location(schema, 10, 4), JSON_SYNTAX_ERROR, "Unexpected character (''' (code 39)): was expecting comma to separate Object entries");
 		assertMessageEqual(expected, actual);
 	}
 	
