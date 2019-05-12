@@ -133,11 +133,11 @@ class EventFlusherCsvTest extends EmbeddedServerSpec {
 	      
 	      val event1 = lines.next()
 	      event1 must startWith regex
-   			s""""\\$$STATE_VISIT","[\\d\\.\\:\\-TZ]*","${sid}","\\$$STATUS=Committed;\\$$STATE=state1","test1","(A|B)","((true)|(false))""""
+   			s""""[a-fA-F0-9]+","\\$$STATE_VISIT","[\\d\\.\\:\\-TZ]*","${sid}","\\$$STATUS=Committed;\\$$STATE=state1","test1","(A|B)","((true)|(false))""""
 	      
 	      val event2 = lines.next()
 	      event2 must startWith regex
-   			s""""\\$$STATE_VISIT","[\\d\\.\\:\\-TZ]*","${sid}","key1=val1;key2=val2;\\$$STATE=state2;\\$$STATUS=Failed","test1","(A|B)","((true)|(false))""""
+   			s""""[a-fA-F0-9]+","\\$$STATE_VISIT","[\\d\\.\\:\\-TZ]*","${sid}","key1=val1;key2=val2;\\$$STATE=state2;\\$$STATUS=Failed","test1","(A|B)","((true)|(false))""""
 
 	      lines.hasNext mustBe false
       }
@@ -266,11 +266,11 @@ class EventFlusherCsvTest extends EmbeddedServerSpec {
 
 			val event1 = lines.next()
 	      event1 must startWith regex
-   			s""""\\$$STATE_VISIT","[\\d\\.\\:\\-TZ]*","${sid}","\\$$STATUS=Committed;\\$$STATE=state1","test1","(A|B)","((true)|(false))""""
+   			s""""[a-fA-F0-9]+","\\$$STATE_VISIT","[\\d\\.\\:\\-TZ]*","${sid}","\\$$STATUS=Committed;\\$$STATE=state1","test1","(A|B)","((true)|(false))""""
 	      
 	      val event2 = lines.next()
 	      event2 must startWith regex
-   			s""""\\$$STATE_VISIT","[\\d\\.\\:\\-TZ]*","${sid}","key1=val1;key2=val2;\\$$STATE=state2;\\$$STATUS=Failed","test1","(A|B)","((true)|(false))""""
+   			s""""[a-fA-F0-9]+","\\$$STATE_VISIT","[\\d\\.\\:\\-TZ]*","${sid}","key1=val1;key2=val2;\\$$STATE=state2;\\$$STATUS=Failed","test1","(A|B)","((true)|(false))""""
 
 	      lines.hasNext mustBe false
       }
