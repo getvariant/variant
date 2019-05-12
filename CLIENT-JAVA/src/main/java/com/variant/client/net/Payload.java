@@ -42,8 +42,8 @@ abstract public class Payload {
 				throw va;
 			}
 			catch (Throwable t) {
-				throw new VariantException(
-						ClientInternalError.INTERNAL_ERROR, String.format("Unable to parse payload type [%s]", Session.class.getName()), t);
+				throw new VariantException(t, 
+						ClientInternalError.INTERNAL_ERROR, String.format("Unable to parse payload type [%s]", Session.class.getName()));
 			}
 		}
 		
