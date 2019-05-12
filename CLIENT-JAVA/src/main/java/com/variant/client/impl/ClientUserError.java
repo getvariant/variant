@@ -2,7 +2,7 @@ package com.variant.client.impl;
 
 import com.variant.client.SessionIdTracker;
 import com.variant.client.TargetingTracker;
-import com.variant.core.error.CommonError;
+import com.variant.core.error.UserError;
 import com.variant.core.error.ServerError;
 
 /**
@@ -14,7 +14,7 @@ import com.variant.core.error.ServerError;
  * @author Igor Urisman
  * @since 0.7
  */
-public class ClientUserError extends CommonError {
+public class ClientUserError extends UserError {
 	
 	//
 	// 271-300 Client Local user errors.

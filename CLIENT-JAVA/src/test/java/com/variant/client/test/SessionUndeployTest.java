@@ -112,9 +112,8 @@ public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 			async (() -> {
 				Session ssn = conn3.getOrCreateSession(newSid());
 				State state = ssn.getSchema().getState("newVisit").get();
-				// The qualifying and targeting hooks will throw an NPE
-				// if user-agent attribute is not set.
-				ssn.getAttributes().put("user-agent", "does not matter");
+				// The qualifying hook will throw an NPE if user attribute is not set.
+				ssn.getAttributes().put("user", "does not matter");
 				StateRequest req = ssn.targetForState(state);
 				assertNotNull(req);
 				assertEquals(req.getSession(), ssn);
@@ -140,7 +139,7 @@ public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 
 				// Non-mutating methods that don't go over the network.
 				assertNotNull(ssn.getId());
-				assertNotNull(ssn.getCreateDate());
+				assertNotNull(ssn.getTimestamp());
 				assertEquals(conn1, ssn.getConnection());
 				assertEquals(1000, ssn.getTimeoutMillis());
 				assertFalse(conn1.getSessionById(sessions1[_i].getId()).isPresent());
@@ -180,7 +179,7 @@ public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 
 				// Non-mutating methods that don't go over the network.
 				assertNotNull(ssn.getId());
-				assertNotNull(ssn.getCreateDate());
+				assertNotNull(ssn.getTimestamp());
 				assertEquals(conn2, ssn.getConnection());
 				assertEquals(1000, ssn.getTimeoutMillis());
 			    assertFalse(conn2.getSessionById(sessions1[_i].getId()).isPresent());
@@ -222,7 +221,7 @@ public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 
 				// Non-mutating methods that don't go over the network.
 				assertNotNull(ssn.getId());
-				assertNotNull(ssn.getCreateDate());
+				assertNotNull(ssn.getTimestamp());
 				assertEquals(conn3, ssn.getConnection());
 				assertEquals(1000, ssn.getTimeoutMillis());
 				
@@ -357,9 +356,8 @@ public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 			async (() -> {
 				Session ssn = conn3.getOrCreateSession(newSid());
 				State state = ssn.getSchema().getState("newVisit").get();
-				// The qualifying and targeting hooks will throw an NPE
-				// if user-agent attribute is not set.
-				ssn.getAttributes().put("user-agent", "does not matter");
+				// The qualifying hook will throw an NPE if user attribute is not set.
+				ssn.getAttributes().put("user", "does not matter");
 				StateRequest req = ssn.targetForState(state);
 				assertNotNull(req);
 				assertEquals(req.getSession(), ssn);
@@ -383,7 +381,7 @@ public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 				StateRequest req = requests1[_i];
 
 				assertNotNull(ssn.getId());
-				assertNotNull(ssn.getCreateDate());
+				assertNotNull(ssn.getTimestamp());
 				assertEquals(conn1, ssn.getConnection());
 				assertEquals(ssnTimeout * 1000, ssn.getTimeoutMillis());
 				
@@ -450,7 +448,7 @@ public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 				StateRequest req = requests2[_i];
 
 				assertNotNull(ssn.getId());
-				assertNotNull(ssn.getCreateDate());
+				assertNotNull(ssn.getTimestamp());
 				assertEquals(conn2, ssn.getConnection());
 				assertEquals(ssnTimeout * 1000, ssn.getTimeoutMillis());
 				
@@ -481,7 +479,7 @@ public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 				StateRequest req = requests3[_i];
 
 				assertNotNull(ssn.getId());
-				assertNotNull(ssn.getCreateDate());
+				assertNotNull(ssn.getTimestamp());
 				assertEquals(conn3, ssn.getConnection());
 				assertEquals(ssnTimeout * 1000, ssn.getTimeoutMillis());
 				
@@ -489,7 +487,7 @@ public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 				assertNotNull(ssn.getTraversedVariations());
 				assertNotNull(ssn.getDisqualifiedVariations());
 				// The user-agent attribute should still be set
-				ssn.getAttributes().remove("user-agent");
+				assertNotNull(ssn.getAttributes().get("user"));
 				req.commit();
 
 			});

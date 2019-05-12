@@ -311,8 +311,7 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 	}
 	
 	/**
-	 * Petclinic schema defines a qual and a targeting hook which will fail,
-	 * unless we create "user-agent" session attributes.
+	 * Petclinic schema defines a qualification hook which will fail, if "user" session attribute is not set.
 	 */
 	//@org.junit.Test
 	public void targetingHookExceptionTest() throws Exception {
@@ -323,8 +322,6 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 		final Session ssn = conn.getOrCreateSession(sid);	
 		final Schema schema = ssn.getSchema();
 		
-		// Targeting and qual hooks will throw exceptions because they
-		// expect 'user-agent' attribute
 	   	new ClientExceptionInterceptor() {
 			@Override public void toRun() {
 				ssn.targetForState(schema.getState("vets").get());
@@ -341,7 +338,7 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 		assertTrue(ssn.getDisqualifiedVariations().isEmpty());
 		
 		// Set the attribute and target. 
-		ssn.getAttributes().put("user-agent", "Any string");
+		ssn.getAttributes().put("user", "Any string");
 		StateRequest req = ssn.targetForState(schema.getState("newVisit").get());
 		assertEquals(req, ssn.getStateRequest().get());
 		assertEquals(InProgress, req.getStatus());

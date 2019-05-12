@@ -12,8 +12,7 @@ public class SessionIdTrackerHeadless implements SessionIdTracker {
 
 	/**
 	 */
-	@Override
-	public void init(Object... userData) {
+	public SessionIdTrackerHeadless(Object... userData) {
 		sessionId = (String) userData[0];
 	}
 

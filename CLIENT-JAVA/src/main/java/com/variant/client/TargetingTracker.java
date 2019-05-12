@@ -98,25 +98,23 @@ public interface TargetingTracker {
 	 * 
 	 * @since 0.9
 	 * @return
-	 *
+	 */
 	public static TargetingTracker empty() {
 		
-	}
-	
-	public static class TargetingTrackerEmpty {
+		return new TargetingTracker() {
+
+			@Override
+			public Set<Entry> get() {
+				return new HashSet<Entry>();
+			}
+
+			@Override
+			public void set(Set<Entry> entries) {}
+
+			@Override
+			public void save(Object... userData) {}
 			
-		}
-		@Override
-		public Set<Entry> get() {
-			return new HashSet<Entry>();
-		}
-
-		@Override
-		public void set(Set<Entry> entries) {}
-
-		@Override
-		public void save(Object... userData) {}
-		
+		};		
 	}
-*/
+
 }

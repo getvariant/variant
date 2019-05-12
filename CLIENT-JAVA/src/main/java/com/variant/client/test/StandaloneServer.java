@@ -100,14 +100,13 @@ public class StandaloneServer {
 				server.isAlive() && 
 				!(listens && instantiated.get())) {
 			
-			if (NativeProcess.execSilent("curl http://localhost:5377/variant") == 0) listens = true;
-			
+			if (NativeProcess.execSilent("curl http://localhost:5377") == 0) listens = true;
+			//System.out.println("*** " + listens + ", " + instantiated.get());			
 			Thread.sleep(200);
 		}
 		
 		if (!listens || !instantiated.get()) {
 			server.destroy();
-			System.out.println("*** " + listens + ", " + instantiated.get());
 			throw new RuntimeException("Server failed to startup in " + STARTUP_TIMEOUT_SECS + " seconds");
 		}
 

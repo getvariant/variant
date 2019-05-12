@@ -3,6 +3,7 @@ package com.variant.client.impl;
 import static com.variant.client.impl.ClientUserError.CANNOT_TRIGGER_SVE;
 import static com.variant.client.impl.ClientUserError.PARAM_CANNOT_BE_NULL;
 
+import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.util.HashSet;
 import java.util.Map;
@@ -134,8 +135,8 @@ public class SessionImpl implements Session {
 	 * Non-mutating
 	 */
 	@Override
-	public ZonedDateTime getCreateDate() {
-		return coreSession.createDate();
+	public Instant getTimestamp() {
+		return coreSession.getTimestamp();
 	}
 
 	/**

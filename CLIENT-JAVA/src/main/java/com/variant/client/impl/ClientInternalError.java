@@ -1,12 +1,12 @@
 package com.variant.client.impl;
 
-import com.variant.core.error.CommonError;
+import com.variant.core.error.UserError;
 
 /**
  * Internal variant exceptions, emitted by the client code,
  * i.e. not coming from the server.
  */
-public class ClientInternalError extends CommonError {
+public class ClientInternalError extends UserError {
 
 	//
 	// 251-270 Client Local internal errors.

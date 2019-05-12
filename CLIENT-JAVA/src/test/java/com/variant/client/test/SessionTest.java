@@ -43,7 +43,7 @@ public class SessionTest extends ClientBaseTestWithServer {
 		Session ssn1 = conn.getOrCreateSession(sid);
 		assertNotNull(ssn1);
 		assertNotEquals(sid, ssn1.getId());
-		assertEquals(System.currentTimeMillis(), ssn1.getCreateDate().getTime(), 2);
+		assertEquals(System.currentTimeMillis(), ssn1.getTimestamp().toEpochMilli(), 2);
 		assertEquals(conn, ssn1.getConnection());
 		assertTrue(ssn1.getDisqualifiedVariations().isEmpty());
 		assertTrue(ssn1.getTraversedStates().isEmpty());

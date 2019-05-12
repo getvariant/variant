@@ -51,7 +51,7 @@ public interface Session {
 	 *
 	 * @since 0.7
 	 */
-	public Instant getCreateInstant();
+	public Instant getTimestamp();
 
 	/**
      * <p>The connection object, which originally created this session via {@link Connection#getSession(Object...)}.

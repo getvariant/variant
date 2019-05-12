@@ -19,8 +19,7 @@ public class TargetingTrackerHeadless extends TargetingTrackerString {
 	 * 0    - session ID - String
 	 * 1... - String "testName.expName"
 	 */
-	@Override
-	public void init(Object...userData) {
+	public TargetingTrackerHeadless(Object...userData) {
 		Set<Entry> entries = new HashSet<Entry>(userData.length);
 		for (int i = 0; i < userData.length; i++) {
 			if (i > 0) {

@@ -21,10 +21,10 @@ public class TraceEventReader {
    
 	private final static String SELECT_EVENTS_SQL = 
 			"SELECT e.id, e.session_id, e.created_on, e.event_name, p.name, p.value " +
-			"FROM events e LEFT OUTER JOIN event_attributes p ON e.id = p.event_id";
+			"FROM events e LEFT OUTER JOIN event_attributes p ON e.id = p.event_id ";
 
 	private final static String SELECT_EVENT_EXPERIENCES_SQL =
-			"SELECT id, event_id, variation_name, experience_name, is_control " +
+			"SELECT event_id, variation_name, experience_name, is_control " +
 			"FROM event_experiences";
 
 	private final Connection conn; //  = eventWriter.flusher.asInstanceOf[EventFlusherJdbc].getJdbcConnection
@@ -59,11 +59,11 @@ public class TraceEventReader {
 					Statement stmt = conn.createStatement();
 					ResultSet eventsRresulSet = stmt.executeQuery(SELECT_EVENTS_SQL);
 
-					// Keep items in a map keyed by event ID for easy access.
-					Map<Long, TraceEventFromDatabase> eventMap = new HashMap<Long, TraceEventFromDatabase>();
+					// Keep items in a map keyed by event ID.
+					Map<String, TraceEventFromDatabase> eventMap = new HashMap<String, TraceEventFromDatabase>();
 					
 					while (eventsRresulSet.next()) {
-						Long id = eventsRresulSet.getLong(1);
+						String id = eventsRresulSet.getString(1);
 						TraceEventFromDatabase event = eventMap.get(id);
 						if (event == null) {
 							event = new TraceEventFromDatabase(
@@ -78,50 +78,28 @@ public class TraceEventReader {
 					}
 					
 					// Read event_experiences
-					// Keep items in a map (keyed by event ID) of maps (keyed by by event_experience ID) for easy access.
-					Map<Long,Map<Long, EventExperienceFromDatabase>> outerMap = new HashMap<Long, Map<Long, EventExperienceFromDatabase>>();
 					ResultSet eventExperiencesResultSet = stmt.executeQuery(SELECT_EVENT_EXPERIENCES_SQL);
-					
+
 					while (eventExperiencesResultSet.next()) {
-						
-						Long eventId = eventExperiencesResultSet.getLong(2);
-						Map<Long, EventExperienceFromDatabase> innerMap = outerMap.get(eventId);
-						if (innerMap == null) {
-							innerMap = new HashMap<Long, EventExperienceFromDatabase>();
-							outerMap.put(eventId, innerMap);
-						}
-						
-						Long eeId = eventExperiencesResultSet.getLong(1);
-						EventExperienceFromDatabase ee = innerMap.get(eeId);
-						if (ee == null) {
-							ee = new EventExperienceFromDatabase(
-   						   eeId,
-							   eventId,
-							   eventExperiencesResultSet.getString(3),
-							   eventExperiencesResultSet.getString(4),
-							   eventExperiencesResultSet.getBoolean(5));
-							innerMap.put(eeId, ee);
-						}
-					}
-					
-					// Attach event_experiences to events
-					for (Map.Entry<Long, Map<Long, EventExperienceFromDatabase>> e: outerMap.entrySet()) {
-						Long eventId = e.getKey();
-						Map<Long, EventExperienceFromDatabase> inner = e.getValue();
-						TraceEventFromDatabase event = eventMap.get(eventId);
-						for (Map.Entry<Long, EventExperienceFromDatabase> ee: inner.entrySet()) {
-							event.eventExperiences.add(ee.getValue());
-						}
+
+						String eventId = eventExperiencesResultSet.getString(1);
+						EventExperienceFromDatabase ee = new EventExperienceFromDatabase(
+								eventId,
+								eventExperiencesResultSet.getString(2),
+								eventExperiencesResultSet.getString(3),
+								eventExperiencesResultSet.getBoolean(4));
+						eventMap.get(eventId).eventExperiences.add(ee);
 					}
 					return eventMap.values();
 				}
 			}
 		);
 		
+		// Sort in chronological order
 		return result
 				.stream()
 				.filter(p)
-				.sorted((e1,e2) -> e1.id.compareTo(e2.id))
+				.sorted((e1,e2) -> e1.createdOn.compareTo(e2.createdOn))
 				.collect(Collectors.<TraceEventFromDatabase>toList());
 	}
 }

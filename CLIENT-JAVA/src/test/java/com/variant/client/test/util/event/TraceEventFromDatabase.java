@@ -11,7 +11,7 @@ import com.fasterxml.jackson.core.JsonGenerator;
 
 public class TraceEventFromDatabase {
 	
-	public final Long id;
+	public final String id;
 	public final String sessionId;
 	public final Date createdOn;
 	public final String name;
@@ -19,7 +19,7 @@ public class TraceEventFromDatabase {
 	public final HashMap<String,String> attributes = new HashMap<String,String>();
 	public final HashSet<EventExperienceFromDatabase> eventExperiences = new HashSet<EventExperienceFromDatabase>();
 
-	TraceEventFromDatabase (Long id, String sessionId, Date createdOn, String name) {
+	TraceEventFromDatabase (String id, String sessionId, Date createdOn, String name) {
 		this.id = id;
 		this.sessionId = sessionId;
 		this.createdOn = createdOn;
@@ -34,7 +34,7 @@ public class TraceEventFromDatabase {
 		try {
 			JsonGenerator jsonGen = new JsonFactory().createGenerator(body);
 			jsonGen.writeStartObject();
-			jsonGen.writeNumberField("id", id);
+			jsonGen.writeStringField("id", id);
 			jsonGen.writeNumberField("createdOn", createdOn.getTime());
 			jsonGen.writeStringField("name", name);
 			if (attributes.size() > 0) {

@@ -11,15 +11,13 @@ import com.fasterxml.jackson.core.JsonGenerator;
    
 public class EventExperienceFromDatabase {
 
-	public final Long id;
-	public final Long eventId;
+	public final String eventId;
 	public final String testName;
 	public final String experienceName;
 	public final Boolean isControl;
 	
 	EventExperienceFromDatabase (
-		Long id, Long eventId, String testName, String experienceName, Boolean isControl) {   
-		this.id = id;
+		String eventId, String testName, String experienceName, Boolean isControl) {   
 		this.eventId = eventId;
 		this.testName = testName;
 		this.experienceName = experienceName;
@@ -35,8 +33,7 @@ public class EventExperienceFromDatabase {
 		try {
 			JsonGenerator jsonGen = new JsonFactory().createGenerator(body);
 			jsonGen.writeStartObject();
-			jsonGen.writeNumberField("id", id);
-			jsonGen.writeNumberField("eventId", eventId);
+			jsonGen.writeStringField("eventId", eventId);
 			jsonGen.writeStringField("testName", testName);
 			jsonGen.writeStringField("expName", experienceName);
 			jsonGen.writeBooleanField("isControl", isControl);
