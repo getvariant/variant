@@ -211,7 +211,7 @@ class EventFlusherCsvTest extends EmbeddedServerSpec {
 
 	      val header = lines.next()
 	      header must fullyMatch regex
-				""""event_name","created_on","session_id","attributes","variation","experience","is_control""""
+				""""event_id","event_name","created_on","session_id","attributes","variation","experience","is_control""""
 	
 	      // create a new session.
 	 		var sid = newSid
