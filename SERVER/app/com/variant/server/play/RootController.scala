@@ -9,6 +9,7 @@ import com.variant.server.boot.VariantServer
 
 import javax.inject.Inject
 import play.api.mvc.ControllerComponents
+import java.time.Duration
 
 //@Singleton -- Is this for non-shared state controllers?
 class RootController @Inject() (
@@ -28,7 +29,7 @@ class RootController @Inject() (
    def status() = action { req =>
      
       val msg: StringBuilder = new StringBuilder(VariantServer.productName) ++= ".\n" ++=
-        "Uptime: %s.\n".format(TimeUtils.formatDuration(ManagementFactory.getRuntimeMXBean().getUptime()))
+        "Uptime: %s.\n".format(TimeUtils.formatDuration(Duration.ofMillis(ManagementFactory.getRuntimeMXBean().getUptime())))
             
       val schemata = server.schemata.getLiveGens
       if (schemata.size == 0) {

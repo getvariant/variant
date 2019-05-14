@@ -1,4 +1,9 @@
 package com.variant.core.util;
+
+import java.time.Duration;
+import java.time.temporal.ChronoUnit;
+import java.util.Arrays;
+
 /**
  * Replacement for apache commons lang3 time utils.
  * @author Igor
@@ -6,46 +11,40 @@ package com.variant.core.util;
  */
 public class TimeUtils {
 
-	public final static long MILLIS_PER_SECOND =     1000L;
-	public final static long MILLIS_PER_MINUTE =    60000L;
-	public final static long MILLIS_PER_HOUR   =  3600000L;
-	public final static long MILLIS_PER_DAY    = 86400000L;
+	public final static int SECONDS_PER_MINUTE =  60;
+	public final static int SECONDS_PER_HOUR   =  SECONDS_PER_MINUTE * 60;
+	public final static int SECONDS_PER_DAY    = SECONDS_PER_HOUR * 24;
 	
 	/**
 	 * Format a time duration expressed in milliseconds as hh:mm:ss.SSS
 	 * @param duration
 	 * @return
 	 */
-	public static String formatDuration(long durationMillis) {
+	public static String formatDuration(Duration duration) {
+	
+		long seconds = duration.get(ChronoUnit.SECONDS);
+		long nanos = duration.get(ChronoUnit.NANOS);
 		
-		int hours = (int) (durationMillis / MILLIS_PER_HOUR);
-		int remainder = (int) (durationMillis % MILLIS_PER_HOUR);
-		int minutes = remainder / (int) MILLIS_PER_MINUTE;
-		remainder = remainder % (int) MILLIS_PER_MINUTE;
-		int seconds = remainder / (int) MILLIS_PER_SECOND;
-		int millis = remainder % (int) MILLIS_PER_SECOND;
+		int dd = (int) (seconds / SECONDS_PER_DAY);
+		int rem = (int) (seconds % SECONDS_PER_DAY);
+		int hh = (int) (rem / SECONDS_PER_HOUR);
+		rem = (int) (seconds % SECONDS_PER_HOUR);
+		int mm = rem / SECONDS_PER_MINUTE;
+		int ss = (int) (seconds % SECONDS_PER_MINUTE);
 
-		//System.out.println("* " + hours + " * " + minutes + " * " + seconds + " * " + millis);
+		//System.out.println("* " + dd + " * " + hh + " * " + mm + " * " + ss + " * " + nanos);
 		
 		StringBuilder result = new StringBuilder();
-		if (hours > 0) result.append(hours).append(':');
-		
-		if (minutes > 9) result.append(minutes);
-		else if (minutes > 0) result.append('0').append(minutes);
-		else result.append("00");
-		result.append(':');
-		
-		if (seconds > 9) result.append(seconds);
-		else if (seconds > 0) result.append('0').append(seconds);
-		else result.append("00");
-		result.append('.');
-		
-		if (millis > 99) result.append(millis);
-		else if (millis > 9) result.append('0').append(millis);
-		else if (millis > 0) result.append("00").append(millis);
-		else result.append("000");
+		if (dd > 0) result.append(dd).append('d');
+		if (hh > 0) result.append(String.format("%02d", hh)).append('h');
+		if (mm > 0) result.append(String.format("%02d", mm)).append('m');
+		result.append(String.format("%02d", ss)).append('.');
+		// discard insignificant decimals.
+		char[] decimals = String.format("%09d", nanos).toCharArray();
+		int lastSignificantDigit = decimals.length;
+		while (decimals[--lastSignificantDigit] == '0') {}			
+		result.append(Arrays.copyOfRange(decimals, 0, lastSignificantDigit + 1)).append("s");
 
-		
 		return result.toString();
 	}
 	
@@ -54,16 +53,14 @@ public class TimeUtils {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		long millis[] = {
-				0, 1, 9, 10, 99, 100, 999, 1000, 1001, 
-				MILLIS_PER_MINUTE, 9 * MILLIS_PER_MINUTE - 1, 59 * MILLIS_PER_MINUTE + 1,  59 * MILLIS_PER_MINUTE + 59000,
-				60 * MILLIS_PER_MINUTE -1, 60 * MILLIS_PER_MINUTE +1,
-				MILLIS_PER_HOUR, MILLIS_PER_HOUR + MILLIS_PER_MINUTE, MILLIS_PER_HOUR + 9 * MILLIS_PER_MINUTE - 1, 
-				MILLIS_PER_HOUR + 59 * MILLIS_PER_MINUTE + 1, MILLIS_PER_HOUR + 59 * MILLIS_PER_MINUTE + 59000,
-				MILLIS_PER_HOUR + 60 * MILLIS_PER_MINUTE -1, MILLIS_PER_HOUR + 60 * MILLIS_PER_MINUTE +1,
-				MILLIS_PER_DAY
-		};
-		
-		for (long m: millis) System.out.println(m + " = " + formatDuration(m));
+		/*
+		Random rand  = new Random(System.currentTimeMillis());
+		for (int i = 0; i<20; i++) {
+			long n = Math.abs(rand.nextLong());
+			Duration dur = Duration.ofNanos(n);
+			System.out.println(formatDuration(dur));
+		}
+		*/
+		System.out.println(formatDuration(Duration.ofSeconds(2,1030000)));
 	}
 }

@@ -19,6 +19,7 @@ import play.api.Logger
 import play.api.inject.ApplicationLifecycle
 import com.variant.core.util.TimeUtils
 import com.variant.server.impl.ConfigurationImpl
+import java.time.Duration
 
 
 /**
@@ -43,7 +44,7 @@ trait VariantServer {
 object VariantServer {
 
    val version = "0.10.0"
-   val productName = "Variant Experience Server release %s".format(version)
+   val productName = "Variant AIM Server release %s".format(version)
 
    // Static instance location.
    private [boot] var _instance: VariantServer = _
@@ -129,7 +130,7 @@ class VariantServerImpl @Inject() (
          logger.info(ServerErrorLocal.SERVER_BOOT_OK.asMessage(
                productName,
                config.getNetworkPort,
-      			TimeUtils.formatDuration(ManagementFactory.getRuntimeMXBean().getUptime())))   	
+      			TimeUtils.formatDuration(Duration.ofMillis(ManagementFactory.getRuntimeMXBean().getUptime()))))   	
 
          _isUp = true
    	}      
@@ -157,7 +158,7 @@ class VariantServerImpl @Inject() (
       logger.info(ServerErrorLocal.SERVER_SHUTDOWN.asMessage(
             productName,
             config.getNetworkPort,
-   			TimeUtils.formatDuration(ManagementFactory.getRuntimeMXBean().getUptime())))
+   			TimeUtils.formatDuration(Duration.ofMillis(ManagementFactory.getRuntimeMXBean().getUptime()))))
    			   			
       // System.exit(0)  << DO NOT DO THIS! Messes up tests.
    	// Ideally, we want to exit in Prod to make the application quit and come back to the

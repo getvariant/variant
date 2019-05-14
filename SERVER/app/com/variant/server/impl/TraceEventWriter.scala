@@ -8,6 +8,9 @@ import com.variant.server.api.FlushableTraceEvent
 import com.variant.server.boot.VariantServer
 import com.variant.server.schema.ServerFlusherService
 import play.api.Logger
+import java.time.Instant
+import java.time.Duration
+import com.variant.core.util.TimeUtils
 
 class TraceEventWriter (private val flushService: ServerFlusherService) {
 	
@@ -162,9 +165,9 @@ class TraceEventWriter (private val flushService: ServerFlusherService) {
    		while(bufferQueue != null && !bufferQueue.isEmpty()) events.add(bufferQueue.poll());
    		logger.debug(s"About to flush ${events.size} events") 
    		if (!events.isEmpty()) {
-      		var now = System.currentTimeMillis();
+      		var start = Instant.now();
    		   flusher.flush(events);		
-   		   logger.info("Flushed " + events.size() + " event(s) in " + DurationFormatUtils.formatDurationHMS(System.currentTimeMillis() - now));
+   		   logger.info("Flushed " + events.size() + " event(s) in " + TimeUtils.formatDuration(Duration.between(Instant.now(), start)))
    		}
    	}
    }
