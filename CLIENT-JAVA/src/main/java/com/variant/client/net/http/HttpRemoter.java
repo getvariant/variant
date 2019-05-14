@@ -2,6 +2,9 @@ package com.variant.client.net.http;
 
 import static com.variant.client.impl.ConfigKeys.SYS_PROP_TIMERS;
 
+import java.time.Duration;
+import java.time.Instant;
+
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpStatus;
@@ -50,7 +53,7 @@ public class HttpRemoter {
 	 */
 	HttpResponse call(Requestable requestable) {
 		
-		long start = System.currentTimeMillis();
+		Instant start = Instant.now();
 		HttpUriRequest req = null;
 		CloseableHttpResponse resp = null;
 		try {
@@ -68,7 +71,7 @@ public class HttpRemoter {
 				Timers.remoteTimer.get().increment(Long.parseLong(millisString));
 			}
 			
-			long elapsed = System.currentTimeMillis() - start;
+			Duration elapsed = Duration.between(start, Instant.now());
 			
 			if (LOG.isTraceEnabled()) {
 				

@@ -9,18 +9,16 @@
 
     2.1. Build the latest server-extapi-demo-<release>.jar
          • EXTAPI project must be on the branch release/<release>
-         • run RELEASE/bin/release.sh
+         • run SERVER/mbin/release.sh
            this will make variant-core-<release>.jar and server-extapi-<release>.jar
            and copy them to variant-server-extapi/lib as dependencies for ExtAPI.
-         • cd variant-pub/VARIANT-SERVER-EXTAPI
-         • Follow instruction in pom.xml for installing the extapi jar into local maven repository. 
-           May need to do the same for the core jar, if not already in local repo.
-         • rm old dependencies from lib/
+         • cd pub/VARIANT-SERVER-EXTAPI
+         • rm old dependencies from lib/, if any.
          • Build the project:
-           $ mvn clean package
-           This produces target/server-extapi-demo-<release>.jar: 
-         • $ cp target/variant-extapi-demo-<release>.jar ../../variant/SERVER/distr/ext
-         • remove old extapi jar from SERVER/distr/ext/
+           $ bin/release.sh
+           This produces target/server-extapi-demo-<release>.jar and copies it to
+           ../../variant/SERVER/distr/ext
+         • remove old extapi jar from SERVER/distr/ext/, if any.
 
     2.2. Confirm the latest variant-extapi-demo-<release>.jar made it to the SERVER project and 
          that it does not brake the server.
@@ -31,9 +29,10 @@
          • cd variant/RELEASE
          • bin/release.sh
            This generates in RELEASE/target: 
-           variant-<release>.js          - JavaScript Client
-           variant-java-<release>.zip    - Java Client
-           variant-server-<release>.zip  - Server
+           variant-<release>.js                 - JavaScript Client
+           variant-java-<release>.zip           - Java Client
+           variant-server-<release>.zip         - Server
+           variant-server-extapi-<release>.zip  - Server EXTAPI
 
 3. Servlet Adapter
 
