@@ -552,7 +552,7 @@ public class ParserConjointOkay1Test extends BaseTestCore {
 		StateVariant variant = variants[0];
 		assertEquals(onState, variant.getOnState());
 		assertEquals(variant.getExperience(), test1.getExperience("B").get());
-		assertEquals("/path/to/state2/test1.B", variant.getParameters().get("path"));
+		assertEquals("/path/to/state2/test1.B", variant.getParameters().get().get("path"));
 		assertTrue(variant.getConjointExperiences().isEmpty());
 		assertTrue(variant.isProper());
 		assertEquals(variant, onState.getVariant(test1.getExperience("B").get()).get());
@@ -560,7 +560,7 @@ public class ParserConjointOkay1Test extends BaseTestCore {
 		variant = variants[1];
 		assertEquals(onState, variant.getOnState());
 		assertEquals(variant.getExperience(), test1.getExperience("C").get());
-		assertEquals("/path/to/state2/test1.C", variant.getParameters().get("path"));
+		assertEquals("/path/to/state2/test1.C", variant.getParameters().get().get("path"));
 		assertTrue(variant.getConjointExperiences().isEmpty());
 		assertTrue(variant.isProper());
 		assertEquals(variant, onState.getVariant(test1.getExperience("C").get()).get());
@@ -574,7 +574,7 @@ public class ParserConjointOkay1Test extends BaseTestCore {
 		variant = variants[0];
 		assertEquals(onState, variant.getOnState());
 		assertEquals(variant.getExperience(), test1.getExperience("B").get());
-		assertEquals("/path/to/state3/test1.B", variant.getParameters().get("path"));
+		assertEquals("/path/to/state3/test1.B", variant.getParameters().get().get("path"));
 		assertTrue(variant.getConjointExperiences().isEmpty());
 		assertTrue(variant.isProper());
 		assertEquals(variant, onState.getVariant(test1.getExperience("B").get()).get());
@@ -582,7 +582,7 @@ public class ParserConjointOkay1Test extends BaseTestCore {
 		variant = variants[1];
 		assertEquals(onState, variant.getOnState());
 		assertEquals(variant.getExperience(), test1.getExperience("C").get());
-		assertEquals("/path/to/state3/test1.C", variant.getParameters().get("path"));
+		assertEquals("/path/to/state3/test1.C", variant.getParameters().get().get("path"));
 		assertTrue(variant.getConjointExperiences().isEmpty());
 		assertTrue(variant.isProper());
 		assertEquals(variant, onState.getVariant(test1.getExperience("C").get()).get());
@@ -596,7 +596,7 @@ public class ParserConjointOkay1Test extends BaseTestCore {
 		variant = variants[0];
 		assertEquals(onState, variant.getOnState());
 		assertEquals(variant.getExperience(), test1.getExperience("B").get());
-		assertTrue(variant.getParameters().isEmpty());
+		assertFalse(variant.getParameters().isPresent());
 		assertTrue(variant.getConjointExperiences().isEmpty());
 		assertTrue(variant.isProper());
 		assertEquals(variant, onState.getVariant(test1.getExperience("B").get()).get());
@@ -604,7 +604,7 @@ public class ParserConjointOkay1Test extends BaseTestCore {
 		variant = variants[1];
 		assertEquals(onState, variant.getOnState());
 		assertEquals(variant.getExperience(), test1.getExperience("C").get());
-		assertTrue(variant.getParameters().isEmpty());
+		assertFalse(variant.getParameters().isPresent());
 		assertTrue(variant.getConjointExperiences().isEmpty());
 		assertTrue(variant.isProper());
 		assertEquals(variant, onState.getVariant(test1.getExperience("C").get()).get());
@@ -618,7 +618,7 @@ public class ParserConjointOkay1Test extends BaseTestCore {
 		variant = variants[0];
 		assertEquals(onState, variant.getOnState());
 		assertEquals(variant.getExperience(), test1.getExperience("B").get());
-		assertTrue(variant.getParameters().isEmpty());
+		assertFalse(variant.getParameters().isPresent());
 		assertTrue(variant.getConjointExperiences().isEmpty());
 		assertTrue(variant.isProper());
 		assertEquals(variant, onState.getVariant(test1.getExperience("B").get()).get());
@@ -626,7 +626,7 @@ public class ParserConjointOkay1Test extends BaseTestCore {
 		variant = variants[1];
 		assertEquals(onState, variant.getOnState());
 		assertEquals(variant.getExperience(), test1.getExperience("C").get());
-		assertTrue(variant.getParameters().isEmpty());
+		assertFalse(variant.getParameters().isPresent());
 		assertTrue(variant.getConjointExperiences().isEmpty());
 		assertTrue(variant.isProper());
 		assertEquals(variant, onState.getVariant(test1.getExperience("C").get()).get());
@@ -649,7 +649,7 @@ public class ParserConjointOkay1Test extends BaseTestCore {
 		variant = variants[0];
 		assertEquals(onState, variant.getOnState());
 		assertEquals(variant.getExperience(), test2.getExperience("B").get());
-		assertTrue(variant.getParameters().isEmpty());
+		assertFalse(variant.getParameters().isPresent());
 		assertTrue(variant.getConjointExperiences().isEmpty());
 		assertTrue(variant.isProper());
 		assertEquals(variant, onState.getVariant(test2.getExperience("B").get()).get());
@@ -657,7 +657,7 @@ public class ParserConjointOkay1Test extends BaseTestCore {
 		variant = variants[1];
 		assertEquals(onState, variant.getOnState());
 		assertEquals(variant.getExperience(), test2.getExperience("C").get());
-		assertTrue(variant.getParameters().isEmpty());
+		assertFalse(variant.getParameters().isPresent());
 		assertTrue(variant.getConjointExperiences().isEmpty());
 		assertTrue(variant.isProper());
 		assertEquals(variant, onState.getVariant(test2.getExperience("C").get()).get());
@@ -671,7 +671,7 @@ public class ParserConjointOkay1Test extends BaseTestCore {
 		variant = variants[0];
 		assertEquals(onState, variant.getOnState());
 		assertEquals(variant.getExperience(), test2.getExperience("B").get());
-		assertEquals("/path/to/state2/test2.B", variant.getParameters().get("path"));
+		assertEquals("/path/to/state2/test2.B", variant.getParameters().get().get("path"));
 		assertTrue(variant.getConjointExperiences().isEmpty());
 		assertTrue(variant.isProper());
 		assertEquals(variant, onState.getVariant(test2.getExperience("B").get()).get());
@@ -679,7 +679,7 @@ public class ParserConjointOkay1Test extends BaseTestCore {
 		variant = variants[1];
 		assertEquals(onState, variant.getOnState());
 		assertEquals(variant.getExperience(), test2.getExperience("C").get());
-		assertEquals("/path/to/state2/test2.C", variant.getParameters().get("path"));
+		assertEquals("/path/to/state2/test2.C", variant.getParameters().get().get("path"));
 		assertTrue(variant.getConjointExperiences().isEmpty());
 		assertTrue(variant.isProper());
 		assertEquals(variant, onState.getVariant(test2.getExperience("C").get()).get());
@@ -689,7 +689,7 @@ public class ParserConjointOkay1Test extends BaseTestCore {
 		assertEquals(variant.getExperience(), test2.getExperience("B").get());
 		assertEquals(1, variant.getConjointExperiences().size());
 		assertEquals(test1.getExperience("B").get(), variant.getConjointExperiences().get(0));
-		assertEquals("/path/to/state2/test1.B+test2.B", variant.getParameters().get("path"));
+		assertEquals("/path/to/state2/test1.B+test2.B", variant.getParameters().get().get("path"));
 		assertEquals(variant, onState.getVariant(test1.getExperience("B").get(),test2.getExperience("B").get()).get());
 
 		variant = variants[3];
@@ -697,7 +697,7 @@ public class ParserConjointOkay1Test extends BaseTestCore {
 		assertEquals(variant.getExperience(), test2.getExperience("C").get());
 		assertEquals(1, variant.getConjointExperiences().size());
 		assertEquals(test1.getExperience("B").get(), variant.getConjointExperiences().get(0));
-		assertEquals("/path/to/state2/test1.B+test2.C", variant.getParameters().get("path"));
+		assertEquals("/path/to/state2/test1.B+test2.C", variant.getParameters().get().get("path"));
 		assertFalse(variant.isProper());
 		assertEquals(variant, onState.getVariant(test1.getExperience("B").get(),test2.getExperience("C").get()).get());
 
@@ -706,7 +706,7 @@ public class ParserConjointOkay1Test extends BaseTestCore {
 		assertEquals(variant.getExperience(), test2.getExperience("B").get());
 		assertEquals(1, variant.getConjointExperiences().size());
 		assertEquals(test1.getExperience("C").get(), variant.getConjointExperiences().get(0));
-		assertEquals("/path/to/state2/test1.C+test2.B", variant.getParameters().get("path"));
+		assertEquals("/path/to/state2/test1.C+test2.B", variant.getParameters().get().get("path"));
 		assertFalse(variant.isProper());
 		assertEquals(variant, onState.getVariant(test1.getExperience("C").get(),test2.getExperience("B").get()).get());
 
@@ -715,7 +715,7 @@ public class ParserConjointOkay1Test extends BaseTestCore {
 		assertEquals(variant.getExperience(), test2.getExperience("C").get());
 		assertEquals(1, variant.getConjointExperiences().size());
 		assertEquals(test1.getExperience("C").get(), variant.getConjointExperiences().get(0));
-		assertEquals("/path/to/state2/test1.C+test2.C", variant.getParameters().get("path"));
+		assertEquals("/path/to/state2/test1.C+test2.C", variant.getParameters().get().get("path"));
 		assertFalse(variant.isProper());
 		assertEquals(variant, onState.getVariant(test1.getExperience("C").get(),test2.getExperience("C").get()).get());
 
@@ -728,14 +728,14 @@ public class ParserConjointOkay1Test extends BaseTestCore {
 		variant = variants[0];
 		assertEquals(onState, variant.getOnState());
 		assertEquals(variant.getExperience(), test2.getExperience("B").get());
-		assertEquals("/path/to/state3/test2.B", variant.getParameters().get("path"));
+		assertEquals("/path/to/state3/test2.B", variant.getParameters().get().get("path"));
 		assertTrue(variant.getConjointExperiences().isEmpty());
 		assertTrue(variant.isProper());
 
 		variant = variants[1];
 		assertEquals(onState, variant.getOnState());
 		assertEquals(variant.getExperience(), test2.getExperience("C").get());
-		assertEquals("/path/to/state3/test2.C", variant.getParameters().get("path"));
+		assertEquals("/path/to/state3/test2.C", variant.getParameters().get().get("path"));
 		assertTrue(variant.getConjointExperiences().isEmpty());
 		assertTrue(variant.isProper());
 
@@ -744,28 +744,28 @@ public class ParserConjointOkay1Test extends BaseTestCore {
 		assertEquals(variant.getExperience(), test2.getExperience("B").get());
 		assertEquals(1, variant.getConjointExperiences().size());
 		assertEquals(test1.getExperience("B").get(), variant.getConjointExperiences().get(0));
-		assertEquals("/path/to/state3/test1.B+test2.B", variant.getParameters().get("path"));
+		assertEquals("/path/to/state3/test1.B+test2.B", variant.getParameters().get().get("path"));
 
 		variant = variants[3];
 		assertEquals(onState, variant.getOnState());
 		assertEquals(variant.getExperience(), test2.getExperience("C").get());
 		assertEquals(1, variant.getConjointExperiences().size());
 		assertEquals(test1.getExperience("B").get(), variant.getConjointExperiences().get(0));
-		assertEquals("/path/to/state3/test1.B+test2.C", variant.getParameters().get("path"));
+		assertEquals("/path/to/state3/test1.B+test2.C", variant.getParameters().get().get("path"));
 
 		variant = variants[4];
 		assertEquals(onState, variant.getOnState());
 		assertEquals(variant.getExperience(), test2.getExperience("B").get());
 		assertEquals(1, variant.getConjointExperiences().size());
 		assertEquals(test1.getExperience("C").get(), variant.getConjointExperiences().get(0));
-		assertEquals("/path/to/state3/test1.C+test2.B", variant.getParameters().get("path"));
+		assertEquals("/path/to/state3/test1.C+test2.B", variant.getParameters().get().get("path"));
 
 		variant = variants[5];
 		assertEquals(onState, variant.getOnState());
 		assertEquals(variant.getExperience(), test2.getExperience("C").get());
 		assertEquals(1, variant.getConjointExperiences().size());
 		assertEquals(test1.getExperience("C").get(), variant.getConjointExperiences().get(0));
-		assertEquals("/path/to/state3/test1.C+test2.C", variant.getParameters().get("path"));
+		assertEquals("/path/to/state3/test1.C+test2.C", variant.getParameters().get().get("path"));
 
 		// state4
 		onState = onStates.get(3);
@@ -776,14 +776,14 @@ public class ParserConjointOkay1Test extends BaseTestCore {
 		variant = variants[0];
 		assertEquals(onState, variant.getOnState());
 		assertEquals(variant.getExperience(), test2.getExperience("B").get());
-		assertEquals("/path/to/state4/test2.B", variant.getParameters().get("path"));
+		assertEquals("/path/to/state4/test2.B", variant.getParameters().get().get("path"));
 		assertTrue(variant.getConjointExperiences().isEmpty());
 		assertTrue(variant.isProper());
 
 		variant = variants[1];
 		assertEquals(onState, variant.getOnState());
 		assertEquals(variant.getExperience(), test2.getExperience("C").get());
-		assertEquals("/path/to/state4/test2.C", variant.getParameters().get("path"));
+		assertEquals("/path/to/state4/test2.C", variant.getParameters().get().get("path"));
 		assertTrue(variant.getConjointExperiences().isEmpty());
 		assertTrue(variant.isProper());
 
@@ -792,12 +792,12 @@ public class ParserConjointOkay1Test extends BaseTestCore {
 		assertEquals(variant.getExperience(), test2.getExperience("B").get());
 		assertEquals(1, variant.getConjointExperiences().size());
 		assertEquals(test1.getExperience("B").get(), variant.getConjointExperiences().get(0));
-		assertTrue(variant.getParameters().isEmpty());
+		assertFalse(variant.getParameters().isPresent());
 
 		variant = variants[3];
 		assertEquals(onState, variant.getOnState());
 		assertEquals(variant.getExperience(), test2.getExperience("C").get());
-		assertTrue(variant.getParameters().isEmpty());
+		assertFalse(variant.getParameters().isPresent());
 		assertEquals(test1.getExperience("B").get(), variant.getConjointExperiences().get(0));
 		assertFalse(variant.isProper());
 
@@ -806,14 +806,14 @@ public class ParserConjointOkay1Test extends BaseTestCore {
 		assertEquals(variant.getExperience(), test2.getExperience("B").get());
 		assertEquals(1, variant.getConjointExperiences().size());
 		assertEquals(test1.getExperience("C").get(), variant.getConjointExperiences().get(0));
-		assertTrue(variant.getParameters().isEmpty());
+		assertFalse(variant.getParameters().isPresent());
 
 		variant = variants[5];
 		assertEquals(onState, variant.getOnState());
 		assertEquals(variant.getExperience(), test2.getExperience("C").get());
 		assertEquals(1, variant.getConjointExperiences().size());
 		assertEquals(test1.getExperience("C").get(), variant.getConjointExperiences().get(0));
-		assertTrue(variant.getParameters().isEmpty());
+		assertFalse(variant.getParameters().isPresent());
 
 		// 
 		// test3 onState objects
@@ -830,14 +830,14 @@ public class ParserConjointOkay1Test extends BaseTestCore {
 		variant = variants[0];
 		assertEquals(onState, variant.getOnState());
 		assertEquals(variant.getExperience(), test3.getExperience("B").get());
-		assertEquals("/path/to/state1/test3.B", variant.getParameters().get("path"));
+		assertEquals("/path/to/state1/test3.B", variant.getParameters().get().get("path"));
 		assertTrue(variant.getConjointExperiences().isEmpty());
 		assertTrue(variant.isProper());
 		
 		variant = variants[1];
 		assertEquals(onState, variant.getOnState());
 		assertEquals(variant.getExperience(), test3.getExperience("C").get());
-		assertEquals("/path/to/state1/test3.C", variant.getParameters().get("path"));
+		assertEquals("/path/to/state1/test3.C", variant.getParameters().get().get("path"));
 		assertTrue(variant.getConjointExperiences().isEmpty());
 		assertTrue(variant.isProper());
 
@@ -850,14 +850,14 @@ public class ParserConjointOkay1Test extends BaseTestCore {
 		variant = variants[0];
 		assertEquals(onState, variant.getOnState());
 		assertEquals(variant.getExperience(), test3.getExperience("B").get());
-		assertEquals("/path/to/state2/test3.B", variant.getParameters().get("path"));
+		assertEquals("/path/to/state2/test3.B", variant.getParameters().get().get("path"));
 		assertTrue(variant.getConjointExperiences().isEmpty());
 		assertTrue(variant.isProper());
 		
 		variant = variants[1];
 		assertEquals(onState, variant.getOnState());
 		assertEquals(variant.getExperience(), test3.getExperience("C").get());
-		assertEquals("/path/to/state2/test3.C", variant.getParameters().get("path"));
+		assertEquals("/path/to/state2/test3.C", variant.getParameters().get().get("path"));
 		assertTrue(variant.getConjointExperiences().isEmpty());
 		assertTrue(variant.isProper());
 
@@ -870,14 +870,14 @@ public class ParserConjointOkay1Test extends BaseTestCore {
 		variant = variants[0];
 		assertEquals(onState, variant.getOnState());
 		assertEquals(variant.getExperience(), test3.getExperience("B").get());
-		assertTrue(variant.getParameters().isEmpty());
+		assertFalse(variant.getParameters().isPresent());
 		assertTrue(variant.getConjointExperiences().isEmpty());
 		assertTrue(variant.isProper());
 		
 		variant = variants[1];
 		assertEquals(onState, variant.getOnState());
 		assertEquals(variant.getExperience(), test3.getExperience("C").get());
-		assertTrue(variant.getParameters().isEmpty());
+		assertFalse(variant.getParameters().isPresent());
 		assertTrue(variant.getConjointExperiences().isEmpty());
 		assertTrue(variant.isProper());
 
@@ -890,14 +890,14 @@ public class ParserConjointOkay1Test extends BaseTestCore {
 		variant = variants[0];
 		assertEquals(onState, variant.getOnState());
 		assertEquals(variant.getExperience(), test3.getExperience("B").get());
-		assertTrue(variant.getParameters().isEmpty());
+		assertFalse(variant.getParameters().isPresent());
 		assertTrue(variant.getConjointExperiences().isEmpty());
 		assertTrue(variant.isProper());
 		
 		variant = variants[1];
 		assertEquals(onState, variant.getOnState());
 		assertEquals(variant.getExperience(), test3.getExperience("C").get());
-		assertTrue(variant.getParameters().isEmpty());
+		assertFalse(variant.getParameters().isPresent());
 		assertTrue(variant.getConjointExperiences().isEmpty());
 		assertTrue(variant.isProper());
 
@@ -910,14 +910,14 @@ public class ParserConjointOkay1Test extends BaseTestCore {
 		variant = variants[0];
 		assertEquals(onState, variant.getOnState());
 		assertEquals(variant.getExperience(), test3.getExperience("B").get());
-		assertTrue(variant.getParameters().isEmpty());
+		assertFalse(variant.getParameters().isPresent());
 		assertTrue(variant.getConjointExperiences().isEmpty());
 		assertTrue(variant.isProper());
 		
 		variant = variants[1];
 		assertEquals(onState, variant.getOnState());
 		assertEquals(variant.getExperience(), test3.getExperience("C").get());
-		assertTrue(variant.getParameters().isEmpty());
+		assertFalse(variant.getParameters().isPresent());
 		assertTrue(variant.getConjointExperiences().isEmpty());
 		assertTrue(variant.isProper());
 	}

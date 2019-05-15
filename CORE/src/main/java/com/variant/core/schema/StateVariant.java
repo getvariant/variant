@@ -2,6 +2,7 @@ package com.variant.core.schema;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import com.variant.core.schema.Variation.Experience;
 import com.variant.core.schema.Variation.OnState;
@@ -75,6 +76,6 @@ public interface StateVariant {
 	 * @return Immutable map containing all parameters defined by this state variant.
 	 * @since 0.5
 	 */
-	public Map<String, String> getParameters();
+	public Optional<Map<String, String>> getParameters();
 
 }	

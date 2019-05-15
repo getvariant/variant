@@ -2,9 +2,9 @@ package com.variant.core.schema.impl;
 
 import java.io.StringWriter;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
@@ -48,18 +48,10 @@ public class StateVariantImpl implements StateVariant {
 			Variation.Experience ownExp, 
 			List<Variation.Experience> conjointExps) {
 		
-		this(onState, ownExp, conjointExps, new HashMap<String,String>());
+		this(onState, ownExp, conjointExps, null);
 		this.inferred = true;
 	}
 
-	/**
-	 * 
-	 * @param experience
-	 *
-	void addConjointExperience(VariationExperienceImpl experience) {
-		conjointExperiences.add(experience);
-	}
-	*/
 	//---------------------------------------------------------------------------------------------//
 	//                                          PUBLIC                                             //
 	//---------------------------------------------------------------------------------------------//
@@ -88,8 +80,8 @@ public class StateVariantImpl implements StateVariant {
 	/**
 	 */
 	@Override
-	public Map<String,String> getParameters() {
-		return Collections.unmodifiableMap(params);
+	public Optional<Map<String,String>> getParameters() {
+		return params == null ? Optional.empty() : Optional.of(Collections.unmodifiableMap(params));
 	}
 
 	@Override
@@ -134,13 +126,16 @@ public class StateVariantImpl implements StateVariant {
 				jsonGen.writeString(exp.toString());
 			}
 			jsonGen.writeEndArray();
-			jsonGen.writeArrayFieldStart("params");
-			for (Map.Entry<String, String> e: getParameters().entrySet()) {
-				jsonGen.writeStartObject();
-				jsonGen.writeStringField(e.getKey(), e.getValue());
-				jsonGen.writeEndObject();
+			
+			if (params != null) {
+				jsonGen.writeArrayFieldStart("params");
+				for (Map.Entry<String, String> e: params.entrySet()) {
+					jsonGen.writeStartObject();
+					jsonGen.writeStringField(e.getKey(), e.getValue());
+					jsonGen.writeEndObject();
+				}
+				jsonGen.writeEndArray();
 			}
-			jsonGen.writeEndArray();
 			jsonGen.writeEndObject();
 			jsonGen.flush();
 			return result.toString();

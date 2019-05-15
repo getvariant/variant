@@ -2,10 +2,10 @@ package com.variant.core.schema.impl;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import com.variant.core.schema.Hook;
 import com.variant.core.schema.Schema;
@@ -21,7 +21,7 @@ public class StateImpl implements State {
 
 	private final Schema schema;
 	private final String name;
-	private final LinkedHashMap<String, String> parameters = new LinkedHashMap<String, String>();
+	private Optional<Map<String, String>> paramMapOpt = Optional.empty();
     
 	// Hooks are keyed by name.
 	private LinkedList<Hook> hooks = new LinkedList<Hook>();
@@ -51,8 +51,8 @@ public class StateImpl implements State {
 	}
 	
 	@Override
-	public Map<String,String> getParameters() {
-		return Collections.unmodifiableMap(parameters);
+	public Optional<Map<String,String>> getParameters() {
+		return paramMapOpt;
 	}
 
 	@Override
@@ -95,7 +95,7 @@ public class StateImpl implements State {
 	 * @param parameters
 	 */
 	public void setParameterMap(Map<String, String> params) {
-		this.parameters.putAll(params);
+		this.paramMapOpt = Optional.of(Collections.unmodifiableMap(params));
 	}
 		
 	/**

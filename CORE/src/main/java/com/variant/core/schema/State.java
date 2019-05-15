@@ -2,37 +2,38 @@ package com.variant.core.schema;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 /**
- * Representation of the <code>state</code> schema property.
+ * Representation of the <code>/states[]</code> array element.
  * 
  * @since 0.5
  */
 public interface State {
 
 	/**
-	 * The schema object containing this state object.
+	 * The containing variation schema..
 	 * 
-	 * @return An object of type {@link Schema}
+	 * @return An object of type {@link Schema}. Cannot be null.
 	 * @since 0.6
 	 */
 	public Schema getSchema();
 	
 	/**
-	 * The name of this state.
+	 * This state's name.
 	 * 
-	 * @return The name of this state.
+	 * @return The name of this state. Cannot be null.
 	 * @since 0.5
 	 */
 	public String getName();	
 	
 	/**
-	 * Immutable map of sate parameters defined by this state.
+	 * Sate parameters defined by this state.
 	 * 
 	 * @return Immutable map of sate parameters defined by this state.
 	 * @since 0.6
 	 */
-	public Map<String,String> getParameters();
+	public Optional<Map<String,String>> getParameters();
 
 	/**
 	 * Immutable List, in ordinal order, of variations which are instrumented on this state. 
