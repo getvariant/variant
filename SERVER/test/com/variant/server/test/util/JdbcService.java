@@ -109,7 +109,6 @@ public class JdbcService {
 	 * @return
 	 */
 	public Vendor getVendor() {
-
 		// Figure out the JDBC vendor, if we can.
 		if (eventWriter.flusher().getClass().getSimpleName().equals("TraceEventFlusherPostgres")) {
 			return Vendor.POSTGRES;

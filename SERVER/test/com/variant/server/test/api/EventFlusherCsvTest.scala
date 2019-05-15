@@ -75,9 +75,10 @@ class EventFlusherCsvTest extends EmbeddedServerSpec {
 	
 	   	server.schemata.get("FlusherTest").isDefined mustBe true
 	   	val schema = server.schemata.get("FlusherTest").get.liveGen.get
-	   	schema.getMeta.getFlusher.getClassName mustBe "com.variant.extapi.std.flush.TraceEventFlusherCsv"
-	   	schema.getMeta.getFlusher.getInit mustBe Optional.empty
-	
+	   	schema.getMeta.getFlusher.get.getClassName mustBe "com.variant.extapi.std.flush.TraceEventFlusherCsv"
+	   	schema.getMeta.getFlusher.get.getInit mustBe Optional.empty
+			schema.getMeta.getComment mustBe Optional.empty
+			
 	      // the default csv file should have already been created.
 	   	Source.fromFile(defaultFileName).getLines().mkString mustBe ""
 	
@@ -203,8 +204,9 @@ class EventFlusherCsvTest extends EmbeddedServerSpec {
 	
 	   	server.schemata.get("FlusherTest").isDefined mustBe true
 	   	val schema = server.schemata.get("FlusherTest").get.liveGen.get
-	   	schema.getMeta.getFlusher.getClassName mustBe "com.variant.extapi.std.flush.TraceEventFlusherCsv"
-	   	schema.getMeta.getFlusher.getInit mustBe Optional.of(s"""{"header":true,"file":"${fileName}"}""")
+	   	schema.getMeta.getFlusher.get.getClassName mustBe "com.variant.extapi.std.flush.TraceEventFlusherCsv"
+	   	schema.getMeta.getFlusher.get.getInit mustBe Optional.of(s"""{"header":true,"file":"${fileName}"}""")
+	   	schema.getMeta.getComment mustBe Optional.empty
 	
 	      // The csv file should have already been created with the header in it.
 	      var lines = Source.fromFile(fileName).getLines()

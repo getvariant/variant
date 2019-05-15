@@ -3,7 +3,7 @@ package com.variant.core.schema;
 import java.util.Optional;
 
 /**
- * Representation of the event flusher schema property.
+ * Representation of the <code>/meta/flusher</code> schema element.
  * 
  * @since 0.8
  */
@@ -11,19 +11,21 @@ import java.util.Optional;
 public interface Flusher {
 	
 	/**
-	 * The name of the class implementing this flusher. Variant will attempt to load this class dynamically by this name,
-	 * as in {@link Class#forName(String)}.
+	 * The canonical name of the class implementing this trace event flusher, as provided by the <code>/meta/flusher/class</code> schema element.
+	 * Variant instantiates an instance of this class at the schema parse time. A variation schema may specify at most one trace event flusher.
 	 * 
-	 * @return The string value of the "class" property. Never null.
+	 * @return The string value provided by the <code>/meta/flusher/class</code> schema element. Cannot be null.
 	 * @since 0.8
 	 */
 	public String getClassName();
 
 	/**
-	 * The initialization string.
+	 * Arbitrary object used to initialize a newly instantiated trace event flusher, as provided by the 
+	 * <code>/meta/flusher/init</code> schema element. Variant will pass this object to the constructor 
+	 * of the flusher class.
 	 * 
-	 * @return The <code>Optional</code> container, with the string value of the "init" property,
-	 *         if provided in the schema, or empty if no <code>'init'</code> property was set.
+	 * @return The Optional container, with the serialized string value of the <code>/meta/flusher/init</code> element,
+	 *         if defined, or empty if <code>/meta/flusher/init</code> element was omitted.
 	 * @since 0.8
 	 */
 	public Optional<String> getInit();

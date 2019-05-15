@@ -5,18 +5,18 @@ import java.util.Optional;
 
 
 /**
- * Representation of a variation schema. A complete description of a set of experience variations 
- * running on a Variant server. 
+ * Representation of the root schema element. 
  * <p>
- * Any schema has three top level entities: <code>meta</code>, <code>states</code>, and <code>variations</code>, in that order. A schema
- * object is instantiated by the schema parser which reads and parses the schema file.
+ * Each variation schema describes a set of related code variations. It has three top level entities: 
+ * {@link Meta}, a list of {@link State}s, and a list of {@link Variation}s, in that order. 
+ * A Variant server can manage any number of variation schemata.
  * 
  * @since 0.5
  */
 public interface Schema {
 
 	/**
-	 * <p>This schema's <code>meta</code> section.
+	 * This schema's <code>/meta</code> element.
 	 * 
 	 * @return An object of type {@link Meta}
 	 * @since 0.9
@@ -24,34 +24,38 @@ public interface Schema {
 	Meta getMeta();
 
 	/**
-	 * The list, in ordinal order, of all states in this schema.
+	 * This schema's <code>/states</code> element.
 	 * 
-	 * @return A list of {@link State} objects.
+	 * @return An immutable list of {@link State} objects in order they were defined in the variation schema.
 	 * @since 0.5
 	 */
 	List<State> getStates();
 
 	/**
-	 * Get a state by its name. Names are case sensitive.
+	 * Get a state by its name.
 	 * 
-	 * @param name The state name.
-	 * @return An {@link Optional}, containing the state with the given name or empty if no such state in the schema.
+	 * @param name The state name of interest
+	 * @return An {@link Optional}, containing the state with the given name, if exists, or empty 
+	 * if no such state is present in the schema.
+	 * 
 	 * @since 0.5
 	 */
 	Optional<State> getState(String name);
 
 	/**
-	 * The list, in ordinal order, of all variations in this schema.
+	 * This schema's <code>/variations</code> element.
 	 * 
-	 * @return A list of {@link Variation} objects.
+	 * @return An immutable list of {@link Variation} objects in order they were defined in the variation schema.
 	 */
 	List<Variation>getVariations();
 	
 	/**
-	 * Get a variation by its name. Names are case sensitive.
+	 * Get a variation by its name.
 	 * 
-	 * @param name The variation name.
-	 * @return An {@link Optional}, containing the variation with the given name or empty if no such variation in the schema.
+	 * @param name The variation name of interest
+	 * @return An {@link Optional}, containing the variation with the given name, if exists, or empty 
+	 * if no such variation is present in the schema.
+     *
 	 * @since 0.5
 	 */
 	Optional<Variation> getVariation(String name);

@@ -14,7 +14,6 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.variant.core.error.CoreException;
 import com.variant.core.error.UserError.Severity;
-import com.variant.core.schema.Hook;
 import com.variant.core.schema.Meta;
 import com.variant.core.schema.parser.error.SemanticError;
 import com.variant.core.schema.parser.error.SyntaxError;
@@ -293,8 +292,10 @@ public abstract class SchemaParser implements Keywords {
 			// If we have the Meta section, init all schema scoped hooks and the flusher.
 			Meta meta = response.getSchema().getMeta();
 			if (meta != null) {
-				for (Hook hook: meta.getHooks()) hooksService.initHook(hook, response);
-
+				
+				// Init meta hooks.
+				meta.getHooks().ifPresent(hooksList -> hooksList.forEach(hook -> hooksService.initHook(hook, response)));
+				
 				// If no flusher was supplied, flusher service is expected to init the default flusher.
 				flusherService.initFlusher(meta.getFlusher());
 			}

@@ -17,6 +17,7 @@ import play.api.inject.guice.GuiceApplicationBuilder
 import com.variant.server.api.ConfigKeys
 import org.scalatestplus.play.guice.GuiceOneAppPerTest
 import com.variant.server.boot.ServerExceptionLocal
+import java.util.Optional
 
 /**
  * TODO: Need to also test annotations.
@@ -98,7 +99,7 @@ class EventFlusherTest extends PlaySpec with GuiceOneAppPerTest {
    		response.getMessages.size mustBe 0
    		server.schemata.get("FlusherTest").isDefined mustBe true
    		val schema = server.schemata.get("FlusherTest").get.liveGen.get
-   		schema.getMeta.getFlusher() mustBe null
+   		schema.getMeta.getFlusher() mustBe Optional.empty
    		
    		// As defined in conf-test/variant.conf
    		schema.eventWriter.flusher.getClass.getName mustBe "com.variant.extapi.std.flush.jdbc.TraceEventFlusherH2"

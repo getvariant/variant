@@ -6,7 +6,6 @@ import java.util.List;
 
 import com.variant.core.error.UserError;
 import com.variant.core.error.UserError.Severity;
-import com.variant.core.schema.ParserMessage;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.impl.SchemaImpl;
 import com.variant.core.schema.parser.error.SemanticError;

@@ -89,7 +89,8 @@ class TestQualificationHookTest extends EmbeddedServerSpec {
 	    val test6 = schema.getVariation("test6").get
        ssn = SessionImpl.empty(newSid(), schema)
 
-   	   schema.getMeta.getHooks mustBe empty
+   	   schema.getMeta.getHooks mustBe Optional.empty
+   	   
    	   test1.getHooks.size mustBe 1
    	   val h1 = test1.getHooks.get(0).asInstanceOf[VariationHookImpl]
    	   h1.location.getPath mustBe "/variations[0]/hooks[0]/"
@@ -188,25 +189,26 @@ class TestQualificationHookTest extends EmbeddedServerSpec {
             )
          )
          
-       val schemaDeployer = SchemaDeployer.fromString(schemaSrc)
-       server.useSchemaDeployer(schemaDeployer)
-       val response = schemaDeployer.parserResponses(0)
-
-       response.hasMessages() mustBe false
-       server.schemata.get(schemaName).isDefined mustBe true
-   	   val schema = server.schemata.get(schemaName).get.liveGen.get
-   		 val state1 = schema.getState("state1").get
-   		 val state2 = schema.getState("state2").get
-   	   val test1 = schema.getVariation("test1").get
-   	   val test2 = schema.getVariation("test2").get
-   	   val test3 = schema.getVariation("test3").get
-   	   val test4 = schema.getVariation("test4").get
-   	   val test5 = schema.getVariation("test5").get
-   	   val test6 = schema.getVariation("test6").get
-       ssn = SessionImpl.empty(newSid(), schema)
-   	   
-       schema.getMeta.getHooks mustBe empty
-   	   test1.getHooks.size mustBe 1
+	       val schemaDeployer = SchemaDeployer.fromString(schemaSrc)
+	       server.useSchemaDeployer(schemaDeployer)
+	       val response = schemaDeployer.parserResponses(0)
+	
+	       response.hasMessages() mustBe false
+	       server.schemata.get(schemaName).isDefined mustBe true
+	   	   val schema = server.schemata.get(schemaName).get.liveGen.get
+	   		 val state1 = schema.getState("state1").get
+	   		 val state2 = schema.getState("state2").get
+	   	   val test1 = schema.getVariation("test1").get
+	   	   val test2 = schema.getVariation("test2").get
+	   	   val test3 = schema.getVariation("test3").get
+	   	   val test4 = schema.getVariation("test4").get
+	   	   val test5 = schema.getVariation("test5").get
+	   	   val test6 = schema.getVariation("test6").get
+	       ssn = SessionImpl.empty(newSid(), schema)
+	   	   
+	       schema.getMeta.getHooks mustBe Optional.empty
+       
+   	    test1.getHooks.size mustBe 1
    	   val h1 = test1.getHooks.get(0).asInstanceOf[VariationHookImpl]
    	   h1.location.getPath mustBe "/variations[0]/hooks[0]/"
    	   h1.getClassName mustBe "com.variant.server.test.hooks.TestQualificationHookDisqual"

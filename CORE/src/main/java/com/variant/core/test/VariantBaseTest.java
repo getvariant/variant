@@ -16,9 +16,9 @@ import java.util.regex.Pattern;
 
 import com.variant.core.error.CoreException;
 import com.variant.core.error.UserError;
-import com.variant.core.schema.ParserMessage;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.Variation.Experience;
+import com.variant.core.schema.parser.ParserMessage;
 import com.variant.core.schema.parser.ParserResponse;
 import com.variant.core.session.CoreSession;
 import com.variant.core.session.SessionScopedTargetingStabile;

@@ -1,9 +1,8 @@
 package com.variant.core.schema.impl;
 
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 
 import com.variant.core.schema.Flusher;
 import com.variant.core.schema.Hook;
@@ -16,10 +15,8 @@ public class MetaImpl implements Meta {
 	
 	private String name = null;
 	private String comment = null;
-	private Flusher flusher = null;
-	
-	// Hooks are keyed by name.
-	private LinkedList<Hook> hooks = new LinkedList<Hook>();
+	private Flusher flusher = null;	
+	private List<Hook> hooks = null;
 
 	/**
 	 */
@@ -37,20 +34,18 @@ public class MetaImpl implements Meta {
 	}
 
 	@Override
-	public String getComment() {
-		return comment;
+	public Optional<String> getComment() {
+		return Optional.ofNullable(comment);
 	}
 
 	@Override
-	public List<Hook> getHooks() {
-		ArrayList<Hook> result = new ArrayList<Hook>(hooks.size());
-		result.addAll(hooks);
-		return Collections.unmodifiableList(result);
+	public Optional<List<Hook>> getHooks() {
+		return hooks == null ? Optional.empty() : Optional.of(Collections.unmodifiableList(hooks));
 	}
 
 	@Override
-	public Flusher getFlusher() {
-		return flusher;
+	public Optional<Flusher> getFlusher() {
+		return Optional.ofNullable(flusher);
 	}
 		
     //---------------------------------------------------------------------------------------------//
@@ -62,8 +57,8 @@ public class MetaImpl implements Meta {
 	 * @param hook
 	 * @return true if hook didn't exist, false if did.
 	 */
-	public void addHook(Hook hook) {
-		hooks.add(hook);
+	public void SetHooks(List<Hook> hooks) {
+		this.hooks = hooks;
 	}
 
 	/**

@@ -1,10 +1,11 @@
 package com.variant.core.schema;
 
 import java.util.List;
+import java.util.Optional;
 
 
 /**
- * Representation of the <code>meta</code> section of an variation schema.
+ * Representation of the <code>/meta</code> schema element.
  * <p>
  * 
  * @since 0.9
@@ -12,36 +13,39 @@ import java.util.List;
 public interface Meta {
 
 	/**
-	 * <p>This schema's name.
+	 * This schema's name, as provided by the <code>/meta/name</code> element.
 	 * 
-	 * @return Schema name, as provided in the meta clause.
+	 * @return Schema name. Cannot be null;
 	 * @since 0.9
 	 */
 	String getName();
 
 	/**
-	 * <p>This schema's comment.
+	 * This schema's comment, as provided by the <code>/meta/name</code> element.
 	 * 
-	 * @return Schema comment, as provided in the meta clause.
+	 * @return An {@link Optional}, containing the schema comment if defined, 
+	 * or empty if <code>/meta/comment</code> element was omitted.
 	 * @since 0.9
 	 */
-	String getComment();
+	Optional<String> getComment();
 	
 	/**
-	 * <p>List of schema-scoped life-cycle hooks.
+	 * List of schema-scoped lifecycle hooks, as provided by the <code>/meta/hooks</code> element. 
 	 * 
-	 * @return A list of {@link Hook} objects in the ordinal order.
+	 * @return An {@link Optional}, containing immutable list of {@link Hook} objects in the order they were defined,
+	 *         or empty if the </code>/meta/hooks</code> element was omitted.
 	 * @since 0.9
 	 */
-	List<Hook> getHooks();
+	Optional<List<Hook>> getHooks();
 
 	/**
-	 * <p>This schema's declared {@link Flusher}. If no flusher is declared by the schema, the system wide default
-	 * is used.
+	 * This schema's trace event flusher, as proided by the <code>/meta/hooks</code> element. If no such flusher
+	 * is provided in the schema, the configurable system wide default is used at run time.
 	 * 
-	 * @return An object of type {@link Flusher} if flusher was declared in this schema, or {@code null} otherwise.
+	 * @return An {@link Optional}, containing the {@link Flusher} object if defined, 
+	 *         or empty if the </code>/meta/flusher</code> element was omitted.
 	 * @since 0.9
 	 */
-	Flusher getFlusher();
+	Optional<Flusher> getFlusher();
 	
 }

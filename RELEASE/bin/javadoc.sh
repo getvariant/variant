@@ -3,7 +3,7 @@
 # Generate server and client javadoc.
 # 
 
-version=0.9
+version=0.10
 dot_version=0.10.0
 workspace_root_dir=$(cd $(dirname $0)/../..; pwd)
 core_src_dir=${workspace_root_dir}/CORE/src/main/java
@@ -15,7 +15,7 @@ target_file=${workspace_root_dir}/RELEASE/target/javadoc-${version}.tar
 rm -rf ${javadoc_dir} ${target_dir}
 mkdir ${target_dir} ${javadoc_dir}
 
-javadoc -d ${javadoc_dir}  \
+javadoc --allow-script-in-comments -d ${javadoc_dir}  \
    -sourcepath ${core_src_dir}:${client_src_dir}:${server_src_dir} \
    -windowtitle "Variant Experience Server ${version} JavaDoc" \
    -doctitle "Variant Experiment Server ${version}" \
@@ -28,11 +28,10 @@ javadoc -d ${javadoc_dir}  \
     ga('create', 'UA-40337670-3', 'auto');                                             \
     ga('send', 'pageview');                                                            \
   </script>" \
-   -bottom "Variant Experience Server release $dot_version. Updated $(date +"%d %b %Y").<br/> Copyright &copy; 2018 <a onclick=\"window.top.location.href='http://getvariant.com';\" href=\"#\">Variant Inc.</a>" \
+   -bottom "Variant Experience Server release $dot_version. Updated $(date +"%d %b %Y").<br/> Copyright &copy; 2019 <a onclick=\"window.top.location.href='http://getvariant.com';\" href=\"#\">Variant Inc.</a>" \
    com.variant.core.lifecycle         \
    com.variant.core.schema            \
    com.variant.client                 \
-   com.variant.client.lifecycle       \
    com.variant.server.api             \
    com.variant.server.api.lifecycle
 

@@ -1,7 +1,7 @@
 package com.variant.core.schema.parser.error;
 
 import com.variant.core.error.UserError;
-import com.variant.core.schema.ParserMessage.Location;
+import com.variant.core.schema.parser.ParserMessage.Location;
 
 abstract public class ParserError extends UserError {
 	

@@ -33,7 +33,6 @@ import org.slf4j.LoggerFactory;
 import com.variant.core.error.CoreException;
 import com.variant.core.error.UserError.Severity;
 import com.variant.core.schema.Hook;
-import com.variant.core.schema.ParserMessage;
 import com.variant.core.schema.State;
 import com.variant.core.schema.StateVariant;
 import com.variant.core.schema.Variation;

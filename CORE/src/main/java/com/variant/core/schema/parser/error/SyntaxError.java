@@ -14,7 +14,7 @@ public class SyntaxError extends ParserError {
 	/**
 	 * Sytanx error location implementation.
 	 */
-	public static class Location implements com.variant.core.schema.ParserMessage.Location {
+	public static class Location implements com.variant.core.schema.parser.ParserMessage.Location {
 		
 		private  final String schemaSrc;
 		

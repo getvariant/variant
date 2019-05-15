@@ -3,8 +3,8 @@ package com.variant.core.schema;
 import java.util.Optional;
 
 /**
- * Representation of the schema <code>hook</code> property. Depending on the definition context,
- * a hook can have the scope of the entire schema, a particular state, or a particular test.
+ * Representation of various lifecycle hook schema elements. Depending on where in the variation schema it is defined,
+ * a hook can have the scope of the entire schema, of a particular state, or of a particular variation.
  * 
  * @since 0.7
  */
@@ -12,32 +12,35 @@ import java.util.Optional;
 public interface Hook {
 			
 	/**
-	 * The canonical name of the class implementing this hook.
+	 * The canonical name of the class implementing this lifecycle hook, as provided by the <code>/../hooks[]/class</code> schema element.
+	 * Variant instantiates an instance of this class for each subscribed lifecycle event.
 	 * 
-	 * @return The string value of the "class" property. Never null.
+	 * @return The string value provided by the <code>/../hooks[]/class</code> schema element. Cannot be null.
 	 * @since 0.7
 	 */
 	public String getClassName();
 
 	/**
-	 * The initialization string.
+	 * Arbitrary object used to initialize a newly instantiated lifecycle hook, as provided by the 
+	 * <code>/../hooks[]/init</code> schema element. Variant will pass this object to the constructor 
+	 * of the hook class.
 	 * 
-	 * @return The <code>Optional</code> container, with the string value of the "init" property,
-	 *         if provided in the schema, or empty if no <code>'init'</code> property was set.
+	 * @return The Optional container, with the serialized string value of the <code>/../hooks[]/init</code> element,
+	 *         if defined, or empty if <code>/../hooks[]/init</code> element was omitted.
 	 * @since 0.7
 	 */
 	public Optional<String> getInit();
 	
 	
 	/**
-	 * Schema scoped life-cycle hook. Declared in the {@code meta/hooks} array.
+	 * Schema scoped lifecycle hook, defined by <code>/meta/hooks[]</code> array element.
      *
 	 * @since 0.7
 	 */
 	public interface Schema extends Hook {}
 	
 	/**
-	 * State scoped life-cycle hook. Declared in the {@code state//hooks} array.
+	 * State scoped lifecycle hook, defined by <code>/states[]/hooks[]</code> array element.
 	 *
 	 * @since 0.7
 	 */
@@ -46,7 +49,7 @@ public interface Hook {
 		/**
 		 * The state in whose scope this hook is defined.
 		 * 
-		 * @return An object of type {@link com.variant.core.schema.Variation}
+		 * @return An object of type {@link com.variant.core.schema.State}
 		 * @since 0.7
 		 */
 		public com.variant.core.schema.State getState();
@@ -54,8 +57,8 @@ public interface Hook {
 	}
 
 	/**
-	 * Variation-scoped life-cycle hook. Declared in the {@code variations//hooks} array
-	 * @author Igor
+	 * Variation scoped lifecycle hook, defined by <code>/variations[]/hooks[]</code> array element.
+	 *
 	 * @since 0.7
 	 */
 	public interface Variation extends Hook {

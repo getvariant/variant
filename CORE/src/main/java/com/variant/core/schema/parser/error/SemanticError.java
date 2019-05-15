@@ -14,7 +14,7 @@ public class SemanticError extends ParserError {
 	 * 
 	 * @author Igor
 	 */
-	public static class Location implements com.variant.core.schema.ParserMessage.Location {
+	public static class Location implements com.variant.core.schema.parser.ParserMessage.Location {
 
 		private final String path;
 		

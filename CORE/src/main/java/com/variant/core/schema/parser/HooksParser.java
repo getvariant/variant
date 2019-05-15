@@ -2,6 +2,7 @@ package com.variant.core.schema.parser;
 
 import static com.variant.core.schema.parser.error.SemanticError.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -36,14 +37,16 @@ public class HooksParser implements Keywords {
 		
 		try {
 			List<?> rawHooks = (List<?>) hooksObject;
-									
+			ArrayList<Hook> hooks = new ArrayList<Hook>(rawHooks.size());
+			
 			int i = 0;
 			for (Object rawHook: rawHooks) {
 				
 				Location hookLocation = hooksLocation.plusIx(i++);
 				Hook hook = parseHook(rawHook, hookLocation, response);
-				if (hook != null) meta.addHook(hook); 
+				if (hook != null) hooks.add(hook); 
 			}
+			meta.SetHooks(hooks);
 		}
 		catch (ClassCastException e) {
 			response.addMessage(metaLocation.plusObj(KEYWORD_HOOKS), PROPERTY_NOT_LIST, "hooks");

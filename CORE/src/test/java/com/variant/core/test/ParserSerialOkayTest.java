@@ -163,8 +163,8 @@ public class ParserSerialOkayTest extends BaseTestCore {
 		Schema schema = response.getSchema();
 		assertNotNull(response.getSchemaSrc());
 		assertEquals("allTestsOffTest", schema.getMeta().getName());
-		assertEquals("!@#$%^&*", schema.getMeta().getComment());
-		Flusher flusher = schema.getMeta().getFlusher();
+		assertEquals("!@#$%^&*", schema.getMeta().getComment().get());
+		Flusher flusher = schema.getMeta().getFlusher().get();
 		assertNotNull(flusher);
 		assertEquals("flusher.class.Foo", flusher.getClassName());
 		assertEquals(Optional.of("{\"url\":\"jdbc:postgresql://localhost/variant\",\"user\":\"variant\",\"password\":\"variant\"}"), flusher.getInit());
@@ -180,7 +180,7 @@ public class ParserSerialOkayTest extends BaseTestCore {
 		assertFalse(test1.isConjointWith(test2));
 		assertFalse(test2.isConjointWith(test1));
 
-		List<Hook> hooks = schema.getMeta().getHooks();
+		List<Hook> hooks = schema.getMeta().getHooks().get();
 		assertEquals(6, hooks.size());
 		Hook hook = hooks.get(0);
 		assertEquals("c.v.s.one", hook.getClassName());
@@ -230,7 +230,7 @@ public class ParserSerialOkayTest extends BaseTestCore {
 				"{                                                                                 \n" +
 					    "  'meta':{                                                                \n" +		    	    
 					    "      'NAME':'oneOffOneDisqualifiedTest',                                 \n" +
-					    "      'CommenT':'oneOffOneDisqualifiedTest comment',                      \n" +
+					    "      'CommenT':'',                                                       \n" +
 					    "      'flusher': {                                                        \n" +
 					    "        'class':'flusher.class.Foo'                                       \n" +  
 					    "       }                                                                  \n" +
@@ -356,12 +356,14 @@ public class ParserSerialOkayTest extends BaseTestCore {
 		assertNotNull(response.getSchemaSrc());
 		Schema schema = response.getSchema();
 		assertEquals("oneOffOneDisqualifiedTest", schema.getMeta().getName());
-		assertEquals("oneOffOneDisqualifiedTest comment", schema.getMeta().getComment());
+		assertEquals("", schema.getMeta().getComment().get());
 
-		Flusher flusher = schema.getMeta().getFlusher();
+		Flusher flusher = schema.getMeta().getFlusher().get();
 		assertNotNull(flusher);
 		assertEquals("flusher.class.Foo", flusher.getClassName());
-		assertEquals(Optional.empty(), flusher.getInit());
+		assertFalse(flusher.getInit().isPresent());
+		assertFalse(schema.getMeta().getHooks().isPresent());
+		assertEquals("", schema.getMeta().getComment().get());
 
 		Variation test1 = schema.getVariation("test1").get();
 		Variation test2 = schema.getVariation("test2").get();
@@ -514,8 +516,8 @@ public class ParserSerialOkayTest extends BaseTestCore {
 		assertNotNull(response.getSchemaSrc());
 		Schema schema = response.getSchema();
 		assertEquals("allTestsDisqualifiedTest", schema.getMeta().getName());
-		assertNull(schema.getMeta().getComment());
-		assertNull(schema.getMeta().getFlusher());
+		assertFalse(schema.getMeta().getComment().isPresent());
+		assertFalse(schema.getMeta().getFlusher().isPresent());
 
 		Variation test1 = schema.getVariation("test1").get();
 		Variation test2 = schema.getVariation("test2").get();
@@ -783,13 +785,13 @@ public class ParserSerialOkayTest extends BaseTestCore {
 		assertNotNull(response.getSchemaSrc());
 		final Schema schema = response.getSchema();
 		assertEquals("happy_path_schema", schema.getMeta().getName());
-		assertNull(schema.getMeta().getComment());
+		assertFalse(schema.getMeta().getComment().isPresent());
 
 		//
 		// Hooks
 		//
 		
-		List<Hook> hooks = schema.getMeta().getHooks();
+		List<Hook> hooks = schema.getMeta().getHooks().get();
 		assertEquals(6, hooks.size());
 		Hook hook = hooks.get(0);
 		assertEquals("c.v.s.one", hook.getClassName());

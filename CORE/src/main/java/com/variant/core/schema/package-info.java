@@ -1,5 +1,7 @@
 /**
- * <p>Public classes modeling the objects of the Variant Experience Variation Model (XVM).
+ * Public classes encapsulating objects in Variant data dictionary.
+ * Variant data dictionary consists of a series of schemata, as modeled
+ * by the {@link com.variant.core.schema.Schema} object. 
  *
  * @since 0.5
  */

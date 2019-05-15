@@ -60,21 +60,21 @@ public class ServerFlusherService implements FlusherService {
 	 * as externally configured in variant.conf.
 	 */
 	@Override
-	public void initFlusher(Flusher flusher) {
+	public void initFlusher(Optional<Flusher> flusherArg) {
 
-		if (flusher == null) flusher = defaultFlusher();
+		Flusher f = flusherArg.orElse(defaultFlusher());
 		
 		// If default flusher is misconfigured, it's still null -- quit.
-		if (flusher == null) return;
+		if (f == null) return;
 		
 		ParserResponse response = parser.responseInProgress();
 		
 		try {
 			// Create the Class object for the supplied LifecycleHook implementation.
-			Object flusherObj = ClassUtil.instantiate(flusher.getClassName(), flusher.getInit());
+			Object flusherObj = ClassUtil.instantiate(f.getClassName(), f.getInit());
 			
 			if (flusherObj == null) {
-				response.addMessage(ServerErrorLocal.OBJECT_CONSTRUCTOR_ERROR, flusher.getClassName());
+				response.addMessage(ServerErrorLocal.OBJECT_CONSTRUCTOR_ERROR, f.getClassName());
 				return;
 			}			
 			
@@ -84,20 +84,20 @@ public class ServerFlusherService implements FlusherService {
 				return;
 			}
 			
-			this.flusher = (TraceEventFlusher) flusherObj;
+			flusher = (TraceEventFlusher) flusherObj;
 			logger.info(String.format(
 					"Registered event flusher [%s] for schema [%s]", 
-					flusher.getClassName(), parser.responseInProgress().getSchema().getMeta().getName()));
+					f.getClassName(), parser.responseInProgress().getSchema().getMeta().getName()));
 						
 		}
 		catch (ConfigException.Parse e) {
-			logger.error(ServerErrorLocal.OBJECT_INSTANTIATION_ERROR.asMessage(flusher.getClassName(), e.getClass().getName()), e);
-			response.addMessage(ServerErrorLocal.OBJECT_INSTANTIATION_ERROR, flusher.getClassName(), e.getClass().getName());
+			logger.error(ServerErrorLocal.OBJECT_INSTANTIATION_ERROR.asMessage(f.getClassName(), e.getClass().getName()), e);
+			response.addMessage(ServerErrorLocal.OBJECT_INSTANTIATION_ERROR, f.getClassName(), e.getClass().getName());
 		}
 		catch (Exception e) {
 			// We log here, even though the schema deployer will echo the error again, in order to log e's call stack.
-			logger.error(ServerErrorLocal.OBJECT_INSTANTIATION_ERROR.asMessage(flusher.getClassName(), e.getClass().getName()), e);
-			response.addMessage(ServerErrorLocal.OBJECT_INSTANTIATION_ERROR, flusher.getClassName(), e.getClass().getName());
+			logger.error(ServerErrorLocal.OBJECT_INSTANTIATION_ERROR.asMessage(f.getClassName(), e.getClass().getName()), e);
+			response.addMessage(ServerErrorLocal.OBJECT_INSTANTIATION_ERROR, f.getClassName(), e.getClass().getName());
 		}
 	}
 
