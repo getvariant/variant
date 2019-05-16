@@ -11,6 +11,9 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.variant.core.error.CoreException;
 import com.variant.core.schema.Hook;
+import com.variant.core.schema.MetaScopedHook;
+import com.variant.core.schema.StateScopedHook;
+import com.variant.core.schema.VariationScopedHook;
 import com.variant.core.schema.impl.MetaImpl;
 import com.variant.core.schema.impl.SchemaHookImpl;
 import com.variant.core.schema.impl.StateHookImpl;
@@ -37,13 +40,13 @@ public class HooksParser implements Keywords {
 		
 		try {
 			List<?> rawHooks = (List<?>) hooksObject;
-			ArrayList<Hook> hooks = new ArrayList<Hook>(rawHooks.size());
+			ArrayList<MetaScopedHook> hooks = new ArrayList<MetaScopedHook>(rawHooks.size());
 			
 			int i = 0;
 			for (Object rawHook: rawHooks) {
 				
 				Location hookLocation = hooksLocation.plusIx(i++);
-				Hook hook = parseHook(rawHook, hookLocation, response);
+				MetaScopedHook hook = parseHook(rawHook, hookLocation, response);
 				if (hook != null) hooks.add(hook); 
 			}
 			meta.SetHooks(hooks);
@@ -63,7 +66,7 @@ public class HooksParser implements Keywords {
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	private static Hook parseHook(Object rawHook, Location hookLocation, ParserResponse response) {
+	private static MetaScopedHook parseHook(Object rawHook, Location hookLocation, ParserResponse response) {
 		
 		String className = null;
 		Optional<String> init = Optional.empty();
@@ -135,20 +138,22 @@ public class HooksParser implements Keywords {
 	static void parseStateHooks(Object hooksObject, StateImpl state, Location stateLocation, ParserResponse response) {		
 		try {
 			List<?> rawHooks = (List<?>) hooksObject;
-									
+			ArrayList<StateScopedHook> hooks = new ArrayList<StateScopedHook>(rawHooks.size());
+
 			int index = 0;
 			for (Object rawHook: rawHooks) {
 				
 				Location hookLocation = stateLocation.plusIx(index++);
 				
-				Hook hook = parseHook(rawHook, hookLocation, response);
+				MetaScopedHook hook = parseHook(rawHook, hookLocation, response);
 				
 				if (hook != null) {
 					// The method above created a schema level hook, but in this case we need a test
 					// domian hook.
-					state.addHook(new StateHookImpl(hook.getClassName(), hook.getInit(), hookLocation, state));
+					hooks.add(new StateHookImpl(hook.getClassName(), hook.getInit(), hookLocation, state));
 				}	
 			}
+			state.setHooks(hooks);
 		}
 		catch (ClassCastException e) {
 			response.addMessage(stateLocation, PROPERTY_NOT_LIST, "hooks");
@@ -166,6 +171,7 @@ public class HooksParser implements Keywords {
 	static void parseVariationHook(Object hooksObject, VariationImpl test, Location testLocation, ParserResponse response) {		
 		try {
 			List<?> rawHooks = (List<?>) hooksObject;
+			ArrayList<VariationScopedHook> hooks = new ArrayList<VariationScopedHook>(rawHooks.size());
 						
 			int index = 0;
 			for (Object rawHook: rawHooks) {
@@ -177,9 +183,10 @@ public class HooksParser implements Keywords {
 				if (hook != null) {
 					// The method above created a schema level hook, but in this case we need a test
 					// domian hook.
-					test.addHook(new VariationHookImpl(hook.getClassName(), hook.getInit(), hookLocation, test));
+					hooks.add(new VariationHookImpl(hook.getClassName(), hook.getInit(), hookLocation, test));
 				}	
 			}
+			test.setHooks(hooks);
 		}
 		catch (ClassCastException e) {
 			response.addMessage(testLocation, PROPERTY_NOT_LIST, "hooks");

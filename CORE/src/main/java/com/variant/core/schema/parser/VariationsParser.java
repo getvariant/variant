@@ -32,7 +32,6 @@ import org.slf4j.LoggerFactory;
 
 import com.variant.core.error.CoreException;
 import com.variant.core.error.UserError.Severity;
-import com.variant.core.schema.Hook;
 import com.variant.core.schema.State;
 import com.variant.core.schema.StateVariant;
 import com.variant.core.schema.Variation;
@@ -97,9 +96,9 @@ public class VariationsParser implements Keywords {
 				response.addMessage(varLocation, DUPE_OBJECT, var.getName());
 			}
 			
-			// If no errors, register test scoped hooks.
+			// If no errors, register variation scoped hooks.
 			if (errorCount.intValue() == 0) {
-				for (Hook hook: var.getHooks()) hooksService.initHook(hook, response);
+				var.getHooks().ifPresent(hooks -> hooks.forEach(hook -> hooksService.initHook(hook, response)));
 			}
 			response.setMessageListener(null);
 

@@ -3,15 +3,14 @@ package com.variant.core.schema.impl;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
 import com.variant.core.error.VariantException;
-import com.variant.core.schema.Hook;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.State;
 import com.variant.core.schema.Variation;
+import com.variant.core.schema.VariationScopedHook;
 
 /**
  * 
@@ -30,7 +29,7 @@ public class VariationImpl implements Variation {
 	private List<VariationOnStateImpl> onStates;
 	
 	// Hooks are keyed by name.
-	private LinkedList<Hook> hooks = new LinkedList<Hook>();
+	private Optional<List<VariationScopedHook>> hooks = Optional.empty();
 
 	// Runtime will cache stuff in this instance.
 	private HashMap<String, Object> runtimeAttributes = new HashMap<String, Object>();
@@ -137,10 +136,8 @@ public class VariationImpl implements Variation {
 	 * 
 	 */
 	@Override
-	public List<Hook> getHooks() {
-		ArrayList<Hook> result = new ArrayList<Hook>(hooks.size());
-		result.addAll(hooks);
-		return Collections.unmodifiableList(result);
+	public Optional<List<VariationScopedHook>> getHooks() {
+		return hooks.map(hooks -> Collections.unmodifiableList(hooks));
 	}
 
 	@Override
@@ -199,8 +196,8 @@ public class VariationImpl implements Variation {
 	 * @param hook
 	 * @return true if hook didn't exist, false if did.
 	 */
-	public void addHook(Hook hook) {
-		hooks.add(hook);
+	public void setHooks(List<VariationScopedHook> hooks) {
+		this.hooks = Optional.of(hooks);
 	}
 
 	/**

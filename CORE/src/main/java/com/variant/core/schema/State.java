@@ -12,54 +12,55 @@ import java.util.Optional;
 public interface State {
 
 	/**
-	 * The containing variation schema..
+	 * The containing variation schema.
 	 * 
 	 * @return An object of type {@link Schema}. Cannot be null.
 	 * @since 0.6
 	 */
-	public Schema getSchema();
+	Schema getSchema();
 	
 	/**
-	 * This state's name.
+	 * This state's name, as provided by the <code>/states[]/name</code> element.
 	 * 
 	 * @return The name of this state. Cannot be null.
 	 * @since 0.5
 	 */
-	public String getName();	
+	String getName();	
 	
 	/**
-	 * Sate parameters defined by this state.
+	 * Sate parameters defined by this state, as provided by the <code>/states[]/parameters</code> element.
 	 * 
-	 * @return Immutable map of sate parameters defined by this state.
+	 * @return An {@link Optional}, containing immutable map of state parameters,
+	 *         or empty if the </code>/states[]/parameters</code> element was omitted.
 	 * @since 0.6
 	 */
-	public Optional<Map<String,String>> getParameters();
+	Optional<Map<String, String>> getParameters();
 
 	/**
-	 * Immutable List, in ordinal order, of variations which are instrumented on this state. 
-	 * Includes both online and offline variations.
+	 * List of state-scoped lifecycle hooks, as provided by the <code>/states[]/hooks</code> element. 
+	 * 
+	 * @return An {@link Optional}, containing immutable list of {@link StateScopedHook} objects in the order they were defined,
+	 *         or empty if the </code>/states[]/hooks</code> element was omitted.
+	 * @since 0.8
+	 */
+	Optional<List<StateScopedHook>> getHooks();
+
+	/**
+	 * A list of variations which instrument this state. Includes both online and offline variations.
 	 *  
-	 * @return A list of {@link Variation} objects.
+	 * @return An immutable list of {@link Variation} objects. Cannot be null but may be empty.
 	 * @since 0.5
 	 */
 	List<Variation> getInstrumentedVariations();
 
 	/**
-	 * Returns <code>true</code> if this state is instrumented by a given variation.
-	 * In other words, is a given variation contained in the return value of {@link #getInstrumentedVariants()}?
+	 * Is this state instrumented by a given variation. In other words, is a given variation contained 
+	 * in the list, returned by {@link #getInstrumentedVariants()}?
 	 * 
 	 * @param variation The variation of interest.
-	 * @return <code>true</code> if this state is instrumented by the given variation, <code>false</code> otherwise. 
+	 * @return <code>true</code> if this state is instrumented by the given variation, or <code>false</code> otherwise. 
 	 * @since 0.5
 	 */
-	public boolean isInstrumentedBy(Variation variation);
+	boolean isInstrumentedBy(Variation variation);
 	
-	/**
-	 * <p>List of variation-scoped life-cycle hooks defined in the scope of this state.
-	 * 
-	 * @return A list, in the ordinal order, of {@link Hook} objects.
-	 * @since 0.8
-	 */
-	public List<Hook> getHooks();
-
 }

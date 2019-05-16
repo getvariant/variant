@@ -10,11 +10,12 @@ import java.util.List;
 import java.util.Optional;
 
 import com.variant.core.schema.Flusher;
-import com.variant.core.schema.Hook;
+import com.variant.core.schema.MetaScopedHook;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.State;
 import com.variant.core.schema.StateVariant;
 import com.variant.core.schema.Variation;
+import com.variant.core.schema.VariationScopedHook;
 import com.variant.core.schema.parser.ParserResponse;
 import com.variant.core.schema.parser.SchemaParser;
 
@@ -179,40 +180,43 @@ public class ParserSerialOkayTest extends BaseTestCore {
 		assertFalse(test1.isConjointWith(test2));
 		assertFalse(test2.isConjointWith(test1));
 
-		List<Hook> hooks = schema.getMeta().getHooks().get();
-		assertEquals(6, hooks.size());
-		Hook hook = hooks.get(0);
-		assertEquals("c.v.s.one", hook.getClassName());
-		assertEquals(Optional.empty(), hook.getInit());
-		hook = hooks.get(1);
-		assertEquals("c.v.s.two", hook.getClassName());
-		assertEquals(Optional.empty(), hook.getInit());
-		hook = hooks.get(2);
-		assertEquals("c.v.s.one", hook.getClassName());
-		assertEquals(Optional.empty(), hook.getInit());
-		hook = hooks.get(3);
-		assertEquals("c.v.s.three", hook.getClassName());
-		assertEquals(Optional.empty(), hook.getInit());
-		hook = hooks.get(4);
-		assertEquals("c.v.s.four", hook.getClassName());
-		assertEquals(Optional.empty(), hook.getInit());
-		hook = hooks.get(5);
-		assertEquals("c.v.s.four", hook.getClassName());
-		assertEquals(Optional.empty(), hook.getInit());
+		List<MetaScopedHook> mHooks = schema.getMeta().getHooks().get();
+		assertEquals(6, mHooks.size());
+		MetaScopedHook mHook = mHooks.get(0);
+		assertEquals("c.v.s.one", mHook.getClassName());
+		assertEquals(Optional.empty(), mHook.getInit());
+		mHook = mHooks.get(1);
+		assertEquals("c.v.s.two", mHook.getClassName());
+		assertEquals(Optional.empty(), mHook.getInit());
+		mHook = mHooks.get(2);
+		assertEquals("c.v.s.one", mHook.getClassName());
+		assertEquals(Optional.empty(), mHook.getInit());
+		mHook = mHooks.get(3);
+		assertEquals("c.v.s.three", mHook.getClassName());
+		assertEquals(Optional.empty(), mHook.getInit());
+		mHook = mHooks.get(4);
+		assertEquals("c.v.s.four", mHook.getClassName());
+		assertEquals(Optional.empty(), mHook.getInit());
+		mHook = mHooks.get(5);
+		assertEquals("c.v.s.four", mHook.getClassName());
+		assertEquals(Optional.empty(), mHook.getInit());
 
-		hooks = test1.getHooks();
-		assertEquals(3, hooks.size());
-		hook = hooks.get(0);
-		assertEquals("c.v.s.one", hook.getClassName());
-		assertEquals(Optional.of("{}"), hook.getInit());
-		hook = hooks.get(1);
-		assertEquals("c.v.s.two", hook.getClassName());
-		assertEquals(Optional.of("null"), hook.getInit());
-		hook = hooks.get(2);
-		assertEquals("c.v.s.three", hook.getClassName());
-		assertEquals(Optional.of("{\"foo\":\"a string\",\"bar\":[1,2],\"obj\":{}}"), hook.getInit());
+		List<VariationScopedHook> vHooks = test1.getHooks().get();
+		assertEquals(3, vHooks.size());
+		VariationScopedHook vHook = vHooks.get(0);
+		assertEquals("c.v.s.one", vHook.getClassName());
+		assertEquals(Optional.of("{}"), vHook.getInit());
+		assertEquals(test1, vHook.getVariation());
+		vHook = vHooks.get(1);
+		assertEquals("c.v.s.two", vHook.getClassName());
+		assertEquals(Optional.of("null"), vHook.getInit());
+		assertEquals(test1, vHook.getVariation());
+		vHook = vHooks.get(2);
+		assertEquals("c.v.s.three", vHook.getClassName());
+		assertEquals(Optional.of("{\"foo\":\"a string\",\"bar\":[1,2],\"obj\":{}}"), vHook.getInit());
+		assertEquals(test1, vHook.getVariation());
 
-		assertTrue(test2.getHooks().isEmpty());
+		assertFalse(test2.getHooks().isPresent());
 		
 		assertEquals(Optional.empty(), test1.getExperience("A").get().getWeight());
 		assertEquals(Optional.of(20), test1.getExperience("B").get().getWeight());
@@ -790,20 +794,20 @@ public class ParserSerialOkayTest extends BaseTestCore {
 		// Hooks
 		//
 		
-		List<Hook> hooks = schema.getMeta().getHooks().get();
-		assertEquals(6, hooks.size());
-		Hook hook = hooks.get(0);
-		assertEquals("c.v.s.one", hook.getClassName());
-		hook = hooks.get(1);
-		assertEquals("c.v.s.two", hook.getClassName());
-		hook = hooks.get(2);
-		assertEquals("c.v.s.one", hook.getClassName());
-		hook = hooks.get(3);
-		assertEquals("c.v.s.three", hook.getClassName());
-		hook = hooks.get(4);
-		assertEquals("c.v.s.four", hook.getClassName());
-		hook = hooks.get(5);
-		assertEquals("c.v.s.four", hook.getClassName());
+		List<MetaScopedHook> mHooks = schema.getMeta().getHooks().get();
+		assertEquals(6, mHooks.size());
+		MetaScopedHook sHook = mHooks.get(0);
+		assertEquals("c.v.s.one", sHook.getClassName());
+		sHook = mHooks.get(1);
+		assertEquals("c.v.s.two", sHook.getClassName());
+		sHook = mHooks.get(2);
+		assertEquals("c.v.s.one", sHook.getClassName());
+		sHook = mHooks.get(3);
+		assertEquals("c.v.s.three", sHook.getClassName());
+		sHook = mHooks.get(4);
+		assertEquals("c.v.s.four", sHook.getClassName());
+		sHook = mHooks.get(5);
+		assertEquals("c.v.s.four", sHook.getClassName());
 
 		//
 		// States.

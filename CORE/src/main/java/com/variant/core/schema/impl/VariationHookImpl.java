@@ -2,7 +2,8 @@ package com.variant.core.schema.impl;
 
 import java.util.Optional;
 
-import com.variant.core.schema.Hook;
+import com.variant.core.schema.Variation;
+import com.variant.core.schema.VariationScopedHook;
 import com.variant.core.schema.parser.error.SemanticError.Location;
 
 /**
@@ -10,7 +11,7 @@ import com.variant.core.schema.parser.error.SemanticError.Location;
  * @author Igor
  *
  */
-public class VariationHookImpl extends BaseHookImpl implements Hook.Variation {
+public class VariationHookImpl extends BaseHookImpl implements VariationScopedHook {
 
 	private final com.variant.core.schema.Variation test;
 	
@@ -24,7 +25,7 @@ public class VariationHookImpl extends BaseHookImpl implements Hook.Variation {
 	//---------------------------------------------------------------------------------------------//
 
 	@Override
-	public com.variant.core.schema.Variation getVariation() {
+	public Variation getVariation() {
 		return test;
 	}
 

@@ -2,14 +2,13 @@ package com.variant.core.schema.impl;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import com.variant.core.schema.Hook;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.State;
+import com.variant.core.schema.StateScopedHook;
 import com.variant.core.schema.Variation;
 
 /**
@@ -21,10 +20,8 @@ public class StateImpl implements State {
 
 	private final Schema schema;
 	private final String name;
-	private Optional<Map<String, String>> paramMapOpt = Optional.empty();
-    
-	// Hooks are keyed by name.
-	private LinkedList<Hook> hooks = new LinkedList<Hook>();
+	private Optional<Map<String, String>> paramMapOpt = Optional.empty();    
+	private Optional<List<StateScopedHook>> hooks = Optional.empty();
 
 	/**
 	 * Package scoped constructor;
@@ -81,10 +78,8 @@ public class StateImpl implements State {
 	 * 
 	 */
 	@Override
-	public List<Hook> getHooks() {
-		ArrayList<Hook> result = new ArrayList<Hook>(hooks.size());
-		result.addAll(hooks);
-		return Collections.unmodifiableList(result);
+	public Optional<List<StateScopedHook>> getHooks() {
+		return hooks.map(hooks -> Collections.unmodifiableList(hooks));
 	}
 
 	//---------------------------------------------------------------------------------------------//
@@ -99,12 +94,10 @@ public class StateImpl implements State {
 	}
 		
 	/**
-	 * Add life-cycle hook to this test
-	 * @param hook
-	 * @return true if hook didn't exist, false if did.
+	 * Add hooks, if were defined.
 	 */
-	public void addHook(Hook hook) {
-		hooks.add(hook);
+	public void setHooks(List<StateScopedHook> hooks) {
+		this.hooks = Optional.of(hooks);
 	}
 	
 	/**

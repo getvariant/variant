@@ -9,10 +9,8 @@ import com.variant.core.schema.Variation.OnState;
 
 
 /**
- * Representation of a single cell of the variant matrix.
- * Corresponds to an element of the variation/onStates/variants schema list.
+ * Representation of the <code>/variations[]/onState/variations[]</code> array element.
  *
- * @author Igor Urisman
  * @since 0.5
  */
 public interface StateVariant {

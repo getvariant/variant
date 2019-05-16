@@ -5,9 +5,7 @@ import java.util.Optional;
 
 
 /**
- * Representation of the root schema element. 
- * <p>
- * Each variation schema describes a set of related code variations. It has three top level entities: 
+ * Representation of the root schema element. Each variation schema describes a set of related code variations. It has three top level entities: 
  * {@link Meta}, a list of {@link State}s, and a list of {@link Variation}s, in that order. 
  * A Variant server can manage any number of variation schemata.
  * 
@@ -18,15 +16,15 @@ public interface Schema {
 	/**
 	 * This schema's <code>/meta</code> element.
 	 * 
-	 * @return An object of type {@link Meta}
+	 * @return An object of type {@link Meta}. Cannot be null.
 	 * @since 0.9
 	 */
 	Meta getMeta();
 
 	/**
-	 * This schema's <code>/states</code> element.
+	 * This schema's <code>/states[]</code> element array.
 	 * 
-	 * @return An immutable list of {@link State} objects in order they were defined in the variation schema.
+	 * @return An immutable list of {@link State} objects in order they were defined in the variation schema. Cannot be null.
 	 * @since 0.5
 	 */
 	List<State> getStates();
@@ -43,9 +41,9 @@ public interface Schema {
 	Optional<State> getState(String name);
 
 	/**
-	 * This schema's <code>/variations</code> element.
+	 * This schema's <code>/variations[]</code> element array.
 	 * 
-	 * @return An immutable list of {@link Variation} objects in order they were defined in the variation schema.
+	 * @return An immutable list of {@link Variation} objects in order they were defined in the variation schema. Cannot be null.
 	 */
 	List<Variation>getVariations();
 	

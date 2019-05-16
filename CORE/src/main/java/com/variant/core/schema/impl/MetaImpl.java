@@ -5,8 +5,8 @@ import java.util.List;
 import java.util.Optional;
 
 import com.variant.core.schema.Flusher;
-import com.variant.core.schema.Hook;
 import com.variant.core.schema.Meta;
+import com.variant.core.schema.MetaScopedHook;
 
 /**
  * @author Igor
@@ -16,7 +16,7 @@ public class MetaImpl implements Meta {
 	private String name = null;
 	private String comment = null;
 	private Flusher flusher = null;	
-	private List<Hook> hooks = null;
+	private List<MetaScopedHook> hooks = null;
 
 	/**
 	 */
@@ -39,7 +39,7 @@ public class MetaImpl implements Meta {
 	}
 
 	@Override
-	public Optional<List<Hook>> getHooks() {
+	public Optional<List<MetaScopedHook>> getHooks() {
 		return hooks == null ? Optional.empty() : Optional.of(Collections.unmodifiableList(hooks));
 	}
 
@@ -57,7 +57,7 @@ public class MetaImpl implements Meta {
 	 * @param hook
 	 * @return true if hook didn't exist, false if did.
 	 */
-	public void SetHooks(List<Hook> hooks) {
+	public void SetHooks(List<MetaScopedHook> hooks) {
 		this.hooks = hooks;
 	}
 

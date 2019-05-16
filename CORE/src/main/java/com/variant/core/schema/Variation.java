@@ -5,7 +5,7 @@ import java.util.Optional;
 import java.util.Set;
 
 /**
- * Representation of the <code>variation</code> schema property.
+ * Representation of the <code>VARIATION</code> schema element.
  * 
  * @since 0.5
  */
@@ -67,12 +67,13 @@ public interface Variation {
 	boolean isOn();
 	
 	/**
-	 * <p>List of life-cycle hooks, defined in the scope of this variation.
+	 * List of variation-scoped lifecycle hooks, as provided by the <code>/variations[]/hooks</code> element. 
 	 * 
-	 * @return A list of {@link Hook} object in the ordinal order.
+	 * @return An {@link Optional}, containing immutable list of {@link VariationScopedHook} objects in the order they were defined,
+	 *         or empty if no hooks were defined by this Variation.
 	 * @since 0.7
 	 */
-	List<Hook> getHooks();
+	Optional<List<VariationScopedHook>> getHooks();
 
 	/**
 	 * List, in ordinal order, of all of this variations's state instrumentations.

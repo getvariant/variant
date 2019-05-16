@@ -15,7 +15,6 @@ import org.slf4j.LoggerFactory;
 
 import com.variant.core.error.CoreException;
 import com.variant.core.error.UserError.Severity;
-import com.variant.core.schema.Hook;
 import com.variant.core.schema.State;
 import com.variant.core.schema.impl.SchemaImpl;
 import com.variant.core.schema.impl.StateImpl;
@@ -73,7 +72,7 @@ public class StatesParser implements Keywords {
 				
 				// If no errors, register state scoped hooks.
 				if (errorCount.intValue() == 0) {
-					for (Hook hook: state.getHooks()) hooksService.initHook(hook, response);	
+					state.getHooks().ifPresent(hooks -> hooks.forEach(hook -> hooksService.initHook(hook, response)));
 				}
 				response.setMessageListener(null);
 			}

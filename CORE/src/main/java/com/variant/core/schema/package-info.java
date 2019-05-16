@@ -1,7 +1,8 @@
 /**
- * Public classes encapsulating objects in Variant data dictionary.
- * Variant data dictionary consists of a series of schemata, as modeled
- * by the {@link com.variant.core.schema.Schema} object. 
+ * Classes encapsulating objects in Variant variation schema.
+ * Variant AIM server manages multiple variation schemata. A client session can
+ * get to the schema it is connected to via <code>Session.getSchema()</code> method.
+ * All classes in this package are immutable.
  *
  * @since 0.5
  */
