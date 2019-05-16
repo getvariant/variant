@@ -4,7 +4,7 @@ import scala.collection.JavaConverters.asScalaBufferConverter
 import scala.collection.mutable
 
 import com.variant.core.error.UserError.Severity
-import com.variant.core.schema.ParserMessage
+import com.variant.core.schema.parser.ParserMessage
 import com.variant.core.schema.parser.ParserResponse
 
 import play.api.Logger

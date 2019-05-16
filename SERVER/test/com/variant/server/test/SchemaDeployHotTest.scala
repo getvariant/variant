@@ -305,7 +305,7 @@ class SchemaDeployHotTest extends EmbeddedServerSpec with TempSchemataDir {
          
 	   }
 
-      val sessionJsonBigCovar = ParameterizedString(SessionTest.sessionJsonBigCovarPrototype.format(DateTimeFormatter.ISO_INSTANT.format(Instant.now())))
+      val sessionJsonBigCovar = ParameterizedString(SessionTest.monsterSessionPrototype.format(DateTimeFormatter.ISO_INSTANT.format(Instant.now())))
 	   
 	   val sid1 = newSid()
 	   

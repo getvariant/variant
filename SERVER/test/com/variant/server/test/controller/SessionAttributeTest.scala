@@ -25,7 +25,7 @@ class SessionAttributeTest extends EmbeddedServerSpec {
    val endpointAttribute = "/session/attr"
    
    val sessionJsonBigCovar = ParameterizedString(
-      sessionJsonBigCovarPrototype.format(DateTimeFormatter.ISO_INSTANT.format(Instant.now())))
+      monsterSessionPrototype.format(DateTimeFormatter.ISO_INSTANT.format(Instant.now())))
          
    val sessionJsonPetclinic = ParameterizedString(
          sessionJsonPetclinicPrototype.format(DateTimeFormatter.ISO_INSTANT.format(Instant.now())))

@@ -165,7 +165,7 @@ class ConnectionDrainingOnDeleteTest extends EmbeddedServerAsyncSpec with TempSc
 
       "permit session updates over dead generations " in {
      
-         val sessionJsonBig = ParameterizedString(SessionTest.sessionJsonBigCovarPrototype.format(DateTimeFormatter.ISO_INSTANT.format(Instant.now())))
+         val sessionJsonBig = ParameterizedString(SessionTest.monsterSessionPrototype.format(DateTimeFormatter.ISO_INSTANT.format(Instant.now())))
          val sessionJsonPet = ParameterizedString(SessionTest.sessionJsonPetclinicPrototype.format(DateTimeFormatter.ISO_INSTANT.format(Instant.now())))
    
          for (i <- 0 until SESSIONS) {

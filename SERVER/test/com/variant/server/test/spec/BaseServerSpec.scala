@@ -20,7 +20,6 @@ import play.api.test.Helpers._
 import com.variant.server.schema.ServerSchemaParser
 import com.variant.server.schema.SchemaGen
 import com.variant.server.api.Session
-import com.variant.core.schema.ParserMessage
 
 /**
  * Base server spec

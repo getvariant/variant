@@ -11,6 +11,7 @@ import com.variant.server.test.spec.EmbeddedServerSpec
 import com.variant.server.impl.StateRequestImpl
 import com.variant.core.schema.impl.VariationHookImpl
 import java.util.Optional
+import java.util.Collections
 
 class TestQualificationHookTest extends EmbeddedServerSpec {
       
@@ -89,7 +90,7 @@ class TestQualificationHookTest extends EmbeddedServerSpec {
 	    val test6 = schema.getVariation("test6").get
        ssn = SessionImpl.empty(newSid(), schema)
 
-   	   schema.getMeta.getHooks mustBe Optional.empty
+   	   schema.getMeta.getHooks mustBe Optional.of(Collections.EMPTY_LIST)
    	   
    	   test1.getHooks.size mustBe 1
    	   val h1 = test1.getHooks.get(0).asInstanceOf[VariationHookImpl]
@@ -206,7 +207,7 @@ class TestQualificationHookTest extends EmbeddedServerSpec {
 	   	   val test6 = schema.getVariation("test6").get
 	       ssn = SessionImpl.empty(newSid(), schema)
 	   	   
-	       schema.getMeta.getHooks mustBe Optional.empty
+   	   schema.getMeta.getHooks mustBe Optional.of(Collections.EMPTY_LIST)
        
    	    test1.getHooks.size mustBe 1
    	   val h1 = test1.getHooks.get(0).asInstanceOf[VariationHookImpl]
