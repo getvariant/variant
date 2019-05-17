@@ -21,7 +21,7 @@ public interface StateVariant {
 	 * @return An object of type {@link OnState}.
 	 * @since 0.5
 	 */
-	public OnState getOnState();
+	OnState getOnState();
 
 	/**
 	 * The state for which this variant is defined. Equivalent to {@link #getOnState()}.getState().
@@ -29,7 +29,7 @@ public interface StateVariant {
 	 * @return A object of type {@link State}
 	 * @since 0.6
 	 */
-	public State getState();
+	State getState();
 
 	/**
 	 * The variation for which this variant is defined. Equivalent to {@link #getOnState()}.getVariation().
@@ -37,7 +37,7 @@ public interface StateVariant {
 	 * @return A object of type {@link Variation}
 	 * @since 0.5
 	 */
-	public Variation getVariation();
+	Variation getVariation();
 		
 	/**
 	 * This variant's proper experience, i.e. the one from the containing variation.
@@ -45,7 +45,7 @@ public interface StateVariant {
 	 * @return An object of type {@link Variation.Experience}.
 	 * @since 0.5
 	 */
-	public Experience getExperience();
+	Experience getExperience();
 	
 	/**
 	 * The list of this variant's conjointly concurrent experiences, i.e. the ones defined in the 
@@ -56,7 +56,7 @@ public interface StateVariant {
 	 *         
 	 * @since 0.5
 	 */
-	public List<Experience> getConjointExperiences();
+	List<Experience> getConjointExperiences();
 				
 	/**
 	 * Is this a proper variant? A shorthand for <code>getConjointExperiences().isEmpty()</code>.
@@ -66,7 +66,7 @@ public interface StateVariant {
 	 *         
 	 * @since 0.6
 	 */
-	public boolean isProper();
+	boolean isProper();
 
 	/**
 	 * This variant's declared state parameter.
@@ -74,6 +74,6 @@ public interface StateVariant {
 	 * @return Immutable map containing all parameters defined by this state variant.
 	 * @since 0.5
 	 */
-	public Optional<Map<String, String>> getParameters();
+	Optional<Map<String, String>> getParameters();
 
 }	

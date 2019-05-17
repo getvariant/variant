@@ -15,7 +15,7 @@ public class VariationExperienceImpl implements Variation.Experience  {
 	private Variation var;
 	private Number weight;
 	private boolean isControl;
-	private Set<State> uninstrumentedStates = new HashSet<State>();
+	private Set<State> phantomStates = new HashSet<State>();
 	
 	/**
 	 * Instantiation.
@@ -54,7 +54,7 @@ public class VariationExperienceImpl implements Variation.Experience  {
 	@Override
 	public boolean isPhantom(State state) {
 		if (state == null) throw new NullPointerException("Null state");
-		return uninstrumentedStates.contains(state);
+		return phantomStates.contains(state);
 	}
 	//---------------------------------------------------------------------------------------------//
 	//                                        PUBLIC EXT                                           //
@@ -64,8 +64,8 @@ public class VariationExperienceImpl implements Variation.Experience  {
 		this.var = var;
 	}
 
-	public void addUninstrumentedState(State state) {
-		uninstrumentedStates.add(state);
+	public void addPhantomState(State state) {
+		phantomStates.add(state);
 	}
 	
 	@Override

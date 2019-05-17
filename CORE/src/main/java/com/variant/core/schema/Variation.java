@@ -5,7 +5,7 @@ import java.util.Optional;
 import java.util.Set;
 
 /**
- * Representation of the <code>/states[]</code> array element.
+ * Representation of the <code>/variations[]</code> array element.
  * 
  * @since 0.5
  */
@@ -29,8 +29,6 @@ public interface Variation {
 
 	/**
 	 * This variation's experiences, as provided by the <code>/variations[]/experiences</code> element. 
-	 * Each experience represents an alternate code path. 
-	 * Exactly one variation must be <code>control</code>, which typically represents the existing code path.
 	 * 
 	 * @return A list of {@link Variation.Experience} objects. Cannot be null.
 	 * @since 0.5
@@ -146,30 +144,34 @@ public interface Variation {
 	boolean isConjointWith(Variation other);
 
 	/**
-	 * Representation of a variation experience.
+	 * Representation of the <code>/variations[]/experience</code> schema element.
+	 * Encapsulates data related to a particular variation experience. 
+	 * Each experience represents an alternate code path. Exactly one experience must be 
+	 * defined as <code>control</code>, which typically represents the existing code path.
 	 * 
 	 * @since 0.5
 	 */
 	interface Experience {
 
 		/**
-		 * The name of the experience.
+    	 * This experience's name, as provided by the <code>/variations[]/experiences[]/name</code> element.
 		 * 
-		 * @return The name of the experience.
+		 * @return The name of the experience. Cannot be null.
 	     * @since 0.5
 		 */
 		String getName();
 		
 		/**
-		 * The variation to which this experience belongs.
+		 * The containing variation.
 		 * 
-		 * @return An object of type {@link Variation}
+		 * @return An object of type {@link Variation}. Cannot be null.
 	     * @since 0.5
 		 */
 		Variation getVariation();
 		
 		/**
-		 * Is this the control experience?
+		 * Is this the control experience, as provided by the <code>/variations[]/experiences[]/isControl</code> element.
+		 * If omitted, <code>false</code> is assumed.
 		 * 
 		 * @return True if this experience is control, false otherwise.
 	     * @since 0.5
@@ -177,8 +179,9 @@ public interface Variation {
 		boolean isControl();
 		
 		/**
-		 * This experience's probabilistic weight. These are used by Variant's default
-		 * targeting algorithm, if no custom tergeting hooks are configured at run time.
+		 * This experience's probabilistic weight, as provided by the <code>/variations[]/experiences[]/weight</code> element.
+		 * These are used by Variant's default targeting algorithm, which targets sessions to experiences randomly, weighted
+		 * according to these weights. If omitted, a custom targeting hook must be defined.
 		 * 
 		 * @return An {@link Optional}, containing the probabilistic weight defined for this experience, 
 	     *         or empty if not defined.
@@ -188,11 +191,12 @@ public interface Variation {
 		Optional<Number> getWeight();
 		
 		/**
-		 * Is a given state phantom in this experience?
-		 * When a state variant is declared phantom, the host application must provide that no session,
-		 * targeted for this experience will ever request this state. See documentation for more on <i>mixed instrumentation</i>.
+		 * Is a given state phantom in this experience, as provided by the <code>/variations[]/experiences[]/onStates[]/variants[]/isPhantom</code> element.
+		 * The host application cannot target a session for a state that is phantom in any of its live experiences.
+		 * See documentation for more on <i>mixed instrumentation</i>.
 		 * 
-		 * @return true if this state variant is declared phantom, or false otherwise.
+		 * @param state The state of interest.
+		 * @return true if given state is phantom in this experience, or false otherwise.
 		 * @since 0.6
 		 *
 		*/
@@ -201,8 +205,8 @@ public interface Variation {
 	}
 
 	/**
-	 * Representation of a variation instrumentation on a particular state.
-	 * Corresponds to an element of the <code>variations/onStates</code> schema list.
+	 * Representation of the <code>/variations[]/onStates[]</code> array element.
+	 * Encapsulates data related to instrumentation of a particular variation on a particular state.
 	 * 
 	 * @since 0.5
 	 *
@@ -210,37 +214,39 @@ public interface Variation {
 	static interface OnState {
 		
 		/**
-		 * The state this instrumentation is for.
+		 * The state this instrumentation is for, as provided by the <code>/variations[]/onStates[]/stateRef</code> element.
 		 * 
-		 * @return An object of type {@link State}
+		 * @return An object of type {@link State}. Cannot be null.
 	     * @since 0.5
 		 */
 		State getState();
 		
 		/**
-		 * The variation to which this instrumentation belongs.
+		 * The containing variation.
 		 * 
-		 * @return An object of type {@link Variation}
+		 * @return An object of type {@link Variation}. Cannot be null.
 		 * @since 0.5
 		 */
 		Variation getVariation();
 				
 		/**
-		 * A set of all state variants for this instrumentation, both explicitly defined and inferred. 
+		 * A set of state variants for this instrumentation, as provided by the <code>/variations[]/onStates[]/variants</code> element.
+		 * Includes explicitly defined state variants
+		 * as well as inferred ones.
 		 * 
-		 * @return A set of objects of type {@link StateVariant}.
+		 * @return A set of objects of type {@link StateVariant}. Cannot be null.
 	     * @since 0.5
 		 */
 		Set<StateVariant> getVariants();
 
 		/**
-		 * The state variant by a set of experiences. At least one experience must be specified.
-		 * It is caller's responsibility to ensure that passed experience list is consistent in that
+		 * The state variant corresponding to a set of experiences. At least one experience must be specified.
+		 * It is caller's responsibility to ensure that passed experience list is consistent, i.e. that
 		 * a) all variations must be instrumented on this state, and b) no two experiences are from
 		 * the same variation.
 		 * 
-		 * @return The {@link Optional} container, holding the state variant given by the set
-		 *         of experiences if exists, or empty if no state variant corresponds to the 
+		 * @return The {@link Optional}, containing the {@link StateVariant} object, given by the set
+		 *         of experiences, if exists, or empty if no state variant corresponds to the 
 		 *         given set of experiences.
 		 *
 	     * @since 0.9

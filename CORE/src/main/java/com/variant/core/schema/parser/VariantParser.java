@@ -254,7 +254,7 @@ public class VariantParser implements Keywords {
 
 		// Don't create a state variant if phantom.
 		if (isPhantom) {
-			exp.addUninstrumentedState(state);
+			exp.addPhantomState(state);
 			return null;
 		}
 		
