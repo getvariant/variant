@@ -1,7 +1,7 @@
 package com.variant.core.schema;
 
 /**
- * State scoped lifecycle hook, defined by <code>/states[]/hooks[]</code> array element.
+ * Representation of state scoped lifecycle hook, defined by <code>/states[]/hooks[]</code> array element.
  *
  * @since 0.7
  */

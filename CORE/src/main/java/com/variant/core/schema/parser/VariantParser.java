@@ -181,7 +181,7 @@ public class VariantParser implements Keywords {
 					Variation conjointVar = conjointVarOpt.get();
 										
 					// This test must declare the other test as conjoint.
-					if (test.getConjointVariations() == null || !test.getConjointVariations().contains(conjointVar)) {
+					if (!test.getConjointVariations().isPresent() || !test.getConjointVariations().get().contains(conjointVar)) {
 						response.addMessage(
 								covarExpRefLocation.plusProp(KEYWORD_EXPERIENCE_REF),
 								CONJOINT_VARIANT_TEST_NOT_CONJOINT,

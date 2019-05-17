@@ -62,12 +62,12 @@ public class ParserConjointOkayMonsterTest extends BaseTestCore {
 		// 
 		// Declared conjoint tests.
 		//
-		assertEquals(0, test1.getConjointVariations().size());
-		assertEquals(0, test2.getConjointVariations().size());
-		assertEquals(CollectionsUtils.list(test2), test3.getConjointVariations());
-		assertEquals(CollectionsUtils.list(test1), test4.getConjointVariations());
-		assertEquals(CollectionsUtils.list(test2, test4), test5.getConjointVariations());
-		assertEquals(CollectionsUtils.list(test1, test2, test4, test5), test6.getConjointVariations());
+		assertFalse(test1.getConjointVariations().isPresent());
+		assertFalse(test2.getConjointVariations().isPresent());
+		assertEquals(CollectionsUtils.list(test2), test3.getConjointVariations().get());
+		assertEquals(CollectionsUtils.list(test1), test4.getConjointVariations().get());
+		assertEquals(CollectionsUtils.list(test2, test4), test5.getConjointVariations().get());
+		assertEquals(CollectionsUtils.list(test1, test2, test4, test5), test6.getConjointVariations().get());
 
 		//
 		// Resulting test concurrency 

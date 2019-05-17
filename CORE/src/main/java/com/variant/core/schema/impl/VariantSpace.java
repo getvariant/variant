@@ -1,6 +1,7 @@
 package com.variant.core.schema.impl;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -108,13 +109,14 @@ public class VariantSpace {
 	 * 
 	 * @param vosImpl
 	 */
+	@SuppressWarnings("unchecked")
 	public VariantSpace(VariationOnStateImpl vosImpl)  {
 				
 		// Build the basis -- list of variations starting with the one containing this VoS,
 		// followed by the conjoint variations, in ordinal order.
 		basis = new LinkedHashSet<Variation>();
 		basis.add(vosImpl.getVariation());
-		basis.addAll(vosImpl.getVariation().getConjointVariations());
+		basis.addAll(vosImpl.getVariation().getConjointVariations().orElse(Collections.EMPTY_LIST));
 
 		// Build the space.
 		for (Variation basisVar: basis) {

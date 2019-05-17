@@ -3,7 +3,6 @@ package com.variant.core.test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.List;
@@ -462,9 +461,9 @@ public class ParserConjointOkay2Test extends BaseTestCore {
 		assertTrue(test3.isConjointWith(test1));
 		assertFalse(test3.isConjointWith(test2));
 
-		assertTrue(test1.getConjointVariations().isEmpty());
-		assertTrue(test2.getConjointVariations().isEmpty());
-		assertEquals(CollectionsUtils.list(test1), test3.getConjointVariations());
+		assertFalse(test1.getConjointVariations().isPresent());
+		assertFalse(test2.getConjointVariations().isPresent());
+		assertEquals(CollectionsUtils.list(test1), test3.getConjointVariations().get());
 
 		// 
 		// test1 onState objects

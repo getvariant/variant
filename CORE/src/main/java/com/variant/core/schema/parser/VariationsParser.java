@@ -257,13 +257,13 @@ public class VariationsParser implements Keywords {
 		}
 		
 		// Resort conjoint tests in ordinal order before adding to the result.
-		List<VariationImpl> conjointVarsReordered = new ArrayList<VariationImpl>();
 		if (conjointVars != null) {
+			List<Variation> conjointVarsReordered = new ArrayList<Variation>();
 			for (Variation t: response.getSchema().getVariations()) {
 				if (conjointVars.contains(t)) conjointVarsReordered.add((VariationImpl)t);
 			}
+			result.setConjointVariations(conjointVarsReordered);
 		}
-		result.setConjointVariations(conjointVarsReordered);
 		
 		// Pass 4: Parse onStates, if we have the control experience
 		

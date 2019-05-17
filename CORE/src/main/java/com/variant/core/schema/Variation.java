@@ -5,40 +5,42 @@ import java.util.Optional;
 import java.util.Set;
 
 /**
- * Representation of the <code>VARIATION</code> schema element.
+ * Representation of the <code>/states[]</code> array element.
  * 
  * @since 0.5
  */
 public interface Variation {
 
 	/**
-	 * The schema, containing this variation.
+	 * The containing variation schema.
 	 * 
-	 * @return An object of type {@link Schema}
+	 * @return An object of type {@link Schema}. Cannot be null.
 	 * @since 0.6
 	 */
 	Schema getSchema();
 
 	/**
-	 * The name of this variation.
+	 * This variation's name, as provided by the <code>/variations[]/name</code> element.
 	 * 
-	 * @return The name of this variation.
+	 * @return The name of this variation. Cannot be null.
 	 * @since 0.5
 	 */
 	String getName();	
 
 	/**
-	 * A list, in ordinal order, of all of this variation's experiences.
+	 * This variation's experiences, as provided by the <code>/variations[]/experiences</code> element. 
+	 * Each experience represents an alternate code path. 
+	 * Exactly one variation must be <code>control</code>, which typically represents the existing code path.
 	 * 
-	 * @return A list of {@link Variation.Experience} objects.
+	 * @return A list of {@link Variation.Experience} objects. Cannot be null.
 	 * @since 0.5
 	 */
 	List<Experience> getExperiences();
 	
 	/**
-	 * Get an experience by its name. Names are case sensitive.
+	 * Get an experience by its name.
 	 * 
-	 * @param name The name of the experience.
+	 * @param name Name of the experience of interest..
 	 * @return An {@link Optional}, containing the experience with the given name or empty if no such experience in this variation.
 	 * @since 0.5
 	 */
@@ -47,13 +49,15 @@ public interface Variation {
 	/**
 	 * Get this variation's control experience.
 	 * 
-	 * @return An {@link Variation.Experience} object.
+	 * @return An {@link Variation.Experience} object. Cannot be null.
 	 * @since 0.5
 	 */
 	Experience getControlExperience();
 
 	/**
-	 * <p>Is this variation currently online? Offline variations  are treated specially:
+	 * Is this variation currently online. 
+	 * <p>
+	 * Offline variations  are treated specially:
 	 * <ol>
      * <li>A session traversing this variation will always see control experience.
      * <li>If the session already has an entry for this variation in its targeting tracker, 
@@ -76,17 +80,17 @@ public interface Variation {
 	Optional<List<VariationScopedHook>> getHooks();
 
 	/**
-	 * List, in ordinal order, of all of this variations's state instrumentations.
+	 * List of this variations's state instrumentations, as provided by the <code>/variations[]/onStates[]</code> array element.
 	 * 
-	 * @return A list of objects of type {@link OnState}.
+	 * @return A list of objects of type {@link OnState}. Cannot be null.
 	 * @since 0.5
 	 */
 	List<OnState> getOnStates();
 
 	/**
-	 * This variation's instrumentation details on a particular state.
+	 * A state instrumentation on a given state.
 	 * 
-	 * @return An {@link Optional}, containing the {@link OnState} instrumentation on given state by this variation, 
+	 * @return An {@link Optional}, containing the {@link OnState} instrumentation on the given state, 
 	 *         or empty if given state is not instrumented by this variation.
 	 * 
 	 * @since 0.5
@@ -94,13 +98,16 @@ public interface Variation {
 	Optional<OnState> getOnState(State state);
 		
 	/**
-	 * Get a list of variations conjointly concurrent with this instrumentation.
+	 * Get a list of variations conjointly concurrent with this variation, 
+	 * as provided by the <code>/variations[]/conjointVariationRefs</code> property.
 	 * 
-	 * @return A list, in ordinal order, of variations listed on the <code>conjointVariationRefs</code> property.
+	 * @return An {@link Optional}, containing the list of variations in order they were listed by
+	 *         the <code>/variations[]/conjointVariationRefs</code> property, or empty if 
+	 *         <code>/variations[]/conjointVariationRefs</code> property was omitted.
 	 * 
 	 * @since 0.5
 	 */
-	List<Variation> getConjointVariations();
+	Optional<List<Variation>> getConjointVariations();
 		
 	/**
 	 * Is this variation serial with a given variation? Two variations are serial when there does not exist a state

@@ -23,7 +23,7 @@ public class VariationImpl implements Variation {
 	private Schema schema;
 	private String name;
 	private boolean isOn = true;
-	private List<VariationImpl> conjointVariations = new ArrayList<VariationImpl>();
+	private Optional<List<Variation>> conjointVariations = Optional.empty();
 	private List<VariationExperienceImpl> experiences;
 	//private VariantSpace variantSpace;
 	private List<VariationOnStateImpl> onStates;
@@ -106,8 +106,8 @@ public class VariationImpl implements Variation {
 	 */
 	@SuppressWarnings("unchecked")
 	@Override
-	public List<Variation> getConjointVariations() {
-		return (List<Variation>) (List<?>) Collections.unmodifiableList(conjointVariations);
+	public Optional<List<Variation>> getConjointVariations() {
+		return conjointVariations;
 	}
 	
 	/**
@@ -143,8 +143,8 @@ public class VariationImpl implements Variation {
 	@Override
 	public boolean isConjointWith(Variation other) {
 		VariationImpl otherImpl = (VariationImpl) other;
-		return conjointVariations != null && conjointVariations.contains(other) || 
-			   otherImpl.conjointVariations != null && otherImpl.conjointVariations.contains(this);		
+		return conjointVariations.isPresent() && conjointVariations.get().contains(other) || 
+			   otherImpl.conjointVariations.isPresent() && otherImpl.conjointVariations.get().contains(this);		
 	}
 
 	//---------------------------------------------------------------------------------------------//
@@ -179,8 +179,8 @@ public class VariationImpl implements Variation {
 	 * Caller must ensure that the covarTests are sorted in ordinal order.
 	 * @param tests
 	 */
-	public void setConjointVariations(List<VariationImpl> conjointVariations) {
-		this.conjointVariations = conjointVariations;
+	public void setConjointVariations(List<Variation> conjointVariations) {
+		this.conjointVariations = Optional.of(conjointVariations);
 	}
 	
 	/**
