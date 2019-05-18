@@ -37,8 +37,6 @@ public interface RuntimeLifecycleEvent extends LifecycleEvent {
 
 	/**
 	 * ...
-	 * @author Igor
-	 *
 	 */
 	public interface PostResult extends LifecycleEvent.PostResult {}
 }

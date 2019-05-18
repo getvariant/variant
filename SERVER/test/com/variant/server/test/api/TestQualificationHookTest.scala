@@ -92,24 +92,24 @@ class TestQualificationHookTest extends EmbeddedServerSpec {
 
    	   schema.getMeta.getHooks mustBe Optional.of(Collections.EMPTY_LIST)
    	   
-   	   test1.getHooks.size mustBe 1
-   	   val h1 = test1.getHooks.get(0).asInstanceOf[VariationHookImpl]
+   	   test1.getHooks.get.size mustBe 1
+   	   val h1 = test1.getHooks.get.get(0).asInstanceOf[VariationHookImpl]
    	   h1.location.getPath mustBe "/variations[0]/hooks[0]/"
    	   h1.getClassName mustBe "com.variant.server.test.hooks.TestQualificationHookSimple"
    	   h1.getInit mustBe Optional.of("""{"value":"h1"}""")
-   	   test2.getHooks.size mustBe 1
-   	   val h2 = test2.getHooks.get(0).asInstanceOf[VariationHookImpl]
+   	   test2.getHooks.get.size mustBe 1
+   	   val h2 = test2.getHooks.get.get(0).asInstanceOf[VariationHookImpl]
    	   h2.location.getPath mustBe "/variations[1]/hooks[0]/"
    	   h2.getClassName mustBe "com.variant.server.test.hooks.TestQualificationHookSimple"
    	   h2.getInit mustBe Optional.of("""{"value":"h2"}""")
-   	   test3.getHooks.size mustBe 1
-   	   val h3 = test3.getHooks.get(0).asInstanceOf[VariationHookImpl]
+   	   test3.getHooks.get.size mustBe 1
+   	   val h3 = test3.getHooks.get.get(0).asInstanceOf[VariationHookImpl]
    	   h3.location.getPath mustBe "/variations[2]/hooks[0]/"
    	   h3.getClassName mustBe "com.variant.server.test.hooks.TestQualificationHookSimple"
    	   h3.getInit mustBe Optional.of("""{"value":"h3"}""")
-   	   test4.getHooks.size mustBe 0
-   	   test5.getHooks.size mustBe 0
-   	   test6.getHooks.size mustBe 0
+   	   test4.getHooks mustBe Optional.of(Collections.EMPTY_LIST)
+   	   test5.getHooks mustBe Optional.of(Collections.EMPTY_LIST)
+   	   test6.getHooks mustBe Optional.of(Collections.EMPTY_LIST)
    	   
    	   // qualification hooks will not be called before targeting.
    	   ssn.getAttributes.get(TestQualificationHookSimple.ATTR_NAME) mustBe null 
@@ -209,21 +209,21 @@ class TestQualificationHookTest extends EmbeddedServerSpec {
 	   	   
    	   schema.getMeta.getHooks mustBe Optional.of(Collections.EMPTY_LIST)
        
-   	    test1.getHooks.size mustBe 1
-   	   val h1 = test1.getHooks.get(0).asInstanceOf[VariationHookImpl]
+   	    test1.getHooks.get.size mustBe 1
+   	   val h1 = test1.getHooks.get.get(0).asInstanceOf[VariationHookImpl]
    	   h1.location.getPath mustBe "/variations[0]/hooks[0]/"
    	   h1.getClassName mustBe "com.variant.server.test.hooks.TestQualificationHookDisqual"
    	   h1.getInit mustBe Optional.of("{\"removeFromTargetingTracker\":false}")
-   	   test2.getHooks.size mustBe 1
-   	   val h2 = test2.getHooks.get(0).asInstanceOf[VariationHookImpl]
+   	   test2.getHooks.get.size mustBe 1
+   	   val h2 = test2.getHooks.get.get(0).asInstanceOf[VariationHookImpl]
    	   h2.location.getPath mustBe "/variations[1]/hooks[0]/"
    	   h2.getClassName mustBe "com.variant.server.test.hooks.TestQualificationHookDisqual"
    	   h2.getInit mustBe Optional.of("{\"removeFromTargetingTracker\":false}")
-   	   test3.getHooks.size mustBe 0
-   	   test4.getHooks.size mustBe 0
-   	   test5.getHooks.size mustBe 0
-   	   test6.getHooks.size mustBe 1
-   	   val h6 = test6.getHooks.get(0).asInstanceOf[VariationHookImpl]
+   	   test3.getHooks mustBe Optional.of(Collections.EMPTY_LIST)
+   	   test4.getHooks mustBe Optional.of(Collections.EMPTY_LIST)
+   	   test5.getHooks mustBe Optional.of(Collections.EMPTY_LIST)
+   	   test6.getHooks.get.size mustBe 1
+   	   val h6 = test6.getHooks.get.get(0).asInstanceOf[VariationHookImpl]
    	   h6.location.getPath mustBe "/variations[5]/hooks[0]/"
    	   h6.getClassName mustBe "com.variant.server.test.hooks.TestQualificationHookDisqual"
    	   h6.getInit mustBe Optional.of("{\"removeFromTargetingTracker\":false}")

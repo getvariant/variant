@@ -1,8 +1,8 @@
-package com.variant.core.lifecycle;
+package com.variant.core;
 
 
 /**
- * <p>Ultimate super-type of all life-cycle event types. Concrete implementations
+ * <p>Ultimate super-type of all lifecycle event types. Concrete implementations
  * are made available to user code via the {@link LifecycleHook#post(LifecycleEvent)} callback.
  *
  * <p>Lifecycle hooks provide a consistent way of extending the functionality of Variant server 

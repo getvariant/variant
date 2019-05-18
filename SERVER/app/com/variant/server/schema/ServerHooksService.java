@@ -13,6 +13,9 @@ import com.variant.core.lifecycle.LifecycleHook;
 import com.variant.core.lifecycle.StateAwareLifecycleEvent;
 import com.variant.core.lifecycle.VariationAwareLifecycleEvent;
 import com.variant.core.schema.Hook;
+import com.variant.core.schema.MetaScopedHook;
+import com.variant.core.schema.StateScopedHook;
+import com.variant.core.schema.VariationScopedHook;
 import com.variant.core.schema.impl.SchemaHookImpl;
 import com.variant.core.schema.impl.StateHookImpl;
 import com.variant.core.schema.impl.VariationHookImpl;
@@ -96,13 +99,13 @@ public class ServerHooksService implements HooksService {
 			
 			// The implementation's scope must be compatible with that of the definition:
 			// 1. Test-scoped hookDef must define an implementation which listens to a test aware event.
-			if (hookDef instanceof Hook.State && ! StateAwareLifecycleEvent.class.isAssignableFrom(hookImpl.getLifecycleEventClass())) {
+			if (hookDef instanceof StateScopedHook && ! StateAwareLifecycleEvent.class.isAssignableFrom(hookImpl.getLifecycleEventClass())) {
 				parserResponse.addMessage(
 						ServerErrorLocal.HOOK_STATE_SCOPE_VIOLATION, 
 						((StateHookImpl)hookDef).location.getPath(), hookImpl.getLifecycleEventClass().getName());				
 			}
 			// 2. State-scoped hookDef must define an implementation which listens to a state aware event.
-			if (hookDef instanceof Hook.Variation && ! VariationAwareLifecycleEvent.class.isAssignableFrom(hookImpl.getLifecycleEventClass())) {
+			if (hookDef instanceof VariationScopedHook && ! VariationAwareLifecycleEvent.class.isAssignableFrom(hookImpl.getLifecycleEventClass())) {
 				parserResponse.addMessage(
 						ServerErrorLocal.HOOK_TEST_SCOPE_VIOLATION, 
 						((VariationHookImpl)hookDef).location.getPath(), hookImpl.getLifecycleEventClass().getName());				
@@ -112,19 +115,19 @@ public class ServerHooksService implements HooksService {
 			// AOK. Add to the appropriate hook list.
 			HookListEntry hle = new HookListEntry(hookImpl.getLifecycleEventClass(), hookDef);
 
-			if (hookDef instanceof Hook.Schema) {
+			if (hookDef instanceof MetaScopedHook) {
 				schemaHooks.add(hle);
 				if (LOG.isDebugEnabled()) 
 					LOG.debug(String.format("Registered schema-scoped hook class [%s] at [%s]", 
 							hookDef.getClass(), ((SchemaHookImpl)hookDef).location.getPath()));
 			}
-			else if (hookDef instanceof Hook.State) {
+			else if (hookDef instanceof StateScopedHook) {
 				stateHooks.add(hle);
 				if (LOG.isDebugEnabled()) 
 					LOG.debug(String.format("Registered state-scoped hook [%s] at [%s]", 
 							hookDef.getClassName(), ((StateHookImpl)hookDef).location.getPath()));
 			}
-			else if (hookDef instanceof Hook.Variation) {
+			else if (hookDef instanceof VariationScopedHook) {
 				testHooks.add(hle);
 				if (LOG.isDebugEnabled()) 
 					LOG.debug(String.format("Registered test-scoped hook [%s] at [%s]", 
@@ -161,7 +164,7 @@ public class ServerHooksService implements HooksService {
 		   for (HookListEntry hle : testHooks) {
 				
 			   if (hle.lseClass.isAssignableFrom(event.getClass()) &&
-					   ((VariationAwareLifecycleEvent) event).getVariation().equals(((Hook.Variation)hle.hookDef).getVariation())) {
+					   ((VariationAwareLifecycleEvent) event).getVariation().equals(((VariationScopedHook)hle.hookDef).getVariation())) {
 											
 				   chain.add(hle);
 				}				   
@@ -174,7 +177,7 @@ public class ServerHooksService implements HooksService {
 			   			   
 			   // Only post subscribers to the event type and whose state matches.
 			   if (hle.lseClass.isAssignableFrom(event.getClass()) &&
-					   ((StateAwareLifecycleEvent) event).getState().equals(((Hook.State)hle.hookDef).getState())) {
+					   ((StateAwareLifecycleEvent) event).getState().equals(((StateScopedHook)hle.hookDef).getState())) {
 				   
 				   chain.add(hle);
 	

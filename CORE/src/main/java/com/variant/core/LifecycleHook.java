@@ -1,8 +1,7 @@
-package com.variant.core.lifecycle;
+package com.variant.core;
 
 import java.util.Optional;
 
-import com.variant.core.schema.Hook;
 
 /**
  * The interface to be implemented by a server life-cycle hook, which wants to be posted by one or more life-cycle events.

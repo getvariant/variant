@@ -29,7 +29,6 @@ javadoc --allow-script-in-comments -d ${javadoc_dir}  \
     ga('send', 'pageview');                                                            \
   </script>" \
    -bottom "Variant Experience Server release $dot_version. Updated $(date +"%d %b %Y").<br/> Copyright &copy; 2019 <a onclick=\"window.top.location.href='http://getvariant.com';\" href=\"#\">Variant Inc.</a>" \
-   com.variant.core.lifecycle         \
    com.variant.core.schema            \
    com.variant.client                 \
    com.variant.server.api             \
