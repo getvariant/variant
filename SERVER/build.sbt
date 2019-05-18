@@ -13,9 +13,6 @@ lazy val root = (project in file(".")).enablePlugins(PlayScala)
 // Add local Maven repo for com.variant artifacts built with Maven.
 resolvers += Resolver.mavenLocal
 
-// This 
-//resolvers += "Typesafe repository" at "http://repo.typesafe.com/typesafe/releases/"
-
 libraryDependencies ++= Seq(
   
   // Required by Play!
@@ -59,6 +56,10 @@ sourceGenerators in Compile += (sourceManaged in Compile, version, name) map { (
   Seq(file)
 }
 *************************************************/
+
+// Disable scaladoc in 'dist' task.
+sources in (Compile,doc) := Seq.empty
+publishArtifact in (Compile, packageDoc) := false
 
 //
 // ScalaTest related settings

@@ -4,11 +4,11 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
-import com.variant.core.StateRequestStatus;
 import com.variant.core.schema.State;
 import com.variant.core.schema.StateVariant;
 import com.variant.core.schema.Variation;
 import com.variant.core.schema.Variation.Experience;
+import com.variant.core.session.StateRequestStatus;
 
 /**
  * Represents a Variant state request, as returned by {@link Session#targetForState(State)}.
@@ -128,4 +128,26 @@ public interface StateRequest {
 	 */
 	void fail(Object...userData);
 	
+	/**
+	 * The current status of a state request. 
+	 * @since 0.10
+	 */
+	public enum Status {
+
+		InProgress, Committed, Failed;
+
+		/**
+		 * Is a value one of the given values?
+		 * 
+		 * @param statuses
+		 * @return ture if this value is one of the given values, false otherwise.
+		 *
+		public boolean isIn(StateRequestStatus... statuses) {
+			
+			for (StateRequestStatus s: statuses) 
+				if (this == s) return true;
+			return false;
+		}
+		*/
+	}	
 }

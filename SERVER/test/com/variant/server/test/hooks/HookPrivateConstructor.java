@@ -10,7 +10,7 @@ import com.variant.server.api.lifecycle.VariationQualificationLifecycleEvent;
 public class HookPrivateConstructor implements LifecycleHook<VariationQualificationLifecycleEvent> {
 		
 	/**
-	 * Non nullary private constructor -- won't work.
+	 * Private constructor -- won't work.
 	 * @param config
 	 */
 	private HookPrivateConstructor(Config conf) {}

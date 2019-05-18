@@ -1,14 +1,11 @@
 package com.variant.core.session;
 
-import static com.variant.core.StateRequestStatus.Committed;
-import static com.variant.core.StateRequestStatus.Failed;
-import static com.variant.core.StateRequestStatus.InProgress;
+import static com.variant.core.session.StateRequestStatus.*;
 
 import java.io.Serializable;
 import java.io.StringWriter;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -17,7 +14,6 @@ import java.util.Set;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
-import com.variant.core.StateRequestStatus;
 import com.variant.core.error.CoreException;
 import com.variant.core.error.ServerError;
 import com.variant.core.schema.Schema;

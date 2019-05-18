@@ -1,15 +1,15 @@
 package com.variant.client.impl;
 
-import static com.variant.core.StateRequestStatus.Committed;
-import static com.variant.core.StateRequestStatus.Failed;
+import static com.variant.core.session.StateRequestStatus.Committed;
+import static com.variant.core.session.StateRequestStatus.Failed;
 
 import java.io.Serializable;
 import java.util.Map;
 
 import com.variant.core.Constants;
-import com.variant.core.StateRequestStatus;
 import com.variant.core.error.CoreException;
 import com.variant.core.schema.State;
+import com.variant.core.session.StateRequestStatus;
 
 @SuppressWarnings("serial")
 public class StateVisitedEvent extends TraceEventSupport implements Serializable {

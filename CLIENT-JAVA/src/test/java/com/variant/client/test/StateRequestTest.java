@@ -1,8 +1,8 @@
 package com.variant.client.test;
 
-import static com.variant.core.StateRequestStatus.Committed;
-import static com.variant.core.StateRequestStatus.Failed;
-import static com.variant.core.StateRequestStatus.InProgress;
+import static com.variant.core.session.StateRequestStatus.Committed;
+import static com.variant.core.session.StateRequestStatus.Failed;
+import static com.variant.core.session.StateRequestStatus.InProgress;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;

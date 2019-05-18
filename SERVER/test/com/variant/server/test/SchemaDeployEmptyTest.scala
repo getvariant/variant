@@ -16,6 +16,7 @@ import play.api.Application
 import play.api.Configuration
 import play.api.Logger
 import play.api.inject.guice.GuiceApplicationBuilder
+import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 
 
 object SchemaDeployEmptyTest {
@@ -29,7 +30,7 @@ object SchemaDeployEmptyTest {
 /**
  * Test various schema deployment scenarios
  */
-class SchemaDeployEmptyTest extends PlaySpec with OneAppPerSuite with BeforeAndAfterAll {
+class SchemaDeployEmptyTest extends PlaySpec with GuiceOneAppPerSuite with BeforeAndAfterAll {
       
    import SchemaDeployEmptyTest._
    

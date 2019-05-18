@@ -1,7 +1,8 @@
-package com.variant.core;
+package com.variant.core.session;
 
 /**
- * State of a state request.
+ * State of a state request.  We replicate this on both client and server,
+ * so as not to have any public core classes other than schema. 
  * 
  * @since 0.9
  */

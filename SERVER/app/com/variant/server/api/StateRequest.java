@@ -4,7 +4,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
-import com.variant.core.StateRequestStatus;
 import com.variant.core.schema.State;
 import com.variant.core.schema.StateVariant;
 import com.variant.core.schema.Variation;
@@ -44,7 +43,7 @@ public interface StateRequest {
 	 * 
 	 * @since 0.9
 	 */
-	StateRequestStatus getStatus();
+	Status getStatus();
 
 	/**
 	 * <p>Targeted experiences in variations instrumented on the target state.
@@ -94,4 +93,20 @@ public interface StateRequest {
 	 */	
 	Map<String,String> getResolvedParameters();
 
+	public enum Status {
+
+		InProgress, Committed, Failed;
+
+		/**
+		 * Is a value one of the given values?
+		 * 
+		 * @param statuses
+		 * @return ture if this value is one of the given values, false otherwise.
+		 */
+		public boolean isIn(Status... statuses) {
+			
+			for (Status s: statuses) if (this == s) return true;
+			return false;
+		}
+	}
 }

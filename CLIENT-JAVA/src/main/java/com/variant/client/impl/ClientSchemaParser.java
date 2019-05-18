@@ -15,12 +15,12 @@ public class ClientSchemaParser extends SchemaParser {
 
 	@Override
 	public HooksService getHooksService() {
-		return HooksService.NULL;
+		return new HooksService();
 	}
 
 	@Override
 	public FlusherService getFlusherService() {
-		return FlusherService.NULL;
+		return new FlusherService();
 	}
 
 }

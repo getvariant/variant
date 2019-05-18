@@ -5,7 +5,7 @@ import java.sql.ResultSet
 import java.util.Collection
 import java.util.HashMap
 import java.util.Map
-import scala.collection.JavaConversions._
+import scala.collection.JavaConverters._
 import org.junit.runners.model.Statement
 import com.variant.server.impl.TraceEventWriter
 import com.variant.core.util.JdbcAdapter
@@ -93,6 +93,6 @@ class TraceEventReader (eventWriter: TraceEventWriter) {
 					eventMap.values()
 				}
 			}
-		).filter(p)
+		).asScala.filter(p)
 	}
 }
