@@ -15,7 +15,6 @@ import com.variant.core.schema.StateVariant;
 import com.variant.core.schema.Variation;
 import com.variant.core.schema.Variation.Experience;
 import com.variant.core.session.CoreStateRequest;
-import com.variant.core.session.StateRequestStatus;
 
 /**
  * Permanent wrapper around transient CoreStateRequest + client only request functionality.
@@ -39,12 +38,12 @@ public class StateRequestImpl implements StateRequest {
 	 * @param state
 	 * @param userData
 	 */
-	private void _commit(StateRequestStatus status, Object... userData) {
+	private void _commit(StateRequest.Status status, Object... userData) {
 		
 		checkState();
 		
 		// If local state already reflects target state -- noop.
-		if (status != coreRequest.getStatus()) {
+		if (status.ordinal() != coreRequest.getStatus().ordinal()) {
 		
 			// Persist targeting and session ID trackers.  Note that we expect the userData to apply to both.
 			session.saveTrackers(userData);
@@ -102,10 +101,10 @@ public class StateRequestImpl implements StateRequest {
 	public void commit(Object... userData) {
 		
 		new MethodTimingWrapper<Object>().exec( () -> {
-			if (getStatus() == StateRequestStatus.Failed)
+			if (getStatus() == StateRequest.Status.Failed)
 				throw new VariantException(ServerError.CANNOT_COMMIT);
-			else if (getStatus() == StateRequestStatus.InProgress)
-				_commit(StateRequestStatus.Committed, userData);
+			else if (getStatus() == StateRequest.Status.InProgress)
+				_commit(StateRequest.Status.Committed, userData);
 			return null;  // void method -- making compiler happy.
 		});
 	}
@@ -114,17 +113,17 @@ public class StateRequestImpl implements StateRequest {
 	public void fail(Object... userData) {
 
 		new MethodTimingWrapper<Object>().exec( () -> {
-			if (getStatus() == StateRequestStatus.Committed)
+			if (getStatus() == StateRequest.Status.Committed)
 				throw new VariantException(ServerError.CANNOT_FAIL);
-			else if (getStatus() == StateRequestStatus.InProgress)
-				_commit(StateRequestStatus.Failed, userData);
+			else if (getStatus() == StateRequest.Status.InProgress)
+				_commit(StateRequest.Status.Failed, userData);
 			return null;  // void method -- making compiler happy.
 		});
 	}
 	
 	@Override
-	public StateRequestStatus getStatus() {
-		return coreRequest.getStatus();
+	public StateRequest.Status getStatus() {
+		return StateRequest.Status.values()[coreRequest.getStatus().ordinal()];
 	}
 
 	@Override

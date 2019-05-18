@@ -6,7 +6,7 @@ import scala.collection.JavaConversions._
 import com.variant.core.error.UserError.Severity._
 import com.variant.core.error.ServerError._
 import com.variant.core.schema.Variation
-import com.variant.core.StateRequestStatus._
+import com.variant.server.api.StateRequest.Status._
 import org.scalatest.Assertions._
 import com.variant.server.boot.ServerErrorLocal._
 import com.variant.server.api.ServerException

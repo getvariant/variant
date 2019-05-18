@@ -2,7 +2,7 @@ package com.variant.server.test.api
 
 import scala.io.Source
 import scala.collection.JavaConverters._
-import com.variant.core.StateRequestStatus._
+import com.variant.server.api.StateRequest.Status._
 import com.variant.server.impl.SessionImpl
 import com.variant.server.test.util.ParameterizedString
 import com.variant.server.test.hooks.TestQualificationHookSimple

@@ -9,7 +9,7 @@ import com.variant.server.api.ConfigKeys
 import com.variant.server.test.spec.EmbeddedServerSpec
 import com.variant.core.error.ServerError._
 import com.variant.core.util.StringUtils
-import com.variant.core.StateRequestStatus._
+import com.variant.server.api.StateRequest.Status._
 import play.api.libs.json._
 import com.variant.server.impl.SessionImpl
 import com.variant.core.Constants._
@@ -56,7 +56,7 @@ class SessionTargetingTest extends EmbeddedServerSpec {
                val coreSsn = CoreSession.fromJson((json \ "session").as[String], schema)
                val stateReq = coreSsn.getStateRequest.get
                stateReq mustNot be (null)
-               stateReq.getStatus mustBe InProgress
+               stateReq.getStatus.ordinal mustBe InProgress.ordinal
                stateReq.getLiveExperiences.size mustBe 4
                stateReq.getResolvedParameters.size mustBe 1
                stateReq.getSession.getId mustBe sid
@@ -80,15 +80,14 @@ class SessionTargetingTest extends EmbeddedServerSpec {
                val coreSsn = CoreSession.fromJson((json \ "session").as[String], schema)
                val stateReq = coreSsn.getStateRequest.get
                stateReq mustNot be (null)
-               stateReq.getStatus mustBe Committed
+               stateReq.getStatus.ordinal mustBe Committed.ordinal
                stateReq.getLiveExperiences.size mustBe 4
                stateReq.getResolvedParameters.size mustBe 1
                stateReq.getSession.getId mustBe sid
                stateReq.getState mustBe schema.getState("state1").get
          }
 
-         serverSsn.getStateRequest().get.getStatus mustBe Committed
-         //println("*** " + serverSsn.getTargetingStabile().getAll.asScala)
+         serverSsn.getStateRequest().get.getStatus.ordinal mustBe Committed.ordinal
       }
 
       "create and commit state request for state2" in {
@@ -105,7 +104,7 @@ class SessionTargetingTest extends EmbeddedServerSpec {
                val coreSsn = CoreSession.fromJson((json \ "session").as[String], schema)
                val stateReq = coreSsn.getStateRequest.get
                stateReq mustNot be (null)
-               stateReq.getStatus mustBe InProgress
+               stateReq.getStatus.ordinal mustBe InProgress.ordinal
                stateReq.getLiveExperiences.size mustBe 5
                stateReq.getResolvedParameters.size mustBe 1
                stateReq.getSession.getId mustBe sid
@@ -115,7 +114,7 @@ class SessionTargetingTest extends EmbeddedServerSpec {
 
          val serverSsn = server.ssnStore.get(sid).get.asInstanceOf[SessionImpl]
 
-         serverSsn.getStateRequest().get.getStatus mustBe InProgress
+         serverSsn.getStateRequest().get.getStatus.ordinal mustBe InProgress.ordinal
 
          // Commit
          val reqBody2 = Json.obj(
@@ -129,15 +128,14 @@ class SessionTargetingTest extends EmbeddedServerSpec {
                val coreSsn = CoreSession.fromJson((json \ "session").as[String], schema)
                val stateReq = coreSsn.getStateRequest.get
                stateReq mustNot be (null)
-               stateReq.getStatus mustBe Committed
+               stateReq.getStatus.ordinal mustBe Committed.ordinal
                stateReq.getLiveExperiences.size mustBe 5
                stateReq.getResolvedParameters.size mustBe 1
                stateReq.getSession.getId mustBe sid
                stateReq.getState mustBe schema.getState("state2").get
          }
          
-         serverSsn.getStateRequest().get.getStatus mustBe Committed
-         //println("*** " + serverSsn.coreSession.getTargetingStabile.getAll.asScala)
+         serverSsn.getStateRequest().get.getStatus.ordinal mustBe Committed.ordinal
 
       }
 
@@ -155,12 +153,11 @@ class SessionTargetingTest extends EmbeddedServerSpec {
                val coreSsn = CoreSession.fromJson((json \ "session").as[String], schema)
                val stateReq = coreSsn.getStateRequest.get
                stateReq mustNot be (null)
-               stateReq.getStatus mustBe InProgress
+               stateReq.getStatus.ordinal mustBe InProgress.ordinal
                stateReq.getLiveExperiences.size mustBe 5
                stateReq.getResolvedParameters.size mustBe 1
                stateReq.getSession.getId mustBe sid
                stateReq.getState mustBe schema.getState("state3").get
-               //println("*** 3 " + stateReq.getLiveExperiences)
             }
 
          val serverSsn = server.ssnStore.get(sid).get.asInstanceOf[SessionImpl]
@@ -180,7 +177,7 @@ class SessionTargetingTest extends EmbeddedServerSpec {
                val coreSsn = CoreSession.fromJson((json \ "session").as[String], schema)
                stateReq = coreSsn.getStateRequest.get
                stateReq mustNot be (null)
-               stateReq.getStatus mustBe Failed
+               stateReq.getStatus.ordinal mustBe Failed.ordinal
                stateReq.getLiveExperiences.size mustBe 5
                stateReq.getResolvedParameters.size mustBe 1
                stateReq.getSession.getId mustBe sid

@@ -8,7 +8,6 @@ import com.variant.core.schema.State;
 import com.variant.core.schema.StateVariant;
 import com.variant.core.schema.Variation;
 import com.variant.core.schema.Variation.Experience;
-import com.variant.core.session.StateRequestStatus;
 
 /**
  * Represents a Variant state request, as returned by {@link Session#targetForState(State)}.
@@ -40,11 +39,11 @@ public interface StateRequest {
 	/**
 	 * The current status of this state request.
      * 
-     * @return An object of type {@link StateRequestStatus}.
+     * @return An object of type {@link Status}.
 	 * 
 	 * @since 0.9
 	 */
-	StateRequestStatus getStatus();
+	Status getStatus();
 
 	/**
 	 * The state variant to which this state request resolved at run time. A state request can 

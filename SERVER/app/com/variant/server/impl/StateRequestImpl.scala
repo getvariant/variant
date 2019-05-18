@@ -1,6 +1,5 @@
 package com.variant.server.impl
 
-import com.variant.core.StateRequestStatus
 import com.variant.core.schema.State
 import com.variant.core.schema.StateVariant
 import com.variant.core.schema.Variation
@@ -36,7 +35,7 @@ class StateRequestImpl(private val session: Session, private val coreReq:CoreSta
 
 	/**
 	 */
-	override def getStatus: StateRequestStatus = coreReq.getStatus
+	override def getStatus: Status = StateRequest.Status.values()(coreReq.getStatus.ordinal())
 
 	/**
 	 */
@@ -60,6 +59,6 @@ class StateRequestImpl(private val session: Session, private val coreReq:CoreSta
 	
    def setResolvedStateVariant(variant: java.util.Optional[StateVariant]): Unit = coreReq.setResolvedStateVariant(variant)
          
-   def setStatus(status: StateRequestStatus): Unit = coreReq.setStatus(status)
+   def setStatus(status: StateRequest.Status): Unit = coreReq.setStatus(CoreStateRequest.Status.values()(status.ordinal()))
 
 }

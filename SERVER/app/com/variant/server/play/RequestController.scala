@@ -2,10 +2,6 @@ package com.variant.server.play
 
 import scala.collection.JavaConverters.mapAsJavaMapConverter
 
-import com.variant.core.StateRequestStatus
-import com.variant.core.StateRequestStatus.Committed
-import com.variant.core.StateRequestStatus.Failed
-import com.variant.core.StateRequestStatus.InProgress
 import com.variant.core.Constants._
 import com.variant.core.error.ServerError._
 import com.variant.core.session.SessionScopedTargetingStabile
@@ -13,6 +9,8 @@ import com.variant.server.boot.ServerExceptionInternal
 import com.variant.server.boot.ServerExceptionRemote
 import com.variant.server.boot.VariantServer
 import com.variant.server.api.TraceEvent
+import com.variant.server.api.StateRequest
+import com.variant.server.api.StateRequest.Status._
 import com.variant.server.impl.SessionImpl
 import com.variant.server.impl.StateRequestImpl
 import com.variant.server.util.JavaImplicits.оptional2Option
@@ -107,7 +105,7 @@ class RequestController @Inject() (
          val ordinal = (bodyJson \ "status").asOpt[Int].getOrElse {
             throw new ServerExceptionRemote(MissingProperty, "status")
          }
-         StateRequestStatus.values()(ordinal)
+         StateRequest.Status.values()(ordinal)
       }
       
       if (!status.isIn(Committed, Failed)) 

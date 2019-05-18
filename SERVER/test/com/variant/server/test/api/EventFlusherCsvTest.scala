@@ -1,7 +1,7 @@
 package com.variant.server.test.api
 
 
-import com.variant.core.StateRequestStatus._
+import com.variant.server.api.StateRequest.Status._
 import com.variant.server.test.spec.EmbeddedServerSpec
 import com.variant.server.schema.SchemaDeployer
 import com.variant.server.boot.VariantServer

@@ -1,11 +1,7 @@
 package com.variant.client.test;
 
-import static com.variant.core.session.StateRequestStatus.Committed;
-import static com.variant.core.session.StateRequestStatus.InProgress;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static com.variant.client.StateRequest.Status.*;
+import static org.junit.Assert.*;
 
 import java.util.List;
 

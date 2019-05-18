@@ -93,6 +93,10 @@ public interface StateRequest {
 	 */	
 	Map<String,String> getResolvedParameters();
 
+	/**
+	 * 
+	 * @since 0.10
+	 */
 	public enum Status {
 
 		InProgress, Committed, Failed;

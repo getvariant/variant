@@ -2,8 +2,7 @@ package com.variant.server.test.controller
 
 import scala.collection.JavaConverters._
 
-import com.variant.core.StateRequestStatus.Committed
-import com.variant.core.StateRequestStatus.InProgress
+import com.variant.server.api.StateRequest.Status._
 import com.variant.core.error.ServerError._
 import com.variant.server.impl.SessionImpl
 import com.variant.server.test.spec.EmbeddedServerSpec
@@ -14,10 +13,7 @@ import play.api.libs.json.JsValue.jsValueToJsLookup
 import play.api.libs.json.Json
 import play.api.libs.json.Json.toJsFieldJsValueWrapper
 import play.api.test.FakeRequest
-import play.api.test.Helpers.GET
-import play.api.test.Helpers.NOT_FOUND
-import play.api.test.Helpers.POST
-import play.api.test.Helpers.PUT
+import play.api.test.Helpers._
 import play.api.test.Helpers.route
 import play.api.test.Helpers.writeableOf_AnyContentAsEmpty
 import play.api.test.Helpers.writeableOf_AnyContentAsText

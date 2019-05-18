@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.variant.client.SessionExpiredException;
+import com.variant.client.StateRequest;
 import com.variant.client.TargetingTracker;
 import com.variant.client.TraceEvent;
 import com.variant.client.UnknownSchemaException;
@@ -19,7 +20,6 @@ import com.variant.client.net.http.HttpAdapter;
 import com.variant.client.net.http.HttpResponse;
 import com.variant.core.error.ServerError;
 import com.variant.core.session.CoreSession;
-import com.variant.core.session.StateRequestStatus;
 
 /**
  * The abstraction of the remote server.  
@@ -361,7 +361,7 @@ public class Server {
 	 * only the attributes and only at commit time.
 	 * 
 	 */
-	public boolean requestCommit(final StateRequestImpl req, StateRequestStatus status) {
+	public boolean requestCommit(final StateRequestImpl req, StateRequest.Status status) {
 		
 		SessionImpl ssn = (SessionImpl) req.getSession();
 		StateVisitedEvent sve = (StateVisitedEvent) req.getStateVisitedEvent();

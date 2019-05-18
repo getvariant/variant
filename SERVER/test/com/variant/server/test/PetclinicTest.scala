@@ -8,9 +8,7 @@ import org.scalatestplus.play._
 import play.api.test._
 import play.api.test.Helpers._
 
-import com.variant.core.StateRequestStatus.Committed
-import com.variant.core.StateRequestStatus.Failed
-import com.variant.core.StateRequestStatus.InProgress
+import com.variant.server.api.StateRequest.Status._
 import com.variant.core.error.ServerError._
 import com.variant.core.session.CoreSession
 import com.variant.core.session.CoreStateRequest

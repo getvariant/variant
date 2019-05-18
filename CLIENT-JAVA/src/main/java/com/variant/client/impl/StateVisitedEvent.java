@@ -1,7 +1,6 @@
 package com.variant.client.impl;
 
-import static com.variant.core.session.StateRequestStatus.Committed;
-import static com.variant.core.session.StateRequestStatus.Failed;
+import static com.variant.client.StateRequest.Status.*;
 
 import java.io.Serializable;
 import java.util.Map;
@@ -9,26 +8,26 @@ import java.util.Map;
 import com.variant.core.Constants;
 import com.variant.core.error.CoreException;
 import com.variant.core.schema.State;
-import com.variant.core.session.StateRequestStatus;
+import com.variant.client.StateRequest;
 
 @SuppressWarnings("serial")
 public class StateVisitedEvent extends TraceEventSupport implements Serializable {
 		
 	public static final String SVE_NAME = Constants.SVE_NAME;
 
-	private final StateRequestStatus status;
+	private final StateRequest.Status status;
 	
 	/**
 	 */
 	public StateVisitedEvent(State state) {
 		super(SVE_NAME);
 		attributes.put("$STATE", state.getName());
-		this.status = StateRequestStatus.InProgress;
+		this.status = StateRequest.Status.InProgress;
 	}
 
 	/**
 	 */
-	public StateVisitedEvent(State state, StateRequestStatus status) {
+	public StateVisitedEvent(State state, StateRequest.Status status) {
 		super(SVE_NAME);
 		attributes.put("$STATE", state.getName());
 		this.status = status;
@@ -39,7 +38,7 @@ public class StateVisitedEvent extends TraceEventSupport implements Serializable
 
 	/**
 	 */
-	public StateVisitedEvent(State state, StateRequestStatus status, Map<String,String> attributes) {
+	public StateVisitedEvent(State state, StateRequest.Status status, Map<String,String> attributes) {
 		this(state, status);
 		this.attributes.putAll(attributes);
 	}
@@ -53,7 +52,7 @@ public class StateVisitedEvent extends TraceEventSupport implements Serializable
 	
 	/**
 	 */
-	public StateRequestStatus getStatus() {
+	public StateRequest.Status getStatus() {
 		return status;
 	}
 	

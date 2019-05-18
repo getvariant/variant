@@ -8,9 +8,7 @@ import org.scalatestplus.play._
 import play.api.test._
 import play.api.test.Helpers._
 
-import com.variant.core.StateRequestStatus.Committed
-import com.variant.core.StateRequestStatus.Failed
-import com.variant.core.StateRequestStatus.InProgress
+import com.variant.server.api.StateRequest.Status._
 import com.variant.core.error.ServerError._
 import com.variant.core.session.CoreSession
 import com.variant.core.session.CoreStateRequest
@@ -89,7 +87,7 @@ class RequestTest extends EmbeddedServerSpec {
                val coreSsn = CoreSession.fromJson((json \ "session").as[String], schema)
                val stateReq = coreSsn.getStateRequest.get
                stateReq mustNot be (null)
-               stateReq.getStatus mustBe InProgress
+               stateReq.getStatus.ordinal mustBe InProgress.ordinal
                stateReq.getLiveExperiences.size mustBe 5
                stateReq.getResolvedParameters.size mustBe 1
                stateReq.getSession.getId mustBe sid
@@ -98,7 +96,7 @@ class RequestTest extends EmbeddedServerSpec {
 
          val serverSsn = server.ssnStore.get(sid).get.asInstanceOf[SessionImpl]
 
-         serverSsn.getStateRequest().get.getStatus mustBe InProgress
+         serverSsn.getStateRequest().get.getStatus.ordinal mustBe InProgress.ordinal
 
          // Commit without SVE attributes.
          val reqBody2 = Json.obj(
@@ -113,14 +111,14 @@ class RequestTest extends EmbeddedServerSpec {
                val coreSsn = CoreSession.fromJson((json \ "session").as[String], schema)
                stateReq = coreSsn.getStateRequest.get
                stateReq mustNot be (null)
-               stateReq.getStatus mustBe Committed
+               stateReq.getStatus.ordinal mustBe Committed.ordinal
                stateReq.getLiveExperiences.size mustBe 5
                stateReq.getResolvedParameters.size mustBe 1
                stateReq.getSession.getId mustBe sid
                stateReq.getState mustBe schema.getState("state2").get
          }
          
-         serverSsn.getStateRequest().get.getStatus mustBe Committed
+         serverSsn.getStateRequest().get.getStatus.ordinal mustBe Committed.ordinal
 
          // Try committing again... Should work because we don't actually check for this on the server.
          // and trust that the client will check before sending the request and check again after receiving.
@@ -169,7 +167,7 @@ class RequestTest extends EmbeddedServerSpec {
             .withBodySession { ssn => 
                val stateReq = ssn.getStateRequest.get
                stateReq mustNot be (null)
-               stateReq.getStatus mustBe InProgress
+               stateReq.getStatus.ordinal mustBe InProgress.ordinal
                stateReq.getLiveExperiences.size mustBe 5
                stateReq.getResolvedParameters.size mustBe 1
                stateReq.getSession.getId mustBe sid
@@ -178,7 +176,7 @@ class RequestTest extends EmbeddedServerSpec {
 
          val serverSsn = server.ssnStore.get(sid).get.asInstanceOf[SessionImpl]
 
-         serverSsn.getStateRequest().get.getStatus mustBe InProgress
+         serverSsn.getStateRequest().get.getStatus.ordinal mustBe InProgress.ordinal
 
          // Commit with SVE attributes.
          val reqBody2 = Json.obj(
@@ -194,14 +192,14 @@ class RequestTest extends EmbeddedServerSpec {
                val coreSsn = CoreSession.fromJson((json \ "session").as[String], schema)
                stateReq = coreSsn.getStateRequest.get
                stateReq mustNot be (null)
-               stateReq.getStatus mustBe Committed
+               stateReq.getStatus.ordinal mustBe Committed.ordinal
                stateReq.getLiveExperiences.size mustBe 5
                stateReq.getResolvedParameters.size mustBe 1
                stateReq.getSession.getId mustBe sid
                stateReq.getState mustBe schema.getState("state3").get
          }
          
-         serverSsn.getStateRequest().get.getStatus mustBe Committed
+         serverSsn.getStateRequest().get.getStatus.ordinal mustBe Committed.ordinal
 
          // Try committing again... Should work because we don't actually check for this on the server.
          // and trust that the client will check before sending the request and check again after receiving.
@@ -247,7 +245,7 @@ class RequestTest extends EmbeddedServerSpec {
                val coreSsn = CoreSession.fromJson((json \ "session").as[String], schema)
                val stateReq = coreSsn.getStateRequest.get
                stateReq mustNot be (null)
-               stateReq.getStatus mustBe InProgress
+               stateReq.getStatus.ordinal mustBe InProgress.ordinal
                stateReq.getLiveExperiences.size mustBe 4
                stateReq.getResolvedParameters.size mustBe 1
                stateReq.getSession.getId mustBe sid
@@ -256,7 +254,7 @@ class RequestTest extends EmbeddedServerSpec {
 
          val serverSsn = server.ssnStore.get(sid).get.asInstanceOf[SessionImpl]
 
-         serverSsn.getStateRequest().get.getStatus mustBe InProgress
+         serverSsn.getStateRequest().get.getStatus.ordinal mustBe InProgress.ordinal
 
          // Commit with SVE attributes.
          val reqBody2 = Json.obj(
@@ -271,14 +269,14 @@ class RequestTest extends EmbeddedServerSpec {
                val coreSsn = CoreSession.fromJson((json \ "session").as[String], schema)
                val stateReq = coreSsn.getStateRequest.get
                stateReq mustNot be (null)
-               stateReq.getStatus mustBe Committed
+               stateReq.getStatus.ordinal mustBe Committed.ordinal
                stateReq.getLiveExperiences.size mustBe 4
                stateReq.getResolvedParameters.size mustBe 1
                stateReq.getSession.getId mustBe sid
                stateReq.getState mustBe schema.getState("state4").get
          }
          
-         serverSsn.getStateRequest().get.getStatus mustBe Committed
+         serverSsn.getStateRequest().get.getStatus.ordinal mustBe Committed.ordinal
 
          // Try failing...
          val reqBody3 = Json.obj(
@@ -326,7 +324,7 @@ class RequestTest extends EmbeddedServerSpec {
                val coreSsn = CoreSession.fromJson((json \ "session").as[String], schema)
                val stateReq = coreSsn.getStateRequest.get
                stateReq mustNot be (null)
-               stateReq.getStatus mustBe InProgress
+               stateReq.getStatus.ordinal mustBe InProgress.ordinal
                stateReq.getLiveExperiences.size mustBe 4
                stateReq.getResolvedParameters.size mustBe 1
                stateReq.getSession.getId mustBe sid
@@ -334,7 +332,7 @@ class RequestTest extends EmbeddedServerSpec {
             }
 
          val serverSsn = server.ssnStore.get(sid).get.asInstanceOf[SessionImpl]
-         serverSsn.getStateRequest().get.getStatus mustBe InProgress
+         serverSsn.getStateRequest().get.getStatus.ordinal mustBe InProgress.ordinal
 
          // Fail with SVE attributes.
          val reqBody2 = Json.obj(
@@ -349,14 +347,14 @@ class RequestTest extends EmbeddedServerSpec {
                val coreSsn = CoreSession.fromJson((json \ "session").as[String], schema)
                val stateReq = coreSsn.getStateRequest.get
                stateReq mustNot be (null)
-               stateReq.getStatus mustBe Failed
+               stateReq.getStatus.ordinal mustBe Failed.ordinal
                stateReq.getLiveExperiences.size mustBe 4
                stateReq.getResolvedParameters.size mustBe 1
                stateReq.getSession.getId mustBe sid
                stateReq.getState mustBe schema.getState("state5").get
          }
          
-         serverSsn.getStateRequest.get.getStatus mustBe Failed
+         serverSsn.getStateRequest.get.getStatus.ordinal mustBe Failed.ordinal
 
          // Attempt to commit.
          val reqBody3 = Json.obj(
@@ -403,7 +401,7 @@ class RequestTest extends EmbeddedServerSpec {
                val coreSsn = CoreSession.fromJson((json \ "session").as[String], schema)
                val stateReq = coreSsn.getStateRequest.get
                stateReq mustNot be (null)
-               stateReq.getStatus mustBe InProgress
+               stateReq.getStatus.ordinal mustBe InProgress.ordinal
                stateReq.getLiveExperiences.size mustBe 4
                stateReq.getResolvedParameters.size mustBe 1
                stateReq.getSession.getId mustBe sid
@@ -411,7 +409,7 @@ class RequestTest extends EmbeddedServerSpec {
             }
 
          val serverSsn = server.ssnStore.get(sid).get.asInstanceOf[SessionImpl]
-         serverSsn.getStateRequest().get.getStatus mustBe InProgress
+         serverSsn.getStateRequest().get.getStatus.ordinal mustBe InProgress.ordinal
 
          // Fail with SVE attributes.
          val reqBody2 = Json.obj(
@@ -426,14 +424,14 @@ class RequestTest extends EmbeddedServerSpec {
                val coreSsn = CoreSession.fromJson((json \ "session").as[String], schema)
                val stateReq = coreSsn.getStateRequest.get
                stateReq mustNot be (null)
-               stateReq.getStatus mustBe Failed
+               stateReq.getStatus.ordinal mustBe Failed.ordinal
                stateReq.getLiveExperiences.size mustBe 4
                stateReq.getResolvedParameters.size mustBe 1
                stateReq.getSession.getId mustBe sid
                stateReq.getState mustBe schema.getState("state5").get
          }
          
-         serverSsn.getStateRequest().get.getStatus mustBe Failed
+         serverSsn.getStateRequest().get.getStatus.ordinal mustBe Failed.ordinal
 
          // Attempt to send invalid status 
          val reqBody3 = Json.obj(
@@ -481,7 +479,7 @@ class RequestTest extends EmbeddedServerSpec {
             .withBodySession { ssn => 
                val stateReq = ssn.getStateRequest.get
                stateReq mustNot be (null)
-               stateReq.getStatus mustBe InProgress
+               stateReq.getStatus.ordinal mustBe InProgress.ordinal
                stateReq.getLiveExperiences.size mustBe 5
                stateReq.getResolvedParameters.size mustBe 1
                stateReq.getSession.getId mustBe sid
@@ -505,7 +503,7 @@ class RequestTest extends EmbeddedServerSpec {
                ssn.getSchema.getMeta.getName mustBe "monstrosity"
                val stateReq = ssn.getStateRequest.get
                stateReq mustNot be (null)
-               stateReq.getStatus mustBe Committed
+               stateReq.getStatus.ordinal mustBe Committed.ordinal
                stateReq.getLiveExperiences.size mustBe 5
                stateReq.getResolvedParameters.size mustBe 1
                stateReq.getSession.getId mustBe sid
@@ -525,7 +523,7 @@ class RequestTest extends EmbeddedServerSpec {
             .withBodySession { ssn => 
                val stateReq = ssn.getStateRequest.get
                stateReq mustNot be (null)
-               stateReq.getStatus mustBe InProgress
+               stateReq.getStatus.ordinal mustBe InProgress.ordinal
                stateReq.getLiveExperiences.size mustBe 5
                stateReq.getResolvedParameters.size mustBe 1
                stateReq.getSession.getId mustBe sid

@@ -5,7 +5,7 @@ package com.variant.core.session;
  * so as not to have any public core classes other than schema. 
  * 
  * @since 0.9
- */
+ *
 
 public enum StateRequestStatus {
 
@@ -16,7 +16,7 @@ public enum StateRequestStatus {
 	 * 
 	 * @param statuses
 	 * @return ture if this value is one of the given values, false otherwise.
-	 */
+	 *
 	public boolean isIn(StateRequestStatus... statuses) {
 		
 		for (StateRequestStatus s: statuses) 
@@ -24,3 +24,4 @@ public enum StateRequestStatus {
 		return false;
 	}
 }
+*/

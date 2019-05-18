@@ -1,7 +1,5 @@
 package com.variant.core.session;
 
-import static com.variant.core.session.StateRequestStatus.*;
-
 import java.io.Serializable;
 import java.io.StringWriter;
 import java.util.Collection;
@@ -46,7 +44,7 @@ public class CoreStateRequest implements Serializable {
 	// Active
 	private Set<Experience> liveExperiences; 
 	
-	private StateRequestStatus status = InProgress;
+	private Status status = Status.InProgress;
 	
 	/**
 	 * Regular constructor
@@ -62,6 +60,30 @@ public class CoreStateRequest implements Serializable {
 	//---------------------------------------------------------------------------------------------//
 	//                                          PUBLIC                                             //
 	//---------------------------------------------------------------------------------------------//
+
+	/**
+	 * State of a state request.  We replicate this on both client and server,
+	 * so as not to have any public core classes other than schema. 
+	 * 
+	 * @since 0.9
+	 */
+
+	public enum Status {
+
+		InProgress, Committed, Failed;
+
+		/**
+		 * Is a value one of the given values?
+		 * 
+		 * @param statuses
+		 * @return ture if this value is one of the given values, false otherwise.
+		 */
+		public boolean isIn(Status... statuses) {
+			for (Status s: statuses) if (this == s) return true;
+			return false;
+		}
+	}
+
 	/**
 	 */
 	public CoreSession getSession() {
@@ -76,11 +98,11 @@ public class CoreStateRequest implements Serializable {
 
 	/**
 	 */
-	public void setStatus(StateRequestStatus targetStatus) {
+	public void setStatus(Status targetStatus) {
 		
-		if (status == Committed && targetStatus == Failed)
+		if (status == Status.Committed && targetStatus == Status.Failed)
 			throw new CoreException.User(ServerError.CANNOT_FAIL);
-		else if (status == Failed && targetStatus == Committed)
+		else if (status == Status.Failed && targetStatus == Status.Committed)
 			throw new CoreException.User(ServerError.CANNOT_COMMIT);
 		else
 			status = targetStatus;
@@ -90,7 +112,7 @@ public class CoreStateRequest implements Serializable {
 	 * 
 	 * @return
 	 */
-	public StateRequestStatus getStatus() {
+	public Status getStatus() {
 		return status;
 	}
 
@@ -260,7 +282,7 @@ public class CoreStateRequest implements Serializable {
 
 		CoreStateRequest result = new CoreStateRequest(session, stateOpt.get());
 				
-		result.status = StateRequestStatus.values()[(Integer)fields.get(FILED_NAME_STATUS)];
+		result.status = Status.values()[(Integer)fields.get(FILED_NAME_STATUS)];
 
 /*		
 		Object paramListObj = fields.get(FIELD_NAME_PARAMS);
