@@ -16,9 +16,9 @@ import com.variant.core.schema.StateScopedHook;
 import com.variant.core.schema.VariationScopedHook;
 import com.variant.core.schema.impl.MetaImpl;
 import com.variant.core.schema.impl.SchemaHookImpl;
-import com.variant.core.schema.impl.StateHookImpl;
+import com.variant.core.schema.impl.StateScopedHookImpl;
 import com.variant.core.schema.impl.StateImpl;
-import com.variant.core.schema.impl.VariationHookImpl;
+import com.variant.core.schema.impl.VariationScopedHookImpl;
 import com.variant.core.schema.impl.VariationImpl;
 import com.variant.core.schema.parser.error.SemanticError.Location;
 /**
@@ -150,7 +150,7 @@ public class HooksParser implements Keywords {
 				if (hook != null) {
 					// The method above created a schema level hook, but in this case we need a test
 					// domian hook.
-					hooks.add(new StateHookImpl(hook.getClassName(), hook.getInit(), hookLocation, state));
+					hooks.add(new StateScopedHookImpl(hook.getClassName(), hook.getInit(), hookLocation, state));
 				}	
 			}
 			state.setHooks(hooks);
@@ -183,7 +183,7 @@ public class HooksParser implements Keywords {
 				if (hook != null) {
 					// The method above created a schema level hook, but in this case we need a test
 					// domian hook.
-					hooks.add(new VariationHookImpl(hook.getClassName(), hook.getInit(), hookLocation, test));
+					hooks.add(new VariationScopedHookImpl(hook.getClassName(), hook.getInit(), hookLocation, test));
 				}	
 			}
 			test.setHooks(hooks);

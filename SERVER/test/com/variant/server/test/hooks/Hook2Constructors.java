@@ -3,7 +3,7 @@ package com.variant.server.test.hooks;
 import java.util.Optional;
 
 import com.typesafe.config.Config;
-import com.variant.core.lifecycle.LifecycleHook;
+import com.variant.server.api.lifecycle.LifecycleHook;
 import com.variant.server.api.lifecycle.VariationQualificationLifecycleEvent;
 
 public class Hook2Constructors implements LifecycleHook<VariationQualificationLifecycleEvent> {

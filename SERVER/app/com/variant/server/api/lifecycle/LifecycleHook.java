@@ -1,4 +1,4 @@
-package com.variant.core;
+package com.variant.server.api.lifecycle;
 
 import java.util.Optional;
 

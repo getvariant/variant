@@ -1,6 +1,5 @@
 package com.variant.server.api.lifecycle;
 
-import com.variant.core.lifecycle.LifecycleEvent;
 import com.variant.core.schema.Variation;
 
 /**

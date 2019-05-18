@@ -82,7 +82,7 @@ public class StandaloneServer {
 				command,
 				line -> {
 					System.out.println("<OUT> " + line);
-					if (line.matches(".*Variant Experience Server .* bootstrapped .*")) instantiated.set(true);
+					if (line.matches(".*Variant AIM Server .* bootstrapped .*")) instantiated.set(true);
 				}, 
 				line -> {
 					System.out.println("<ERR> " + line); 					

@@ -1,5 +1,6 @@
-package com.variant.core;
+package com.variant.server.api.lifecycle;
 
+import com.variant.server.api.Session;
 
 /**
  * <p>Ultimate super-type of all lifecycle event types. Concrete implementations
@@ -15,6 +16,13 @@ package com.variant.core;
 public interface LifecycleEvent {
 	
 	/**
+	 * User session on whose behalf the event is raised.
+	 * @return
+	 * @since 0.8
+	 */
+	Session getSession();
+
+	/**
 	 * <p>Make a new object of the right type, suitable as the return type of Implementations of the
 	 * {@link LifecycleHook#post(LifecycleEvent)} method. Concrete lifecycle events will override this
 	 * with a suitable narrower return type.
@@ -22,6 +30,15 @@ public interface LifecycleEvent {
 	 * @since 0.10
 	 */
 	public PostResult newPostResult();
+	
+	/**
+	 * The default life-cycle hook, which is automatically added to each life cycle event's hook chain.
+	 * It is posted in case either 1) no life-cycle hooks were defined in the schema, or 2) none of those
+	 * life-cycle hooks defined in the schema for this event type returned a non-null response.
+	 * 
+	 *  @since 0.7
+	 */
+	LifecycleHook<? extends LifecycleEvent> getDefaultHook();
 	
 	/**
 	 * The result of the {@link LifecycleHook#post(LifecycleEvent)} callback. Concrete implementations will have methods

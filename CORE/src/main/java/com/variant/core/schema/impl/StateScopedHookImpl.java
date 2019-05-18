@@ -11,11 +11,11 @@ import com.variant.core.schema.parser.error.SemanticError.Location;
  * @author Igor
  *
  */
-public class StateHookImpl extends BaseHookImpl implements StateScopedHook {
+public class StateScopedHookImpl extends BaseHookImpl implements StateScopedHook {
 
 	private final com.variant.core.schema.State state;
 	
-	public StateHookImpl(String className, Optional<String> init, Location location, com.variant.core.schema.State state) {
+	public StateScopedHookImpl(String className, Optional<String> init, Location location, com.variant.core.schema.State state) {
 		super(className, init, location);
 		this.state = state;
 	}

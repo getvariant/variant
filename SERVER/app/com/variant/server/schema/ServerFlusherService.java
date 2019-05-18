@@ -18,7 +18,7 @@ import com.variant.server.boot.VariantServer;
 import com.variant.server.boot.VariantServer$;
 import com.variant.server.util.ClassUtil;
 
-public class ServerFlusherService implements FlusherService {
+public class ServerFlusherService extends FlusherService {
 
 	private static final Logger logger = LoggerFactory.getLogger(ServerFlusherService.class);
 

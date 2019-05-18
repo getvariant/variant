@@ -5,8 +5,8 @@ import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.variant.core.lifecycle.LifecycleEvent;
-import com.variant.core.lifecycle.LifecycleHook;
+import com.variant.server.api.lifecycle.LifecycleEvent;
+import com.variant.server.api.lifecycle.LifecycleHook;
 import com.variant.server.api.lifecycle.VariationQualificationLifecycleEvent;
 
 public class DisqualifierHook implements LifecycleHook<VariationQualificationLifecycleEvent>{

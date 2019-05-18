@@ -5,12 +5,12 @@ import java.util.Optional;
 import java.util.Random;
 
 import com.typesafe.config.Config;
-import com.variant.core.lifecycle.LifecycleEvent;
-import com.variant.core.lifecycle.LifecycleHook;
 import com.variant.core.schema.State;
 import com.variant.core.schema.Variation;
 import com.variant.core.schema.Variation.Experience;
 import com.variant.server.api.Session;
+import com.variant.server.api.lifecycle.LifecycleEvent;
+import com.variant.server.api.lifecycle.LifecycleHook;
 import com.variant.server.api.lifecycle.VariationTargetingLifecycleEvent;
 import com.variant.server.boot.ServerExceptionInternal;
 

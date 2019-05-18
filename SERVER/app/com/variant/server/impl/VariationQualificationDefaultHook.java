@@ -2,7 +2,7 @@ package com.variant.server.impl;
 
 import java.util.Optional;
 
-import com.variant.core.lifecycle.LifecycleHook;
+import com.variant.server.api.lifecycle.LifecycleHook;
 import com.variant.server.api.lifecycle.VariationQualificationLifecycleEvent;
 
 class VariationQualificationDefaultHook implements LifecycleHook<VariationQualificationLifecycleEvent> {

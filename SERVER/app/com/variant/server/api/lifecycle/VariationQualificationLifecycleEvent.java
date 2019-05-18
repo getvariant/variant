@@ -1,8 +1,5 @@
 package com.variant.server.api.lifecycle;
 
-import com.variant.core.lifecycle.LifecycleHook;
-import com.variant.core.lifecycle.VariationAwareLifecycleEvent;
-
 
 /**
  * <p>Life cycle event, triggered when Variant session'a qualification for a particular test must be established. 
@@ -20,7 +17,7 @@ import com.variant.core.lifecycle.VariationAwareLifecycleEvent;
  * @since 0.7
  *
  */
-public interface VariationQualificationLifecycleEvent extends RuntimeLifecycleEvent, VariationAwareLifecycleEvent {
+public interface VariationQualificationLifecycleEvent extends VariationAwareLifecycleEvent {
       
    /**
     * The return type of the {@link LifecycleHook#post(com.variant.core.LifecycleEvent) LifecycleHook.post(TestQualificationLifecycleEvent)} 
@@ -29,7 +26,7 @@ public interface VariationQualificationLifecycleEvent extends RuntimeLifecycleEv
     * 
     * @since 0.7
     */
-   public interface PostResult extends RuntimeLifecycleEvent.PostResult {
+   public interface PostResult extends LifecycleEvent.PostResult {
       
       /**
        * Set whether the session is qualified for the associated test.

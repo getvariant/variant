@@ -2,8 +2,8 @@ package com.variant.server.test.hooks;
 
 import java.util.Optional;
 
-import com.variant.core.lifecycle.LifecycleEvent;
-import com.variant.core.lifecycle.LifecycleHook;
+import com.variant.server.api.lifecycle.LifecycleEvent;
+import com.variant.server.api.lifecycle.LifecycleHook;
 import com.variant.server.api.lifecycle.VariationQualificationLifecycleEvent;
 
 public class HookWrongSignatureConstructor implements LifecycleHook<VariationQualificationLifecycleEvent> {

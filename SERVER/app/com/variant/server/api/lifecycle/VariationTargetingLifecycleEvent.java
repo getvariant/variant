@@ -1,8 +1,5 @@
 package com.variant.server.api.lifecycle;
 
-import com.variant.core.lifecycle.LifecycleHook;
-import com.variant.core.lifecycle.StateAwareLifecycleEvent;
-import com.variant.core.lifecycle.VariationAwareLifecycleEvent;
 import com.variant.core.schema.Variation.Experience;
 
 /**
@@ -26,7 +23,7 @@ import com.variant.core.schema.Variation.Experience;
  * @since 0.7
  *
  */
-public interface VariationTargetingLifecycleEvent extends RuntimeLifecycleEvent, VariationAwareLifecycleEvent, StateAwareLifecycleEvent {
+public interface VariationTargetingLifecycleEvent extends VariationAwareLifecycleEvent, StateAwareLifecycleEvent {
 	
    /**
     * The return type of the {@link LifecycleHook#post(com.variant.core.LifecycleEvent) LifecycleHook.post(TestTargetingLifecycleEvent)} 
@@ -34,7 +31,7 @@ public interface VariationTargetingLifecycleEvent extends RuntimeLifecycleEvent,
     * 
     * @since 0.7
     */
-	public interface PostResult extends RuntimeLifecycleEvent.PostResult {
+	public interface PostResult extends LifecycleEvent.PostResult {
 	   
 	   /**
 	    * Set the test experience for this session in this test.

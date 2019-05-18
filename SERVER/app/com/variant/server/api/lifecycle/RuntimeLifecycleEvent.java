@@ -1,5 +1,5 @@
 package com.variant.server.api.lifecycle;
-
+/*
 import com.variant.core.lifecycle.LifecycleEvent;
 import com.variant.core.lifecycle.LifecycleHook;
 import com.variant.server.api.Session;
@@ -15,7 +15,7 @@ import com.variant.server.api.Session;
  *  
  * @author Igor Urisman.
  * @since 0.8
- */
+ *
 
 public interface RuntimeLifecycleEvent extends LifecycleEvent {
 	
@@ -23,7 +23,7 @@ public interface RuntimeLifecycleEvent extends LifecycleEvent {
 	 * User session on whose behalf the event is raised.
 	 * @return
 	 * @since 0.8
-	 */
+	 *
 	Session getSession();
 
 	/**
@@ -32,11 +32,12 @@ public interface RuntimeLifecycleEvent extends LifecycleEvent {
 	 * life-cycle hooks defined in the schema for this event type returned a non-null response.
 	 * 
 	 *  @since 0.7
-	 */
+	 *
 	LifecycleHook<? extends RuntimeLifecycleEvent> getDefaultHook();
 
 	/**
 	 * ...
-	 */
+	 *
 	public interface PostResult extends LifecycleEvent.PostResult {}
 }
+*/

@@ -8,20 +8,19 @@ import org.slf4j.LoggerFactory;
 
 import com.typesafe.config.ConfigException;
 import com.variant.core.error.ServerError;
-import com.variant.core.lifecycle.LifecycleEvent;
-import com.variant.core.lifecycle.LifecycleHook;
-import com.variant.core.lifecycle.StateAwareLifecycleEvent;
-import com.variant.core.lifecycle.VariationAwareLifecycleEvent;
 import com.variant.core.schema.Hook;
 import com.variant.core.schema.MetaScopedHook;
 import com.variant.core.schema.StateScopedHook;
 import com.variant.core.schema.VariationScopedHook;
 import com.variant.core.schema.impl.SchemaHookImpl;
-import com.variant.core.schema.impl.StateHookImpl;
-import com.variant.core.schema.impl.VariationHookImpl;
+import com.variant.core.schema.impl.StateScopedHookImpl;
+import com.variant.core.schema.impl.VariationScopedHookImpl;
 import com.variant.core.schema.parser.HooksService;
 import com.variant.core.schema.parser.ParserResponse;
-import com.variant.server.api.lifecycle.RuntimeLifecycleEvent;
+import com.variant.server.api.lifecycle.LifecycleEvent;
+import com.variant.server.api.lifecycle.LifecycleHook;
+import com.variant.server.api.lifecycle.StateAwareLifecycleEvent;
+import com.variant.server.api.lifecycle.VariationAwareLifecycleEvent;
 import com.variant.server.boot.ServerErrorLocal;
 import com.variant.server.boot.ServerExceptionLocal;
 import com.variant.server.boot.ServerExceptionRemote;
@@ -35,7 +34,7 @@ import com.variant.server.util.ClassUtil;
  * @author
  *
  */
-public class ServerHooksService implements HooksService {
+public class ServerHooksService extends HooksService {
 
 	private static final Logger LOG = LoggerFactory.getLogger(ServerHooksService.class);
 
@@ -90,7 +89,7 @@ public class ServerHooksService implements HooksService {
 			}
 			
 			// It must implement the right interface.
-			if (! (hookObj instanceof LifecycleHook)) {
+			if (! (hookObj instanceof LifecycleHook<?>)) {
 				parserResponse.addMessage(ServerErrorLocal.HOOK_CLASS_NO_INTERFACE, hookObj.getClass().getName(), LifecycleHook.class.getName());
 				return;
 			}
@@ -102,13 +101,13 @@ public class ServerHooksService implements HooksService {
 			if (hookDef instanceof StateScopedHook && ! StateAwareLifecycleEvent.class.isAssignableFrom(hookImpl.getLifecycleEventClass())) {
 				parserResponse.addMessage(
 						ServerErrorLocal.HOOK_STATE_SCOPE_VIOLATION, 
-						((StateHookImpl)hookDef).location.getPath(), hookImpl.getLifecycleEventClass().getName());				
+						((StateScopedHookImpl)hookDef).location.getPath(), hookImpl.getLifecycleEventClass().getName());				
 			}
 			// 2. State-scoped hookDef must define an implementation which listens to a state aware event.
 			if (hookDef instanceof VariationScopedHook && ! VariationAwareLifecycleEvent.class.isAssignableFrom(hookImpl.getLifecycleEventClass())) {
 				parserResponse.addMessage(
 						ServerErrorLocal.HOOK_TEST_SCOPE_VIOLATION, 
-						((VariationHookImpl)hookDef).location.getPath(), hookImpl.getLifecycleEventClass().getName());				
+						((VariationScopedHookImpl)hookDef).location.getPath(), hookImpl.getLifecycleEventClass().getName());				
 			}
 
 						
@@ -125,13 +124,13 @@ public class ServerHooksService implements HooksService {
 				stateHooks.add(hle);
 				if (LOG.isDebugEnabled()) 
 					LOG.debug(String.format("Registered state-scoped hook [%s] at [%s]", 
-							hookDef.getClassName(), ((StateHookImpl)hookDef).location.getPath()));
+							hookDef.getClassName(), ((StateScopedHookImpl)hookDef).location.getPath()));
 			}
 			else if (hookDef instanceof VariationScopedHook) {
 				testHooks.add(hle);
 				if (LOG.isDebugEnabled()) 
 					LOG.debug(String.format("Registered test-scoped hook [%s] at [%s]", 
-							hookDef.getClassName(), ((VariationHookImpl)hookDef).location.getPath()));
+							hookDef.getClassName(), ((VariationScopedHookImpl)hookDef).location.getPath()));
 			}
 		}
 		catch (ConfigException.Parse e) {
@@ -152,7 +151,6 @@ public class ServerHooksService implements HooksService {
 	 * @return the hook passed in as argument.
 	 */
    @SuppressWarnings("unchecked")
-   @Override
    public LifecycleEvent.PostResult post(LifecycleEvent event) {
 			   	   	   
 	   // 1. Build the hook chain, i.e. all hooks eligible for posting, in order.
@@ -225,9 +223,9 @@ public class ServerHooksService implements HooksService {
 
 		   // Either empty chain, or none cared to return a result.
 		   // If this is a server event, post the default hook.
-		   if (event instanceof RuntimeLifecycleEvent) {
-			   RuntimeLifecycleEvent sle = (RuntimeLifecycleEvent) event;
-			   return ((LifecycleHook<RuntimeLifecycleEvent>) sle.getDefaultHook()).post(sle).get();
+		   if (event instanceof LifecycleEvent) {
+			   LifecycleEvent sle = (LifecycleEvent) event;
+			   return ((LifecycleHook<LifecycleEvent>) sle.getDefaultHook()).post(sle).get();
 		   }
 		   
 		   return null;
