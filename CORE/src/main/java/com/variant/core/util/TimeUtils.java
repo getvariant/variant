@@ -3,7 +3,6 @@ package com.variant.core.util;
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
-import java.util.Random;
 
 /**
  * Replacement for apache commons lang3 time utils.
@@ -32,14 +31,27 @@ public class TimeUtils {
 		rem = (int) (seconds % SECONDS_PER_HOUR);
 		int mm = rem / SECONDS_PER_MINUTE;
 		int ss = (int) (seconds % SECONDS_PER_MINUTE);
+		String twoDigitFormat = "%02d";
+		String oneOrTwoDigitFormat = "%d";
 
 		//System.out.println("dd " + dd + " hh " + hh + " mm " + mm + " ss " + ss + " nanos " + nanos);
 		
 		StringBuilder result = new StringBuilder();
 		if (dd > 0) result.append(dd).append("d ");
-		if (hh > 0) result.append(String.format("%02d", hh)).append("h ");
-		if (mm > 0) result.append(String.format("%02d", mm)).append("m ");
-		result.append(String.format("%02d", ss)).append('.');
+		
+		if (hh > 0) {
+			if (dd > 0) result.append(String.format(twoDigitFormat, hh)); else result.append(String.format(oneOrTwoDigitFormat, hh));
+			result.append("h ");
+		}
+		
+		if (mm > 0) {
+			if (hh > 0) result.append(String.format(twoDigitFormat, mm)); else result.append(String.format(oneOrTwoDigitFormat, mm));
+			result.append("m ");
+		}
+		
+		if (mm > 0) result.append(String.format(twoDigitFormat, ss)); else result.append(String.format(oneOrTwoDigitFormat, ss));
+		result.append('.');
+		
 		// discard insignificant decimals.
 		char[] decimals = String.format("%09d", nanos).toCharArray();
 		int lastSignificantDigit = decimals.length;
@@ -52,7 +64,7 @@ public class TimeUtils {
 	/**
 	 * Testing
 	 * @param args
-	 */
+	 *
 	public static void main(String[] args) {
 		
 		Random rand  = new Random(System.currentTimeMillis());
@@ -65,4 +77,5 @@ public class TimeUtils {
 		long[] millis = {1999, 2000, 2001, 59999, 60000, 60001, 60999, 61000, 61001};
 		Arrays.stream(millis).forEach(l -> System.out.println(formatDuration(Duration.ofMillis(l))));
 	}
+	*/
 }
