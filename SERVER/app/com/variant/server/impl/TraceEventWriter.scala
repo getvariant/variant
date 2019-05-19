@@ -167,7 +167,7 @@ class TraceEventWriter (private val flushService: ServerFlusherService) {
    		if (!events.isEmpty()) {
       		var start = Instant.now();
    		   flusher.flush(events);		
-   		   logger.info("Flushed " + events.size() + " event(s) in " + TimeUtils.formatDuration(Duration.between(Instant.now(), start)))
+   		   logger.info("Flushed " + events.size() + " event(s) in " + TimeUtils.formatDuration(Duration.between(start, Instant.now())))
    		}
    	}
    }

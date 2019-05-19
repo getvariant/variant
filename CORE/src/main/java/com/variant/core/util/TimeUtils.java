@@ -3,6 +3,7 @@ package com.variant.core.util;
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
+import java.util.Random;
 
 /**
  * Replacement for apache commons lang3 time utils.
@@ -32,17 +33,17 @@ public class TimeUtils {
 		int mm = rem / SECONDS_PER_MINUTE;
 		int ss = (int) (seconds % SECONDS_PER_MINUTE);
 
-		//System.out.println("* " + dd + " * " + hh + " * " + mm + " * " + ss + " * " + nanos);
+		//System.out.println("dd " + dd + " hh " + hh + " mm " + mm + " ss " + ss + " nanos " + nanos);
 		
 		StringBuilder result = new StringBuilder();
-		if (dd > 0) result.append(dd).append('d');
-		if (hh > 0) result.append(String.format("%02d", hh)).append('h');
-		if (mm > 0) result.append(String.format("%02d", mm)).append('m');
+		if (dd > 0) result.append(dd).append("d ");
+		if (hh > 0) result.append(String.format("%02d", hh)).append("h ");
+		if (mm > 0) result.append(String.format("%02d", mm)).append("m ");
 		result.append(String.format("%02d", ss)).append('.');
 		// discard insignificant decimals.
 		char[] decimals = String.format("%09d", nanos).toCharArray();
 		int lastSignificantDigit = decimals.length;
-		while (decimals[--lastSignificantDigit] == '0') {}			
+		while (lastSignificantDigit > 0 && decimals[--lastSignificantDigit] == '0') {}			
 		result.append(Arrays.copyOfRange(decimals, 0, lastSignificantDigit + 1)).append("s");
 
 		return result.toString();
@@ -53,14 +54,15 @@ public class TimeUtils {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		/*
+		
 		Random rand  = new Random(System.currentTimeMillis());
-		for (int i = 0; i<20; i++) {
+		for (int i = 0; i<200; i++) {
 			long n = Math.abs(rand.nextLong());
 			Duration dur = Duration.ofNanos(n);
 			System.out.println(formatDuration(dur));
 		}
-		*/
-		System.out.println(formatDuration(Duration.ofSeconds(2,1030000)));
+		
+		long[] millis = {1999, 2000, 2001, 59999, 60000, 60001, 60999, 61000, 61001};
+		Arrays.stream(millis).forEach(l -> System.out.println(formatDuration(Duration.ofMillis(l))));
 	}
 }
