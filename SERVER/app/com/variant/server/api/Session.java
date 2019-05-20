@@ -10,8 +10,7 @@ import com.variant.core.schema.State;
 import com.variant.core.schema.Variation;
 
 /**
- * The server side of a Variant user session, contains session-scoped application 
- * state.
+ * User session.
  *
  * @author Igor Urisman
  * @since 0.7
@@ -42,7 +41,7 @@ public interface Session {
 	 *     For each state S, the visit count in incremented by one whenever all of the following conditions are met: 
      * <ul> 
      * <li>The session is targeted for the state S</li>
-     * <li>There exists a test T, which a) is instrumented on state S, b) is not OFF, and c) this session qualified for.</li>
+     * <li>There exists a variation V, which a) is instrumented on state S, b) is not OFF, and c) this session qualified for.</li>
      * </ul>
 
 	 * 
@@ -54,7 +53,7 @@ public interface Session {
 	public Map<State, Integer> getTraversedStates(); 
 
 	/**
-	 * Get variation schema, associated with this session.
+	 * The variation schema, associated with this session.
 	 *  
 	 * @return An object of type {@link Schema}
 	 * 
@@ -63,7 +62,7 @@ public interface Session {
 	public Schema getSchema();
 
 	/**
-	 * Get Server's current runtime configuration.
+	 * Variant server's current runtime configuration.
 	 *  
 	 * @return An object of type {@link Configuration}. Cannot be null.
 	 * 
@@ -105,7 +104,7 @@ public interface Session {
 	public Optional<StateRequest> getStateRequest();
 
 	/**
-	 * <p>Get this session's attributes as a map
+	 * <p>This session's attributes as a mutable map.
 	 * 
 	 * @return A mutable {@link Map}.
 	 * @since 0.7
