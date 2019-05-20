@@ -1,10 +1,11 @@
 package com.variant.server.api;
 
-import java.util.Map;
 import java.util.Optional;
 
 /**
- * Effective server configuration.
+ * Runtime server configuration currently in effect.
+ * 
+ * @since 0.10
  */
 public interface Configuration {
  
@@ -12,7 +13,7 @@ public interface Configuration {
 
 	int getSessionTimeout();
 
-	int getVacuumInterval();
+	int getSessionVacuumInterval();
 
 	String getEventFlusherClassName();
 
@@ -21,8 +22,6 @@ public interface Configuration {
 	int getEventWriterBufferSize();
 
 	int getEventWriterMaxDelay();
-
-	Map<String,Object> asMap();
 	
 	String getNetworkPort();
 }

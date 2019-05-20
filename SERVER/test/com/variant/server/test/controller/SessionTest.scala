@@ -60,7 +60,7 @@ class SessionTest extends EmbeddedServerSpec {
    val sessionTimeoutMillis = server.config.getSessionTimeout * 1000
    sessionTimeoutMillis mustEqual 1000
    
-   val vacuumIntervalMillis = server.config.getVacuumInterval * 1000
+   val vacuumIntervalMillis = server.config.getSessionVacuumInterval * 1000
   
    vacuumIntervalMillis  mustEqual 1000
 
@@ -205,6 +205,5 @@ class SessionTest extends EmbeddedServerSpec {
             .isError(SESSION_EXPIRED, sid)
 
        }
-
-   }
+   }   
 }

@@ -6,6 +6,7 @@ import java.util.Optional;
 
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigException;
+import com.typesafe.config.ConfigRenderOptions;
 import com.typesafe.config.ConfigValue;
 import com.typesafe.config.ConfigValueType;
 import com.variant.core.util.immutable.ImmutableMap;
@@ -110,7 +111,7 @@ public class ConfigurationImpl implements Configuration, ConfigKeys {
 	}
 
 	@Override
-	public int getVacuumInterval() {
+	public int getSessionVacuumInterval() {
 		return getInt(SESSION_VACUUM_INTERVAL);
 	}
 
@@ -121,7 +122,7 @@ public class ConfigurationImpl implements Configuration, ConfigKeys {
 
 	@Override
 	public Optional<String> getEventFlusherClassInit() {
-		return getConfigValue(EVENT_FLUSHER_CLASS_INIT).map( val -> val.render());
+		return getConfigValue(EVENT_FLUSHER_CLASS_INIT).map( val -> val.render(ConfigRenderOptions.concise()));
 	}
 
 	@Override
@@ -134,13 +135,16 @@ public class ConfigurationImpl implements Configuration, ConfigKeys {
 		return getInt(EVENT_WRITER_MAX_DELAY);
 	}
 
-	@Override
+	/*--------------------------------------------------------------------------------*/
+	/*                                  PUBLIC EXT                                    */
+	/*--------------------------------------------------------------------------------*/
+
 	public Map<String, Object> asMap() {
 		@SuppressWarnings("serial")
 		HashMap<String, Object> result = new HashMap<String, Object>() {{
 			put(SCHEMATA_DIR, getString(SCHEMATA_DIR));
 			put(SESSION_TIMEOUT, getSessionTimeout());
-			put(SESSION_VACUUM_INTERVAL, getVacuumInterval());
+			put(SESSION_VACUUM_INTERVAL, getSessionVacuumInterval());
 			put(EVENT_FLUSHER_CLASS_NAME, getEventFlusherClassName());	
 			put(EVENT_FLUSHER_CLASS_INIT, getEventFlusherClassInit());
 			put(EVENT_WRITER_BUFFER_SIZE, getEventWriterBufferSize());

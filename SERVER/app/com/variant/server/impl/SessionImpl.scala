@@ -16,6 +16,7 @@ import com.variant.server.util.JavaImplicits
 import play.api.Logger
 import com.variant.core.schema.StateVariant
 import com.variant.server.api.TraceEvent
+import com.variant.server.boot.VariantServer
 
 /**
  * Server session enriches core session with server side functionality.
@@ -60,6 +61,8 @@ class SessionImpl(val coreSession: CoreSession, val schemaGen: SchemaGen) extend
 
    override def getTimestamp = coreSession.getTimestamp
    
+   override def getConfiguration = VariantServer.instance.config
+
    override def getDisqualifiedVariations = coreSession.getDisqualifiedVariations
    
    override def getId = coreSession.getId

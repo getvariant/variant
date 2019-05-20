@@ -66,7 +66,7 @@ class VariantServerImpl @Inject() (
    ) extends VariantServer {
    
    import VariantServer._
-   
+   //println("*** " + playConfig.getObject("variant.event.flusher.class.init"))
 	private[this] val logger = Logger(this.getClass)
    private[this] var _schemaDeployer: SchemaDeployer = null
    private[this] var _isUp = false

@@ -30,7 +30,7 @@ class ConnectionDrainingOnDeleteTest extends EmbeddedServerAsyncSpec with TempSc
    private val SESSIONS = 100 
    
    val sessionTimeoutMillis = server.config.getSessionTimeout * 1000
-   val vacuumIntervalMillis = server.config.getVacuumInterval * 1000
+   val vacuumIntervalMillis = server.config.getSessionVacuumInterval * 1000
    
    "Confirm key settings" in {
    

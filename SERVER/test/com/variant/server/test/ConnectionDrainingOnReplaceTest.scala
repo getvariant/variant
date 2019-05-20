@@ -30,7 +30,7 @@ class ConnectionDrainingOnReplaceTest extends EmbeddedServerAsyncSpec with TempS
    //private val sessionJsonPet = ParameterizedString(SessionTest.sessionJsonPetclinicPrototype.format(System.currentTimeMillis()))
       
    val sessionTimeoutMillis = server.config.getSessionTimeout * 1000
-   val vacuumIntervalMillis = server.config.getVacuumInterval * 1000
+   val vacuumIntervalMillis = server.config.getSessionVacuumInterval * 1000
    
    "Confirm key settings" in {
    

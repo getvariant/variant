@@ -30,7 +30,7 @@ public interface Variation {
 	/**
 	 * This variation's experiences, as provided by the <code>/variations[]/experiences</code> element. 
 	 * 
-	 * @return A list of {@link Variation.Experience} objects. Cannot be null.
+	 * @return A list of {@link Variation.Experience} objects in the order they were defined. Cannot be null.
 	 * @since 0.5
 	 */
 	List<Experience> getExperiences();
@@ -38,7 +38,7 @@ public interface Variation {
 	/**
 	 * Get an experience by its name.
 	 * 
-	 * @param name Name of the experience of interest..
+	 * @param name The name of the experience of interest.
 	 * @return An {@link Optional}, containing the experience with the given name or empty if no such experience in this variation.
 	 * @since 0.5
 	 */
@@ -69,7 +69,7 @@ public interface Variation {
 	boolean isOn();
 	
 	/**
-	 * List of variation-scoped lifecycle hooks, as provided by the <code>/variations[]/hooks</code> element. 
+	 * The lifecycle hooks, defined by this variation, as provided by the <code>/variations[]/hooks</code> element. 
 	 * 
 	 * @return An {@link Optional}, containing immutable list of {@link VariationScopedHook} objects in the order they were defined,
 	 *         or empty if no hooks were defined by this Variation.
@@ -86,7 +86,7 @@ public interface Variation {
 	List<OnState> getOnStates();
 
 	/**
-	 * A state instrumentation on a given state.
+	 * This variation's instrumentation details on a given state.
 	 * 
 	 * @return An {@link Optional}, containing the {@link OnState} instrumentation on the given state, 
 	 *         or empty if given state is not instrumented by this variation.
@@ -96,7 +96,7 @@ public interface Variation {
 	Optional<OnState> getOnState(State state);
 		
 	/**
-	 * Get a list of variations conjointly concurrent with this variation, 
+	 * The variations conjointly concurrent with this variation, 
 	 * as provided by the <code>/variations[]/conjointVariationRefs</code> property.
 	 * 
 	 * @return An {@link Optional}, containing the list of variations in order they were listed by
@@ -108,7 +108,7 @@ public interface Variation {
 	Optional<List<Variation>> getConjointVariations();
 		
 	/**
-	 * Is this variation serial with a given variation? Two variations are serial when there does not exist a state
+	 * Is this variation serial with a given variation. Two variations are serial when there does not exist a state
 	 * instrumented by both. Serial variations can be targeted independently without any additional considerations. 
 	 * 
 	 * @param other
@@ -120,7 +120,7 @@ public interface Variation {
 	}
 
 	/**
-	 * Is this variation concurrent with a given variation? This is equivalent to
+	 * Is this variation concurrent with a given variation. This is equivalent to
 	 * {@code !isSerialWith(other)}. Concurrent variations cannot be targeted independently,
 	 * unless they are declared to be conjointly concurrent and the host application has
 	 * provided hybrid state variants.
@@ -132,7 +132,7 @@ public interface Variation {
 	boolean isConcurrentWith(Variation other);
 
 	/**
-	 * Is this variation conjointly concurrent with the a given variation? 
+	 * Is this variation conjointly concurrent with the a given variation. 
 	 * Concurrent variations cannot be targeted independently,
 	 * unless they are declared to be conjointly concurrent and the host application has
 	 * provided hybrid state variants.

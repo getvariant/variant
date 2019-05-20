@@ -63,6 +63,15 @@ public interface Session {
 	public Schema getSchema();
 
 	/**
+	 * Get Server's current runtime configuration.
+	 *  
+	 * @return An object of type {@link Configuration}. Cannot be null.
+	 * 
+	 * @since 0.9
+	 */
+	public Configuration getConfiguration();
+
+	/**
 	 * <p> The set of variations traversed by this session so far. A variation V 
 	 * is traversed by a session when the session is targeted for a state, 
 	 * which a) is instrumented by V, b) V is not OFF, and c) this session is

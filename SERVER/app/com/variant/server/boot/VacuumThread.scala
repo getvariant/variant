@@ -12,7 +12,7 @@ class VacuumThread(server: VariantServer) extends Thread {
 
    private val logger = Logger(this.getClass)
    
-   private val vacuumingFrequencyMillis = server.config.getVacuumInterval * 1000
+   private val vacuumingFrequencyMillis = server.config.getSessionVacuumInterval * 1000
 	setName("Vacuum");
    setDaemon(true);
 
