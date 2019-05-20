@@ -14,7 +14,6 @@ import com.variant.server.schema.SchemaDeployer
 import play.api.Application
 import play.api.Configuration
 import play.api.inject.guice.GuiceApplicationBuilder
-import com.variant.server.api.ConfigKeys
 import org.scalatestplus.play.guice.GuiceOneAppPerTest
 import com.variant.server.boot.ServerExceptionLocal
 import java.util.Optional

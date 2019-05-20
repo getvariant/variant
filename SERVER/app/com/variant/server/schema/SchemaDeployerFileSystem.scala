@@ -6,10 +6,10 @@ import java.nio.file.Path
 import scala.io.Source
 
 import com.variant.core.error.UserError.Severity
-import com.variant.server.api.ConfigKeys.SCHEMATA_DIR
 import com.variant.server.boot.ServerErrorLocal
 import com.variant.server.boot.ServerExceptionLocal
 import com.variant.server.boot.VariantServer
+import com.variant.server.impl.ConfigKeys.SCHEMATA_DIR;
 import com.variant.server.util.AsyncDirectoryWatcher
 
 import play.api.Logger

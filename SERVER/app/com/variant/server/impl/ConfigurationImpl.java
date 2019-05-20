@@ -10,7 +10,6 @@ import com.typesafe.config.ConfigRenderOptions;
 import com.typesafe.config.ConfigValue;
 import com.typesafe.config.ConfigValueType;
 import com.variant.core.util.immutable.ImmutableMap;
-import com.variant.server.api.ConfigKeys;
 import com.variant.server.api.Configuration;
 import com.variant.server.boot.ServerErrorLocal;
 import com.variant.server.boot.ServerExceptionLocal;

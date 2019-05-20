@@ -10,7 +10,6 @@ import com.variant.core.error.ServerError._
 import com.variant.core.Constants._
 import com.variant.server.test.util.ParameterizedString
 import com.variant.server.test.util.TraceEventReader
-import com.variant.server.api.ConfigKeys._
 import com.variant.server.test.spec.EmbeddedServerSpec
 import com.variant.core.schema.parser.SchemaParser
 import com.variant.server.schema.ServerSchemaParser

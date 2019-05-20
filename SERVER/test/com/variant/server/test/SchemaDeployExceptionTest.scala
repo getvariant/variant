@@ -6,7 +6,7 @@ import scala.util.Try
 import org.apache.commons.io.FileUtils
 import org.scalatest.TestData
 import com.variant.core.error.UserError.Severity._
-import com.variant.server.api.ConfigKeys
+import com.variant.server.impl.ConfigKeys
 import com.variant.server.api.ServerException
 import com.variant.server.boot.ServerErrorLocal._
 import com.variant.server.play.VariantApplicationLoader

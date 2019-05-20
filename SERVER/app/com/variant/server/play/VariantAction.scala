@@ -15,7 +15,6 @@ import com.variant.server.boot.VariantServer
 import javax.inject.Inject
 import play.api.Logger
 import play.api.mvc._
-import com.variant.server.impl.ConfigKeysSecret
 
 /**
  * Superclass for all Variant actions.

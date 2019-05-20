@@ -7,7 +7,6 @@ import com.variant.server.boot.ServerErrorRemote
 import play.api.mvc.ControllerComponents
 import com.variant.server.boot.VariantServer
 import play.api.libs.json._
-import com.variant.server.api.ConfigKeys
 import scala.io.Source
 
 class ConnectionController @Inject() (

@@ -3,7 +3,7 @@ package com.variant.server.impl
 import java.util.LinkedList
 import java.util.concurrent.ConcurrentLinkedQueue
 import org.apache.commons.lang3.time.DurationFormatUtils
-import com.variant.server.api.ConfigKeys._
+import com.variant.server.impl.ConfigKeys._
 import com.variant.server.api.FlushableTraceEvent
 import com.variant.server.boot.VariantServer
 import com.variant.server.schema.ServerFlusherService

@@ -3,7 +3,6 @@ package com.variant.server.test
 import play.api.Logger
 import play.api.test.Helpers._
 import com.variant.core.error.ServerError._
-import com.variant.server.api.ConfigKeys._
 import com.variant.server.schema.SchemaGen.State._
 import com.variant.server.test.spec.EmbeddedServerSpec
 import com.variant.server.test.spec.TempSchemataDir
