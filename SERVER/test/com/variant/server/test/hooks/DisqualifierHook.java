@@ -24,7 +24,7 @@ public class DisqualifierHook implements LifecycleHook<VariationQualificationLif
 		VariationQualificationLifecycleEvent.PostResult result = null;
 		String attrValue = event.getSession().getAttributes().get("disqual");
 		if (attrValue != null && Boolean.parseBoolean(attrValue)) {
-			result = event.newPostResult();
+			result = event.mkPostResult();
 			result.setQualified(false);
 			LOG.info(String.format("Disqulified session ID [%s] form variation [%s]", event.getSession().getId(), event.getVariation().getName()));
 		}

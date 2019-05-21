@@ -3,7 +3,7 @@ package com.variant.server.api.lifecycle;
 import com.variant.core.schema.Variation;
 
 /**
- * Super-type of all life-cycle event types whose runtime context includes a particular experience variation.
+ * Super-type of all lifecycle event types, whose runtime context includes a particular variation.
  * 
  * @since 0.7
  *
@@ -11,7 +11,7 @@ import com.variant.core.schema.Variation;
 public interface VariationAwareLifecycleEvent extends LifecycleEvent{
 
 	/**
-	 * The event's triggering test.
+	 * The schema variation associated with this event.
 	 * 
 	 * @return An object of type {@link Variation}.
 	 * 

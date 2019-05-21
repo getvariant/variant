@@ -15,12 +15,12 @@ public class VariationQualificationLifecycleEventPostResultImpl implements Varia
 	public void setQualified(boolean qualified) {
 		this.qualified = qualified;
 	}
-
+/*
 	@Override
 	public void setRemoveFromTargetingTracker(boolean removeFromTT) {
 		this.removeFromTT = removeFromTT;
 	}
-
+*/
 	public boolean isQualified() { 
 		return qualified; 
 	}

@@ -62,7 +62,7 @@ class VariationTargetingDefaultHook implements LifecycleHook<VariationTargetingL
 			if (e.isPhantom(state)) continue;
 			weightSum += e.getWeight().get().doubleValue();
 			if (randVal < weightSum) {
-				VariationTargetingLifecycleEvent.PostResult result = event.newPostResult();
+				VariationTargetingLifecycleEvent.PostResult result = event.mkPostResult();
 				result.setTargetedExperience(e);
 				return Optional.of(result);
 			}

@@ -1,5 +1,5 @@
 /**
- * Life-cycle events and hooks accessible via the Server Extension API. 
+ * Lifecycle events and hooks available via the Variant Server Extension SPI. 
  * 
  * @since 0.8
  */

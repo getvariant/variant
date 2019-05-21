@@ -43,7 +43,7 @@ public class VariationTargetingLifecycleEventImpl implements VariationTargetingL
 	}
 
 	@Override
-	public VariationTargetingLifecycleEvent.PostResult newPostResult() {
+	public VariationTargetingLifecycleEvent.PostResult mkPostResult() {
 		return new VariationTargetingLifecycleEventPostResultImpl(this);
 	}
 	

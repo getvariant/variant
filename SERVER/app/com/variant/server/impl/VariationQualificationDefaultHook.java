@@ -28,7 +28,7 @@ class VariationQualificationDefaultHook implements LifecycleHook<VariationQualif
 	@Override
 	public Optional<VariationQualificationLifecycleEvent.PostResult> post(VariationQualificationLifecycleEvent event) throws Exception {
 		
-		VariationQualificationLifecycleEvent.PostResult result = event.newPostResult();				
+		VariationQualificationLifecycleEvent.PostResult result = event.mkPostResult();				
 		result.setQualified(true);
 		return Optional.of(result);
 	}

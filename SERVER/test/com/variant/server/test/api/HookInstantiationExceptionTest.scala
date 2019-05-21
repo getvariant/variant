@@ -63,7 +63,7 @@ class HookInstantiationExceptionTest extends EmbeddedServerSpec {
      		 response.getMessages(ERROR).size() mustBe 1
      		 var msg = response.getMessages.get(0)
      	   msg.getSeverity mustBe ERROR
-     	   msg.getText mustBe HOOK_CLASS_NO_INTERFACE.asMessage("com.variant.server.test.hooks.HookNoInterface", "com.variant.core.lifecycle.LifecycleHook")
+     	   msg.getText mustBe HOOK_CLASS_NO_INTERFACE.asMessage("com.variant.server.test.hooks.HookNoInterface", "com.variant.server.api.lifecycle.LifecycleHook")
       }
    }
 	

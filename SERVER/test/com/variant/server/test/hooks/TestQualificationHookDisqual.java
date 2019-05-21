@@ -2,22 +2,17 @@ package com.variant.server.test.hooks;
 
 import java.util.Optional;
 
-import com.typesafe.config.Config;
 import com.variant.server.api.lifecycle.LifecycleEvent;
 import com.variant.server.api.lifecycle.LifecycleHook;
 import com.variant.server.api.lifecycle.VariationQualificationLifecycleEvent;
 
 public class TestQualificationHookDisqual implements LifecycleHook<VariationQualificationLifecycleEvent>{
 
-	private boolean removeFromTargetingTracker = false;
-
 	/**
 	 * Non nullary constructor
 	 * @param config
 	 */
-	public TestQualificationHookDisqual(Config config) {
-		removeFromTargetingTracker = config.getBoolean("removeFromTargetingTracker");
-	}
+	public TestQualificationHookDisqual() {}
 
 	@Override
     public Class<VariationQualificationLifecycleEvent> getLifecycleEventClass() {
@@ -26,9 +21,8 @@ public class TestQualificationHookDisqual implements LifecycleHook<VariationQual
    
 	@Override
 	public Optional<LifecycleEvent.PostResult> post(VariationQualificationLifecycleEvent event) {
-		VariationQualificationLifecycleEvent.PostResult result = event.newPostResult();
+		VariationQualificationLifecycleEvent.PostResult result = event.mkPostResult();
 		result.setQualified(false);
-		result.setRemoveFromTargetingTracker(removeFromTargetingTracker);
 		return Optional.of(result);
 	}
 	

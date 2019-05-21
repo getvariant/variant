@@ -2,18 +2,15 @@ package com.variant.server.api.lifecycle;
 
 
 /**
- * <p>Life cycle event, triggered when Variant session'a qualification for a particular test must be established. 
+ * <p>Lifecycle event, raised when a user session's qualification for a particular variation must be established. 
  * If no user hooks for this event are defined in the experiment schema, Variant server uses
- * the default hook, which blindly qualifies all user sessions for all live tests.
+ * the default hook, which qualifies all user sessions for all variations.
  * <p>
- * If a user hook, registered to this event, wishes to (dis)qualify the associated test, its
+ * If a user hook, registered subscribed for event, wishes to (dis)qualify the associated test, its
  * <code>post()</code> method must return an object of type {@link PostResult} with the qualification outcome
  * set via the {@link PostResult#setQualified(boolean)} method. An empty post result 
- * object is obtained by calling the {@link PostResultFactory#mkPostResult(TestQualificationLifecycleEvent)} 
- * factory method.
+ * object is obtained by calling {@link #mkPostResult()} factory method of this class.
  * 
- * @see LifecycleHook
- * @see PostResult
  * @since 0.7
  *
  */
@@ -48,8 +45,9 @@ public interface VariationQualificationLifecycleEvent extends VariationAwareLife
        * 
        * @param remove 
        * @since 0.7
-       */
+       *
       public void setRemoveFromTargetingTracker(boolean remove);
+      */
    }
 
 	/**
@@ -59,6 +57,6 @@ public interface VariationQualificationLifecycleEvent extends VariationAwareLife
 	 * @since 0.10
 	 */
 	@Override
-	public PostResult newPostResult();
+	public PostResult mkPostResult();
 
 }

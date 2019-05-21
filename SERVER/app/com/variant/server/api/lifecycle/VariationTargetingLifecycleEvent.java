@@ -50,6 +50,6 @@ public interface VariationTargetingLifecycleEvent extends VariationAwareLifecycl
 	 * @since 0.10
 	 */
 	@Override
-	public PostResult newPostResult();
+	public PostResult mkPostResult();
 
 }

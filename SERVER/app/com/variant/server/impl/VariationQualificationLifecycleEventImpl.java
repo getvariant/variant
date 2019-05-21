@@ -31,7 +31,7 @@ public class VariationQualificationLifecycleEventImpl  implements VariationQuali
 	}
 
 	@Override
-	public VariationQualificationLifecycleEvent.PostResult newPostResult() {
+	public VariationQualificationLifecycleEvent.PostResult mkPostResult() {
 		return new VariationQualificationLifecycleEventPostResultImpl(this);
 	}
 

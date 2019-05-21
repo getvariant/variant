@@ -56,7 +56,7 @@ public class TestTargetingHook implements LifecycleHook<VariationTargetingLifecy
 	public Optional<LifecycleEvent.PostResult> post(VariationTargetingLifecycleEvent event) {
 
 		Session ssn = event.getSession();
-		VariationTargetingLifecycleEvent.PostResult result = event.newPostResult();
+		VariationTargetingLifecycleEvent.PostResult result = event.mkPostResult();
 		
 		if (experienceToReturn != null) {
 			String[] tokens = experienceToReturn.split("\\.");
