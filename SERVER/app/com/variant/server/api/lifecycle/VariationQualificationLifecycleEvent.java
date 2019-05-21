@@ -17,9 +17,8 @@ package com.variant.server.api.lifecycle;
 public interface VariationQualificationLifecycleEvent extends VariationAwareLifecycleEvent {
       
    /**
-    * The return type of the {@link LifecycleHook#post(com.variant.core.LifecycleEvent) LifecycleHook.post(TestQualificationLifecycleEvent)} 
-    * method. An empty post result object is obtained by calling the 
-    * {@link PostResultFactory#mkPostResult(TestQualificationLifecycleEvent)} factory method.
+    * The return type of the <code>Lifecycle&lt;VariationQualificationLifecycleEvent&gt;Hook#post(VariationQualificationLifecycleEvent)</code>
+    * method. An empty object is obtained by calling the {@link #mkPostResult()} factory method.
     * 
     * @since 0.7
     */
@@ -28,31 +27,15 @@ public interface VariationQualificationLifecycleEvent extends VariationAwareLife
       /**
        * Set whether the session is qualified for the associated test.
         *
-       * @param qualified 
        * @since 0.7
        */
       public void setQualified(boolean qualified);
 
-      /**
-       * <p>The {@link LifecycleHook#post(com.variant.core.LifecycleEvent) LifecycleHook.post(TestQualificationLifecycleEvent)} method
-       * may call this to inform Variant server whether the entry for this test should
-       * be removed from this session's targeting tracker, in the case it is disqualified.
-       * If the associated session was disqualified for the associated test, and this method was passed <code>true</code>, 
-       * the entry for this test in the targeting tracker on the client will be discarded. Otherwise, existing entries for
-       * disqualified tests are left intact.
-       * 
-       * <p>Variant server will ignore the value set by this method if #{@link PostResult#setQualified(boolean)} was not called with <code>false</code>.
-       * 
-       * @param remove 
-       * @since 0.7
-       *
-      public void setRemoveFromTargetingTracker(boolean remove);
-      */
    }
 
 	/**
-	 * Override the return type with the narrower one, suitable for this concrete lifecycle event.
-	 * This avoid unnecessary casts in the client code.
+	 * Override the return type with the narrower one, suitable for this class.
+	 * This avoids unnecessary casts in the client code.
 	 * 
 	 * @since 0.10
 	 */
