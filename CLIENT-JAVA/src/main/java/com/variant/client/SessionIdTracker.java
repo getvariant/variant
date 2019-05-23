@@ -1,19 +1,22 @@
 package com.variant.client;
 
 /**
- * Interface to be implemented by an environment-bound session ID tracker. The implementation will 
- * use an external mechanism to store the current session ID between state requests. 
- * For instance, in a Web application environment, session ID should be tracked in an HTTP cookie, 
- * just like the HTTP session ID.
+ * Interface to be implemented by a session ID tracker. Variant does its own session management,
+ * but relies on the host application to track session IDs between state requests. The concrete
+ * implementation depend on the technology stack of the host application. For example, a web
+ * application will use an HTTP cookie based tracker, just like
+ * <a href="https://github.com/getvariant/variant-java-servlet-adapter/blob/master/src/main/java/com/variant/client/servlet/SessionIdTrackerHttpCookie.java" target="_blank">SessionIdTrackerHttpCookie</a>
+ * included in the
+ * <a href="https://github.com/getvariant/variant-java-servlet-adapter" target="_blank">Servlet Adapter for Variant Java Client</a>.
  * <p>
- * The implementation will have request scoped life-cycle, i.e. Variant will re-instantiate the 
- * implementing class at the start of each state request.By contract, an implementation must 
- * provide the constructor with the following signature <code>ImplClassName(Object...)</code>.
- * Variant will use this constructor to instantiate a concrete implementation within the scope 
- * of {@link Connection#getSession(Object...)} or {@link Connection#getOrCreateSession(Session, Object...)} 
+ * The implementation has a request-scoped lifecycle, i.e. Variant re-instantiates the 
+ * implementing class at the start of each state request. By contract, an implementation must 
+ * provide the constructor with the signature <code>ImplClassName(Object...)</code>.
+ * Variant uses this constructor to instantiate a concrete implementation within the scope 
+ * of {@link Connection#getSession(Object...)} or {@link Connection#getOrCreateSession(Object...)} 
  * methods by passing it these arguments without interpretation.
  * <p>
- * Configured by <code>session.id.tracker.class.name</code> configuration property.
+ * Configured with the {@link VariantClient.Builder#withSessionIdTrackerClass(Class)}.  There is no default implementation.
  *
  * @since 0.6
  */
@@ -21,28 +24,26 @@ package com.variant.client;
 public interface SessionIdTracker {
 
 	/**
-	 * <p>Retrieve the current value of the session ID from the tracker. 
-	 * This value may have been set by {@link #init(Connection, Object...)} or by {@link #set(String)}.
+	 * The current value of the session ID tracked by this object.
 	 * 
-	 * @return Session ID, if present in the tracker or null otherwise.
 	 * @since 0.6
 	 */
 	public String get();
 	
 	/**
-	 * <p>Set the value of session ID. Use to start tracking a new session.
+	 * Set the value of session ID tracked by this object.
 	 * 
-	 * @param sessionId Session ID to set.
 	 * @since 0.6
 	 */
 	public void set(String sessionId);
 
 	/**
-	 * <p>Called by Variant to save the current value of session ID to the underlying persistence mechanism. 
-	 * Variant client calls this method within the scope of the {@link StateRequest#commit(Object...)} method.
+	 * Save the value of session ID, tracked by this object, to the underlying persistence mechanism. 
+	 * Variant client calls this method within the scope of the {@link StateRequest#commit(Object...)}
+	 * or {@link StateRequest#fail(Object...)} methods.
 	 * 
 	 * @param userData An array of zero or more opaque objects which {@link StateRequest#commit(Object...)}
-	 *                 will pass here without interpretation.
+	 *                or {@link StateRequest#fail(Object...)} will pass here without interpretation.
 	 *                 
 	 * @since 0.6
 	 */

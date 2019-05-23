@@ -115,12 +115,12 @@ public class ConfigurationImpl implements Configuration, ConfigKeys {
 	}
 
 	@Override
-	public String getEventFlusherClassName() {
+	public String getDefaultEventFlusherClassName() {
 		return getString(EVENT_FLUSHER_CLASS_NAME);
 	}
 
 	@Override
-	public Optional<String> getEventFlusherClassInit() {
+	public Optional<String> getDefaultEventFlusherClassInit() {
 		return getConfigValue(EVENT_FLUSHER_CLASS_INIT).map( val -> val.render(ConfigRenderOptions.concise()));
 	}
 
@@ -144,8 +144,8 @@ public class ConfigurationImpl implements Configuration, ConfigKeys {
 			put(SCHEMATA_DIR, getString(SCHEMATA_DIR));
 			put(SESSION_TIMEOUT, getSessionTimeout());
 			put(SESSION_VACUUM_INTERVAL, getSessionVacuumInterval());
-			put(EVENT_FLUSHER_CLASS_NAME, getEventFlusherClassName());	
-			put(EVENT_FLUSHER_CLASS_INIT, getEventFlusherClassInit());
+			put(EVENT_FLUSHER_CLASS_NAME, getDefaultEventFlusherClassName());	
+			put(EVENT_FLUSHER_CLASS_INIT, getDefaultEventFlusherClassInit());
 			put(EVENT_WRITER_BUFFER_SIZE, getEventWriterBufferSize());
 			put(EVENT_WRITER_MAX_DELAY, getEventWriterMaxDelay());
 		}};

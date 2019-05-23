@@ -39,11 +39,11 @@ public class ServerFlusherService extends FlusherService {
 		return new Flusher() {
 					
 					@Override public String getClassName() {
-						return config.getEventFlusherClassName();
+						return config.getDefaultEventFlusherClassName();
 					}
 					
 					@Override public Optional<String> getInit() {
-						return config.getEventFlusherClassInit();
+						return config.getDefaultEventFlusherClassInit();
 					}			
 		};
 	}

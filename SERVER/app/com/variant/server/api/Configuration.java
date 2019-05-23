@@ -33,21 +33,21 @@ public interface Configuration {
 	int getSessionVacuumInterval();
 
 	/**
-	 * System-wide default trace event flusher. Provided by the <code>variant.event.flusher.class.name</code> configuration property.
+	 * Server-wide default trace event flusher. Provided by the <code>variant.event.flusher.class.name</code> configuration property.
 	 * Normally, each schema defines its own event flusher in the <code>/meta/flusher</code> element. If omitted, Variant
 	 * server will default to this implementation. Cannot be null.
 	 * 
 	 * @since 0.10
 	 */
-	String getEventFlusherClassName();
+	String getDefaultEventFlusherClassName();
 
 	/**
-	 * Initial state for the default trace event flusher. Provided by the <code>variant.event.flusher.class.init</code> configuration property.
+	 * Initial state for the server-wide default trace event flusher. Provided by the <code>variant.event.flusher.class.init</code> configuration property.
 	 * Arbitrary JSON object.
 	 * 
 	 * @since 0.10
 	 */
-	Optional<String> getEventFlusherClassInit();
+	Optional<String> getDefaultEventFlusherClassInit();
 
 	/**
 	 * Event writer buffer size. Provided by the <code>variant.event.writer.buffer.size</code> configuration property.

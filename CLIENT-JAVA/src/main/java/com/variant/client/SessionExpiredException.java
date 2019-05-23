@@ -4,7 +4,7 @@ import com.variant.core.error.ServerError;
 
 
 /**
- * Thrown when the underlying Variant session has expired.
+ * Thrown when the underlying Variant session has been expired on Variant server.
  * 
  * @since 0.7
  */

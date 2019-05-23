@@ -11,23 +11,13 @@ import com.variant.core.schema.Variation;
 import com.variant.core.schema.Variation.Experience;
 
 /**
- * Represents a Variant user session. Provides a way to 
- * identify a user across multiple state requests and contains session-scoped application 
- * state that must be preserved between state requests. 
- * <p>
- * Variant server provides distributed
- * session management which does not rely on the host application's own notion of the user
- * session. This way host sessions and Variant sessions remain decoupled, leaving the host
- * application free to recreate its session without affecting experience variations
- * managed by Variant. For example, a Web application natively relies on the HTTP session, 
- * provided to it by a Web container, like Apache Tomcat. 
- * If a Variant experience variation starts on a public page and continues past the login page, 
- * Variant sessions will not be disrupted should the application re-create its native session
- * at login.
- *    
- * <p> Variant sessions are expired by Variant server after a configurable session timeout 
- *     period of inactivity. Once a session has expired, most methods of this class will throw 
- *     a {@link SessionExpiredException}.
+ * Variant user session. Provides a way to maintain user state across multiple state requests. 
+ * Variant sessions are managed by Variant Server and are completely distinct from those 
+ * that may be managed by the host application. However, Variant server relies on the host
+ * application to provide session ID tracking via an implementation of the {@link SessionIdTracker}
+ * interface. Variant sessions are discarded by Variant server 
+ * after a configurable session timeout period of inactivity. Once a session has expired, 
+ * most methods of this class will throw a {@link SessionExpiredException}.
  *
  * @author Igor Urisman
  * @since 0.5
@@ -36,10 +26,8 @@ import com.variant.core.schema.Variation.Experience;
 public interface Session {
 
 	/**
-     * <p>This session's unique identifier.
-     *  
-	 * @return This session's unique identifier.  
-	 *
+     * <p>This session's unique identifier. Generated as a random 128-bit number converted to the hexadecimal notation.
+   	 *
 	 * @since 0.7
 	 */
 	String getId();
@@ -47,38 +35,35 @@ public interface Session {
 	/**
      * <p>This session's creation time stamp. 
      *  
-	 * @return This session's creation date.
-	 *
 	 * @since 0.7
 	 */
 	public Instant getTimestamp();
 
 	/**
-     * <p>The connection object, which originally created this session via {@link Connection#getSession(Object...)}.
+     * <p>The connection object, which originally created this session.
      *  
-	 * @return An object of type {@link Connection}.
+	 * @return An object of type {@link Connection}. Cannot be null.
 	 *
 	 * @since 0.7
 	 */	
 	public Connection getConnection();
 
 	/**
-	 * Get variation schema, associated with this session.
+	 * The variation schema, associated with this session.  This is the schema that was live at the time when this session was created.
+	 * May not be the current live generation of this schema.
 	 * 
-	 * @return An object of type {@link Schema}
-	 * 
-	 * @throws UnknownSchemaException
+	 * @return An object of type {@link Schema}. Cannot be null.
 	 * 
 	 * @since 0.9
 	 */
 	Schema getSchema();
 
 	/**
-     * <p>Target this session for a state. 
+     * <p>Target this session for a given state. 
      *  
 	 * @return An object of type {@link StateRequest}, which
 	 *         may be further examined for more information about the outcome of this operation.
-	 *         Nover <code>null</code>
+	 *         Cannot be <code>null</code>
 	 * 
 	 * @throws SessionExpiredException
 	 * @throws UnknownSchemaException
@@ -90,24 +75,17 @@ public interface Session {
 	/**
      * <p>Session timeout interval, as set by the server. The server will dispose of this session after this many milliseconds of inactivity.
      *  
-	 * @return Timeout interval in milliseconds.
-	 *
-	 * @see #isExpired()
 	 * @since 0.7
 	 */	
 	public long getTimeoutMillis();
 
 	/**
 	 * <p> The collection of states, traversed by this session so far, and their respective visit counts. 
-	 *     For each state S, the visit count is incremented by one whenever all of the following conditions are met: 
-     * <ul> 
-     * <li>The session is targeted for the state S</li>
-     * <li>There exists a variation V, which a) is instrumented on state S, b) is online, and c) this session qualified for.</li>
-     * </ul>
-
+	 *     For each state S, the visit count is incremented by one whenever the session is targeted for the state S, 
+	 *     and there exists a variation V, which a) is instrumented on state S, b) is online, and c) this session qualified for.
 	 * 
-	 * @return A map, whose entries are keyed by {@link State} and values are Integer visit counts of
-	 *         that state.
+	 * @return A map, whose entries are keyed by {@link State} and values are the Integer visit counts of
+	 *         that state. Cannot be null, but may be empty.
 	 *         
 	 * @throws SessionExpiredException
 	 * @throws UnknownSchemaException
@@ -121,7 +99,7 @@ public interface Session {
 	 * a session when the session is targeted for a state instrumented by V, V is online, 
 	 * and the session is qualified for V.
 	 * 
-	 * @return A set of object of type {@link Variation}.
+	 * @return A set of object of type {@link Variation}. Cannot be null, but may be empty.
 	 * 
 	 * @throws SessionExpiredException
 	 * @throws UnknownSchemaException
@@ -135,7 +113,7 @@ public interface Session {
 	 * for a variation, it remains disqualified for it for the life of the session, even if the condition 
 	 * that disqualified it may no longer hold.
 	 * 
-	 * @return A set of objects of type {@link Variation}. 
+	 * @return A set of objects of type {@link Variation}. Cannot be null, but may be empty.
 	 * 
 	 * @throws SessionExpiredException
 	 * @throws UnknownSchemaException
@@ -145,12 +123,11 @@ public interface Session {
 	public Set<Variation> getDisqualifiedVariations();
 		
 	/**
-	 * <p> The set live experiences to which this session has been targeted and which are still in effect.
+	 * <p> The set of live experiences to which this session has been targeted.
 	 * This list is different from he similarly named {@link StateRequest#getLiveExperiences()} in that
-	 * it is cumulative of all the state requests performed by this session and is not pertinent to
-	 * any particular state. 
+	 * it is cumulative of all the state requests performed by this session. 
 	 * 
-	 * @return A set of object of type {@link Experience}.
+	 * @return A set of object of type {@link Experience}. Cannot be null, but may be empty.
 	 * 
 	 * @throws SessionExpiredException
 	 * @throws UnknownSchemaException
@@ -160,10 +137,10 @@ public interface Session {
 	public Set<Experience> getLiveExperiences(); 
 
 	/**
-	 * <p> Get the live experience in a given variation. Finds, in the {@link Set}, returned by {@link #getLiveExperiences()},
-	 * one from the given variation. 
+	 * <p> The live experience in a given variation. 
 	 * 
-	 * @return An {@link Optional} containing the requested experience, if any.
+	 * @return An {@link Optional} containing the requested experience if the {@link Set}, 
+	 * returned by {@link #getLiveExperiences()}, contains one for the given variation, or empty otherwise.
 	 * 
 	 * @throws SessionExpiredException
 	 * @throws UnknownSchemaException
@@ -173,10 +150,11 @@ public interface Session {
 	public Optional<Experience> getLiveExperience(Variation variation); 
 
 	/**
-	 * <p> Get the live experience in a given variation given by its name. 
-	 * Finds, in the {@link Set}, returned by {@link #getLiveExperiences()}, one from the given variation. 
+	 * <p> The live experience in a given variation, by variation name.  
 	 * 
-	 * @return An {@link Optional} containing the requested experience, if any.
+	 * @return An {@link Optional} containing the requested experience if the {@link Set}, 
+	 * returned by {@link #getLiveExperiences()}, contains one for the given variation, or empty otherwise.
+	 * one from the given variation.
 	 * 
 	 * @throws SessionExpiredException
 	 * @throws UnknownSchemaException
@@ -188,7 +166,7 @@ public interface Session {
 	/**
 	 * <p>The most recent state request, which may be still in progress or already committed.
 	 * 
-	 * @return An {@link Optional} of {@link StateRequest}, containing the most recent state request,
+	 * @return An {@link Optional}, containing the most recent state request,
 	 *         or empty if this session has not yet been targeted for a state.
 	 *  
 	 * @throws SessionExpiredException
@@ -201,7 +179,7 @@ public interface Session {
 	/**
 	 * Trigger a custom trace event.
 	 * 
-	 * @param event An implementation of {@link TraceEvent}, which represents the custom trace event to be triggered.
+	 * @param event An implementation of {@link TraceEvent}, to be triggered.
 	 * 
 	 * @throws SessionExpiredException
 	 * @throws UnknownSchemaException
@@ -211,7 +189,7 @@ public interface Session {
 	public void triggerTraceEvent(TraceEvent event);
 		
 	/**
-	 * Get object representing this session's attributes. 
+	 * This session's attributes. 
 	 * 
 	 * @return An object of type {@code SessionAttributeMap}.  
 	 * 

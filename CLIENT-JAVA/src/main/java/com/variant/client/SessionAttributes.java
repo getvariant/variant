@@ -6,12 +6,11 @@ import java.util.Set;
 
 /**
  * A map-like collection of session attributes, returned by {@link Session#getAttributes()}.
- * Attribute names and values are arbitrary non-null strings.
- *  
+ * Attribute names and values are arbitrary non-null strings. 
  * The state of this object reflects the shared state at the time of creation. All non-mutating methods are
- * local and may not reflect the shared state at the time of their invocation. If you need
- * to refresh from the shared state, get a new copy of this object with {@link Session#getAttributes()}.
- * 
+ * local and may not reflect the shared state. If there is a possibility that the shared state may
+ * have been updated since this object was created, you need to refresh from the shared state by
+ * getting a new copy of this object with {@link Session#getAttributes()}.
  * Conversely, all mutating methods update the shared state on the server. By the time
  * mutating methods return, this object is refreshed with the current shared state.
  *  
@@ -28,8 +27,7 @@ public interface SessionAttributes {
 	int size();
 
 	/**
-	 * Retrieve the string value, currently associated with the given key. 
-	 * Does not refresh from the server.
+	 * The string value, currently associated with the given key. Does not refresh from the server.
 	 * 
 	 * @since 0.10
 	 * @param name The attribute name.
@@ -80,7 +78,7 @@ public interface SessionAttributes {
 	void removeAll();
 
 	/**
-	 * Get the names of all existing session attributes.
+	 * The names of all existing session attributes.
 	 * Does not refresh from the server.
 	 * 
 	 * @since 0.10
@@ -89,7 +87,7 @@ public interface SessionAttributes {
 	Set<String> names();
 
 	/**
- 	 * Get the values of all existing session attributes.
+ 	 * The values of all existing session attributes.
 	 * Does not refresh from the server.
 	 * 
 	 * @since 0.10
@@ -98,7 +96,7 @@ public interface SessionAttributes {
 	Collection<String> values();
 
 	/**
-	 * Get all existing session attributes as a set of {@code Map.Entry<String,String>}s.
+	 * All existing session attributes as a set of {@code Map.Entry<String,String>}s.
 	 * Does not refresh from the server.
 	 * 
 	 * @since 0.10

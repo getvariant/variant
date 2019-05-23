@@ -5,9 +5,12 @@ import java.util.Optional;
 
 
 /**
- * Represents a connection to a particular schema on a Variant server. 
+ * Connection to a particular schema on a Variant server. 
  * The first operation a new Variant client instance must
- * do is connect to a particular schema on a Variant server by calling {@link VariantClient#getConnection(String)}
+ * do is connect to a particular schema on a Variant server by calling {@link VariantClient#connectTo(String)}.
+ * Variant connections are stateless, i.e. no information about this connection is retained on the server.
+ * New sessions are created against the live generation of the variation schema named in the connection. If no
+ * such schema exists on the server, the {@link UnknownSchemaException} is thrown.
  * 
  * @since 0.7
  */
@@ -16,8 +19,8 @@ public interface Connection {
 	/**
      * <p>The Variant client instance, which created this connection. 
      *  
-	 * @return An instance of the {@link VariantClient} object, which originally created this object
-	 *         via one of the {@code getSession()} calls.
+	 * @return An instance of the {@link VariantClient} object, which originally created this connection
+	 *         via the {@link VariantClient#connectTo(String)} call.
 	 *
 	 * @since 0.7
 	 */
@@ -28,11 +31,10 @@ public interface Connection {
 	 * If the session was not found on the server, a new session is created with a new session ID and
 	 * the session tracker is updated accordingly. 
      *
-	 * @param userData An array of zero or more opaque objects which will be passed, without interpretation,
-	 *                 to the implementations of {@link SessionIdTracker#init(Object...)}
-	 *                 and {@link TargetingTracker#init(Session, Object...)}.
+	 * @param userData An array of zero or more opaque objects which is passed, without interpretation,
+	 *                 to the constructor of the session ID tracker.
 
-	 * @return An object of type {@link Session}. Never returns <code>null</code>.
+	 * @return An object of type {@link Session}. Cannot be <code>null</code>.
 	 *
 	 * @throws UnknownSchemaException
      *
@@ -43,9 +45,8 @@ public interface Connection {
 	/**
 	 * Get, if exists, the Variant session with the externally tracked ID. 
 	 *  
-	 * @param userData An array of zero or more opaque objects which will be passed, without interpretation,
-	 *                 to the implementations of {@link SessionIdTracker#init(Object...)}
-	 *                 and {@link TargetingTracker#init(Session, Object...)}.
+	 * @param userData An array of zero or more opaque objects which is passed, without interpretation,
+	 *                 to the constructor of the session ID tracker.
      *
      * @return An {@link Optional}, containing the {@link Session} object if the session exists on Variant server,
      *         or empty otherwise.
@@ -57,24 +58,9 @@ public interface Connection {
 	Optional<? extends Session> getSession(Object... userData);
 
 	/**
-	 * Get, if exists, the Variant session with the externally tracked ID.
-	 * 
-	 * Under normal circumstances, when this connection is {@link ConnectionStatus#OPEN}, the following behavior
-	 * is expected. If the session with the ID provided by the effective implementation 
-	 * of {@link SessionIdTracker} has not yet expired on the server, it is returned. 
-	 * Otherwise, this method returns <code>null</code>.
-	 * 
-	 * This method is idempotent, i.e. a subsequent calls with the same parameters
-	 * will return the same object, unless the session has expired between the calls,
-	 * in which case a brand new object will be returned.
-	 * 
-	 * However, if this connection is {@link ConnectionStatus#DRAINING}, and the session with the ID 
-	 * provided by the effective implementation of {@link SessionIdTracker} has not yet expired on the server, 
-	 * it is returned. Otherwise, if the session with this ID has expired, {@link ConnectionDrainingException}
-	 * is thrown.
-	 * 
-	 * Finally, if this connection is {@link ConnectionStatus#CLOSED_BY_CLIENT} or {@link ConnectionStatus#CLOSED_BY_SERVER}, 
-	 * {@link UnknownSchemaException} is thrown.
+	 * Get, if exists, the Variant session by its ID. Intended for downstream components of the host application,
+	 * which do not implement an external session ID tracker, but rely on the upstream to create Variant session
+	 * and pass down its ID.
 	 * 
 	 * @param sessionId The ID of the session you are looking to retrieve from the server.
      *
@@ -88,7 +74,8 @@ public interface Connection {
 	Optional<? extends Session> getSessionById(String sessionId);
 	
 	/**
-	 * The name of the schema which is the target of this connection.
+	 * The name of the schema which is the target of this connection. Note that only schema name is retained at the connection level.
+	 * Individual sessions created with this connection object, may be connected to different generations of this schema.
 	 *
 	 * @since 0.9
 	 */

@@ -1,7 +1,9 @@
 package com.variant.client;
 
 
-import static com.variant.client.impl.ConfigKeys.*;
+import static com.variant.client.impl.ConfigKeys.SESSION_ID_TRACKER_CLASS;
+import static com.variant.client.impl.ConfigKeys.TARGETING_STABILITY_DAYS;
+import static com.variant.client.impl.ConfigKeys.TARGETING_TRACKER_CLASS;
 
 import java.util.HashMap;
 
@@ -10,11 +12,19 @@ import com.variant.client.impl.VariantClientImpl;
 import com.variant.core.util.immutable.ImmutableMap;
 
 /**
- * Variant Java Client object.
- * <p>
- * Provides connectivity to Variant Experience Server from any JVM process. 
+ * Variant Java client.
+ * 
+ * <p>Provides connectivity to Variant AIM Server from any JVM. 
  * Makes no assumptions about the host application other than 
- * it is running on a JVM. 
+ * it is running on a JVM. Instantiated using the Builder pattern as follows:
+ * 
+ * <pre>
+ * VariantClient client = 
+ *         new VariantClient.Builder()
+ *         .withSessionIdTrackerClass(MySessionIdTracker.class)
+ *         .build();
+ * </pre>
+ * 
  * 
  * @since 0.5
  */
@@ -22,12 +32,15 @@ public interface VariantClient {
 		
 	/**
 	 * Connect to a variation schema on a Variant server by its URI.
-	 * Variant schema URI has the following format:
-	 * [variant:]//netloc[:port]/schema
+	 * Variant schema URI has the following format: <code>[variant:]//netloc[:port]/schema</code>
+	 * If omitted, port 5377 is assumed. For example, to connect to the petclinic demo schema,
+	 * <pre>
+	 *   Connection conn = client.connectTo("myserver.com:5377/petclinic")
+	 * </pre>
 	 * 
-	 * @param uri The Variant URI to the schema.
+	 * @param uri The URI to the variation schema.
 	 *        
-	 * @return An instance of the {@link Connection} type.
+	 * @return An object of type {@link Connection}. Cannot be null.
 	 * 
 	 * @throws UnknownSchemaException if given schema does not exist on the server.
 	 * @since 0.7

@@ -1,5 +1,5 @@
 /**
- * This package contains top level classes for Variant Java Client API.
+ * Top level classes in the Variant Java Client API.
  * <p>
  * Provides connectivity to Variant Experience Server from any JVM process.
  * 
