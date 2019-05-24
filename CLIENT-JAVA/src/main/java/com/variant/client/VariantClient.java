@@ -49,8 +49,6 @@ public interface VariantClient {
 	
 	/**
 	 * Variant client builder helper class. Implements the builder design pattern.
-	 * Subclasses of the containing {@link VariantClient} class can simply extend
-	 * the builder as is, though most likely override the {@link #build()} method.
 	 * 
 	 * @since 0.10
 	 */
@@ -62,7 +60,8 @@ public interface VariantClient {
 		}};
 
 		/**
-		 * Instantiate a Variant clicent builder. 
+		 * Public constructor. 
+		 * @since 0.10
 		 */
 		public Builder() {}
 		
@@ -109,11 +108,11 @@ public interface VariantClient {
 		
 
 		/**
-		 * Instantiate a new instance of {@link VariantClient} 
+		 * Instantiate a new instance of {@link VariantClient}.
 		 * Host application should hold on to and reuse the object returned by this method whenever possible.
-		 * In most cases, one {@link VariantClient} instance per application should be sufficient.
+		 * In most cases, one {@link VariantClient} instance per application is sufficient.
 		 * 
-		 * @return Instance of the {@link VariantClient} type.
+		 * @return Instance of the {@link VariantClient} type. Cannot be null.
 		 * @since 0.10
 		 */
 		public VariantClient build() {
