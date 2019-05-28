@@ -37,8 +37,8 @@ class SessionTest extends EmbeddedServerSpec {
 			config mustNot be (null)
 	      config.asInstanceOf[ConfigurationImpl].asMap().asScala.map(e => println(e._1 + ", " + e._2))
 	      config.asInstanceOf[ConfigurationImpl].asMap().size() mustBe 7
-	      config.getEventFlusherClassName mustBe "com.variant.extapi.std.flush.jdbc.TraceEventFlusherH2"
-	      config.getEventFlusherClassInit mustBe Optional.of("""{"password":"variant","url":"jdbc:h2:mem:variant;MVCC=true;DB_CLOSE_DELAY=-1;","user":"variant"}""")
+	      config.getDefaultEventFlusherClassName mustBe "com.variant.extapi.std.flush.jdbc.TraceEventFlusherH2"
+	      config.getDefaultEventFlusherClassInit mustBe Optional.of("""{"password":"variant","url":"jdbc:h2:mem:variant;MVCC=true;DB_CLOSE_DELAY=-1;","user":"variant"}""")
 	      config.getSessionTimeout mustBe 1
 	      config.getEventWriterBufferSize mustBe 200
 	      config.getEventWriterMaxDelay mustBe 2
