@@ -36,15 +36,15 @@ public class ParserSerialOkayTest extends BaseTestCore {
 					    "     'comment':'!@#$%^&*',                                                \n" +
 					    "     'hooks':[                                                            \n" +
 					    "        {'class':'c.v.s.one'},                                            \n" +
-					    "        {'class':'c.v.s.two'},                                            \n" +
-					    "        {'class':'c.v.s.one'},                                            \n" +
-					    "        {'class':'c.v.s.three'},                                          \n" +
+					    "        {'CLASS':'c.v.s.two'},                                            \n" +
+					    "        {'Class':'c.v.s.one'},                                            \n" +
+					    "        {'clasS':'c.v.s.three'},                                          \n" +
 					    "        {'class':'c.v.s.four'},                                           \n" +
 					    "        {'class':'c.v.s.four'}                                            \n" +
 					    "      ],                                                                  \n" +
 					    "      'flusher': {                                                        \n" +
-					    "        'class':'flusher.class.Foo',                                      \n" +  
-					    "        'init':{'url':'jdbc:postgresql://localhost/variant\','user':'variant','password': 'variant'} \n" +
+					    "        'clAss':'flusher.class.Foo',                                      \n" +  
+					    "        'Init':{'url':'jdbc:postgresql://localhost/variant\','user':'variant','password': 'variant'} \n" +
 					    "       }                                                                  \n" +
  		    		    "  },                                                                      \n" +
 			    	    //==========================================================================//
