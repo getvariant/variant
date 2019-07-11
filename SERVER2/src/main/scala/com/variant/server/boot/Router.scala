@@ -1,4 +1,4 @@
-package com.variant.server.akka
+package com.variant.server.boot
 
 import akka.actor.{ ActorRef, ActorSystem }
 import akka.event.Logging
