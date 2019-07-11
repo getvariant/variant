@@ -1,5 +1,8 @@
 package com.variant.server.util;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.LayoutBase;
 
@@ -12,12 +15,14 @@ import ch.qos.logback.core.LayoutBase;
  */
 public class VariantLogbackLayout  extends LayoutBase<ILoggingEvent> {
 
+	private static final SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+	
   public String doLayout(ILoggingEvent event) {
     StringBuffer sbuf = new StringBuffer(128);
-    sbuf.append(event.getTimeStamp() - event.getTimeStamp());
+    sbuf.append(df.format(new Date(event.getTimeStamp())));
     sbuf.append(" ");
     sbuf.append(event.getLevel());
-    sbuf.append(" ");
+    sbuf.append(" - ");
     
     String[] tokens =  event.getLoggerName().split("\\.");
     for (int i = 0; i < tokens.length; i++) {

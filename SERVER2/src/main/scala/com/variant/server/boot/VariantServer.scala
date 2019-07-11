@@ -1,5 +1,6 @@
 package com.variant.server.boot
 
+import java.time.{ Duration => JavaDuration }
 import scala.concurrent.{ Await, ExecutionContext, Future }
 import scala.concurrent.duration.Duration
 import scala.util.{ Failure, Success }
@@ -10,6 +11,8 @@ import akka.actor.{ ActorRef, ActorSystem }
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.server.Route
 import akka.stream.ActorMaterializer
+import com.variant.core.util.TimeUtils
+import java.lang.management.ManagementFactory
 
 /**
  * The Main class.
@@ -17,14 +20,16 @@ import akka.stream.ActorMaterializer
  */
 object VariantServer extends App with LazyLogging {
 
-   val name = getClass.getPackage.getImplementationTitle
-   val version = getClass.getPackage.getImplementationVersion
+   val productName = "Variant AIM Server"
+   val productVersion = getClass.getPackage.getImplementationVersion
+
+   // Bootstrap external configuration.
+   val config = ConfigLoader.load("/variant.conf", "/variant-default.conf");
 
    // set up ActorSystem and other dependencies here
    implicit val system: ActorSystem = ActorSystem("helloAkkaHttpServer")
    implicit val materializer: ActorMaterializer = ActorMaterializer()
    implicit val executionContext: ExecutionContext = system.dispatcher
-   //#server-bootstrapping
 
    //val userRegistryActor: ActorRef = system.actorOf(UserRegistryActor.props, "userRegistryActor")
 
@@ -32,13 +37,18 @@ object VariantServer extends App with LazyLogging {
    val serverBinding: Future[Http.ServerBinding] = Http().bindAndHandle(Router.routs, "localhost", 8080)
 
    serverBinding.onComplete {
+      
       case Success(binding) =>
          sys.addShutdownHook { shutdownHook(binding) }
          logger.debug("foo")
-         println(s"Server online at http://${binding.localAddress.getHostString}:${binding.localAddress.getPort}/" + name + version)
+         logger.info(ServerMessageLocal.SERVER_BOOT_OK.asMessage(
+            productName,
+            binding.localAddress.getPort.asInstanceOf[Object],
+            TimeUtils.formatDuration(JavaDuration.ofMillis(ManagementFactory.getRuntimeMXBean().getUptime()))))
+
       case Failure(e) =>
-         Console.err.println(s"Server could not start!")
-         e.printStackTrace()
+   		logger.error(ServerMessageLocal.SERVER_BOOT_FAILED.asMessage(productName))
+   		logger.error(e.getMessage, e)
          system.terminate()
    }
 
