@@ -37,7 +37,7 @@ object VariantServer extends App with LazyLogging {
    val serverBinding: Future[Http.ServerBinding] = Http().bindAndHandle(Router.routs, "localhost", 8080)
 
    serverBinding.onComplete {
-      
+
       case Success(binding) =>
          sys.addShutdownHook { shutdownHook(binding) }
          logger.debug("foo")
@@ -47,8 +47,8 @@ object VariantServer extends App with LazyLogging {
             TimeUtils.formatDuration(JavaDuration.ofMillis(ManagementFactory.getRuntimeMXBean().getUptime()))))
 
       case Failure(e) =>
-   		logger.error(ServerMessageLocal.SERVER_BOOT_FAILED.asMessage(productName))
-   		logger.error(e.getMessage, e)
+         logger.error(ServerMessageLocal.SERVER_BOOT_FAILED.asMessage(productName))
+         logger.error(e.getMessage, e)
          system.terminate()
    }
 

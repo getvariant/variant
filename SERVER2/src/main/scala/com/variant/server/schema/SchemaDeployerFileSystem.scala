@@ -22,73 +22,69 @@ import com.variant.server.util.AsyncDirectoryWatcher
  */
 class SchemaDeployerFileSystem() extends AbstractSchemaDeployer with LazyLogging {
 
-  // Don't evaluate during instantiation because this singleton class is instantiated
-  // by Play during application startup and we don't want a user error to derail that.
-  lazy val dir = {
-           
-     val dirName = VariantServer.config.getSchemataDir
-     val result = new File(dirName)
-     if (!result.exists)
-        throw new ServerExceptionLocal(ServerMessageLocal.SCHEMATA_DIR_MISSING, dirName)
-     if (!result.isDirectory)
-        throw new ServerExceptionLocal(ServerMessageLocal.SCHEMATA_DIR_NOT_DIR, dirName)
-     result
-  }
-  
+   // Don't evaluate during instantiation because this singleton class is instantiated
+   // by Play during application startup and we don't want a user error to derail that.
+   lazy val dir = {
+
+      val dirName = VariantServer.config.getSchemataDir
+      val result = new File(dirName)
+      if (!result.exists)
+         throw new ServerExceptionLocal(ServerMessageLocal.SCHEMATA_DIR_MISSING, dirName)
+      if (!result.isDirectory)
+         throw new ServerExceptionLocal(ServerMessageLocal.SCHEMATA_DIR_NOT_DIR, dirName)
+      result
+   }
+
    /**
     * Read content of schemata dir and deploy.
     */
    override def bootstrap {
-    
+
       // Start the directory watch service.
       val schemataDirWatcher = new SchemataDirectoryWatcher();
       schemataDirWatcher.start()
-    
+
       logger.info("Mounted schemata directory [%s]".format(dir.getAbsolutePath))
-    
+
       // Parse the files in the schemata directory: the first reference of lazy dir.
       val schemaFiles = dir.listFiles()
 
-      if (schemaFiles.length == 0) 
+      if (schemaFiles.length == 0)
          logger.info(ServerMessageLocal.EMPTY_SCHEMATA.asMessage(dir.getAbsolutePath))
-    
+
       schemaFiles.foreach { deployFrom(_) }
    }
-  
+
    /**
     * Deploy a single schema from a FS file.
     */
    private def deployFrom(file: File) = {
-      
+
       // Ignore special files.
       if (file.getName.startsWith(".")) {
-          logger.debug(s"Ignoring special file ${file.getName}")  
-      } 
-      else {
+         logger.debug(s"Ignoring special file ${file.getName}")
+      } else {
          logger.info(ServerMessageLocal.SCHEMA_DEPLOYING.asMessage(file.getAbsolutePath))
-            
+
          // Parse
          val parserResp = parse(Source.fromFile(file).mkString)
-                  
+
          // If failed parsing, print errors and no schema.
          if (parserResp.hasMessages(Severity.ERROR)) {
-            
-            val schemaName = if (parserResp.getSchemaName == null) "?" else parserResp.getSchemaName 
+
+            val schemaName = if (parserResp.getSchemaName == null) "?" else parserResp.getSchemaName
             logger.warn(ServerMessageLocal.SCHEMA_FAILED.asMessage(schemaName, file.getAbsolutePath))
-         }
-         else {
+         } else {
             try {
                deploy(parserResp, file.getName)
             } catch {
-               case ue: ServerExceptionLocal => 
+               case ue: ServerExceptionLocal =>
                   logger.error(ue.getMessage)
-                  logger.warn(ServerMessageLocal.SCHEMA_FAILED.asMessage( parserResp.getSchema.getMeta.getName, file.getAbsolutePath))
+                  logger.warn(ServerMessageLocal.SCHEMA_FAILED.asMessage(parserResp.getSchema.getMeta.getName, file.getAbsolutePath))
             }
          }
       }
    }
-
-      
 
    /**
     * Directory watcher receives events form the file system and processes them asynchronously.
@@ -100,13 +96,13 @@ class SchemaDeployerFileSystem() extends AbstractSchemaDeployer with LazyLogging
          logger.debug(s"Detected new file [${inFile}]")
          deployFrom(inFile)
       }
-   
+
       override def onDelete(file: Path): Unit = {
          val inFile = dir.toPath.resolve(file).toFile()
          logger.debug(s"Detected deleted file [${inFile}]")
          schemata.undeploy(inFile.getName)
       }
-      
+
       override def onModify(file: Path): Unit = {
          val inFile = dir.toPath.resolve(file).toFile()
          logger.debug(s"Detected modified file [${inFile}]")
@@ -114,5 +110,4 @@ class SchemaDeployerFileSystem() extends AbstractSchemaDeployer with LazyLogging
       }
    }
 }
-
 

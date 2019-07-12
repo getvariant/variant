@@ -51,3 +51,6 @@ resourceDirectory := baseDirectory.value / "main" / "universal" / "conf"
 
 // ...and prepend it to the startup script's classpath.
 scriptClasspath := Seq("../conf/") ++ scriptClasspath.value
+
+// Disable scaladoc generation for packaging
+publishArtifact in (Compile, packageDoc) := false
