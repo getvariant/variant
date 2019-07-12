@@ -1,5 +1,5 @@
 package com.variant.server.util
-/*
+
 import java.nio.file.Path
 import java.nio.file.StandardWatchEventKinds.ENTRY_CREATE
 import java.nio.file.StandardWatchEventKinds.ENTRY_DELETE
@@ -8,16 +8,14 @@ import java.nio.file.WatchEvent
 
 import scala.collection.JavaConverters._
 
-import com.variant.server.boot.ServerExceptionInternal
+import com.typesafe.scalalogging.LazyLogging
 
-import play.api.Logger
+import com.variant.server.boot.ServerExceptionInternal
 
 /**
  * Watch a directory for create/modify/delete events.
  */
-abstract class AsyncDirectoryWatcher(val path: Path) extends Thread {
-
-   private val logger = Logger(this.getClass)
+abstract class AsyncDirectoryWatcher(val path: Path) extends Thread with LazyLogging {
 
    setDaemon(true) // don't get in the way of server shutdown.
 
@@ -79,4 +77,3 @@ abstract class AsyncDirectoryWatcher(val path: Path) extends Thread {
    }
 
 }
-*/ 

@@ -13,6 +13,7 @@ import akka.http.scaladsl.server.Route
 import akka.stream.ActorMaterializer
 import com.variant.core.util.TimeUtils
 import java.lang.management.ManagementFactory
+import com.variant.server.impl.ConfigurationImpl
 
 /**
  * The Main class.
@@ -20,11 +21,10 @@ import java.lang.management.ManagementFactory
  */
 object VariantServer extends App with LazyLogging {
 
-   val productName = "Variant AIM Server"
-   val productVersion = getClass.getPackage.getImplementationVersion
+   private val productName = "Variant AIM Server release " + getClass.getPackage.getImplementationVersion
 
    // Bootstrap external configuration.
-   val config = ConfigLoader.load("/variant.conf", "/variant-default.conf");
+   val config = new ConfigurationImpl(ConfigLoader.load("/variant.conf", "/variant-default.conf"));
 
    // set up ActorSystem and other dependencies here
    implicit val system: ActorSystem = ActorSystem("helloAkkaHttpServer")
