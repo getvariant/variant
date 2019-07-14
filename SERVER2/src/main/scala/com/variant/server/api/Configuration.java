@@ -67,9 +67,9 @@ public interface Configuration {
 	int getEventWriterMaxDelay();
 	
 	/**
-	 * Network port bound by Variant server. Provided by the <code>-Dhttp.port</code> system property.
+	 * Network port bound by Variant server. Provided by the <code>http.port</code> configuration property.
 	 * 
 	 * @since 0.10
 	 */
-	String getNetworkPort();
+	int getHttpPort();
 }

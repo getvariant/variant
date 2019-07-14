@@ -13,6 +13,7 @@ import com.variant.server.boot.ServerExceptionLocal
 import com.variant.server.boot.VariantServer
 import com.variant.server.impl.ConfigKeys.SCHEMATA_DIR;
 import com.variant.server.util.AsyncDirectoryWatcher
+import java.nio.file.Paths
 
 /**
  * Deploy schemata from a directory on the file system.
@@ -27,6 +28,7 @@ class SchemaDeployerFileSystem() extends AbstractSchemaDeployer with LazyLogging
    lazy val dir = {
 
       val dirName = VariantServer.config.getSchemataDir
+      println(Paths.get("").toAbsolutePath().toString())
       val result = new File(dirName)
       if (!result.exists)
          throw new ServerExceptionLocal(ServerMessageLocal.SCHEMATA_DIR_MISSING, dirName)

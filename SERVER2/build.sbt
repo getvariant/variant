@@ -19,7 +19,7 @@ val coreVersion     = "0.10.1"
 // Add local Maven repo for com.variant.core artifacts built with Maven.
 resolvers += Resolver.mavenLocal
 
-enablePlugins(JavaAppPackaging)
+enablePlugins(JavaServerAppPackaging)
 
 libraryDependencies ++= Seq(
   "com.typesafe.akka" %% "akka-http"            % akkaHttpVersion,
@@ -54,3 +54,5 @@ scriptClasspath := Seq("../conf/") ++ scriptClasspath.value
 
 // Disable scaladoc generation for packaging
 publishArtifact in (Compile, packageDoc) := false
+
+executableScriptName := "variant-ctl"

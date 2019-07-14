@@ -3,6 +3,7 @@ package com.variant.server.util;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.LayoutBase;
 
@@ -15,23 +16,32 @@ import ch.qos.logback.core.LayoutBase;
  */
 public class VariantLogbackLayout  extends LayoutBase<ILoggingEvent> {
 
-	private static final SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-	
-  public String doLayout(ILoggingEvent event) {
-    StringBuffer sbuf = new StringBuffer(128);
-    sbuf.append(df.format(new Date(event.getTimeStamp())));
-    sbuf.append(" ");
-    sbuf.append(event.getLevel());
-    sbuf.append(" - ");
+   private static final SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+	   
+   public String doLayout(ILoggingEvent event) {
+      StringBuffer sbuf = new StringBuffer(128);
+      sbuf.append(df.format(new Date(event.getTimeStamp())));
+      sbuf.append(" ");
+      sbuf.append(colorizeLevel(event.getLevel()));
+      sbuf.append(" - ");
     
-    String[] tokens =  event.getLoggerName().split("\\.");
-    for (int i = 0; i < tokens.length; i++) {
-    	if (i > 0) sbuf.append(".");
-    	sbuf.append(i < 3 ? tokens[i].charAt(0) : tokens[i]);
-    }
-    sbuf.append(" - ");
-    sbuf.append(event.getFormattedMessage());
-    sbuf.append(System.lineSeparator());
-    return sbuf.toString();
-  }
+      String[] tokens =  event.getLoggerName().split("\\.");
+      for (int i = 0; i < tokens.length; i++) {
+         if (i > 0) sbuf.append(".");
+         sbuf.append(i < 3 ? tokens[i].charAt(0) : tokens[i]);
+      }
+      sbuf.append(" - ");
+      sbuf.append(event.getFormattedMessage());
+      sbuf.append(System.lineSeparator());
+      return sbuf.toString();
+   }
+   
+   /**
+    * Do nothing for colorization here, but the colorizing subclass will override.
+    * @param level
+    * @return
+    */
+   protected String colorizeLevel(Level level) {
+      return level.toString();
+   }
 }

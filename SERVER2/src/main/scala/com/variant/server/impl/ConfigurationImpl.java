@@ -95,8 +95,8 @@ public class ConfigurationImpl implements Configuration, ConfigKeys {
 	/*--------------------------------------------------------------------------------*/
 
 	@Override
-	public String getNetworkPort() {
-		return Optional.ofNullable(System.getProperty("http.port")).orElse("5377");
+	public int getHttpPort() {
+		return getInt("http.port");
 	}
 
 	@Override
@@ -148,6 +148,7 @@ public class ConfigurationImpl implements Configuration, ConfigKeys {
 			put(EVENT_FLUSHER_CLASS_INIT, getDefaultEventFlusherClassInit());
 			put(EVENT_WRITER_BUFFER_SIZE, getEventWriterBufferSize());
 			put(EVENT_WRITER_MAX_DELAY, getEventWriterMaxDelay());
+         put(HTTP_PORT, getHttpPort());
 		}};
 		return new ImmutableMap<String, Object>(result);
 	}
