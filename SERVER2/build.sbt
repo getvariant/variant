@@ -52,7 +52,12 @@ resourceDirectory := baseDirectory.value / "main" / "universal" / "conf"
 // ...and prepend it to the startup script's classpath.
 scriptClasspath := Seq("../conf/") ++ scriptClasspath.value
 
+// ...and add ext/ to script's classpath.
+scriptClasspath := Seq("../ext/*") ++ scriptClasspath.value
+
 // Disable scaladoc generation for packaging
 publishArtifact in (Compile, packageDoc) := false
 
+// Rename the executable script, so that our own wrapper can be called 'variant'
 executableScriptName := "variant-ctl"
+

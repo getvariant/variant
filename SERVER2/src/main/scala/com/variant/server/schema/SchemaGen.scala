@@ -8,6 +8,7 @@ import com.variant.core.schema.parser.ParserResponse
 import com.variant.core.util.StringUtils
 import com.variant.server.boot.Runtime
 import com.variant.server.impl.TraceEventWriter
+import com.variant.server.util.JavaImplicits._
 
 /**
  *
@@ -75,9 +76,15 @@ class SchemaGen(val response: ParserResponse, val origin: String) extends CoreSc
    val flusherService = response.getParser.getFlusherService.asInstanceOf[ServerFlusherService]
    val eventWriter = new TraceEventWriter(flusherService)
 
+   /*
+   def toNiceString: String = {
+      "Schema: " + getMeta.getName +
+         (if (getMeta.getComment.isDefined) " (" + getMeta.getComment.get + ")" else "")
+   }
+   */
    /**
     *
     */
-   override def toString() = s"{ServerSchema=[${getMeta.getName}], ID=[${id}]}"
+   override def toString = s"{ServerSchema=[${getMeta.getName}], ID=[${id}]}"
 
 }

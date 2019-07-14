@@ -3,9 +3,10 @@ package com.variant.server.schema
 import scala.collection.JavaConverters._
 import scala.collection.concurrent.TrieMap
 
+import com.typesafe.scalalogging.LazyLogging
+
 import com.variant.server.boot.ServerMessageLocal
 import com.variant.server.boot.ServerExceptionInternal
-import com.typesafe.scalalogging.LazyLogging
 
 /**
  *
@@ -30,14 +31,7 @@ class Schemata extends LazyLogging {
          }
       }
 
-      // Write log message
-      val msg = ServerMessageLocal.SCHEMA_DEPLOYED.asMessage(gen.getMeta.getName, gen.origin) + '\n' +
-         "Name: " + gen.getMeta.getName + "\n" +
-         "   Comment: " + gen.getMeta.getComment + "\n" +
-         "   States: " + gen.getStates.size + "\n" +
-         "   Variations: " + gen.getVariations.size
-
-      logger.info(msg)
+      logger.info(ServerMessageLocal.SCHEMA_DEPLOYED.asMessage(gen.getMeta.getName, gen.origin))
 
    }
 

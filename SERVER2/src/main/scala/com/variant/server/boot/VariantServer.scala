@@ -85,6 +85,8 @@ object VariantServer extends App with LazyLogging {
    // Block until the server completes.
    Await.result(system.whenTerminated, Duration.Inf)
 
+   // Server quit
+
    /**
     * Tests can override the default schema deployer to be able to deploy from a memory string.
     */
