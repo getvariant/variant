@@ -1,22 +1,15 @@
-package com.variant.server.boot
+package com.variant.server.routs
 
-import akka.actor.{ ActorRef, ActorSystem }
-import akka.event.Logging
-
+import akka.actor.ActorSystem
 import scala.concurrent.duration._
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.model.StatusCodes
 import akka.http.scaladsl.server.Route
-import akka.http.scaladsl.server.directives.MethodDirectives.delete
-import akka.http.scaladsl.server.directives.MethodDirectives.get
-import akka.http.scaladsl.server.directives.MethodDirectives.post
 import akka.http.scaladsl.server.directives.RouteDirectives.complete
-import akka.http.scaladsl.server.directives.PathDirectives.path
-
-import scala.concurrent.Future
 import com.example.UserRegistryActor._
-import akka.pattern.ask
 import akka.util.Timeout
+import akka.http.scaladsl.marshalling.ToResponseMarshallable.apply
+import akka.http.scaladsl.server.Directive.addByNameNullaryApply
 
 /**
  * HTTP request router.
@@ -39,9 +32,7 @@ object Router {
     *  The routs served by our server.
     */
    def routs(implicit system: ActorSystem): Route =
-      pathEndOrSingleSlash {
-         complete((StatusCodes.OK, "ALIVE"))
-      }
+      pathEndOrSingleSlash { Root.root }
    /*
     pathPrefix("users") {
       concat(

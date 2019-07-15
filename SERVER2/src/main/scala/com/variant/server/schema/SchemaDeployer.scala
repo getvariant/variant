@@ -8,7 +8,7 @@ trait SchemaDeployer {
    /**
     * Once constructed, a schema deployer returns all available schemata at startup time.
     */
-   def schemata: Schemata
+   val schemata = new Schemata
 
    /**
     * All parser response objects in order they were produced by the deployer,
