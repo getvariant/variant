@@ -12,9 +12,9 @@ import com.variant.core.util.TimeUtils
 import com.typesafe.scalalogging.LazyLogging
 import akka.event.jul.Logger
 
-class TraceEventWriter(private val flushService: ServerFlusherService) extends LazyLogging {
+class TraceEventWriter(private val flushService: ServerFlusherService)(implicit server: VariantServer) extends LazyLogging {
 
-   private val config = VariantServer.config
+   private val config = server.config
 
    val flusher = flushService.getFlusher
 

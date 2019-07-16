@@ -10,11 +10,17 @@ import com.example.UserRegistryActor._
 import akka.util.Timeout
 import akka.http.scaladsl.marshalling.ToResponseMarshallable.apply
 import akka.http.scaladsl.server.Directive.addByNameNullaryApply
+import com.variant.server.boot.VariantServer
 
 /**
  * HTTP request router.
  */
 object Router {
+
+   def apply(implicit server: VariantServer) = new Router
+}
+
+class Router(implicit server: VariantServer) {
    //#user-routes-class
 
    // we leave these abstract, since they will be provided by the App
@@ -30,6 +36,7 @@ object Router {
 
    /**
     *  The routs served by our server.
+    *  TODO: move ActorSystem under server.
     */
    def routs(implicit system: ActorSystem): Route =
       pathEndOrSingleSlash { Root.root }

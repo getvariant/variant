@@ -21,13 +21,13 @@ import java.nio.file.Paths
  * user error will be thrown if number of files in
  * ServerPropertiesKey.SCHEMATA_DIR is other than 1.
  */
-class SchemaDeployerFileSystem() extends AbstractSchemaDeployer with LazyLogging {
+class SchemaDeployerFileSystem(implicit server: VariantServer) extends AbstractSchemaDeployer with LazyLogging {
 
    // Don't evaluate during instantiation because this singleton class is instantiated
    // by Play during application startup and we don't want a user error to derail that.
    lazy val dir = {
 
-      val dirName = VariantServer.config.getSchemataDir
+      val dirName = server.config.getSchemataDir
       println(Paths.get("").toAbsolutePath().toString())
       val result = new File(dirName)
       if (!result.exists)

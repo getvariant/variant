@@ -2,6 +2,7 @@ package com.variant.server.schema
 
 import scala.collection.mutable
 import com.variant.core.schema.parser.ParserResponse
+import com.variant.server.boot.VariantServer
 
 trait SchemaDeployer {
 
@@ -28,17 +29,17 @@ object SchemaDeployer {
    /**
     * Factory method returns a file system deployer.
     */
-   def fromFileSystem(): SchemaDeployer = new SchemaDeployerFileSystem()
+   def fromFileSystem(implicit server: VariantServer): SchemaDeployer = new SchemaDeployerFileSystem()
 
    /**
     * Factory method returns a deployer that reads schema from a memory string once.
     */
-   def fromString(schemaSrc: String*): SchemaDeployer = new SchemaDeployerString(schemaSrc: _*)
+   def fromString(schemaSrc: String*)(implicit server: VariantServer): SchemaDeployer = new SchemaDeployerString(schemaSrc: _*)
 
    /**
     * Factory method returns a deployer that reads schema from a classpath resource once.
     */
-   def fromClasspath(resource: String): SchemaDeployer = new SchemaDeployerClasspath(resource)
+   def fromClasspath(resource: String)(implicit server: VariantServer): SchemaDeployer = new SchemaDeployerClasspath(resource)
 
 }
 

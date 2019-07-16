@@ -16,12 +16,12 @@ object Root {
     * "/" route.
     * Display health page.
     */
-   def root = {
+   def root(implicit server: VariantServer) = {
 
-      val msg: StringBuilder = new StringBuilder(VariantServer.productName) ++= ".\n" ++=
-         "Uptime: %s.\n".format(TimeUtils.formatDuration(VariantServer.uptime))
+      val msg: StringBuilder = new StringBuilder(server.productName) ++= ".\n" ++=
+         "Uptime: %s.\n".format(TimeUtils.formatDuration(server.uptime))
 
-      val liveGens = VariantServer.schemata.getLiveGens
+      val liveGens = server.schemata.getLiveGens
 
       if (liveGens.size == 0) {
          msg.append("No schemata deployed")

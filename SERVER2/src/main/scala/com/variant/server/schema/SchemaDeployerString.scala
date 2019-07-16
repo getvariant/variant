@@ -5,11 +5,12 @@ import java.util.Random
 import com.variant.core.error.UserError.Severity
 import com.variant.core.util.IoUtils
 import com.variant.core.util.StringUtils
+import com.variant.server.boot.VariantServer
 
 /**
  * Deploy single schema from a string in memory.
  */
-class SchemaDeployerString(schemaStrings: String*) extends AbstractSchemaDeployer {
+class SchemaDeployerString(schemaStrings: String*)(implicit server: VariantServer) extends AbstractSchemaDeployer() {
 
    // Convert internal mutable map to an immutable one for the world
    //override def schemata = _schemata.toMap
@@ -32,5 +33,5 @@ class SchemaDeployerString(schemaStrings: String*) extends AbstractSchemaDeploye
 /**
  * Deploy single schema from classpath.
  */
-class SchemaDeployerClasspath(resource: String)
+class SchemaDeployerClasspath(resource: String)(implicit server: VariantServer)
    extends SchemaDeployerString(IoUtils.toString(IoUtils.openResourceAsStream(resource)._1()))

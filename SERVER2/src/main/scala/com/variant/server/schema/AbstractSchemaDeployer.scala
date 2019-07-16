@@ -7,8 +7,9 @@ import com.variant.core.error.UserError.Severity
 import com.variant.core.schema.parser.ParserMessage
 import com.variant.core.schema.parser.ParserResponse
 import com.typesafe.scalalogging.LazyLogging
+import com.variant.server.boot.VariantServer
 
-abstract class AbstractSchemaDeployer() extends SchemaDeployer with LazyLogging {
+abstract class AbstractSchemaDeployer(implicit server: VariantServer) extends SchemaDeployer with LazyLogging {
 
    private[this] val _parserResponses = mutable.ArrayBuffer[ParserResponse]()
 
@@ -19,7 +20,7 @@ abstract class AbstractSchemaDeployer() extends SchemaDeployer with LazyLogging 
     */
    protected def parse(schemaSrc: String): ParserResponse = {
 
-      val parser = ServerSchemaParser()
+      val parser = ServerSchemaParser(implicitly)
 
       // Parser the schema.
       val resp = parser.parse(schemaSrc)

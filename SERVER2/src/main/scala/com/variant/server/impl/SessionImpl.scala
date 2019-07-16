@@ -28,28 +28,28 @@ object SessionImpl {
    /**
     * Server session from core session.
     */
-   def apply(coreSession: CoreSession, schemaGen: SchemaGen) = new SessionImpl(coreSession, schemaGen)
+   def apply(coreSession: CoreSession, schemaGen: SchemaGen)(implicit server: VariantServer) = new SessionImpl(coreSession, schemaGen)
 
    /**
     * Server session deserialized from core session's JSON.
     */
-   def apply(json: String, schemaGen: SchemaGen) = new SessionImpl(json, schemaGen)
+   def apply(json: String, schemaGen: SchemaGen)(implicit server: VariantServer) = new SessionImpl(json, schemaGen)
 
    /**
     * New server session with nothing in it, but the SID.
     */
-   def empty(sid: String, schemaGen: SchemaGen) = new SessionImpl(new CoreSession(sid), schemaGen)
+   def empty(sid: String, schemaGen: SchemaGen)(implicit server: VariantServer) = new SessionImpl(new CoreSession(sid), schemaGen)
 }
 
 /**
  * Construct from an object.
  */
-class SessionImpl(val coreSession: CoreSession, val schemaGen: SchemaGen) extends Session with LazyLogging {
+class SessionImpl(val coreSession: CoreSession, val schemaGen: SchemaGen)(implicit server: VariantServer) extends Session with LazyLogging {
 
    /**
     * Construct via deserialization.
     */
-   def this(json: String, schemaGen: SchemaGen) {
+   def this(json: String, schemaGen: SchemaGen)(implicit server: VariantServer) {
       this(CoreSession.fromJson(json, schemaGen), schemaGen)
    }
 
@@ -59,7 +59,7 @@ class SessionImpl(val coreSession: CoreSession, val schemaGen: SchemaGen) extend
 
    override def getTimestamp = coreSession.getTimestamp
 
-   override def getConfiguration = VariantServer.config
+   override def getConfiguration = server.config
 
    override def getDisqualifiedVariations = coreSession.getDisqualifiedVariations
 

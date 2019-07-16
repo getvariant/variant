@@ -14,14 +14,16 @@ import com.variant.core.schema.parser.SchemaParser;
 import com.variant.server.api.Configuration;
 import com.variant.server.api.TraceEventFlusher;
 import com.variant.server.boot.ServerMessageLocal;
-import com.variant.server.boot.VariantServer;
 import com.variant.server.util.ClassUtil;
 
 public class ServerFlusherService extends FlusherService {
 
 	private static final Logger logger = LoggerFactory.getLogger(ServerFlusherService.class);
 
-	// Schema parser in whose scope we operate
+   // Schema parser in whose scope we operate
+   private final Configuration config;
+
+   // Schema parser in whose scope we operate
 	private final SchemaParser parser;
 		
 	// If flusher is not defined, it will be instantiated lazily by getFlusher
@@ -29,9 +31,7 @@ public class ServerFlusherService extends FlusherService {
 	
 	// Get the default flusher. 
 	private Flusher defaultFlusher() {
-
-		Configuration config = VariantServer.config();
-
+	   
 		return new Flusher() {
 					
 					@Override public String getClassName() {
@@ -47,12 +47,13 @@ public class ServerFlusherService extends FlusherService {
 	/**
 	 * Package instantiation only.
 	 */
-	ServerFlusherService(SchemaParser parser) {
+	ServerFlusherService(Configuration config, SchemaParser parser) {
 		this.parser = parser;
+		this.config = config;
 	}
 
 	/**
-	 * If we're invoked with null parameter, we take it that caller wants default flusher, 
+	 * If we're invoked with empty arg, we take it that caller wants default flusher, 
 	 * as externally configured in variant.conf.
 	 */
 	@Override

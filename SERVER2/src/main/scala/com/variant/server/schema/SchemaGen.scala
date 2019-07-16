@@ -9,6 +9,7 @@ import com.variant.core.util.StringUtils
 import com.variant.server.boot.Runtime
 import com.variant.server.impl.TraceEventWriter
 import com.variant.server.util.JavaImplicits._
+import com.variant.server.boot.VariantServer
 
 /**
  *
@@ -25,13 +26,13 @@ object SchemaGen {
 
    private val rand = new java.util.Random()
 
-   def apply(response: ParserResponse, origin: String) = new SchemaGen(response, origin)
+   def apply(response: ParserResponse, origin: String)(implicit server: VariantServer) = new SchemaGen(response, origin)
 }
 
 /**
  * Server side schema adds some server specific state.
  */
-class SchemaGen(val response: ParserResponse, val origin: String) extends CoreSchema {
+class SchemaGen(val response: ParserResponse, val origin: String)(implicit server: VariantServer) extends CoreSchema {
 
    //private val logger = Logger(this.getClass)
    private val coreSchema = response.getSchema

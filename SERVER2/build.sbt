@@ -45,9 +45,6 @@ libraryDependencies ++= Seq(
 // Be sure your local IDE settings are in sync.
 scalariformPreferences := scalariformPreferences.value
     .setPreference(IndentSpaces, 3)
- 
-// Map resource directory to conf
-resourceDirectory := baseDirectory.value / "main" / "universal" / "conf"
 
 // ...and prepend it to the startup script's classpath.
 scriptClasspath := Seq("../conf/") ++ scriptClasspath.value
@@ -60,4 +57,11 @@ publishArtifact in (Compile, packageDoc) := false
 
 // Rename the executable script, so that our own wrapper can be called 'variant'
 executableScriptName := "variant-ctl"
+
+//
+// Test related (imbedded) settings.
+//
+// Append production resource directory "conf" so that its content is available
+// but behind the content of src/test/resources
+unmanagedClasspath in Test += baseDirectory.value / "src" / "universal" / "conf"
 

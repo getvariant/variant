@@ -7,7 +7,7 @@ import com.variant.server.boot.ServerMessageLocal._
 import com.variant.server.test.spec.ServerlessSpec
 import com.variant.server.test.spec.BaseSpec
 
-class ConfigTest extends BaseSpec {
+class ConfigLoaderTest extends BaseSpec {
 
    "ConfigLoader" should {
 
