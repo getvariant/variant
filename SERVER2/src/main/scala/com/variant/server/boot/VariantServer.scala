@@ -16,6 +16,7 @@ import com.variant.server.routs.Router
 import scala.concurrent.duration.Duration
 import scala.concurrent.Await
 import com.variant.core.util.TimeUtils
+import java.nio.file.Paths
 
 /**
  * The Main class.
@@ -23,7 +24,8 @@ import com.variant.core.util.TimeUtils
  */
 trait VariantServer {
 
-   val productName = "Variant AIM Server release " + getClass.getPackage.getImplementationVersion
+   // TODO Need to get this from sbt
+   val productName = "Variant AIM Server release 0.10.1"
 
    val config: Configuration
 
@@ -59,10 +61,9 @@ class VariantServerImpl extends VariantServer with LazyLogging {
    override lazy val schemata: Schemata = _schemaDeployer.schemata
 
    // Bootstrap external configuration.
-   val config = new ConfigurationImpl(ConfigLoader.load("/variant.conf", "/variant-default.conf"));
+   val config = new ConfigurationImpl(ConfigLoader.load("/variant.conf", "/prod/variant-default.conf"));
 
    // To speedup server startup, we split it between two parallel threads.
-
    // Startup Thread 1: server binding.
    // TODO: I haven't found a way to pass `this` implicitly other than creating an implicit val
    implicit val _this = this

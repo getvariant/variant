@@ -153,6 +153,9 @@ public class ConfigurationImpl implements Configuration, ConfigKeys {
 		return new ImmutableMap<String, Object>(result);
 	}
 
+	public Config underlying() {
+	   return config;
+	}
 }
 
 					

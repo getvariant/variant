@@ -104,7 +104,7 @@ class ConfigLoaderTest extends BaseSpec {
 
       "override from filesystem" in {
 
-         System.setProperty("variant.config.file", "src/test/resources/variant-file-override.conf")
+         System.setProperty("variant.config.file", "../src/test/resources/variant-file-override.conf")
          System.clearProperty("variant.config.resource");
          System.clearProperty("variant.foo");
 

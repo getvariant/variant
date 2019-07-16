@@ -7,7 +7,7 @@ import com.variant.core.error.UserError.Severity;
  * Local Server messages, i.e. the ones emitted to the server log and not sent back to client.
  * These are raised by UserErrorException.
  */
-class ServerMessageLocal private (code: Int, severity: Severity, format: String) extends UserError(code, severity, format)
+class ServerMessageLocal private (code: Int, severity: Severity, format: String) extends UserError(code, severity, format) with Serializable
 
 object ServerMessageLocal {
 

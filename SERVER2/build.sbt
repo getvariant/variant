@@ -39,7 +39,7 @@ libraryDependencies ++= Seq(
   "com.variant"            % "variant-core"        % coreVersion
   
 )
-
+    
 // Scalariform plugin enforces formatting convention on all dirty files which required recompilation.
 // The following overrides default formatter settings. The plugin always fills indents with spaces.
 // Be sure your local IDE settings are in sync.
@@ -59,9 +59,16 @@ publishArtifact in (Compile, packageDoc) := false
 executableScriptName := "variant-ctl"
 
 //
-// Test related (imbedded) settings.
+// Test related settings.
 //
+
 // Append production resource directory "conf" so that its content is available
 // but behind the content of src/test/resources
 unmanagedClasspath in Test += baseDirectory.value / "src" / "universal" / "conf"
+unmanagedClasspath in Test += baseDirectory.value / "src" / "universal" / "ext/*"
+
+// Change current directory to `test-base` for `test`, `testQuick`, and `testOnly`
+// For this to work, fork must be set to true, i.e. each run is in a separate JVM
+fork := true
+Test / baseDirectory := file("test-base")
 
