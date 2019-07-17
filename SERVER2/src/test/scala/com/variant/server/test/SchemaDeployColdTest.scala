@@ -2,7 +2,7 @@ package com.variant.server.test
 
 import org.scalatest.TestData
 
-import com.variant.server.boot.VariantServer 
+import com.variant.server.boot.VariantServer
 
 import com.variant.server.test.spec.EmbeddedSpec
 
@@ -10,7 +10,7 @@ import com.variant.server.test.spec.EmbeddedSpec
  * Test various schema deployment scenarios
  */
 class SchemaDeployColdTest extends EmbeddedSpec {
-/*
+   /*
    implicit override def newAppForTest(testData: TestData): Application = {
 
       if (testData.name.startsWith("1.")) {
@@ -40,7 +40,7 @@ class SchemaDeployColdTest extends EmbeddedSpec {
          .withConfig(Map("variant.schemata.dir" -> "schemata-test"))
          .build()
 
-      server.startupErrorLog.size mustEqual 0
+      server.bootExceptions.size mustEqual 0
       server.schemata.size mustBe 3
       server.schemata.get("monstrosity").isDefined mustBe true
       server.schemata.get("monstrosity").get.liveGen.get.getMeta.getName mustEqual "monstrosity"
@@ -49,7 +49,7 @@ class SchemaDeployColdTest extends EmbeddedSpec {
       server.schemata.get("petclinic").isDefined mustBe true
       server.schemata.get("petclinic").get.liveGen.get.getMeta.getName mustEqual "petclinic"
    }
-/*
+   /*
    "2. Schema should deploy from system property variant.schemata.dir" in {
       val server = app.injector.instanceOf[VariantServer]
       server.startupErrorLog.size mustEqual 0

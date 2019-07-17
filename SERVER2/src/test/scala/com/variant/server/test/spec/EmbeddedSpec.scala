@@ -31,7 +31,9 @@ trait EmbeddedSpec extends BaseSpec with ScalatestRouteTest {
          this
       }
 
-      def build {
+      def build() {
+         EmbeddedSpec.this._server.shutdown()
+
          EmbeddedSpec.this._server = overrides match {
             case None => new VariantServerImpl
             case Some(map) => new VariantServerImpl(map)

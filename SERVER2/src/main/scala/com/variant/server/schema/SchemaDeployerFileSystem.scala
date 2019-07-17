@@ -28,7 +28,7 @@ class SchemaDeployerFileSystem(implicit server: VariantServer) extends AbstractS
    lazy val dir = {
 
       val dirName = server.config.getSchemataDir
-      println(Paths.get("").toAbsolutePath().toString())
+
       val result = new File(dirName)
       if (!result.exists)
          throw new ServerExceptionLocal(ServerMessageLocal.SCHEMATA_DIR_MISSING, dirName)

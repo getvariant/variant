@@ -15,11 +15,13 @@ import scala.concurrent.ExecutionContext
 import com.variant.server.impl.ConfigurationImpl
 import com.variant.server.routs.Router
 import scala.concurrent.duration.Duration
+import scala.concurrent.duration._
 import scala.concurrent.Await
 import com.variant.core.util.TimeUtils
 import java.nio.file.Paths
 import scala.util.Try
 import com.variant.server.api.ServerException
+import com.variant.core.error.UserError
 
 /**
  * The Main class.
@@ -39,9 +41,12 @@ trait VariantServer {
    val bootExceptions = mutable.ArrayBuffer[ServerException]()
 
    /**
-    * Server uptime == JVM uptime.
+    * Shutdown server synchronously.
     */
+   def shutdown(): Unit
+
    def uptime: java.time.Duration = java.time.Duration.ofMillis(java.lang.management.ManagementFactory.getRuntimeMXBean().getUptime())
+
 }
 
 /**
@@ -72,6 +77,12 @@ class VariantServerImpl(configOverrides: Map[String, String]) extends VariantSer
 
    // Bootstrap external configuration first, before we can split into 2 parallel threads.
    override lazy val config = _config.get
+
+   override def shutdown() {
+      _binding.get.unbind()
+      actorSystem.terminate()
+      Await.result(actorSystem.whenTerminated, 2 seconds)
+   }
 
    val _config: Option[Configuration] = Try[Configuration] {
       new ConfigurationImpl(ConfigLoader.load("/variant.conf", "/prod/variant-default.conf"));
@@ -105,22 +116,28 @@ class VariantServerImpl(configOverrides: Map[String, String]) extends VariantSer
       }
 
       // When both futures have completed...
-      Future.sequence(Seq(serverBindingTask, serverInitTask))
-         .onComplete {
-            case Success(_) =>
-               if (_isUp.get) {
-                  logger.info(ServerMessageLocal.SERVER_BOOT_OK.asMessage(
-                     productName,
-                     _binding.get.localAddress.getPort.asInstanceOf[Object],
-                     TimeUtils.formatDuration(uptime)))
+      Await.result(Future.sequence(Seq(serverBindingTask, serverInitTask)), Duration.Inf)
+      if (_isUp.get) {
+         logger.info(ServerMessageLocal.SERVER_BOOT_OK.asMessage(
+            productName,
+            _binding.get.localAddress.getPort.asInstanceOf[Object],
+            TimeUtils.formatDuration(uptime)))
 
-                  sys.addShutdownHook { farewell(_binding.get) }
+      } else {
+         logger.error(ServerMessageLocal.SERVER_BOOT_FAILED.asMessage(productName))
+      }
 
-               } else {
-                  logger.error(ServerMessageLocal.SERVER_BOOT_FAILED.asMessage(productName))
-               }
-            case Failure(e) => croak(e)
-         }
+   }
+
+   actorSystem.whenTerminated.andThen {
+      case Success(_) =>
+         logger.info(ServerMessageLocal.SERVER_SHUTDOWN.asMessage(
+            productName,
+            String.valueOf(config.getHttpPort),
+            TimeUtils.formatDuration(uptime)))
+
+      case Failure(e) =>
+         logger.error("Unexpected exception thrown:", e)
    }
 
    /**
@@ -135,8 +152,15 @@ class VariantServerImpl(configOverrides: Map[String, String]) extends VariantSer
     * Croak with an expected error, which has been already reported.
     */
    def croak() {
-      logger.error(ServerMessageLocal.SERVER_BOOT_FAILED.asMessage(productName))
+
       actorSystem.terminate()
+      actorSystem.whenTerminated.andThen {
+         case Success(_) =>
+            logger.error(ServerMessageLocal.SERVER_BOOT_FAILED.asMessage(productName))
+
+         case Failure(e) =>
+            logger.error("Unexpected exception thrown:", e)
+      }
    }
 
    /**
@@ -145,16 +169,6 @@ class VariantServerImpl(configOverrides: Map[String, String]) extends VariantSer
    def croak(t: Throwable) {
       logger.error(t.getMessage, t)
       croak
-   }
-
-   /**
-    * To be executed during JVM shutdown.
-    */
-   def farewell(binding: Http.ServerBinding) = {
-      logger.info(ServerMessageLocal.SERVER_SHUTDOWN.asMessage(
-         productName,
-         String.valueOf(config.getHttpPort),
-         TimeUtils.formatDuration(uptime)))
    }
 
 }
