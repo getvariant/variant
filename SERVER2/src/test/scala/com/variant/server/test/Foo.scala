@@ -10,11 +10,13 @@ import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.{ Matchers, WordSpec }
 import com.variant.server.routs.Router
 import com.variant.server.boot.VariantServerImpl
+import com.variant.server.test.spec.BaseSpec
+import com.variant.server.test.spec.EmbeddedSpec
 
 /**
  *
  */
-class Foo extends WordSpec with Matchers with ScalaFutures with ScalatestRouteTest {
+class Foo extends EmbeddedSpec {
    //#test-top
 
    // Here we need to implement all the abstract members of UserRoutes.
@@ -22,10 +24,6 @@ class Foo extends WordSpec with Matchers with ScalaFutures with ScalatestRouteTe
    // but we could "mock" it by implementing it in-place or by using a TestProbe()
    //override val userRegistryActor: ActorRef =
    //   system.actorOf(UserRegistryActor.props, "userRegistry")
-   implicit val server = new VariantServerImpl
-   val routes = Router(implicitly).routs
-
-   //#set-up
 
    //#actual-test
    "UserRoutes" should {
@@ -33,14 +31,14 @@ class Foo extends WordSpec with Matchers with ScalaFutures with ScalatestRouteTe
          // note that there's no need for the host part in the uri:
          val request = HttpRequest(uri = "/")
 
-         request ~> routes ~> check {
-            status should ===(StatusCodes.OK)
+         request ~> router ~> check {
+            status mustBe StatusCodes.OK
 
             // we expect the response to be json:
-            contentType should ===(ContentTypes.`application/json`)
+            contentType mustBe ContentTypes.`application/json`
 
             // and no entries should be in the list:
-            entityAs[String] should ===("""{"users":[]}""")
+            entityAs[String] mustBe """{"users":[]}"""
          }
       }
       //#actual-test

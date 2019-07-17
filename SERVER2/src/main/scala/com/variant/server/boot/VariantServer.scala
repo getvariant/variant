@@ -2,6 +2,7 @@ package com.variant.server.boot
 
 import com.variant.server.schema.Schemata
 import scala.concurrent.Future
+import scala.collection.mutable
 import akka.http.scaladsl.Http
 import com.variant.server.api.Configuration
 import scala.util.{ Failure, Success }
@@ -17,6 +18,8 @@ import scala.concurrent.duration.Duration
 import scala.concurrent.Await
 import com.variant.core.util.TimeUtils
 import java.nio.file.Paths
+import scala.util.Try
+import com.variant.server.api.ServerException
 
 /**
  * The Main class.
@@ -33,16 +36,23 @@ trait VariantServer {
 
    val actorSystem: ActorSystem
 
+   val bootExceptions = mutable.ArrayBuffer[ServerException]()
+
    /**
     * Server uptime == JVM uptime.
     */
-   val uptime: java.time.Duration = java.time.Duration.ofMillis(java.lang.management.ManagementFactory.getRuntimeMXBean().getUptime())
+   def uptime: java.time.Duration = java.time.Duration.ofMillis(java.lang.management.ManagementFactory.getRuntimeMXBean().getUptime())
 }
 
 /**
  * Concrete implementation of VariantServer
  */
-class VariantServerImpl extends VariantServer with LazyLogging {
+class VariantServerImpl(configOverrides: Map[String, String]) extends VariantServer with LazyLogging {
+
+   /**
+    * Nullary constructor means no config property overrides.
+    */
+   def this() { this(Map.empty[String, String]) }
 
    private val startupTimeoutSeconds = 10
 
@@ -60,52 +70,57 @@ class VariantServerImpl extends VariantServer with LazyLogging {
 
    override lazy val schemata: Schemata = _schemaDeployer.schemata
 
-   // Bootstrap external configuration.
-   val config = new ConfigurationImpl(ConfigLoader.load("/variant.conf", "/prod/variant-default.conf"));
+   // Bootstrap external configuration first, before we can split into 2 parallel threads.
+   override lazy val config = _config.get
 
-   // To speedup server startup, we split it between two parallel threads.
-   // Startup Thread 1: server binding.
-   // TODO: I haven't found a way to pass `this` implicitly other than creating an implicit val
-   implicit val _this = this
-   val serverBindingTask: Future[Http.ServerBinding] = Http().bindAndHandle(new Router().routs, "localhost", config.getHttpPort)
-
-   serverBindingTask.onComplete {
-
-      case Success(binding) =>
-         sys.addShutdownHook { shutdownHook(binding) }
-         _isUp <= true
-         _binding <= binding
-      case Failure(e) =>
-         logger.error(ServerMessageLocal.SERVER_BOOT_FAILED.asMessage(productName))
-         logger.error(e.getMessage, e)
-         actorSystem.terminate()
+   val _config: Option[Configuration] = Try[Configuration] {
+      new ConfigurationImpl(ConfigLoader.load("/variant.conf", "/prod/variant-default.conf"));
+   } match {
+      case Success(config) => Some(config)
+      case Failure(t) =>
+         croak(t)
+         None
    }
 
-   // Thread 2: Server init.
-   val serverInitTask = Future {
-      useSchemaDeployer(SchemaDeployer.fromFileSystem(this))
-   }
+   if (_config.isDefined) {
 
-   serverInitTask.onComplete {
+      // To speedup server startup, we split it between two parallel threads.
+      // Startup Thread 1: server binding.
+      // TODO: I haven't found a way to pass `this` implicitly other than creating an implicit val
+      implicit val _this = this
+      val serverBindingTask: Future[Http.ServerBinding] = Http().bindAndHandle(new Router().routs, "localhost", config.getHttpPort)
 
-      case Success(binding) =>
-      case Failure(e) =>
-         logger.error(ServerMessageLocal.SERVER_BOOT_FAILED.asMessage(productName))
-         logger.error(e.getMessage, e)
-         actorSystem.terminate()
-   }
+      serverBindingTask.onComplete {
 
-   // Block Until both boot tasks complete.
-   Await.result(serverBindingTask, Duration(startupTimeoutSeconds, "sec"))
-   Await.result(serverInitTask, Duration(startupTimeoutSeconds, "sec"))
+         case Success(binding) =>
+            _isUp <= true
+            _binding <= binding
 
-   if (_isUp.get) {
-      logger.info(ServerMessageLocal.SERVER_BOOT_OK.asMessage(
-         productName,
-         _binding.get.localAddress.getPort.asInstanceOf[Object],
-         TimeUtils.formatDuration(uptime)))
-   } else {
-      logger.error(ServerMessageLocal.SERVER_BOOT_FAILED.asMessage(productName))
+         case Failure(_) =>
+      }
+
+      // Thread 2: Server init.
+      val serverInitTask = Future {
+         useSchemaDeployer(SchemaDeployer.fromFileSystem(this))
+      }
+
+      // When both futures have completed...
+      Future.sequence(Seq(serverBindingTask, serverInitTask))
+         .onComplete {
+            case Success(_) =>
+               if (_isUp.get) {
+                  logger.info(ServerMessageLocal.SERVER_BOOT_OK.asMessage(
+                     productName,
+                     _binding.get.localAddress.getPort.asInstanceOf[Object],
+                     TimeUtils.formatDuration(uptime)))
+
+                  sys.addShutdownHook { farewell(_binding.get) }
+
+               } else {
+                  logger.error(ServerMessageLocal.SERVER_BOOT_FAILED.asMessage(productName))
+               }
+            case Failure(e) => croak(e)
+         }
    }
 
    /**
@@ -117,9 +132,25 @@ class VariantServerImpl extends VariantServer with LazyLogging {
    }
 
    /**
+    * Croak with an expected error, which has been already reported.
+    */
+   def croak() {
+      logger.error(ServerMessageLocal.SERVER_BOOT_FAILED.asMessage(productName))
+      actorSystem.terminate()
+   }
+
+   /**
+    * Croak with unexpected exception.
+    */
+   def croak(t: Throwable) {
+      logger.error(t.getMessage, t)
+      croak
+   }
+
+   /**
     * To be executed during JVM shutdown.
     */
-   def shutdownHook(binding: Http.ServerBinding) = {
+   def farewell(binding: Http.ServerBinding) = {
       logger.info(ServerMessageLocal.SERVER_SHUTDOWN.asMessage(
          productName,
          String.valueOf(config.getHttpPort),

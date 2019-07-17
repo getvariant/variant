@@ -6,6 +6,7 @@ import java.util.Optional;
 
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigException;
+import com.typesafe.config.ConfigFactory;
 import com.typesafe.config.ConfigRenderOptions;
 import com.typesafe.config.ConfigValue;
 import com.typesafe.config.ConfigValueType;
@@ -31,6 +32,15 @@ public class ConfigurationImpl implements Configuration, ConfigKeys {
 	}
 	
 	/**
+	 * Test can use this to emulate config parameter overrides.
+	 * @param config
+	 * @param overrides
+	 */
+   public ConfigurationImpl(Config config, Map<String, ?> overrides) {
+      this.config = ConfigFactory.parseMap(overrides).withFallback(config);
+   }
+
+   /**
 	 * String getter. Throws exception if not set or wrong type.
 	 * @param key
 	 * @return

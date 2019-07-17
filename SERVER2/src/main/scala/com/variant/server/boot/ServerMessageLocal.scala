@@ -84,7 +84,7 @@ object ServerMessageLocal {
       new ServerMessageLocal(433, Severity.INFO, "%s bootstrapped on port [%s] in %s");
 
    val SERVER_BOOT_FAILED =
-      new ServerMessageLocal(434, Severity.INFO, "%s failed to bootstrap due to following errors:");
+      new ServerMessageLocal(434, Severity.INFO, "%s failed to bootstrap due to previous errors");
 
    val SERVER_SHUTDOWN =
       new ServerMessageLocal(435, Severity.INFO, "%s shutdown on  port [%s], uptime %s.");

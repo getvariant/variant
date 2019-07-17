@@ -39,7 +39,7 @@ libraryDependencies ++= Seq(
   "com.variant"            % "variant-core"        % coreVersion
   
 )
-    
+     
 // Scalariform plugin enforces formatting convention on all dirty files which required recompilation.
 // The following overrides default formatter settings. The plugin always fills indents with spaces.
 // Be sure your local IDE settings are in sync.
