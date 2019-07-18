@@ -1,27 +1,29 @@
 package com.variant.server.boot
 
-import com.variant.server.schema.Schemata
-import scala.concurrent.Future
 import scala.collection.mutable
-import akka.http.scaladsl.Http
-import com.variant.server.api.Configuration
-import scala.util.{ Failure, Success }
-import com.typesafe.scalalogging.LazyLogging
-import com.variant.server.schema.SchemaDeployer
-import com.variant.server.util.OnceAssignable
-import akka.actor.ActorSystem
-import akka.stream.ActorMaterializer
+import scala.collection.JavaConverters._
+import scala.concurrent.Await
 import scala.concurrent.ExecutionContext
+import scala.concurrent.Future
+import scala.concurrent.duration._
+import scala.concurrent.duration.Duration
+import scala.util.Failure
+import scala.util.Success
+import scala.util.Try
+
+import com.typesafe.scalalogging.LazyLogging
+import com.variant.core.util.TimeUtils
+import com.variant.server.api.Configuration
+import com.variant.server.api.ServerException
 import com.variant.server.impl.ConfigurationImpl
 import com.variant.server.routs.Router
-import scala.concurrent.duration.Duration
-import scala.concurrent.duration._
-import scala.concurrent.Await
-import com.variant.core.util.TimeUtils
-import java.nio.file.Paths
-import scala.util.Try
-import com.variant.server.api.ServerException
-import com.variant.core.error.UserError
+import com.variant.server.schema.SchemaDeployer
+import com.variant.server.schema.Schemata
+import com.variant.server.util.OnceAssignable
+
+import akka.actor.ActorSystem
+import akka.http.scaladsl.Http
+import akka.stream.ActorMaterializer
 
 /**
  * The Main class.
@@ -40,6 +42,8 @@ trait VariantServer {
 
    val bootExceptions = mutable.ArrayBuffer[ServerException]()
 
+   def isUp: Boolean
+
    /**
     * Shutdown server synchronously.
     */
@@ -52,18 +56,18 @@ trait VariantServer {
 /**
  * Concrete implementation of VariantServer
  */
-class VariantServerImpl(configOverrides: Map[String, String]) extends VariantServer with LazyLogging {
+class VariantServerImpl(configOverrides: Map[String, Object]) extends VariantServer with LazyLogging {
 
    /**
     * Nullary constructor means no config property overrides.
     */
-   def this() { this(Map.empty[String, String]) }
+   def this() { this(Map.empty[String, Object]) }
 
    private val startupTimeoutSeconds = 10
 
-   private var _schemaDeployer: SchemaDeployer = _
-   private val _isUp = OnceAssignable(false)
-   private val _binding = OnceAssignable[Http.ServerBinding]
+   private[this] var _schemaDeployer: SchemaDeployer = _
+   private[this] var binding: Option[Http.ServerBinding] = None
+   private[this] var initialized: Option[Boolean] = None
 
    //val userRegistryActor: ActorRef = system.actorOf(UserRegistryActor.props, "userRegistryActor")
 
@@ -74,26 +78,26 @@ class VariantServerImpl(configOverrides: Map[String, String]) extends VariantSer
    private implicit val executionContext: ExecutionContext = actorSystem.dispatcher
 
    override lazy val schemata: Schemata = _schemaDeployer.schemata
+   override def isUp = binding.isDefined && initialized.getOrElse(false)
 
    // Bootstrap external configuration first, before we can split into 2 parallel threads.
    override lazy val config = _config.get
 
-   override def shutdown() {
-      _binding.get.unbind()
-      actorSystem.terminate()
-      Await.result(actorSystem.whenTerminated, 2 seconds)
-   }
-
-   val _config: Option[Configuration] = Try[Configuration] {
-      new ConfigurationImpl(ConfigLoader.load("/variant.conf", "/prod/variant-default.conf"));
+   val _config: Option[ConfigurationImpl] = Try[ConfigurationImpl] {
+      new ConfigurationImpl(ConfigLoader.load("/variant.conf", "/prod/variant-default.conf"), configOverrides.asJava)
    } match {
-      case Success(config) => Some(config)
+      case Success(conf) => Some(conf)
       case Failure(t) =>
          croak(t)
          None
    }
 
    if (_config.isDefined) {
+
+      // If debug, echo all config params.
+      logger.whenDebugEnabled {
+         config.asMap().asScala.map { case (k, v) => logger.debug(s"${k} -> ${v}") }
+      }
 
       // To speedup server startup, we split it between two parallel threads.
       // Startup Thread 1: server binding.
@@ -102,12 +106,8 @@ class VariantServerImpl(configOverrides: Map[String, String]) extends VariantSer
       val serverBindingTask: Future[Http.ServerBinding] = Http().bindAndHandle(new Router().routs, "localhost", config.getHttpPort)
 
       serverBindingTask.onComplete {
-
-         case Success(binding) =>
-            _isUp <= true
-            _binding <= binding
-
-         case Failure(_) =>
+         case Success(bndng) => binding = Some(bndng)
+         case Failure(e) => croak(e)
       }
 
       // Thread 2: Server init.
@@ -115,12 +115,17 @@ class VariantServerImpl(configOverrides: Map[String, String]) extends VariantSer
          useSchemaDeployer(SchemaDeployer.fromFileSystem(this))
       }
 
+      serverInitTask.onComplete {
+         case Success(_) => initialized = Some(true)
+         case Failure(e) => croak(e)
+      }
+
       // When both futures have completed...
       Await.result(Future.sequence(Seq(serverBindingTask, serverInitTask)), Duration.Inf)
-      if (_isUp.get) {
+      if (isUp) {
          logger.info(ServerMessageLocal.SERVER_BOOT_OK.asMessage(
             productName,
-            _binding.get.localAddress.getPort.asInstanceOf[Object],
+            binding.get.localAddress.getPort.asInstanceOf[Object],
             TimeUtils.formatDuration(uptime)))
 
       } else {
@@ -138,6 +143,13 @@ class VariantServerImpl(configOverrides: Map[String, String]) extends VariantSer
 
       case Failure(e) =>
          logger.error("Unexpected exception thrown:", e)
+   }
+
+   override def shutdown() {
+      binding.get.unbind()
+      binding = None
+      actorSystem.terminate()
+      Await.result(actorSystem.whenTerminated, 2 seconds)
    }
 
    /**

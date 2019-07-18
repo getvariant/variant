@@ -36,7 +36,7 @@ public class ConfigurationImpl implements Configuration, ConfigKeys {
 	 * @param config
 	 * @param overrides
 	 */
-   public ConfigurationImpl(Config config, Map<String, ?> overrides) {
+   public ConfigurationImpl(Config config, Map<String, Object> overrides) {
       this.config = ConfigFactory.parseMap(overrides).withFallback(config);
    }
 
