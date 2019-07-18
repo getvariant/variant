@@ -34,6 +34,11 @@ class SchemaDeployColdTest extends EmbeddedSpec {
 
    }
 */
+   "Server should come up with no schemata" in {
+      server.bootExceptions.size mustEqual 0
+      server.schemata.size mustBe 0
+   }
+
    "Schema should deploy from config property variant.schemata.dir" in {
 
       new ServerBuilder()
@@ -52,10 +57,10 @@ class SchemaDeployColdTest extends EmbeddedSpec {
 
    "Schema should deploy from system property variant.schemata.dir" in {
 
-      new ServerBuilder().build()
-
       sys.props.contains("schemata.dir") mustBe false
-      sys.props += ("variant.schemata.dir" -> "schemata-test-with-errors")
+      sys.props += ("schemata.dir" -> "schemata-test-with-errors")
+
+      new ServerBuilder().build()
 
       server.bootExceptions.size mustEqual 0
       server.schemata.size mustBe 1
