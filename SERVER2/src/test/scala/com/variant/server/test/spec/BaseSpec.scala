@@ -5,6 +5,7 @@ import org.scalatest.WordSpec
 import org.scalatest.concurrent.ScalaFutures
 
 /**
- * No Server
+ * No Server.
+ * NOTE: All tests run with current directory set at `test-base`
  */
 trait BaseSpec extends WordSpec with MustMatchers with ScalaFutures

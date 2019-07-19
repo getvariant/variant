@@ -24,9 +24,9 @@ trait EmbeddedSpec extends BaseSpec with ScalatestRouteTest {
     */
    class ServerBuilder {
 
-      private[this] var overrides: Option[Map[String, String]] = None
+      private[this] var overrides: Option[Map[String, _]] = None
 
-      def withConfig(overrides: Map[String, String]): ServerBuilder = {
+      def withConfig(overrides: Map[String, _]): ServerBuilder = {
          this.overrides = Some(overrides)
          this
       }
@@ -36,7 +36,7 @@ trait EmbeddedSpec extends BaseSpec with ScalatestRouteTest {
 
          EmbeddedSpec.this._server = overrides match {
             case None => new VariantServerImpl
-            case Some(map) => new VariantServerImpl(map)
+            case Some(map) => new VariantServerImpl(map.asInstanceOf[Map[String, Object]])
          }
 
       }

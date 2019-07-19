@@ -7,33 +7,10 @@ import com.variant.server.boot.VariantServer
 import com.variant.server.test.spec.EmbeddedSpec
 
 /**
- * Test various schema deployment scenarios
+ * Test various schema deployment scenarios.
  */
 class SchemaDeployColdTest extends EmbeddedSpec {
-   /*
-   implicit override def newAppForTest(testData: TestData): Application = {
 
-      if (testData.name.startsWith("1.")) {
-         // Just application property
-         new GuiceApplicationBuilder()
-            .configure(new Configuration(VariantApplicationLoader.loadConfig))
-            .configure(
-               Map("variant.schemata.dir" -> "schemata-test"))
-            .build()
-      } else if (testData.name.startsWith("2.")) {
-         // Override with system property.
-         sys.props.contains("variant.schemata.dir") mustBe false
-         sys.props += ("variant.schemata.dir" -> "schemata-test-with-errors")
-         new GuiceApplicationBuilder()
-            .configure(new Configuration(VariantApplicationLoader.loadConfig))
-            .build()
-      } else {
-         // All defaults.
-         throw new RuntimeException("Dunno what to do")
-      }
-
-   }
-*/
    "Server should come up with no schemata" in {
       server.bootExceptions.size mustEqual 0
       server.schemata.size mustBe 0

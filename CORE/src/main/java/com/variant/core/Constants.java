@@ -14,5 +14,8 @@ public interface Constants {
 	
 	// Server-side timing is returned in this response header.
 	final public static String HTTP_HEADER_SERVER_TIMIER = "Variant-Timer";
+	
+	// Customer logger's date format
+   final static String LOGGER_DATE_FORMAT = "yyyy-MM-dd HH:mm:ss,SSS";
 
 }

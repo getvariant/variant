@@ -3,6 +3,8 @@ package com.variant.server.util;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import com.variant.core.Constants;
+
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.LayoutBase;
@@ -14,9 +16,9 @@ import ch.qos.logback.core.LayoutBase;
  * @author Igor
  *
  */
-public class VariantLogbackLayout  extends LayoutBase<ILoggingEvent> {
+public class VariantLogbackLayout extends LayoutBase<ILoggingEvent> implements Constants {
 
-   private static final SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+   private static final SimpleDateFormat df = new SimpleDateFormat(LOGGER_DATE_FORMAT);
 	   
    public String doLayout(ILoggingEvent event) {
       StringBuffer sbuf = new StringBuffer(128);

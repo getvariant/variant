@@ -12,7 +12,7 @@
     <appender name="FILE" class="ch.qos.logback.core.FileAppender">
         <!-- path to your log file, where you want to store logs -->
         <file>log/variant.log</file>
-        <append>false</append>
+        <append>true</append>
         <encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">
             <layout class="com.variant.server.util.VariantLogbackLayout" />        
         </encoder>

@@ -61,7 +61,7 @@ class VariantServerImpl(configOverrides: Map[String, Object]) extends VariantSer
    /**
     * Nullary constructor means no config property overrides.
     */
-   def this() { this(Map.empty[String, Object]) }
+   def this() { this(Map.empty) }
 
    private val startupTimeoutSeconds = 10
 
