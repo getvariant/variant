@@ -1,6 +1,7 @@
 package com.variant.server.api;
 
 import java.util.Optional;
+import java.util.Set;
 
 /**
  * Variant Server's runtime configuration currently in effect. Can be obtained by calling {@link Session#getConfiguration()}.
@@ -72,4 +73,5 @@ public interface Configuration {
 	 * @since 0.10
 	 */
 	int httpPort();
+	
 }

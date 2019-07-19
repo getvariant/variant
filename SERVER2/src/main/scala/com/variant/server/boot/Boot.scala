@@ -8,11 +8,11 @@ import sun.misc.Signal
 import sun.misc.SignalHandler
 
 /**
- * Standalone server bootup, when we own the main().
+ * Standalone server entry point.
  */
 object Boot extends App with LazyLogging {
 
-   val server = new VariantServerImpl
+   val server = VariantServer()
 
    // We shutdown server by sending it the INTERRUPT signal, which we catch right here.
    Signal.handle(new Signal("INT"), new SignalHandler() {

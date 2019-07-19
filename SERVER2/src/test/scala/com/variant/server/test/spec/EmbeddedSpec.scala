@@ -16,7 +16,7 @@ trait EmbeddedSpec extends BaseSpec with ScalatestRouteTest {
    // Build straight up server upon initialization
    // Tests may use the builder object to build other server instances with
    // alternate configuration parameters.
-   private[this] var _server: VariantServer = new VariantServerImpl
+   private[this] var _server: VariantServer = VariantServer()
 
    def server = _server
 
@@ -28,16 +28,16 @@ trait EmbeddedSpec extends BaseSpec with ScalatestRouteTest {
    class ServerBuilder {
 
       // This will override the regularly loaded configuration
-      private[this] var overrides: Option[Map[String, _]] = None
+      private[this] var overrides: Map[String, _] = Map.empty
 
       // These keys will be deleted from regularly loaded configuration.
-      private[this] val deletes = mutable.Seq[String]()
+      private[this] val deletions = mutable.ListBuffer[String]()
 
       /**
        * Add given mappings to the standard config, loaded externally by new VariantServerImpl
        */
       def withConfig(overrides: Map[String, _]): ServerBuilder = {
-         this.overrides = Some(overrides)
+         this.overrides = overrides
          this
       }
 
@@ -45,7 +45,7 @@ trait EmbeddedSpec extends BaseSpec with ScalatestRouteTest {
        * Remove given mappings from the standard config, loaded eternally by new VariantServerImpl
        */
       def withoutKeys(keys: String*): ServerBuilder = {
-         deletes ++ keys
+         deletions ++= keys
          this
       }
 
@@ -55,9 +55,7 @@ trait EmbeddedSpec extends BaseSpec with ScalatestRouteTest {
       def reboot() {
 
          EmbeddedSpec.this._server.shutdown()
-         EmbeddedSpec.this._server = new VariantServerImpl
-         overrides.map { o => EmbeddedSpec.this._server.config.asInstanceOf[ConfigurationImpl].overrideWith(o) }
-         EmbeddedSpec.this._server.config.asInstanceOf[ConfigurationImpl].deleteKeys(deletes)
+         EmbeddedSpec.this._server = VariantServer(overrides, deletions)
       }
    }
 

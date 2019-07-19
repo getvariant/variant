@@ -24,6 +24,8 @@ import com.variant.server.util.OnceAssignable
 import akka.actor.ActorSystem
 import akka.http.scaladsl.Http
 import akka.stream.ActorMaterializer
+import com.typesafe.config.ConfigFactory
+import com.typesafe.config.Config
 
 /**
  * The Main class.
@@ -50,14 +52,22 @@ trait VariantServer {
    def shutdown(): Unit
 
    def uptime: java.time.Duration = java.time.Duration.ofMillis(java.lang.management.ManagementFactory.getRuntimeMXBean().getUptime())
-
 }
 
 /**
- * Concrete implementation of VariantServer
+ * Server factories
  */
-class VariantServerImpl extends VariantServer with LazyLogging {
+object VariantServer {
+   def apply(): VariantServer = new VariantServerImpl(Map.empty, Seq.empty);
+   def apply(overrides: Map[String, _], deletions: Seq[String]): VariantServer = new VariantServerImpl(overrides, deletions);
+}
 
+/**
+ * Concrete implementation of VariantServer with a private constructor.
+ */
+class VariantServerImpl(overrides: Map[String, _], deletions: Seq[String]) extends VariantServer with LazyLogging {
+
+   println("********** " + deletions.size)
    private val startupTimeoutSeconds = 10
 
    private[this] var _schemaDeployer: SchemaDeployer = _
@@ -78,10 +88,15 @@ class VariantServerImpl extends VariantServer with LazyLogging {
    // Bootstrap external configuration first, before we can split into 2 parallel threads.
    override lazy val config = _config.get
 
-   val _config: Option[ConfigurationImpl] = Try[ConfigurationImpl] {
-      new ConfigurationImpl(ConfigLoader.load("/variant.conf", "/prod/variant-default.conf"))
+   //Attempt to load the external configuration.
+   val _config: Option[ConfigurationImpl] = Try[Config] {
+      ConfigLoader.load("/variant.conf", "/prod/variant-default.conf")
    } match {
-      case Success(conf) => Some(conf)
+      case Success(conf) =>
+         // Have external config. Apply overrides.
+         var finalConfig = ConfigFactory.parseMap(overrides.asJava).withFallback(conf)
+         deletions.foreach { key => finalConfig = finalConfig.withoutPath(key) }
+         Some(new ConfigurationImpl(finalConfig))
       case Failure(t) =>
          croak(t)
          None
@@ -91,7 +106,7 @@ class VariantServerImpl extends VariantServer with LazyLogging {
 
       // If debug, echo all config params.
       logger.whenDebugEnabled {
-         config.asMap.map { case (k, v) => logger.debug(s"${k} -> ${v}") }
+         config.entrySet.forEach { e => logger.debug(s"${e.getKey} → ${e.getValue}") }
       }
 
       // To speedup server startup, we split it between two parallel threads.

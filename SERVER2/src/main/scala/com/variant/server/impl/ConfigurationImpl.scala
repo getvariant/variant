@@ -12,10 +12,11 @@ import com.variant.server.api.Configuration
 import com.variant.server.boot.ServerMessageLocal
 import com.variant.server.boot.ServerExceptionLocal
 import com.variant.server.util.JavaImplicits._
+
 /**
  * Effective server configuration.
  */
-class ConfigurationImpl(private var config: Config) extends Configuration with ConfigKeys {
+class ConfigurationImpl(config: Config) extends Configuration with ConfigKeys {
 
    /**
     * String getter. Throws exception if not set or wrong type.
@@ -102,28 +103,6 @@ class ConfigurationImpl(private var config: Config) extends Configuration with C
    /*                                  PUBLIC EXT                                    */
    /*--------------------------------------------------------------------------------*/
 
-   // These are used by tests to manipulate underlying configuration.
-
-   def overrideWith(overrides: Map[String, _]) {
-      config = ConfigFactory.parseMap(overrides.asJava).withFallback(config)
-   }
-
-   def deleteKeys(keys: Seq[String]) {
-      keys.foreach { key => config = config.withoutPath(key) }
-   }
-
-   def asMap: Map[String, _] = {
-
-      Map(
-         SCHEMATA_DIR -> schemataDir,
-         SESSION_TIMEOUT -> sessionTimeout,
-         SESSION_VACUUM_INTERVAL -> sessionVacuumInterval,
-         EVENT_FLUSHER_CLASS_NAME -> defaultEventFlusherClassName,
-         EVENT_FLUSHER_CLASS_INIT -> defaultEventFlusherClassInit.getOrElse("null"),
-         EVENT_WRITER_BUFFER_SIZE -> eventWriterBufferSize,
-         EVENT_WRITER_MAX_DELAY -> eventWriterMaxDelay,
-         HTTP_PORT -> httpPort)
-   }
-
+   def entrySet = config.entrySet()
 }
 
