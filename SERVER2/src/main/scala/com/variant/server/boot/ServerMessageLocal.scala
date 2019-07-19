@@ -81,7 +81,7 @@ object ServerMessageLocal {
       new ServerMessageLocal(432, Severity.INFO, "No schemata found in [%s]");
 
    val SERVER_BOOT_OK =
-      new ServerMessageLocal(433, Severity.INFO, "%s bootstrapped on port [%s] in %s");
+      new ServerMessageLocal(433, Severity.INFO, "%s started on port [%s] in %s");
 
    val SERVER_BOOT_FAILED =
       new ServerMessageLocal(434, Severity.INFO, "%s failed to bootstrap due to previous errors");

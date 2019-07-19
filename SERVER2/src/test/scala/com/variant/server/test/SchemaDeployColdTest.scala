@@ -20,7 +20,7 @@ class SchemaDeployColdTest extends EmbeddedSpec {
 
       new ServerBuilder()
          .withConfig(Map("schemata.dir" -> "schemata-test"))
-         .build()
+         .reboot()
 
       server.bootExceptions.size mustEqual 0
       server.schemata.size mustBe 3
@@ -37,7 +37,7 @@ class SchemaDeployColdTest extends EmbeddedSpec {
       sys.props.contains("schemata.dir") mustBe false
       sys.props += ("schemata.dir" -> "schemata-test-with-errors")
 
-      new ServerBuilder().build()
+      new ServerBuilder().reboot()
 
       server.bootExceptions.size mustEqual 0
       server.schemata.size mustBe 1

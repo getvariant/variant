@@ -15,7 +15,7 @@ public interface Configuration {
 	 * 
 	 * @since 0.10
 	 */
-	String getSchemataDir();
+	String schemataDir();
 
 	/**
 	 * Session timeout in seconds. Provided by the <code>variant.session.timeout</code> configuration property.
@@ -23,14 +23,14 @@ public interface Configuration {
 	 * 
 	 * @since 0.10
 	 */
-	int getSessionTimeout();
+	int sessionTimeout();
 
 	/**
 	 * Session vacuum interval in seconds. Provided by the <code>variant.session.timeout.interval</code> configuration property.
 	 * 
 	 * @since 0.10
 	 */
-	int getSessionVacuumInterval();
+	int sessionVacuumInterval();
 
 	/**
 	 * Server-wide default trace event flusher. Provided by the <code>variant.event.flusher.class.name</code> configuration property.
@@ -39,7 +39,7 @@ public interface Configuration {
 	 * 
 	 * @since 0.10
 	 */
-	String getDefaultEventFlusherClassName();
+	String defaultEventFlusherClassName();
 
 	/**
 	 * Initial state for the server-wide default trace event flusher. Provided by the <code>variant.event.flusher.class.init</code> configuration property.
@@ -47,7 +47,7 @@ public interface Configuration {
 	 * 
 	 * @since 0.10
 	 */
-	Optional<String> getDefaultEventFlusherClassInit();
+	Optional<String> defaultEventFlusherClassInit();
 
 	/**
 	 * Event writer buffer size. Provided by the <code>variant.event.writer.buffer.size</code> configuration property.
@@ -55,7 +55,7 @@ public interface Configuration {
 	 * 
 	 * @since 0.10
 	 */
-	int getEventWriterBufferSize();
+	int eventWriterBufferSize();
 
 	/**
 	 * Event writer maximum delay in seconds. Provided by the <code>variant.event.writer.max.delay</code> configuration property.
@@ -64,12 +64,12 @@ public interface Configuration {
 	 * 
 	 * @since 0.10
 	 */
-	int getEventWriterMaxDelay();
+	int eventWriterMaxDelay();
 	
 	/**
 	 * Network port bound by Variant server. Provided by the <code>http.port</code> configuration property.
 	 * 
 	 * @since 0.10
 	 */
-	int getHttpPort();
+	int httpPort();
 }

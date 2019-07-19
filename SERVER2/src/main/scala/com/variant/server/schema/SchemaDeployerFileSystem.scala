@@ -11,7 +11,7 @@ import com.variant.core.error.UserError.Severity
 import com.variant.server.boot.ServerMessageLocal
 import com.variant.server.boot.ServerExceptionLocal
 import com.variant.server.boot.VariantServer
-import com.variant.server.impl.ConfigKeys.SCHEMATA_DIR;
+import com.variant.server.impl.ConfigKeys;
 import com.variant.server.util.AsyncDirectoryWatcher
 import java.nio.file.Paths
 
@@ -21,13 +21,14 @@ import java.nio.file.Paths
  * user error will be thrown if number of files in
  * ServerPropertiesKey.SCHEMATA_DIR is other than 1.
  */
-class SchemaDeployerFileSystem(implicit server: VariantServer) extends AbstractSchemaDeployer with LazyLogging {
+class SchemaDeployerFileSystem(implicit server: VariantServer) extends AbstractSchemaDeployer
+   with LazyLogging with ConfigKeys {
 
    // Don't evaluate during instantiation because this singleton class is instantiated
    // by Play during application startup and we don't want a user error to derail that.
    lazy val dir = {
 
-      val dirName = server.config.getSchemataDir
+      val dirName = server.config.schemataDir
 
       val result = new File(dirName)
       if (!result.exists)

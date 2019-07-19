@@ -56,12 +56,7 @@ trait VariantServer {
 /**
  * Concrete implementation of VariantServer
  */
-class VariantServerImpl(configOverrides: Map[String, Object]) extends VariantServer with LazyLogging {
-
-   /**
-    * Nullary constructor means no config property overrides.
-    */
-   def this() { this(Map.empty) }
+class VariantServerImpl extends VariantServer with LazyLogging {
 
    private val startupTimeoutSeconds = 10
 
@@ -84,7 +79,7 @@ class VariantServerImpl(configOverrides: Map[String, Object]) extends VariantSer
    override lazy val config = _config.get
 
    val _config: Option[ConfigurationImpl] = Try[ConfigurationImpl] {
-      new ConfigurationImpl(ConfigLoader.load("/variant.conf", "/prod/variant-default.conf"), configOverrides.asJava)
+      new ConfigurationImpl(ConfigLoader.load("/variant.conf", "/prod/variant-default.conf"))
    } match {
       case Success(conf) => Some(conf)
       case Failure(t) =>
@@ -96,14 +91,14 @@ class VariantServerImpl(configOverrides: Map[String, Object]) extends VariantSer
 
       // If debug, echo all config params.
       logger.whenDebugEnabled {
-         config.asMap().asScala.map { case (k, v) => logger.debug(s"${k} -> ${v}") }
+         config.asMap.map { case (k, v) => logger.debug(s"${k} -> ${v}") }
       }
 
       // To speedup server startup, we split it between two parallel threads.
       // Startup Thread 1: server binding.
       // TODO: I haven't found a way to pass `this` implicitly other than creating an implicit val
       implicit val _this = this
-      val serverBindingTask: Future[Http.ServerBinding] = Http().bindAndHandle(new Router().routs, "localhost", config.getHttpPort)
+      val serverBindingTask: Future[Http.ServerBinding] = Http().bindAndHandle(new Router().routs, "localhost", config.httpPort)
 
       serverBindingTask.onComplete {
          case Success(bndng) => binding = Some(bndng)
@@ -138,7 +133,7 @@ class VariantServerImpl(configOverrides: Map[String, Object]) extends VariantSer
       case Success(_) =>
          logger.info(ServerMessageLocal.SERVER_SHUTDOWN.asMessage(
             productName,
-            String.valueOf(config.getHttpPort),
+            String.valueOf(config.httpPort),
             TimeUtils.formatDuration(uptime)))
 
       case Failure(e) =>

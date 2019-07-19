@@ -2,7 +2,6 @@ package com.variant.server.impl
 
 import java.util.LinkedList
 import java.util.concurrent.ConcurrentLinkedQueue
-import com.variant.server.impl.ConfigKeys._
 import com.variant.server.api.FlushableTraceEvent
 import com.variant.server.boot.VariantServer
 import com.variant.server.schema.ServerFlusherService
@@ -12,13 +11,13 @@ import com.variant.core.util.TimeUtils
 import com.typesafe.scalalogging.LazyLogging
 import akka.event.jul.Logger
 
-class TraceEventWriter(private val flushService: ServerFlusherService)(implicit server: VariantServer) extends LazyLogging {
+class TraceEventWriter(private val flushService: ServerFlusherService)(implicit server: VariantServer) extends LazyLogging with ConfigKeys {
 
    private val config = server.config
 
    val flusher = flushService.getFlusher
 
-   val maxBufferSize = config.getEventWriterBufferSize
+   val maxBufferSize = config.eventWriterBufferSize
 
    // We're full if 50% or more of max buffer is taken.
    val fullSize = math.round(maxBufferSize * 0.5F)
@@ -27,7 +26,7 @@ class TraceEventWriter(private val flushService: ServerFlusherService)(implicit 
    val emptySize = math.round(maxBufferSize * 0.01F)
 
    // Force flush after this long, even if still empty.
-   val maxDelayMillis = config.getEventWriterMaxDelay * 1000
+   val maxDelayMillis = config.eventWriterMaxDelay * 1000
 
    // The underlying buffer is a non-blocking, unbounded queue. We will enforce the soft upper bound,
    // refusing inserts that will put the queue size over the limit, but not worrying about
