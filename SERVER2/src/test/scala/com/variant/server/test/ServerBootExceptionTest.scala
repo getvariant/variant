@@ -62,13 +62,13 @@ class ServerBootExceptionTest extends EmbeddedSpec with ConfigKeys {
 
    "Server boot" should {
 
-      "throw CONFIG_PROPERTY_NOT_SET if no schema.dir config" in {
+      "emit CONFIG_PROPERTY_NOT_SET if no schema.dir config" in {
 
          new ServerBuilder()
             .withoutKeys("schemata.dir")
             .reboot()
 
-         server.schemata mustBe (null)
+         server.schemata.size mustBe 0
          server.bootExceptions.size mustEqual 1
          val ex = server.bootExceptions.head
          ex.getMessage mustEqual CONFIG_PROPERTY_NOT_SET.asMessage(SCHEMATA_DIR)

@@ -67,7 +67,6 @@ object VariantServer {
  */
 class VariantServerImpl(overrides: Map[String, _], deletions: Seq[String]) extends VariantServer with LazyLogging {
 
-   println("********** " + deletions.size)
    private val startupTimeoutSeconds = 10
 
    private[this] var _schemaDeployer: SchemaDeployer = _
@@ -76,7 +75,7 @@ class VariantServerImpl(overrides: Map[String, _], deletions: Seq[String]) exten
 
    //val userRegistryActor: ActorRef = system.actorOf(UserRegistryActor.props, "userRegistryActor")
 
-   override implicit val actorSystem: ActorSystem = ActorSystem("helloAkkaHttpServer")
+   override implicit val actorSystem: ActorSystem = ActorSystem("VariantServer")
 
    // set up ActorSystem and other dependencies here
    private implicit val materializer: ActorMaterializer = ActorMaterializer()
@@ -92,14 +91,14 @@ class VariantServerImpl(overrides: Map[String, _], deletions: Seq[String]) exten
    val _config: Option[ConfigurationImpl] = Try[Config] {
       ConfigLoader.load("/variant.conf", "/prod/variant-default.conf")
    } match {
+
       case Success(conf) =>
          // Have external config. Apply overrides.
          var finalConfig = ConfigFactory.parseMap(overrides.asJava).withFallback(conf)
          deletions.foreach { key => finalConfig = finalConfig.withoutPath(key) }
          Some(new ConfigurationImpl(finalConfig))
-      case Failure(t) =>
-         croak(t)
-         None
+
+      case Failure(t) => croak(t); None
    }
 
    if (_config.isDefined) {
@@ -117,7 +116,7 @@ class VariantServerImpl(overrides: Map[String, _], deletions: Seq[String]) exten
 
       serverBindingTask.onComplete {
          case Success(bndng) => binding = Some(bndng)
-         case Failure(e) => croak(e)
+         case Failure(t) => croak(t)
       }
 
       // Thread 2: Server init.
@@ -127,19 +126,26 @@ class VariantServerImpl(overrides: Map[String, _], deletions: Seq[String]) exten
 
       serverInitTask.onComplete {
          case Success(_) => initialized = Some(true)
-         case Failure(e) => croak(e)
+         case Failure(t) => croak(t)
       }
 
-      // When both futures have completed...
-      Await.result(Future.sequence(Seq(serverBindingTask, serverInitTask)), Duration.Inf)
+      // Block indefinitely for when both futures are completed...
+      val results = for {
+         r1 <- serverBindingTask
+         r2 <- serverInitTask
+      } yield (r1, r2)
+
+      Await.ready(results, Duration.Inf)
+
       if (isUp) {
          logger.info(ServerMessageLocal.SERVER_BOOT_OK.asMessage(
             productName,
             binding.get.localAddress.getPort.asInstanceOf[Object],
             TimeUtils.formatDuration(uptime)))
-
       } else {
          logger.error(ServerMessageLocal.SERVER_BOOT_FAILED.asMessage(productName))
+         bootExceptions.foreach(e => logger.error(e.getMessage, e))
+         actorSystem.terminate()
       }
 
    }
@@ -171,26 +177,14 @@ class VariantServerImpl(overrides: Map[String, _], deletions: Seq[String]) exten
    }
 
    /**
-    * Croak with an expected error, which has been already reported.
-    */
-   def croak() {
-
-      actorSystem.terminate()
-      actorSystem.whenTerminated.andThen {
-         case Success(_) =>
-            logger.error(ServerMessageLocal.SERVER_BOOT_FAILED.asMessage(productName))
-
-         case Failure(e) =>
-            logger.error("Unexpected exception thrown:", e)
-      }
-   }
-
-   /**
     * Croak with unexpected exception.
     */
    def croak(t: Throwable) {
-      logger.error(t.getMessage, t)
-      croak
+      t match {
+         case se: ServerException =>
+            bootExceptions += se; println("added " + se)
+         case e: Throwable => bootExceptions += new ServerException("Uncaught exception " + e.getMessage, e)
+      }
    }
 
 }

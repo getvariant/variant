@@ -7,7 +7,7 @@ import com.variant.core.error.UserError.Severity;
  * Local Server messages, i.e. the ones emitted to the server log and not sent back to client.
  * These are raised by UserErrorException.
  */
-class ServerMessageLocal private (code: Int, severity: Severity, format: String) extends UserError(code, severity, format) with Serializable
+class ServerMessageLocal private (code: Int, severity: Severity, format: String) extends UserError(code, severity, format)
 
 object ServerMessageLocal {
 
@@ -84,7 +84,7 @@ object ServerMessageLocal {
       new ServerMessageLocal(433, Severity.INFO, "%s started on port [%s] in %s");
 
    val SERVER_BOOT_FAILED =
-      new ServerMessageLocal(434, Severity.INFO, "%s failed to bootstrap due to previous errors");
+      new ServerMessageLocal(434, Severity.INFO, "%s failed to bootstrap due to following errors");
 
    val SERVER_SHUTDOWN =
       new ServerMessageLocal(435, Severity.INFO, "%s shutdown on  port [%s], uptime %s.");
