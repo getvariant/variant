@@ -24,7 +24,7 @@ object Root {
       val liveGens = server.schemata.getLiveGens
 
       if (liveGens.size == 0) {
-         msg.append("No schemata deployed")
+         msg.append("No schemata deployed.")
       } else {
          msg.append("Schemata:")
          liveGens.foreach(liveGen =>
