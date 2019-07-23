@@ -6,11 +6,14 @@ import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.model.StatusCodes
 import com.variant.core.util.TimeUtils
 import com.variant.server.boot.VariantServer
+import akka.http.scaladsl.model.HttpEntity
+import akka.http.scaladsl.model.HttpResponse
+import akka.http.scaladsl.model.ContentTypes
 
 /**
  * "/" route
  */
-object Root {
+object RootRoute {
 
    /**
     * "/" route.
@@ -36,6 +39,6 @@ object Root {
       }
       msg.append('\n')
 
-      complete((StatusCodes.OK, msg.toString))
+      complete(HttpResponse(StatusCodes.OK, entity = HttpEntity(ContentTypes.`application/json`, msg.toString)))
    }
 }

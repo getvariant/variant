@@ -7,6 +7,9 @@ import com.variant.server.boot.VariantServerImpl
 import com.variant.server.boot.VariantServer
 import com.variant.server.impl.ConfigurationImpl
 import com.variant.server.impl.ConfigurationImpl
+import akka.http.scaladsl.server.Route
+import akka.http.scaladsl.model.HttpMethods
+import akka.http.scaladsl.model.HttpMethod
 
 /**
  * Embedded Server
@@ -20,10 +23,23 @@ trait EmbeddedSpec extends BaseSpec with ScalatestRouteTest {
 
    def server = _server
 
-   def router = Router(_server).routs
+   def router = Route.seal(Router(_server).routs)
+
+   def foreachHttpMethod(b: => Any) {
+
+      Seq(
+         HttpMethods.CONNECT,
+         HttpMethods.DELETE,
+         HttpMethods.GET,
+         HttpMethods.HEAD,
+         HttpMethods.OPTIONS,
+         HttpMethods.PATCH,
+         HttpMethods.POST,
+         HttpMethods.PUT).foreach(_ => b)
+   }
 
    /**
-    * implements a basid builder pattern.
+    * implements a basiC builder pattern.
     */
    class ServerBuilder {
 
