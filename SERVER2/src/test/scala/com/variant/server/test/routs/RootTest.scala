@@ -23,7 +23,8 @@ class RootTest extends EmbeddedSpec {
             val lines = entityAs[String].split("\n").toSeq
             lines(0) mustBe server.productName + '.'
             lines(1) must startWith("Uptime")
-            lines(2) mustBe "No schemata deployed."
+            lines(2) mustBe "Schemata:"
+            lines.size mustBe 15
          }
       }
 

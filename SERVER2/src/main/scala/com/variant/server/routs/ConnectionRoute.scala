@@ -19,10 +19,10 @@ import akka.http.scaladsl.model.ContentTypes
 object ConnectionRoute extends VariantRoute with LazyLogging {
 
    /**
-    * Ping a schema.
-    * Called on VariantClient.connectTo(schema)
+    * Ping a schema. Called on VariantClient.connectTo(schema).
+    * Our connections are stateless on the server, so the client simply pings to ensure the schema exists.
     */
-   def put(name: String)(implicit server: VariantServer, ctx: RequestContext): HttpResponse = {
+   def get(name: String)(implicit server: VariantServer, ctx: RequestContext): HttpResponse = {
 
       server.schemata.get(name) match {
 

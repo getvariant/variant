@@ -10,6 +10,7 @@ import akka.http.scaladsl.model.HttpRequest
 import akka.http.scaladsl.model.StatusCodes._
 import akka.http.scaladsl.model.ContentTypes
 import akka.http.scaladsl.model.HttpMethods
+import play.api.libs.json._
 
 /*
  * Reusable event JSON objects.
@@ -61,11 +62,11 @@ class ConnectionTest extends EmbeddedSpec {
 
       "open connection on PUT with valid schema name" in {
 
-         HttpRequest(method = HttpMethods.PUT, uri = "/connection/monstrosity") ~> router ~> check {
+         HttpRequest(method = HttpMethods.GET, uri = "/connection/monstrosity") ~> router ~> check {
             handled mustBe true
             status mustBe OK
-            //            .withBodyJson { json =>
-            //               (json \ "ssnto").as[Long] mustBe server.config.getSessionTimeout
+            val respBody = Json.parse(entityAs[String])
+            (respBody \ "ssnto").as[Long] mustBe server.config.sessionTimeout
          }
       }
    }
