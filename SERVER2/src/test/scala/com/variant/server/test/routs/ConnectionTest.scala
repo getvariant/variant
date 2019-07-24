@@ -9,6 +9,7 @@ import com.variant.server.schema.ServerSchemaParser
 import akka.http.scaladsl.model.HttpRequest
 import akka.http.scaladsl.model.StatusCodes._
 import akka.http.scaladsl.model.ContentTypes
+import akka.http.scaladsl.model.HttpMethods
 
 /*
  * Reusable event JSON objects.
@@ -57,22 +58,16 @@ class ConnectionTest extends EmbeddedSpec {
             entityAs[String] mustBe "The requested resource could not be found."
          }
       }
-      /*
-      "return  400 and error on GET to non-existent schema" in {
-         assertResp(route(app, httpReq(GET, endpoint + "/bad_schema")))
-            .isError(UNKNOWN_SCHEMA, "bad_schema")
-      }
 
-      "open connection on POST with valid schema name" in {
+      "open connection on PUT with valid schema name" in {
 
-         assertResp(route(app, httpReq(GET, endpoint + "/monstrosity")))
-            .isOk
-            .withBodyJson { json =>
-               (json \ "ssnto").as[Long] mustBe server.config.getSessionTimeout
-            }
+         HttpRequest(method = HttpMethods.PUT, uri = "/connection/monstrosity") ~> router ~> check {
+            handled mustBe true
+            status mustBe OK
+            //            .withBodyJson { json =>
+            //               (json \ "ssnto").as[Long] mustBe server.config.getSessionTimeout
+         }
       }
-      *
-      */
    }
 }
 

@@ -71,7 +71,6 @@ class VariantServerImpl(overrides: Map[String, _], deletions: Seq[String]) exten
 
    private[this] var _schemaDeployer: SchemaDeployer = _
    private[this] var binding: Option[Http.ServerBinding] = None
-   private[this] var initialized: Option[Boolean] = None
 
    //val userRegistryActor: ActorRef = system.actorOf(UserRegistryActor.props, "userRegistryActor")
 
@@ -82,7 +81,8 @@ class VariantServerImpl(overrides: Map[String, _], deletions: Seq[String]) exten
    private implicit val executionContext: ExecutionContext = actorSystem.dispatcher
 
    override lazy val schemata: Schemata = _schemaDeployer.schemata
-   override def isUp = binding.isDefined && initialized.getOrElse(false)
+
+   override def isUp = binding.isDefined && bootExceptions.size == 0
 
    // Bootstrap external configuration first, before we can split into 2 parallel threads.
    override lazy val config = _config.get
@@ -112,30 +112,25 @@ class VariantServerImpl(overrides: Map[String, _], deletions: Seq[String]) exten
       // Startup Thread 1: server binding.
       // TODO: I haven't found a way to pass `this` implicitly other than creating an implicit val
       implicit val _this = this
+
+      // Thread 1: Bind to TCP port.
       val serverBindingTask: Future[Http.ServerBinding] = Http().bindAndHandle(new Router().routs, "localhost", config.httpPort)
 
-      serverBindingTask.onComplete {
-         case Success(bndng) => binding = Some(bndng)
-         case Failure(t) => croak(t)
-      }
-
-      // Thread 2: Server init.
+      // Thread 2: Server backend init.
       val serverInitTask = Future {
          useSchemaDeployer(SchemaDeployer.fromFileSystem(this))
       }
+      // Block indefinitely for when both futures are completed...
 
-      serverInitTask.onComplete {
-         case Success(_) => initialized = Some(true)
+      Try { Await.result(serverBindingTask, Duration.Inf) } match {
+         case Success(b) => binding = Some(b)
          case Failure(t) => croak(t)
       }
 
-      // Block indefinitely for when both futures are completed...
-      val results = for {
-         r1 <- serverBindingTask
-         r2 <- serverInitTask
-      } yield (r1, r2)
-
-      Await.ready(results, Duration.Inf)
+      Try { Await.result(serverInitTask, Duration.Inf) } match {
+         case Success(_) =>
+         case Failure(t) => croak(t)
+      }
 
       if (isUp) {
          logger.info(ServerMessageLocal.SERVER_BOOT_OK.asMessage(

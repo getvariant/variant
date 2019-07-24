@@ -59,7 +59,7 @@ class SchemaDeployEmptyTest extends EmbeddedSpec with BeforeAndAfterAll {
 
       "refuse deploy schema with errors" in {
 
-         s"cp schemata-test-with-errors/monster-error.schema  ${schemataDir}/monster-error.schema" !;
+         s"cp schemata-errata/monster-error.schema  ${schemataDir}/monster-errata.schema" !;
 
          // Sleep awhile to let WatcherService.take() have a chance to detect.
          Thread.sleep(dirWatcherLatencyMsecs);
@@ -76,7 +76,7 @@ class SchemaDeployEmptyTest extends EmbeddedSpec with BeforeAndAfterAll {
 
       "process deletion of a faulty schema file" in {
 
-         s"rm -f ${schemataDir}/monster-error.schema" !;
+         s"rm -f ${schemataDir}/monster-errata.schema" !;
          Thread.sleep(dirWatcherLatencyMsecs);
          server.schemata.size mustBe 0
 
@@ -84,7 +84,7 @@ class SchemaDeployEmptyTest extends EmbeddedSpec with BeforeAndAfterAll {
 
       "deply a good schema" in {
 
-         s"cp schemata-test/monster.schema ${schemataDir}/monster.schema" !;
+         s"cp schemata/monster.schema ${schemataDir}/monster.schema" !;
          Thread.sleep(dirWatcherLatencyMsecs);
          server.schemata.size mustBe 1
       }

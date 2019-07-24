@@ -82,16 +82,11 @@ class Router(implicit server: VariantServer) extends LazyLogging {
       // Health page
       pathEndOrSingleSlash { RootRoute.root }
 
-   // GET /connection/:schema
+   // PUT /connection/:schema
    pathPrefix("connection") {
       concat(
          path(Segment) { schema =>
-            concat(
-               get { ctx =>
-                  // Connect to a schema
-                  //complete(ConnectionRoute.get(ctx, schema))
-                  ctx.complete("foo")
-               })
+            put { implicit ctx => ctx.complete(ConnectionRoute.put(schema)) }
          })
    }
    //#all-routes

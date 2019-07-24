@@ -13,16 +13,6 @@ class SchemaDeployColdTest extends EmbeddedSpec {
 
    "Server should come up with no schemata" in {
       server.bootExceptions.size mustEqual 0
-      server.schemata.size mustBe 0
-   }
-
-   "Schema should deploy from config property variant.schemata.dir" in {
-
-      new ServerBuilder()
-         .withConfig(Map("schemata.dir" -> "schemata-test"))
-         .reboot()
-
-      server.bootExceptions.size mustEqual 0
       server.schemata.size mustBe 3
       server.schemata.get("monstrosity").isDefined mustBe true
       server.schemata.get("monstrosity").get.liveGen.get.getMeta.getName mustEqual "monstrosity"
@@ -32,10 +22,20 @@ class SchemaDeployColdTest extends EmbeddedSpec {
       server.schemata.get("petclinic").get.liveGen.get.getMeta.getName mustEqual "petclinic"
    }
 
+   "Schema should deploy from config property variant.schemata.dir" in {
+
+      new ServerBuilder()
+         .withConfig(Map("schemata.dir" -> "schemata-empty"))
+         .reboot()
+
+      server.bootExceptions.size mustEqual 0
+      server.schemata.size mustBe 0
+   }
+
    "Schema should deploy from system property variant.schemata.dir" in {
 
       sys.props.contains("schemata.dir") mustBe false
-      sys.props += ("schemata.dir" -> "schemata-test-with-errors")
+      sys.props += ("schemata.dir" -> "schemata-errata")
 
       new ServerBuilder().reboot()
 

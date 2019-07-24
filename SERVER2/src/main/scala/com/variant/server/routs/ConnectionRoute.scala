@@ -22,7 +22,7 @@ object ConnectionRoute extends VariantRoute with LazyLogging {
     * Ping a schema.
     * Called on VariantClient.connectTo(schema)
     */
-   def get(req: RequestContext, name: String)(implicit server: VariantServer) = {
+   def put(name: String)(implicit server: VariantServer, ctx: RequestContext): HttpResponse = {
 
       server.schemata.get(name) match {
 
@@ -32,7 +32,7 @@ object ConnectionRoute extends VariantRoute with LazyLogging {
             val entity = JsObject(Seq(
                "ssnto" -> JsNumber(server.config.sessionTimeout)))
 
-            complete(HttpResponse(StatusCodes.OK, entity = HttpEntity(ContentTypes.`application/json`, entity.toString())))
+            HttpResponse(StatusCodes.OK, entity = HttpEntity(ContentTypes.`application/json`, entity.toString()))
          }
          case None => {
             logger.debug("Schema [%s] not found".format(name))

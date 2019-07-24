@@ -75,34 +75,36 @@ class ServerBootExceptionTest extends EmbeddedSpec with ConfigKeys {
          server.isUp mustBe false
       }
    }
+
+   "emit SCHEMATA_DIR_MISSING if schemata dir does not exist" in {
+
+      new ServerBuilder()
+         .withConfig(Map("schemata.dir" -> "non-existent"))
+         .reboot()
+
+      server.schemata.size mustBe 0
+      server.bootExceptions.size mustEqual 1
+      val ex = server.bootExceptions.head
+      ex.getSeverity mustEqual SCHEMATA_DIR_MISSING.getSeverity
+      ex.getMessage mustEqual SCHEMATA_DIR_MISSING.asMessage("non-existent")
+      server.isUp mustBe false
+   }
    /*
-   "Missing schemata dir" should {
+   "return 503 in every http request after SCHEMATA_DIR_MISSING" in {
 
-      "cause server to throw SCHEMATA_DIR_MISSING" in {
-         server.schemata.size mustBe 0
-         server.startupErrorLog.size mustEqual 1
-         val ex = server.startupErrorLog.head
-         ex.getSeverity mustEqual SCHEMATA_DIR_MISSING.getSeverity
-         ex.getMessage mustEqual new ServerExceptionLocal(SCHEMATA_DIR_MISSING, "non-existent").getMessage
-         server.isUp mustBe false
-      }
+      server.isUp mustBe false
 
-      "return 503 in every http request after SCHEMATA_DIR_MISSING" in {
+      assertResp(route(app, httpReq(PUT, "/session/foo")))
+         .is(SERVICE_UNAVAILABLE)
+         .withNoBody
 
-         server.isUp mustBe false
+      assertResp(route(app, httpReq(GET, "/session/foo/bar")))
+         .is(SERVICE_UNAVAILABLE)
+         .withNoBody
 
-         assertResp(route(app, httpReq(PUT, "/session/foo")))
-            .is(SERVICE_UNAVAILABLE)
-            .withNoBody
-
-         assertResp(route(app, httpReq(GET, "/session/foo/bar")))
-            .is(SERVICE_UNAVAILABLE)
-            .withNoBody
-
-         assertResp(route(app, httpReq(POST, "/session/foo/bar")))
-            .is(SERVICE_UNAVAILABLE)
-            .withNoBody
-      }
+      assertResp(route(app, httpReq(POST, "/session/foo/bar")))
+         .is(SERVICE_UNAVAILABLE)
+         .withNoBody
    }
 
    "Schemata dir which is not a dir" should {
