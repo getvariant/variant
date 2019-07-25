@@ -7,7 +7,6 @@ import com.typesafe.scalalogging.LazyLogging
 import com.typesafe.scalalogging.LazyLogging
 import akka.http.scaladsl.model.HttpHeader.ParsingResult.Ok
 import akka.http.scaladsl.server.RequestContext
-import com.variant.server.boot.ServerMessageRemote
 import akka.http.scaladsl.model.HttpEntity
 import play.api.libs.json._
 import akka.http.scaladsl.server.Directives._
@@ -16,10 +15,10 @@ import akka.http.scaladsl.model.HttpResponse
 import akka.http.scaladsl.model.StatusCodes
 import akka.http.scaladsl.model.ContentTypes
 
-object ConnectionRoute extends VariantRoute with LazyLogging {
+object SchemaRoute extends VariantRoute with LazyLogging {
 
    /**
-    * Ping a schema. Called on VariantClient.connectTo(schema).
+    * Ping a schema by name. Called on VariantClient.connectTo(schema).
     * Our connections are stateless on the server, so the client simply pings to ensure the schema exists.
     */
    def get(name: String)(implicit server: VariantServer, ctx: RequestContext): HttpResponse = {

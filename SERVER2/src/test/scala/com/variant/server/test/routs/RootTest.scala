@@ -19,9 +19,9 @@ class RootTest extends EmbeddedSpec {
          HttpRequest(uri = "/") ~> router ~> check {
 
             status mustBe OK
-            contentType mustBe ContentTypes.`application/json`
+            contentType mustBe ContentTypes.`text/plain(UTF-8)`
             val lines = entityAs[String].split("\n").toSeq
-            lines(0) mustBe server.productName + '.'
+            lines(0) mustBe s"${server.productVersion.comment} release ${server.productVersion.version}."
             lines(1) must startWith("Uptime")
             lines(2) mustBe "Schemata:"
             lines.size mustBe 15
@@ -30,8 +30,8 @@ class RootTest extends EmbeddedSpec {
 
       "Reject unmapped path for all http methods" in {
 
-         foreachHttpMethod {
-            HttpRequest(uri = "/invalid") ~> router ~> check {
+         httpMethods.foreach { method =>
+            HttpRequest(method, uri = "/invalid") ~> router ~> check {
                handled mustBe true
                status mustBe NotFound
                contentType mustBe ContentTypes.`text/plain(UTF-8)`

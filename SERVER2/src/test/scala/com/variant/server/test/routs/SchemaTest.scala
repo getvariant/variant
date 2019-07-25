@@ -15,7 +15,7 @@ import play.api.libs.json._
 /*
  * Reusable event JSON objects.
  */
-object ConnectionTest {
+object SchemaTest {
 
    val body = ParameterizedString("""
       {"sid":"${sid:SID}",
@@ -44,15 +44,13 @@ object ConnectionTest {
 /**
  * Event Controller
  */
-class ConnectionTest extends EmbeddedSpec {
-
-   val endpoint = "/connection"
+class SchemaTest extends EmbeddedSpec {
 
    "ConnectionController" should {
 
       "return  404 on GET with no schema name" in {
 
-         HttpRequest(uri = "/connection") ~> router ~> check {
+         HttpRequest(uri = "/schema") ~> router ~> check {
             handled mustBe true
             status mustBe NotFound
             contentType mustBe ContentTypes.`text/plain(UTF-8)`
@@ -60,15 +58,26 @@ class ConnectionTest extends EmbeddedSpec {
          }
       }
 
-      "open connection on PUT with valid schema name" in {
+      "respond OK on GET with valid schema" in {
 
-         HttpRequest(method = HttpMethods.GET, uri = "/connection/monstrosity") ~> router ~> check {
+         HttpRequest(method = HttpMethods.GET, uri = "/schema/monstrosity") ~> router ~> check {
             handled mustBe true
             status mustBe OK
             val respBody = Json.parse(entityAs[String])
             (respBody \ "ssnto").as[Long] mustBe server.config.sessionTimeout
          }
       }
+
+      "respond OK on GET with invalid schema" in {
+
+         HttpRequest(method = HttpMethods.GET, uri = "/schema/invalid") ~> router ~> check {
+            handled mustBe true
+            status mustBe OK
+            val respBody = Json.parse(entityAs[String])
+            (respBody \ "ssnto").as[Long] mustBe server.config.sessionTimeout
+         }
+      }
+
    }
 }
 

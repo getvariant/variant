@@ -15,7 +15,7 @@ public class ServerError extends UserError {
 	// 601-620 Internal, Payload syntax error
 	//
 	public static final ServerError InternalError = 
-			new ServerError(601, "Internal server error [%s]");
+			new ServerError(601, "Unexpected internal server error [%s]");
 	
 	public static final ServerError JsonParseError = 
 			new ServerError(602, "JSON parsing error: '%s'");
@@ -112,7 +112,7 @@ public class ServerError extends UserError {
 			new ServerError(707, "Cannot target state [%s] because it is phantom in live experience [%s]");
 
 	public static final ServerError EXPERIENCE_WEIGHT_MISSING = 
-			new ServerError(708, "No weight specified for variation [%s], experience [%s] and no targeting hook defined");
+			new ServerError(708, "No weight specified for variation [%s], experience [%s] and no targeting hooks defined");
 
 
 	/**

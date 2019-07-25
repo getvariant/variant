@@ -9,7 +9,7 @@ import com.typesafe.config.ConfigValue
 import com.typesafe.config.ConfigValueType
 import com.variant.core.util.immutable.ImmutableMap
 import com.variant.server.api.Configuration
-import com.variant.server.boot.ServerMessageLocal
+import com.variant.server.boot.ServerMessageLocal._
 import com.variant.server.boot.ServerExceptionLocal
 import com.variant.server.util.JavaImplicits._
 
@@ -29,13 +29,10 @@ class ConfigurationImpl(config: Config) extends Configuration with ConfigKeys {
       } catch {
 
          case e: ConfigException.Missing =>
-            throw new ServerExceptionLocal(ServerMessageLocal.CONFIG_PROPERTY_NOT_SET, key);
+            throw ServerExceptionLocal(CONFIG_PROPERTY_NOT_SET, key);
 
          case e: ConfigException.WrongType =>
-            throw new ServerExceptionLocal(
-               ServerMessageLocal.CONFIG_PROPERTY_WRONG_TYPE, key,
-               ConfigValueType.STRING,
-               config.getValue(key).valueType());
+            throw ServerExceptionLocal(CONFIG_PROPERTY_WRONG_TYPE, key, ConfigValueType.STRING, config.getValue(key).valueType())
       }
    }
 
@@ -51,10 +48,7 @@ class ConfigurationImpl(config: Config) extends Configuration with ConfigKeys {
          case e: ConfigException.Missing => None
 
          case e: ConfigException.WrongType =>
-            throw new ServerExceptionLocal(
-               ServerMessageLocal.CONFIG_PROPERTY_WRONG_TYPE, key,
-               ConfigValueType.OBJECT,
-               config.getValue(key).valueType());
+            throw ServerExceptionLocal(CONFIG_PROPERTY_WRONG_TYPE, key, ConfigValueType.OBJECT, config.getValue(key).valueType())
       }
    }
 
@@ -68,13 +62,10 @@ class ConfigurationImpl(config: Config) extends Configuration with ConfigKeys {
          config.getInt(key)
       } catch {
          case e: ConfigException.Missing =>
-            throw new ServerExceptionLocal(ServerMessageLocal.CONFIG_PROPERTY_NOT_SET, key);
+            throw ServerExceptionLocal(CONFIG_PROPERTY_NOT_SET, key)
 
          case e: ConfigException.WrongType =>
-            throw new ServerExceptionLocal(
-               ServerMessageLocal.CONFIG_PROPERTY_WRONG_TYPE, key,
-               ConfigValueType.NUMBER,
-               config.getValue(key).valueType());
+            throw ServerExceptionLocal(CONFIG_PROPERTY_WRONG_TYPE, key, ConfigValueType.NUMBER, config.getValue(key).valueType())
       }
    }
 

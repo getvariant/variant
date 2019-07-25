@@ -32,9 +32,9 @@ class SchemaDeployerFileSystem(implicit server: VariantServer) extends AbstractS
 
       val result = new File(dirName)
       if (!result.exists)
-         throw new ServerExceptionLocal(ServerMessageLocal.SCHEMATA_DIR_MISSING, dirName)
+         throw ServerExceptionLocal(ServerMessageLocal.SCHEMATA_DIR_MISSING, dirName)
       if (!result.isDirectory)
-         throw new ServerExceptionLocal(ServerMessageLocal.SCHEMATA_DIR_NOT_DIR, dirName)
+         throw ServerExceptionLocal(ServerMessageLocal.SCHEMATA_DIR_NOT_DIR, dirName)
       result
    }
 

@@ -9,6 +9,7 @@ import com.variant.server.boot.VariantServer
 import akka.http.scaladsl.model.HttpEntity
 import akka.http.scaladsl.model.HttpResponse
 import akka.http.scaladsl.model.ContentTypes
+import akka.http.scaladsl.model.headers.Server
 
 /**
  * "/" route
@@ -21,24 +22,27 @@ object RootRoute {
     */
    def root(implicit server: VariantServer) = {
 
-      val msg: StringBuilder = new StringBuilder(server.productName) ++= ".\n" ++=
-         "Uptime: %s.\n".format(TimeUtils.formatDuration(server.uptime))
+      val msg: StringBuilder =
+         new StringBuilder(s"${server.productVersion.comment} release ${server.productVersion.version}") ++=
+            ".\n" ++=
+            "Uptime: %s.\n".format(TimeUtils.formatDuration(server.uptime))
 
       val liveGens = server.schemata.getLiveGens
 
       if (liveGens.size == 0) {
-         msg.append("No schemata deployed.")
+         msg ++= "No schemata deployed."
       } else {
-         msg.append("Schemata:")
+         msg ++= "Schemata:"
          liveGens.foreach(liveGen =>
-            msg.append(
-               "\n   Name: " + liveGen.getMeta.getName +
-                  "\n      Comment: " + liveGen.getMeta.getComment +
-                  "\n      States: " + liveGen.getStates.size +
-                  "\n      Variations: " + liveGen.getVariations.size))
+            msg ++=
+               "\n   Name: " + liveGen.getMeta.getName ++=
+               "\n      Comment: " + liveGen.getMeta.getComment ++=
+               "\n      States: " + liveGen.getStates.size ++=
+               "\n      Variations: " + liveGen.getVariations.size)
       }
-      msg.append('\n')
 
-      complete(HttpResponse(StatusCodes.OK, entity = HttpEntity(ContentTypes.`application/json`, msg.toString)))
+      msg ++= "\n"
+
+      complete(HttpResponse(StatusCodes.OK, entity = HttpEntity(ContentTypes.`text/plain(UTF-8)`, msg.toString)))
    }
 }

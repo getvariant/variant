@@ -42,7 +42,7 @@ abstract class AsyncDirectoryWatcher(val path: Path) extends Thread with LazyLog
                      case ENTRY_MODIFY => onModify(target)
                      case ENTRY_DELETE => onDelete(target)
                   }
-               case event => throw new ServerExceptionInternal(s"Unknown event [${event}]")
+               case event => throw ServerExceptionInternal(s"Unknown event [${event}]")
             }
             key.reset()
          }

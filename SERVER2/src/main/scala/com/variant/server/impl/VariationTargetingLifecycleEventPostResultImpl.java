@@ -6,7 +6,7 @@ import com.variant.core.schema.State;
 import com.variant.core.schema.Variation;
 import com.variant.core.schema.Variation.Experience;
 import com.variant.server.api.lifecycle.VariationTargetingLifecycleEvent;
-import com.variant.server.boot.ServerExceptionLocal;
+import com.variant.server.boot.ServerExceptionRemote$;
 
 public class VariationTargetingLifecycleEventPostResultImpl implements VariationTargetingLifecycleEvent.PostResult {
 
@@ -31,7 +31,7 @@ public class VariationTargetingLifecycleEventPostResultImpl implements Variation
 			if (experience.equals(te)) {
 				if (experience.isPhantom(state)) {
 					StackTraceElement caller = Thread.currentThread().getStackTrace()[2];
-					throw new ServerExceptionLocal(
+					throw ServerExceptionRemote$.MODULE$.apply(
 							HOOK_TARGETING_BAD_EXPERIENCE, 
 							caller.getClassName(), var.getName(), experience.toString(), var.getName());
 				}
@@ -42,7 +42,7 @@ public class VariationTargetingLifecycleEventPostResultImpl implements Variation
 		// If we're here, the experience is not from the test we're listening for.
 		// Figure out the caller class and throw an exception.
 		StackTraceElement caller = Thread.currentThread().getStackTrace()[2];
-		throw new ServerExceptionLocal(
+		throw ServerExceptionRemote$.MODULE$.apply(
 				HOOK_TARGETING_BAD_EXPERIENCE, 
 				caller.getClassName(), var.getName(), experience.toString());
 	}

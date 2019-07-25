@@ -19,13 +19,14 @@ import com.variant.server.impl.ConfigurationImpl
 import com.variant.server.routs.Router
 import com.variant.server.schema.SchemaDeployer
 import com.variant.server.schema.Schemata
-import com.variant.server.util.OnceAssignable
 
 import akka.actor.ActorSystem
 import akka.http.scaladsl.Http
 import akka.stream.ActorMaterializer
 import com.typesafe.config.ConfigFactory
 import com.typesafe.config.Config
+import akka.http.scaladsl.model.headers.ProductVersion
+import akka.http.scaladsl.settings.ServerSettings
 
 /**
  * The Main class.
@@ -34,7 +35,7 @@ import com.typesafe.config.Config
 trait VariantServer {
 
    // TODO Need to get this from sbt
-   val productName = "Variant AIM Server release 0.10.1"
+   val productVersion = new ProductVersion("Variant", "0.10.1", "Variant AIM Server")
 
    val config: Configuration
 
@@ -114,7 +115,7 @@ class VariantServerImpl(overrides: Map[String, _], deletions: Seq[String]) exten
       implicit val _this = this
 
       // Thread 1: Bind to TCP port.
-      val serverBindingTask: Future[Http.ServerBinding] = Http().bindAndHandle(new Router().routs, "localhost", config.httpPort)
+      val serverBindingTask: Future[Http.ServerBinding] = Http().bindAndHandle(new Router().routes, "localhost", config.httpPort)
 
       // Thread 2: Server backend init.
       val serverInitTask = Future {
@@ -134,11 +135,11 @@ class VariantServerImpl(overrides: Map[String, _], deletions: Seq[String]) exten
 
       if (isUp) {
          logger.info(ServerMessageLocal.SERVER_BOOT_OK.asMessage(
-            productName,
+            s"${productVersion.comment} release ${productVersion.version}",
             binding.get.localAddress.getPort.asInstanceOf[Object],
             TimeUtils.formatDuration(uptime)))
       } else {
-         logger.error(ServerMessageLocal.SERVER_BOOT_FAILED.asMessage(productName))
+         logger.error(ServerMessageLocal.SERVER_BOOT_FAILED.asMessage(s"${productVersion.comment} release ${productVersion.version}"))
          bootExceptions.foreach(e => logger.error(e.getMessage, e))
          actorSystem.terminate()
       }
@@ -148,7 +149,7 @@ class VariantServerImpl(overrides: Map[String, _], deletions: Seq[String]) exten
    actorSystem.whenTerminated.andThen {
       case Success(_) =>
          logger.info(ServerMessageLocal.SERVER_SHUTDOWN.asMessage(
-            productName,
+            s"${productVersion.comment} release ${productVersion.version}",
             String.valueOf(config.httpPort),
             TimeUtils.formatDuration(uptime)))
 
@@ -178,7 +179,7 @@ class VariantServerImpl(overrides: Map[String, _], deletions: Seq[String]) exten
       t match {
          case se: ServerException =>
             bootExceptions += se; println("added " + se)
-         case e: Throwable => bootExceptions += new ServerException("Uncaught exception " + e.getMessage, e)
+         case e: Throwable => bootExceptions += new ServerException("Uncaught exception: " + e.getMessage, e)
       }
    }
 

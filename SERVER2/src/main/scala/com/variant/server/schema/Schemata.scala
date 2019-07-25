@@ -70,7 +70,7 @@ class Schemata extends LazyLogging {
       val schemaToUndeploy = _schemaMap.filter(e => { e._2.origin == origin })
 
       if (schemaToUndeploy.size > 1)
-         throw new ServerExceptionInternal(s"Found ${schemaToUndeploy.size} schemata with origin ${origin}")
+         throw ServerExceptionInternal(s"Found ${schemaToUndeploy.size} schemata with origin ${origin}")
 
       schemaToUndeploy.foreach { e => e._2.undeployLiveGen() }
    }

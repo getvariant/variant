@@ -103,7 +103,7 @@ public class Runtime {
 				// in targeting tracker and live. 
 				// User error if requested state is phantom in this experience.
 				if (exp.isPhantom(state))  {
-					throw new ServerExceptionRemote(ServerError.STATE_PHANTOM_IN_EXPERIENCE, state.getName(), exp.toString());
+					throw ServerExceptionRemote$.MODULE$.apply(ServerError.STATE_PHANTOM_IN_EXPERIENCE, state.getName(), exp.toString());
 				}
 				alreadyTargetedExperiences.add(exp);
 			}

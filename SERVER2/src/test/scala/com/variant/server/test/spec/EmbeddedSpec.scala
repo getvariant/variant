@@ -23,23 +23,21 @@ trait EmbeddedSpec extends BaseSpec with ScalatestRouteTest {
 
    def server = _server
 
-   def router = Route.seal(Router(_server).routs)
+   // Seal the router in order not to have rejections.
+   def router = Route.seal(Router(_server).routes)
 
-   def foreachHttpMethod(b: => Any) {
-
-      Seq(
-         HttpMethods.CONNECT,
-         HttpMethods.DELETE,
-         HttpMethods.GET,
-         HttpMethods.HEAD,
-         HttpMethods.OPTIONS,
-         HttpMethods.PATCH,
-         HttpMethods.POST,
-         HttpMethods.PUT).foreach(_ => b)
-   }
+   val httpMethods = Seq(
+      HttpMethods.CONNECT,
+      HttpMethods.DELETE,
+      HttpMethods.GET,
+      HttpMethods.HEAD,
+      HttpMethods.OPTIONS,
+      HttpMethods.PATCH,
+      HttpMethods.POST,
+      HttpMethods.PUT)
 
    /**
-    * implements a basiC builder pattern.
+    * Build another server. Implements a basic builder pattern.
     */
    class ServerBuilder {
 

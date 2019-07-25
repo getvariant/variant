@@ -10,7 +10,7 @@ import com.variant.core.schema.Variation.Experience;
 import com.variant.server.api.lifecycle.LifecycleHook;
 import com.variant.server.api.lifecycle.VariationTargetingLifecycleEvent;
 import com.variant.server.boot.ServerExceptionInternal;
-import com.variant.server.boot.ServerExceptionLocal;
+import com.variant.server.boot.ServerExceptionRemote$;
 
 class VariationTargetingDefaultHook implements LifecycleHook<VariationTargetingLifecycleEvent> {
 	
@@ -27,7 +27,7 @@ class VariationTargetingDefaultHook implements LifecycleHook<VariationTargetingL
 	}
 
 	/**
-	 * Default test qualifier. Qualify all.
+	 * Default targeter targets randomly. Weights must be supplied. 
 	 * 
 	 * @param session
 	 * @param test
@@ -46,7 +46,7 @@ class VariationTargetingDefaultHook implements LifecycleHook<VariationTargetingL
 			if (!e.getWeight().isPresent()) {
 				// It's not a syntax error not to supply the weight, but if we're
 				// here it means that no targeter hook fired, and that's a runtime error.
-				throw new ServerExceptionLocal(ServerError.EXPERIENCE_WEIGHT_MISSING, e.getVariation().getName(), e.getName());
+				throw ServerExceptionRemote$.MODULE$.apply(ServerError.EXPERIENCE_WEIGHT_MISSING, e.getVariation().getName(), e.getName());
 			}
 			weightSum += e.getWeight().get().doubleValue();
 		}

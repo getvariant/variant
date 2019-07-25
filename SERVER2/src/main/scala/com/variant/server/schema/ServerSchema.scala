@@ -43,12 +43,11 @@ class ServerSchema(private val seed: SchemaGen) extends LazyLogging {
 
       // New gen's name must match ours.
       if (gen.getMeta.getName != name)
-         throw new ServerExceptionInternal(
-            s"Cannot add schema gen [${gen.getMeta.getName}] to schema [${name}]");
+         throw ServerExceptionInternal(s"Cannot add schema gen [${gen.getMeta.getName}] to schema [${name}]");
 
       // New gen's origin must match ours.
       if (gen.origin != origin)
-         throw new ServerExceptionLocal(ServerMessageLocal.SCHEMA_CANNOT_REPLACE, name, origin, gen.origin)
+         throw ServerExceptionLocal(ServerMessageLocal.SCHEMA_CANNOT_REPLACE, name, origin, gen.origin)
 
       val oldLive = liveGen
       gen.state = SchemaGen.State.Live

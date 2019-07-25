@@ -22,7 +22,7 @@ import com.variant.server.api.lifecycle.LifecycleHook;
 import com.variant.server.api.lifecycle.StateAwareLifecycleEvent;
 import com.variant.server.api.lifecycle.VariationAwareLifecycleEvent;
 import com.variant.server.boot.ServerExceptionLocal;
-import com.variant.server.boot.ServerExceptionRemote;
+import com.variant.server.boot.ServerExceptionRemote$;
 import com.variant.server.boot.ServerMessageLocal;
 import com.variant.server.util.ClassUtil;
 
@@ -231,7 +231,7 @@ public class ServerHooksService extends HooksService {
 		} catch (Exception e) {
 			e.printStackTrace();
 			LOG.error(ServerError.HOOK_UNHANDLED_EXCEPTION.asMessage(hookDef.getClassName(), e.getMessage()), e);
-			throw new ServerExceptionRemote(ServerError.HOOK_UNHANDLED_EXCEPTION, LifecycleHook.class.getName(), e.getMessage());
+			throw ServerExceptionRemote$.MODULE$.apply(ServerError.HOOK_UNHANDLED_EXCEPTION, LifecycleHook.class.getName(), e.getMessage());
 		}				
 
 	}
