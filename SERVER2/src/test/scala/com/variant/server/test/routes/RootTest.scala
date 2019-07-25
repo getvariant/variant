@@ -1,4 +1,4 @@
-package com.variant.server.test.routs
+package com.variant.server.test.routes
 
 import com.variant.server.test.spec.EmbeddedServerSpec
 

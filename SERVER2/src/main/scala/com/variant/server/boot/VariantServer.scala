@@ -16,7 +16,7 @@ import com.variant.core.util.TimeUtils
 import com.variant.server.api.Configuration
 import com.variant.server.api.ServerException
 import com.variant.server.impl.ConfigurationImpl
-import com.variant.server.routs.Router
+import com.variant.server.routes.Router
 import com.variant.server.schema.SchemaDeployer
 import com.variant.server.schema.Schemata
 

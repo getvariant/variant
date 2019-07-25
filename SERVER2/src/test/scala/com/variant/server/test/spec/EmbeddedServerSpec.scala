@@ -2,7 +2,7 @@ package com.variant.server.test.spec
 
 import scala.collection.mutable
 import akka.http.scaladsl.testkit.ScalatestRouteTest
-import com.variant.server.routs.Router
+import com.variant.server.routes.Router
 import com.variant.server.boot.VariantServerImpl
 import com.variant.server.boot.VariantServer
 import com.variant.server.impl.ConfigurationImpl

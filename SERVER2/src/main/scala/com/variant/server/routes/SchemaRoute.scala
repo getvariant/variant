@@ -1,4 +1,4 @@
-package com.variant.server.routs
+package com.variant.server.routes
 
 import com.variant.core.error.ServerError
 import com.variant.server.boot.VariantServer

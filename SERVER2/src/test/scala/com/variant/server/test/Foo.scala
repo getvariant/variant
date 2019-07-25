@@ -8,7 +8,7 @@ import akka.http.scaladsl.model._
 import akka.http.scaladsl.testkit.ScalatestRouteTest
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.{ Matchers, WordSpec }
-import com.variant.server.routs.Router
+import com.variant.server.routes.Router
 import com.variant.server.boot.VariantServerImpl
 import com.variant.server.test.spec.BaseSpec
 import com.variant.server.test.spec.EmbeddedServerSpec

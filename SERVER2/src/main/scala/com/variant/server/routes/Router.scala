@@ -1,4 +1,4 @@
-package com.variant.server.routs
+package com.variant.server.routes
 
 import com.typesafe.scalalogging.LazyLogging
 import com.variant.server.boot.VariantServer

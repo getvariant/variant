@@ -1,4 +1,4 @@
-package com.variant.server.routs
+package com.variant.server.routes
 
 import akka.http.scaladsl.server.ExceptionHandler
 import com.variant.server.boot.ServerExceptionRemote

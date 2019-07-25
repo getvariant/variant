@@ -1,4 +1,4 @@
-package com.variant.server.test.routs
+package com.variant.server.test.routes
 
 import scala.util.Random
 import com.variant.core.Constants._
