@@ -11,12 +11,12 @@ import org.scalatest.{ Matchers, WordSpec }
 import com.variant.server.routs.Router
 import com.variant.server.boot.VariantServerImpl
 import com.variant.server.test.spec.BaseSpec
-import com.variant.server.test.spec.EmbeddedSpec
+import com.variant.server.test.spec.EmbeddedServerSpec
 
 /**
  *
  */
-class Foo extends EmbeddedSpec {
+class Foo extends EmbeddedServerSpec {
    //#test-top
 
    // Here we need to implement all the abstract members of UserRoutes.
@@ -25,7 +25,7 @@ class Foo extends EmbeddedSpec {
    //override val userRegistryActor: ActorRef =
    //   system.actorOf(UserRegistryActor.props, "userRegistry")
 
-   //#actual-test
+   /* /#actual-test
    "UserRoutes" should {
       "return no users if no present (GET /users)" in {
          // note that there's no need for the host part in the uri:
@@ -42,7 +42,7 @@ class Foo extends EmbeddedSpec {
          }
       }
       //#actual-test
-      /*
+
       //#testing-post
       "be able to add users (POST /users)" in {
          val user = User("Kapi", 42, "jp")
@@ -78,9 +78,9 @@ class Foo extends EmbeddedSpec {
          }
       }
       //#actual-test
-       *
-       */
    }
+   *
+   */
    //#actual-test
 
    //#set-up

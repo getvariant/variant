@@ -29,10 +29,11 @@ class ConfigurationImpl(config: Config) extends Configuration with ConfigKeys {
       } catch {
 
          case e: ConfigException.Missing =>
-            throw ServerExceptionLocal(CONFIG_PROPERTY_NOT_SET, key);
+            println("**************** " + ServerExceptionLocal(CONFIG_PROPERTY_NOT_SET, key).getMessage)
+            throw ServerExceptionLocal(CONFIG_PROPERTY_NOT_SET, key)
 
          case e: ConfigException.WrongType =>
-            throw ServerExceptionLocal(CONFIG_PROPERTY_WRONG_TYPE, key, ConfigValueType.STRING, config.getValue(key).valueType())
+            throw ServerExceptionLocal(CONFIG_PROPERTY_WRONG_TYPE, key, ConfigValueType.STRING.toString, config.getValue(key).valueType.toString)
       }
    }
 
@@ -48,7 +49,7 @@ class ConfigurationImpl(config: Config) extends Configuration with ConfigKeys {
          case e: ConfigException.Missing => None
 
          case e: ConfigException.WrongType =>
-            throw ServerExceptionLocal(CONFIG_PROPERTY_WRONG_TYPE, key, ConfigValueType.OBJECT, config.getValue(key).valueType())
+            throw ServerExceptionLocal(CONFIG_PROPERTY_WRONG_TYPE, key, ConfigValueType.OBJECT.toString, config.getValue(key).valueType.toString)
       }
    }
 
@@ -65,7 +66,7 @@ class ConfigurationImpl(config: Config) extends Configuration with ConfigKeys {
             throw ServerExceptionLocal(CONFIG_PROPERTY_NOT_SET, key)
 
          case e: ConfigException.WrongType =>
-            throw ServerExceptionLocal(CONFIG_PROPERTY_WRONG_TYPE, key, ConfigValueType.NUMBER, config.getValue(key).valueType())
+            throw ServerExceptionLocal(CONFIG_PROPERTY_WRONG_TYPE, key, ConfigValueType.NUMBER.toString, config.getValue(key).valueType.toString)
       }
    }
 

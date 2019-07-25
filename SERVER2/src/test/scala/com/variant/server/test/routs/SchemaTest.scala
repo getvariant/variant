@@ -3,7 +3,7 @@ package com.variant.server.test.routs
 import scala.util.Random
 import com.variant.core.Constants._
 import com.variant.server.test.util.ParameterizedString
-import com.variant.server.test.spec.EmbeddedSpec
+import com.variant.server.test.spec.EmbeddedServerSpec
 import com.variant.core.schema.parser.SchemaParser
 import com.variant.server.schema.ServerSchemaParser
 import akka.http.scaladsl.model.HttpRequest
@@ -44,7 +44,7 @@ object SchemaTest {
 /**
  * Event Controller
  */
-class SchemaTest extends EmbeddedSpec {
+class SchemaTest extends EmbeddedServerSpec {
 
    "ConnectionController" should {
 

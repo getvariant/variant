@@ -9,12 +9,12 @@ import com.variant.server.boot.ServerMessageLocal._
 import com.variant.server.boot.VariantServer
 import com.variant.server.test.util.ServerLogTailer
 import com.variant.server.boot.ServerMessageLocal
-import com.variant.server.test.spec.EmbeddedSpec
+import com.variant.server.test.spec.EmbeddedServerSpec
 
 /**
  * Test various schema deployment error scenarios
  */
-class ServerBootExceptionTest extends EmbeddedSpec with ConfigKeys {
+class ServerBootExceptionTest extends EmbeddedServerSpec with ConfigKeys {
 
    /*
    /**

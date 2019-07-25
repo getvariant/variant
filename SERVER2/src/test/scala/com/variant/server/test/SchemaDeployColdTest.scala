@@ -4,12 +4,21 @@ import org.scalatest.TestData
 
 import com.variant.server.boot.VariantServer
 
-import com.variant.server.test.spec.EmbeddedSpec
+import com.variant.server.test.spec.EmbeddedServerSpec
+import org.scalatest.BeforeAndAfterAll
 
 /**
  * Test various schema deployment scenarios.
  */
-class SchemaDeployColdTest extends EmbeddedSpec {
+class SchemaDeployColdTest extends EmbeddedServerSpec with BeforeAndAfterAll {
+
+   /**
+    * Cleanup
+    */
+   override def afterAll() {
+      sys.props -= "schemata.dir"
+      super.afterAll()
+   }
 
    "Server should come up with no schemata" in {
       server.bootExceptions.size mustEqual 0

@@ -14,12 +14,12 @@ import akka.http.scaladsl.model.HttpMethod
 /**
  * Embedded Server
  */
-trait EmbeddedSpec extends BaseSpec with ScalatestRouteTest {
+trait EmbeddedServerSpec extends BaseSpec with ScalatestRouteTest {
 
    // Build straight up server upon initialization
    // Tests may use the builder object to build other server instances with
    // alternate configuration parameters.
-   private[this] var _server: VariantServer = VariantServer()
+   private[this] var _server: VariantServer = VariantServer.builder.headless.build
 
    def server = _server
 
@@ -68,8 +68,12 @@ trait EmbeddedSpec extends BaseSpec with ScalatestRouteTest {
        */
       def reboot() {
 
-         EmbeddedSpec.this._server.shutdown()
-         EmbeddedSpec.this._server = VariantServer(overrides, deletions)
+         EmbeddedServerSpec.this._server.shutdown()
+         EmbeddedServerSpec.this._server = VariantServer.builder
+            .headless
+            .withOverrides(overrides)
+            .withDeletions(deletions)
+            .build
       }
    }
 

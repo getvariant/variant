@@ -59,14 +59,41 @@ trait VariantServer {
  * Server factories
  */
 object VariantServer {
-   def apply(): VariantServer = new VariantServerImpl(Map.empty, Seq.empty);
-   def apply(overrides: Map[String, _], deletions: Seq[String]): VariantServer = new VariantServerImpl(overrides, deletions);
+
+   class Builder {
+
+      private[this] var overrides: Map[String, _] = Map.empty
+      private[this] var deletions: Seq[String] = Seq.empty
+      private[this] var headless: Boolean = false
+
+      def headless(): Builder = {
+         this.headless = true
+         this
+      }
+
+      def withOverrides(overrides: Map[String, _]): Builder = {
+         this.overrides = overrides;
+         this
+      }
+
+      def withDeletions(deletions: Seq[String]): Builder = {
+         this.deletions = deletions
+         this
+      }
+
+      def build(): VariantServer = {
+         new VariantServerImpl(headless, overrides, deletions)
+      }
+   }
+
+   def builder = new Builder
 }
 
 /**
  * Concrete implementation of VariantServer with a private constructor.
+ * The headless option is used by the tests, which are not interested in binding to the port.
  */
-class VariantServerImpl(overrides: Map[String, _], deletions: Seq[String]) extends VariantServer with LazyLogging {
+private class VariantServerImpl(headless: Boolean, overrides: Map[String, _], deletions: Seq[String]) extends VariantServer with LazyLogging {
 
    private val startupTimeoutSeconds = 10
 
@@ -83,7 +110,7 @@ class VariantServerImpl(overrides: Map[String, _], deletions: Seq[String]) exten
 
    override lazy val schemata: Schemata = _schemaDeployer.schemata
 
-   override def isUp = binding.isDefined && bootExceptions.size == 0
+   override def isUp = (headless || binding.isDefined) && bootExceptions.size == 0
 
    // Bootstrap external configuration first, before we can split into 2 parallel threads.
    override lazy val config = _config.get
@@ -114,8 +141,11 @@ class VariantServerImpl(overrides: Map[String, _], deletions: Seq[String]) exten
       // TODO: I haven't found a way to pass `this` implicitly other than creating an implicit val
       implicit val _this = this
 
-      // Thread 1: Bind to TCP port.
-      val serverBindingTask: Future[Http.ServerBinding] = Http().bindAndHandle(new Router().routes, "localhost", config.httpPort)
+      // Thread 1: Bind to TCP port, unless headless is true.
+      val serverBindingTask: Future[Http.ServerBinding] = {
+         if (headless) Future.successful(null)
+         else Http().bindAndHandle(new Router().routes, "localhost", config.httpPort)
+      }
 
       // Thread 2: Server backend init.
       val serverInitTask = Future {
@@ -124,7 +154,7 @@ class VariantServerImpl(overrides: Map[String, _], deletions: Seq[String]) exten
       // Block indefinitely for when both futures are completed...
 
       Try { Await.result(serverBindingTask, Duration.Inf) } match {
-         case Success(b) => binding = Some(b)
+         case Success(b) => binding = if (headless) None else Some(b)
          case Failure(t) => croak(t)
       }
 
@@ -136,7 +166,7 @@ class VariantServerImpl(overrides: Map[String, _], deletions: Seq[String]) exten
       if (isUp) {
          logger.info(ServerMessageLocal.SERVER_BOOT_OK.asMessage(
             s"${productVersion.comment} release ${productVersion.version}",
-            binding.get.localAddress.getPort.asInstanceOf[Object],
+            config.httpPort.toString,
             TimeUtils.formatDuration(uptime)))
       } else {
          logger.error(ServerMessageLocal.SERVER_BOOT_FAILED.asMessage(s"${productVersion.comment} release ${productVersion.version}"))
@@ -150,7 +180,7 @@ class VariantServerImpl(overrides: Map[String, _], deletions: Seq[String]) exten
       case Success(_) =>
          logger.info(ServerMessageLocal.SERVER_SHUTDOWN.asMessage(
             s"${productVersion.comment} release ${productVersion.version}",
-            String.valueOf(config.httpPort),
+            config.httpPort.toString,
             TimeUtils.formatDuration(uptime)))
 
       case Failure(e) =>
@@ -158,7 +188,7 @@ class VariantServerImpl(overrides: Map[String, _], deletions: Seq[String]) exten
    }
 
    override def shutdown() {
-      binding.get.unbind()
+      binding.map(_.unbind)
       binding = None
       actorSystem.terminate()
       Await.result(actorSystem.whenTerminated, 2 seconds)
@@ -178,7 +208,7 @@ class VariantServerImpl(overrides: Map[String, _], deletions: Seq[String]) exten
    def croak(t: Throwable) {
       t match {
          case se: ServerException =>
-            bootExceptions += se; println("added " + se)
+            bootExceptions += se;
          case e: Throwable => bootExceptions += new ServerException("Uncaught exception: " + e.getMessage, e)
       }
    }

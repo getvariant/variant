@@ -1,6 +1,6 @@
 package com.variant.server.test.routs
 
-import com.variant.server.test.spec.EmbeddedSpec
+import com.variant.server.test.spec.EmbeddedServerSpec
 
 import akka.http.scaladsl.model.ContentTypes
 import akka.http.scaladsl.model.HttpRequest
@@ -10,7 +10,7 @@ import akka.http.scaladsl.model.HttpMethods
 /**
  * Root Controller (health message)
  */
-class RootTest extends EmbeddedSpec {
+class RootTest extends EmbeddedServerSpec {
 
    "RootController" should {
 

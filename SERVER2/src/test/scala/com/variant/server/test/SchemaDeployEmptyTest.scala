@@ -9,14 +9,14 @@ import com.variant.server.boot.ServerMessageLocal
 import com.variant.server.boot.VariantServer
 import com.variant.server.test.util.ServerLogTailer
 
-import com.variant.server.test.spec.EmbeddedSpec
+import com.variant.server.test.spec.EmbeddedServerSpec
 import org.scalatest.BeforeAndAfterAll
 import java.nio.file.Paths
 
 /**
  * Test various schema deployment scenarios
  */
-class SchemaDeployEmptyTest extends EmbeddedSpec with BeforeAndAfterAll {
+class SchemaDeployEmptyTest extends EmbeddedServerSpec with BeforeAndAfterAll {
 
    private val schemataDir = "/tmp/schemata-test"
    private val dirWatcherLatencyMsecs = 15000 // takes this long for FS to notify the directory watcher service.
