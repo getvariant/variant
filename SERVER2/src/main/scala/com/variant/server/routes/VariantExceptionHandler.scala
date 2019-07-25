@@ -18,7 +18,7 @@ object VariantExceptionHandler extends LazyLogging {
       case e: ServerExceptionRemote =>
 
          logger.whenDebugEnabled {
-            logger.debug(s"Remote server error: [${e.getMessage}]")
+            logger.debug(s"Remote server error: ${e.getMessage}")
          }
 
          complete(HttpResponse(StatusCodes.BadRequest, entity = e.toResponseEntity))
@@ -27,7 +27,7 @@ object VariantExceptionHandler extends LazyLogging {
       case e: ServerExceptionInternal =>
 
          logger.whenDebugEnabled {
-            logger.debug(s"Internal server error: [${e.getMessage}]")
+            logger.debug(s"Internal server error: ${e.getMessage}")
          }
 
          complete(HttpResponse(StatusCodes.InternalServerError, entity = e.toRemoteException.toResponseEntity))

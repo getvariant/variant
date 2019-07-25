@@ -35,7 +35,7 @@ object SchemaRoute extends VariantRoute with LazyLogging {
          }
          case None => {
             logger.debug("Schema [%s] not found".format(name))
-            throw new ServerExceptionRemote(ServerError.UNKNOWN_SCHEMA, name)
+            throw ServerExceptionRemote(ServerError.UNKNOWN_SCHEMA, name)
          }
       }
    }
