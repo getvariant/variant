@@ -11,6 +11,7 @@ import akka.http.scaladsl.model.StatusCodes._
 import akka.http.scaladsl.model.ContentTypes
 import akka.http.scaladsl.model.HttpMethods
 import play.api.libs.json._
+import com.variant.core.error.ServerError
 
 /*
  * Reusable event JSON objects.
@@ -48,7 +49,7 @@ class SchemaTest extends EmbeddedServerSpec {
 
    "ConnectionController" should {
 
-      "return  404 on GET with no schema name" in {
+      "respond NotFound on GET with no schema name" in {
 
          HttpRequest(uri = "/schema") ~> router ~> check {
             handled mustBe true
@@ -68,13 +69,27 @@ class SchemaTest extends EmbeddedServerSpec {
          }
       }
 
-      "respond OK on GET with invalid schema" in {
+      "respond BadRequest on GET with invalid schema" in {
 
          HttpRequest(method = HttpMethods.GET, uri = "/schema/invalid") ~> router ~> check {
             handled mustBe true
-            status mustBe OK
+            status mustBe BadRequest
+            println(entityAs[String])
             val respBody = Json.parse(entityAs[String])
-            (respBody \ "ssnto").as[Long] mustBe server.config.sessionTimeout
+            (respBody \ "code").as[Long] mustBe ServerError.UNKNOWN_SCHEMA.getCode
+            (respBody \ "args").as[List[String]] mustBe List("invalid")
+         }
+      }
+
+      "respond MethodNotAllowed on everythig bug GET with invalid schema" in {
+
+         httpMethods.filter(_ != HttpMethods.GET).foreach { method =>
+            HttpRequest(method = method, uri = "/schema/invalid") ~> router ~> check {
+               handled mustBe true
+               status mustBe MethodNotAllowed
+               contentType mustBe ContentTypes.`text/plain(UTF-8)`
+               entityAs[String] mustBe "HTTP method not allowed, supported methods: GET"
+            }
          }
       }
 

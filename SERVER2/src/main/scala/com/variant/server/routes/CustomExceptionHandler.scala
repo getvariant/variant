@@ -10,7 +10,7 @@ import com.variant.core.error.ServerError
 import com.variant.server.boot.ServerExceptionInternal
 import akka.http.scaladsl.model.ContentTypes
 
-object VariantExceptionHandler extends LazyLogging {
+object CustomExceptionHandler extends LazyLogging {
 
    def apply() = ExceptionHandler {
 
