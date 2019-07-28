@@ -35,7 +35,7 @@ import akka.http.scaladsl.settings.ServerSettings
 trait VariantServer {
 
    // TODO Need to get this from sbt
-   val productVersion = new ProductVersion("Variant AIM Server", "0.10.1")
+   val productVersion = ("Variant AIM Server", "0.10.1")
 
    val config: Configuration
 
@@ -171,11 +171,11 @@ private class VariantServerImpl(
 
    if (isUp) {
       logger.info(ServerMessageLocal.SERVER_BOOT_OK.asMessage(
-         s"${productVersion.product} release ${productVersion.version}",
+         s"${productVersion._1} release ${productVersion._2}",
          config.httpPort.toString,
          TimeUtils.formatDuration(uptime)))
    } else {
-      logger.error(ServerMessageLocal.SERVER_BOOT_FAILED.asMessage(s"${productVersion.product} release ${productVersion.version}"))
+      logger.error(ServerMessageLocal.SERVER_BOOT_FAILED.asMessage(s"${productVersion._1} release ${productVersion._2}"))
       bootExceptions.foreach(e => logger.error(e.getMessage, e))
       actorSystem.terminate()
    }
@@ -183,7 +183,7 @@ private class VariantServerImpl(
    actorSystem.whenTerminated.andThen {
       case Success(_) =>
          logger.info(ServerMessageLocal.SERVER_SHUTDOWN.asMessage(
-            s"${productVersion.product} release ${productVersion.version}",
+            s"${productVersion._1} release ${productVersion._2}",
             config.httpPort.toString,
             TimeUtils.formatDuration(uptime)))
 

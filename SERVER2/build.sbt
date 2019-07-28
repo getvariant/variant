@@ -35,6 +35,9 @@ libraryDependencies ++= Seq(
   
   "ch.qos.logback"             % "logback-classic"  % "1.2.3",
   "com.typesafe.scala-logging" %% "scala-logging"    % "3.9.2",
+ 
+   // H2 In mem DB in test 
+  "com.h2database"     % "h2"                   % "1.4.191"       % Test,
   
   // Variant Core
   "com.variant"            % "variant-core"        % coreVersion
@@ -62,14 +65,13 @@ executableScriptName := "variant-ctl"
 //
 // Test related settings.
 //
-
-// Append production resource directory "conf" so that its content is available
-// but behind the content of src/test/resources
-unmanagedClasspath in Test += baseDirectory.value / "src" / "universal" / "conf"
-unmanagedClasspath in Test += baseDirectory.value / "src" / "universal" / "ext/*"
-
 // Change current directory to `test-base` for `test`, `testQuick`, and `testOnly`
 // For this to work, fork must be set to true, i.e. each run is in a separate JVM
 fork := true
 Test / baseDirectory := file("test-base")
+
+// Append production resource directory "conf" so that its content is available
+// but behind the content of src/test/resources
+//unmanagedClasspath in Test += baseDirectory.value / "src" / "universal" / "conf"
+unmanagedClasspath in Test += baseDirectory.value / "src" / "universal" / "ext/*"
 

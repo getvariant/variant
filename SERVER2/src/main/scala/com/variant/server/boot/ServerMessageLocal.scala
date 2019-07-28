@@ -57,7 +57,7 @@ object ServerMessageLocal {
       new ServerMessageLocal(424, Severity.ERROR, "Unable to instantiate class [%s] becuase no suitable constructor was found");
 
    val OBJECT_INSTANTIATION_ERROR =
-      new ServerMessageLocal(425, Severity.ERROR, "Unable to instantiate class [%s] due to error [%s]. See log for details");
+      new ServerMessageLocal(425, Severity.ERROR, "Unable to instantiate class [%s] due to error [%s]");
 
    val HOOK_CLASS_NO_INTERFACE =
       new ServerMessageLocal(426, Severity.ERROR, "Lifecycle hook class [%s] must implement interface [%s]");

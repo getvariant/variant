@@ -27,7 +27,7 @@ public class ClassUtil  {
 
 		// Java reflection API does not understand optionals, so translate.
 		Config config  = !init.isPresent() || init.get().equals("null") ? null : ConfigFactory.parseString(init.get()); 
-
+	   
 		Object result = ReflectUtils.instantiate(className, Config.class, config);
 		
 		if (LOG.isTraceEnabled())

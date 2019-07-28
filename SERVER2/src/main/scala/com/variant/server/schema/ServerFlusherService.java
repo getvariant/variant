@@ -1,5 +1,8 @@
 package com.variant.server.schema;
 
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.nio.file.Paths;
 import java.util.Optional;
 
 import org.slf4j.Logger;
@@ -68,6 +71,9 @@ public class ServerFlusherService extends FlusherService {
 		
 		try {
 			// Create the Class object for the supplied LifecycleHook implementation.
+		   //for (URL url: ((URLClassLoader) ServerFlusherService.class.getClassLoader()).getURLs()) {
+		   //   System.out.println("****************** " + url);
+		   //}
 			Object flusherObj = ClassUtil.instantiate(f.getClassName(), f.getInit());
 			
 			if (flusherObj == null) {

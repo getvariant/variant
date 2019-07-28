@@ -38,8 +38,9 @@ class Router(implicit server: VariantServer) extends LazyLogging {
    def routes(implicit system: ActorSystem): Route = {
 
       // Override the default Server header.
-      val akkaProductVersion = ProductVersion("akka-http", server.actorSystem.settings.config.getString("akka.http.version"))
-      respondWithHeaders(Server(server.productVersion, akkaProductVersion)) {
+      val akkaHttp = "akka-http/" + server.actorSystem.settings.config.getString("akka.http.version")
+      val variant = "variant/" + server.productVersion._2
+      respondWithHeaders(Server(s"${variant} - ${akkaHttp}")) {
          handleExceptions(eh) {
             handleRejections(rh) {
                concat(

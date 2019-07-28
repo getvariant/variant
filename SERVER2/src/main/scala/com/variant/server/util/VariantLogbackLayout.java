@@ -7,6 +7,8 @@ import com.variant.core.Constants;
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.spi.ILoggingEvent;
+import ch.qos.logback.classic.spi.IThrowableProxy;
+import ch.qos.logback.classic.spi.ThrowableProxyUtil;
 import ch.qos.logback.core.LayoutBase;
 
 /**
@@ -21,6 +23,7 @@ public class VariantLogbackLayout extends LayoutBase<ILoggingEvent> implements C
    private static final SimpleDateFormat df = new SimpleDateFormat(LOGGER_DATE_FORMAT);
 	   
    public String doLayout(ILoggingEvent event) {
+      
       StringBuffer sbuf = new StringBuffer(128);
       sbuf.append(df.format(new Date(event.getTimeStamp())));
       sbuf.append(" ");
@@ -35,6 +38,15 @@ public class VariantLogbackLayout extends LayoutBase<ILoggingEvent> implements C
       sbuf.append(" - ");
       sbuf.append(event.getFormattedMessage());
       sbuf.append(System.lineSeparator());
+      
+      // If this event has an error stack to display.
+      IThrowableProxy throwbleProxy = event.getThrowableProxy();
+      if (throwbleProxy != null) {
+          String throwableStr = ThrowableProxyUtil.asString(throwbleProxy);
+          sbuf.append(throwableStr);
+          sbuf.append(System.lineSeparator());
+      }
+
       return sbuf.toString();
    }
    
