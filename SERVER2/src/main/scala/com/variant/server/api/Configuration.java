@@ -1,7 +1,6 @@
 package com.variant.server.api;
 
 import java.util.Optional;
-import java.util.Set;
 
 /**
  * Variant Server's runtime configuration currently in effect. Can be obtained by calling {@link Session#getConfiguration()}.
@@ -68,10 +67,17 @@ public interface Configuration {
 	int eventWriterMaxDelay();
 	
 	/**
-	 * Network port bound by Variant server. Provided by the <code>http.port</code> configuration property.
+	 * HTTP port. Provided by the <code>http.port</code> configuration property.
 	 * 
 	 * @since 0.10
 	 */
 	int httpPort();
-	
+
+   /**
+    * HTTPS port. Provided by the <code>http.port</code> configuration property.
+    * 
+    * @since 0.10
+    */
+   int httpsPort();
+
 }

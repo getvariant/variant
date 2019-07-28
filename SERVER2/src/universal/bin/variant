@@ -20,8 +20,8 @@ stop)
       kill -2 $pid
       echo "Variant Server stopped"
    fi
-
    ;;
+   
 status)
    pid=$(running_pid)
    if [ -n "$pid" ] ; then 
@@ -30,6 +30,11 @@ status)
       echo "Variant Server not running"
    fi  
    ;;
+
+debug)  ## unpublished option ##
+   bin/variant-ctl -agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=8000
+   ;;
+   
 *)
         echo "Usage: variant.sh {start|stop|status}"
         exit 1

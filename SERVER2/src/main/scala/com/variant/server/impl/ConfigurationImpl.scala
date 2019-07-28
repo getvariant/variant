@@ -29,7 +29,6 @@ class ConfigurationImpl(config: Config) extends Configuration with ConfigKeys {
       } catch {
 
          case e: ConfigException.Missing =>
-            println("**************** " + ServerExceptionLocal(CONFIG_PROPERTY_NOT_SET, key).getMessage)
             throw ServerExceptionLocal(CONFIG_PROPERTY_NOT_SET, key)
 
          case e: ConfigException.WrongType =>
@@ -75,6 +74,8 @@ class ConfigurationImpl(config: Config) extends Configuration with ConfigKeys {
    /*--------------------------------------------------------------------------------*/
 
    override def httpPort: Int = getInt(HTTP_PORT)
+
+   override def httpsPort: Int = getInt(HTTPS_PORT)
 
    override def schemataDir: String = getString(SCHEMATA_DIR)
 

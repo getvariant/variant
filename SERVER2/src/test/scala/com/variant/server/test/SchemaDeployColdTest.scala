@@ -16,7 +16,7 @@ class SchemaDeployColdTest extends EmbeddedServerSpec with BeforeAndAfterAll {
     * Cleanup
     */
    override def afterAll() {
-      sys.props -= "schemata.dir"
+      sys.props -= "variant.schemata.dir"
       super.afterAll()
    }
 
@@ -34,7 +34,7 @@ class SchemaDeployColdTest extends EmbeddedServerSpec with BeforeAndAfterAll {
    "Schema should deploy from config property variant.schemata.dir" in {
 
       new ServerBuilder()
-         .withConfig(Map("schemata.dir" -> "schemata-empty"))
+         .withConfig(Map("variant.schemata.dir" -> "schemata-empty"))
          .reboot()
 
       server.bootExceptions.size mustEqual 0
@@ -43,8 +43,8 @@ class SchemaDeployColdTest extends EmbeddedServerSpec with BeforeAndAfterAll {
 
    "Schema should deploy from system property variant.schemata.dir" in {
 
-      sys.props.contains("schemata.dir") mustBe false
-      sys.props += ("schemata.dir" -> "schemata-errata")
+      sys.props.contains("variant.schemata.dir") mustBe false
+      sys.props += ("variant.schemata.dir" -> "schemata-errata")
 
       new ServerBuilder().reboot()
 

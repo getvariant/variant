@@ -15,6 +15,7 @@ import akka.http.scaladsl.model.HttpResponse
 import com.variant.core.error.ServerError
 import akka.http.scaladsl.server.ExceptionHandler
 import akka.http.scaladsl.server.MethodRejection
+import akka.http.scaladsl.model.headers.ProductVersion
 
 /**
  * HTTP request router.
@@ -22,12 +23,14 @@ import akka.http.scaladsl.server.MethodRejection
 object Router {
 
    def apply(implicit server: VariantServer) = new Router
+
+   private[Router] val eh = CustomExceptionHandler()
+   private[Router] val rh = CustomRejectionHandler()
 }
 
 class Router(implicit server: VariantServer) extends LazyLogging {
 
-   // we leave these abstract, since they will be provided by the App
-   // implicit def system: ActorSystem
+   import Router._
 
    /**
     *  The routes served by our server.
@@ -35,22 +38,23 @@ class Router(implicit server: VariantServer) extends LazyLogging {
    def routes(implicit system: ActorSystem): Route = {
 
       // Override the default Server header.
-      respondWithHeaders(Server(server.productVersion)) {
-         handleExceptions(CustomExceptionHandler()) {
-            //handleRejections(CustomRejectionHandler()) {
-            concat(
+      val akkaProductVersion = ProductVersion("akka-http", server.actorSystem.settings.config.getString("akka.http.version"))
+      respondWithHeaders(Server(server.productVersion, akkaProductVersion)) {
+         handleExceptions(eh) {
+            handleRejections(rh) {
+               concat(
 
-               // GET / - Health page
-               pathEndOrSingleSlash { RootRoute.root },
+                  // GET / - Health page
+                  pathEndOrSingleSlash { RootRoute.root },
 
-               // GET /schema/:name - pings a schema so that the client can create a connection.
-               pathPrefix("schema") {
-                  concat(
-                     path(Segment) { name =>
-                        get { implicit ctx => ctx.complete(SchemaRoute.get(name)) }
-                     })
-               })
-            //}
+                  // GET /schema/:name - pings a schema so that the client can create a connection.
+                  pathPrefix("schema") {
+                     concat(
+                        path(Segment) { name =>
+                           get { implicit ctx => ctx.complete(SchemaRoute.get(name)) }
+                        })
+                  })
+            }
          }
       }
    }

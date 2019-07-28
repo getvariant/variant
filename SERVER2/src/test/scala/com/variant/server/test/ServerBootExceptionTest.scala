@@ -24,19 +24,19 @@ class ServerBootExceptionTest extends EmbeddedServerSpec with ConfigKeys {
 
       if (testData.name.contains("CONFIG_PROPERTY_NOT_SET")) {
          _app = new GuiceApplicationBuilder()
-            .configure(new Configuration(VariantApplicationLoader.config.withoutPath("variant.schemata.dir")))
+            .configure(new Configuration(VariantApplicationLoader.config.withoutPath("variant.variant.schemata.dir")))
             .build()
          _app
       } else if (testData.name.contains("SCHEMATA_DIR_MISSING")) {
          _app = new GuiceApplicationBuilder()
             .configure(new Configuration(VariantApplicationLoader.config))
-            .configure(Map("variant.schemata.dir" -> "non-existent"))
+            .configure(Map("variant.variant.schemata.dir" -> "non-existent"))
             .build()
          _app
       } else if (testData.name.contains("SCHEMATA_DIR_NOT_DIR")) {
          _app = new GuiceApplicationBuilder()
             .configure(new Configuration(VariantApplicationLoader.config))
-            .configure("variant.schemata.dir" -> "test-schemata-file")
+            .configure("variant.variant.schemata.dir" -> "test-schemata-file")
             .build()
          _app
       } else if (testData.name.contains("SCHEMA_NAME_DUPE")) {
@@ -48,7 +48,7 @@ class ServerBootExceptionTest extends EmbeddedServerSpec with ConfigKeys {
          FileUtils.copyFile(new File("conf-test/ParserConjointOkayBigTestNoHooks.json"), new File("/tmp/schemata-test/schema2.json"))
          _app = new GuiceApplicationBuilder()
             .configure(new Configuration(VariantApplicationLoader.config))
-            .configure("variant.schemata.dir" -> "/tmp/schemata-test")
+            .configure("variant.variant.schemata.dir" -> "/tmp/schemata-test")
             .build()
          _app
       } else {
@@ -65,9 +65,10 @@ class ServerBootExceptionTest extends EmbeddedServerSpec with ConfigKeys {
       "emit CONFIG_PROPERTY_NOT_SET if no schema.dir config" in {
 
          new ServerBuilder()
-            .withoutKeys("schemata.dir")
+            .withoutKeys("variant.schemata.dir")
             .reboot()
 
+         server.isUp mustBe false
          server.schemata.size mustBe 0
          server.bootExceptions.size mustEqual 1
          val ex = server.bootExceptions.head
@@ -79,9 +80,10 @@ class ServerBootExceptionTest extends EmbeddedServerSpec with ConfigKeys {
    "emit SCHEMATA_DIR_MISSING if schemata dir does not exist" in {
 
       new ServerBuilder()
-         .withConfig(Map("schemata.dir" -> "non-existent"))
+         .withConfig(Map("variant.schemata.dir" -> "non-existent"))
          .reboot()
 
+      server.isUp mustBe false
       server.schemata.size mustBe 0
       server.bootExceptions.size mustEqual 1
       val ex = server.bootExceptions.head

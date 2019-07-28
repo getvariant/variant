@@ -6,6 +6,7 @@ import scala.concurrent.Await
 import scala.concurrent.duration.Duration
 import sun.misc.Signal
 import sun.misc.SignalHandler
+import scala.util.Try
 
 /**
  * Standalone server entry point.

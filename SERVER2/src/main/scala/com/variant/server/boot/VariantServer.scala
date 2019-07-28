@@ -35,7 +35,7 @@ import akka.http.scaladsl.settings.ServerSettings
 trait VariantServer {
 
    // TODO Need to get this from sbt
-   val productVersion = new ProductVersion("Variant", "0.10.1", "Variant AIM Server")
+   val productVersion = new ProductVersion("Variant AIM Server", "0.10.1")
 
    val config: Configuration
 
@@ -82,7 +82,19 @@ object VariantServer {
       }
 
       def build(): VariantServer = {
-         new VariantServerImpl(headless, overrides, deletions)
+
+         // Create actor system outside of the constructor so we can catch any uncaught exceptions here
+         // and have the opportunity to terminate actor system.
+
+         implicit val actorSystem: ActorSystem = ActorSystem("VariantServer")
+
+         try {
+            new VariantServerImpl(headless, overrides, deletions)
+         } catch {
+            case t: Throwable =>
+               actorSystem.terminate()
+               throw t
+         }
       }
    }
 
@@ -93,7 +105,12 @@ object VariantServer {
  * Concrete implementation of VariantServer with a private constructor.
  * The headless option is used by the tests, which are not interested in binding to the port.
  */
-private class VariantServerImpl(headless: Boolean, overrides: Map[String, _], deletions: Seq[String]) extends VariantServer with LazyLogging {
+private class VariantServerImpl(
+   headless: Boolean,
+   overrides: Map[String, _],
+   deletions: Seq[String])(override implicit val actorSystem: ActorSystem)
+
+   extends VariantServer with LazyLogging {
 
    private val startupTimeoutSeconds = 10
 
@@ -102,9 +119,17 @@ private class VariantServerImpl(headless: Boolean, overrides: Map[String, _], de
 
    //val userRegistryActor: ActorRef = system.actorOf(UserRegistryActor.props, "userRegistryActor")
 
-   override implicit val actorSystem: ActorSystem = ActorSystem("VariantServer")
+   //
+   // Attempt to load the external configuration first. Let it fail if a problem,
+   // since there's no future before a config.
+   val config = {
+      val external = ConfigLoader.load("/variant.conf", "/prod/variant-default.conf")
+      // Apply overrides.
+      var withOverrides = ConfigFactory.parseMap(overrides.asJava).withFallback(external)
+      deletions.foreach { key => withOverrides = withOverrides.withoutPath(key) }
+      new ConfigurationImpl(withOverrides)
+   }
 
-   // set up ActorSystem and other dependencies here
    private implicit val materializer: ActorMaterializer = ActorMaterializer()
    private implicit val executionContext: ExecutionContext = actorSystem.dispatcher
 
@@ -112,74 +137,53 @@ private class VariantServerImpl(headless: Boolean, overrides: Map[String, _], de
 
    override def isUp = (headless || binding.isDefined) && bootExceptions.size == 0
 
-   // Bootstrap external configuration first, before we can split into 2 parallel threads.
-   override lazy val config = _config.get
-
-   //Attempt to load the external configuration.
-   val _config: Option[ConfigurationImpl] = Try[Config] {
-      ConfigLoader.load("/variant.conf", "/prod/variant-default.conf")
-   } match {
-
-      case Success(conf) =>
-         // Have external config. Apply overrides.
-         var finalConfig = ConfigFactory.parseMap(overrides.asJava).withFallback(conf)
-         deletions.foreach { key => finalConfig = finalConfig.withoutPath(key) }
-         Some(new ConfigurationImpl(finalConfig))
-
-      case Failure(t) => croak(t); None
+   // If debug, echo all config params.
+   logger.whenDebugEnabled {
+      config.entrySet.forEach { e => logger.debug(s"${e.getKey} → ${e.getValue}") }
    }
 
-   if (_config.isDefined) {
+   // To speedup server startup, we split it between two parallel threads.
+   // Startup Thread 1: server binding.
+   // TODO: I haven't found a way to pass `this` implicitly other than creating an implicit val
+   implicit val _this = this
 
-      // If debug, echo all config params.
-      logger.whenDebugEnabled {
-         config.entrySet.forEach { e => logger.debug(s"${e.getKey} → ${e.getValue}") }
-      }
+   // Thread 1: Bind to TCP port, unless headless is true.
+   val serverBindingTask: Future[Http.ServerBinding] = {
+      if (headless) Future.successful(null)
+      else Http().bindAndHandle(new Router().routes, "localhost", config.httpPort)
+   }
 
-      // To speedup server startup, we split it between two parallel threads.
-      // Startup Thread 1: server binding.
-      // TODO: I haven't found a way to pass `this` implicitly other than creating an implicit val
-      implicit val _this = this
+   // Thread 2: Server backend init.
+   val serverInitTask = Future {
+      useSchemaDeployer(SchemaDeployer.fromFileSystem(this))
+   }
+   // Block indefinitely for when both futures are completed...
 
-      // Thread 1: Bind to TCP port, unless headless is true.
-      val serverBindingTask: Future[Http.ServerBinding] = {
-         if (headless) Future.successful(null)
-         else Http().bindAndHandle(new Router().routes, "localhost", config.httpPort)
-      }
+   Try { Await.result(serverBindingTask, Duration.Inf) } match {
+      case Success(b) => binding = if (headless) None else Some(b)
+      case Failure(t) => croak(t)
+   }
 
-      // Thread 2: Server backend init.
-      val serverInitTask = Future {
-         useSchemaDeployer(SchemaDeployer.fromFileSystem(this))
-      }
-      // Block indefinitely for when both futures are completed...
+   Try { Await.result(serverInitTask, Duration.Inf) } match {
+      case Success(_) =>
+      case Failure(t) => croak(t)
+   }
 
-      Try { Await.result(serverBindingTask, Duration.Inf) } match {
-         case Success(b) => binding = if (headless) None else Some(b)
-         case Failure(t) => croak(t)
-      }
-
-      Try { Await.result(serverInitTask, Duration.Inf) } match {
-         case Success(_) =>
-         case Failure(t) => croak(t)
-      }
-
-      if (isUp) {
-         logger.info(ServerMessageLocal.SERVER_BOOT_OK.asMessage(
-            s"${productVersion.comment} release ${productVersion.version}",
-            config.httpPort.toString,
-            TimeUtils.formatDuration(uptime)))
-      } else {
-         logger.error(ServerMessageLocal.SERVER_BOOT_FAILED.asMessage(s"${productVersion.comment} release ${productVersion.version}"))
-         bootExceptions.foreach(e => logger.error(e.getMessage, e))
-         actorSystem.terminate()
-      }
-
+   if (isUp) {
+      logger.info(ServerMessageLocal.SERVER_BOOT_OK.asMessage(
+         s"${productVersion.product} release ${productVersion.version}",
+         config.httpPort.toString,
+         TimeUtils.formatDuration(uptime)))
+   } else {
+      logger.error(ServerMessageLocal.SERVER_BOOT_FAILED.asMessage(s"${productVersion.product} release ${productVersion.version}"))
+      bootExceptions.foreach(e => logger.error(e.getMessage, e))
+      actorSystem.terminate()
    }
 
    actorSystem.whenTerminated.andThen {
       case Success(_) =>
          logger.info(ServerMessageLocal.SERVER_SHUTDOWN.asMessage(
-            s"${productVersion.comment} release ${productVersion.version}",
+            s"${productVersion.product} release ${productVersion.version}",
             config.httpPort.toString,
             TimeUtils.formatDuration(uptime)))
 
