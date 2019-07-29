@@ -69,7 +69,7 @@ class SchemaTest extends EmbeddedServerSpec {
          }
       }
 
-      "respond BadRequest on GET with invalid schema" in {
+      "respond UNKNOWN_SCHEMA on GET with invalid schema" in {
 
          HttpRequest(method = HttpMethods.GET, uri = "/schema/invalid") ~> router ~> check {
             handled mustBe true
@@ -81,7 +81,7 @@ class SchemaTest extends EmbeddedServerSpec {
          }
       }
 
-      "respond MethodNotAllowed on everythig bug GET with invalid schema" in {
+      "respond MethodNotAllowed on everythig but GET with invalid schema" in {
 
          httpMethods.filter(_ != HttpMethods.GET).foreach { method =>
             HttpRequest(method = method, uri = "/schema/invalid") ~> router ~> check {

@@ -41,6 +41,8 @@ trait VariantServer {
 
    val schemata: Schemata
 
+   val ssnStore: SessionStore
+
    val actorSystem: ActorSystem
 
    val bootExceptions = mutable.ArrayBuffer[ServerException]()
@@ -134,7 +136,7 @@ private class VariantServerImpl(
    private implicit val executionContext: ExecutionContext = actorSystem.dispatcher
 
    override lazy val schemata: Schemata = _schemaDeployer.schemata
-
+   override val ssnStore = new SessionStore(this)
    override def isUp = (headless || binding.isDefined) && bootExceptions.size == 0
 
    // If debug, echo all config params.

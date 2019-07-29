@@ -15,6 +15,10 @@ import java.time.Instant
 import akka.http.scaladsl.model.HttpRequest
 import akka.http.scaladsl.model.StatusCodes._
 import akka.http.scaladsl.model.HttpMethods
+import com.variant.core.error.ServerError
+import com.variant.core.schema.parser.SchemaParser
+import com.variant.core.session.CoreSession
+import com.variant.server.boot.VariantServer
 
 /**
  * Session Controller Tests
@@ -69,29 +73,39 @@ class SessionTest extends EmbeddedServerSpec {
 
       var genId: String = null
 
-      "return 404 on GET with no sid" in {
+      "respond NotFound on GET with no sid" in {
 
          HttpRequest(method = HttpMethods.GET, uri = "/session/petclinic") ~> router ~> check {
             handled mustBe true
             status mustBe NotFound
-            entityAs[String] mustBe null
+            entityAs[String] mustBe "The requested resource could not be found."
+         }
+      }
+
+      "respond SESSION_EXPIRED on GET non-existent session on valid schema" in {
+
+         HttpRequest(method = HttpMethods.GET, uri = "/session/petclinic/foo") ~> router ~> check {
+            handled mustBe true
+            status mustBe BadRequest
+            val respBody = Json.parse(entityAs[String])
+            (respBody \ "code").as[Long] mustBe ServerError.SESSION_EXPIRED.getCode
+            (respBody \ "args").as[List[String]] mustBe List("foo")
+         }
+      }
+
+      "respond OK on POST non-existent session with valid schema" in {
+
+         val sid = newSid
+         HttpRequest(method = HttpMethods.POST, uri = s"/session/monstrosity/${sid}", entity = emptyTargetingTrackerBody) ~> router ~> check {
+            handled mustBe true
+            status mustBe OK
+            entityAs[String] mustNot be(null)
+            val ssnResp = new SessionResponse(entityAs[String])
+            ssnResp.session.getId mustNot be(sid)
+            ssnResp.schema.getMeta.getName mustBe "monstrosity"
          }
       }
       /*
-      "return SessionExpired on GET non-existent session on valid schema" in {
-
-         assertResp(route(app, httpReq(GET, endpoint + "/petclinic/foo")))
-            .isError(SESSION_EXPIRED, "foo")
-      }
-
-      "return OK on PUT non-existent session with valid conn ID" in {
-
-         val body = sessionJsonBigCovar.expand("sid" -> "foo")
-         assertResp(route(app, httpReq(PUT, endpoint + "/monstrosity").withBody(body)))
-            .isOk
-            .withNoBody
-      }
-
       "return OK and existing session on GET" in {
 
          val body = "just some junk that should be ignored"
@@ -208,5 +222,22 @@ class SessionTest extends EmbeddedServerSpec {
        }
        *
        */
+   }
+
+   /**
+    * Unmarshal the common sessionResponse
+    */
+   private class SessionResponse(respBody: String)(implicit server: VariantServer) {
+
+      private[this] val respJson = Json.parse(respBody)
+      private[this] val ssnSrc = (respJson \ "session").asOpt[String].getOrElse { fail("No 'session' element in reponse") }
+      private[this] val schemaSrc = (respJson \ "schema" \ "src").asOpt[String].getOrElse { fail("No 'schema/src' element in reponse") }
+      private[this] val parserResponse = ServerSchemaParser(implicitly).parse(schemaSrc)
+
+      parserResponse.hasMessages mustBe false
+
+      val session = new CoreSession(ssnSrc)
+      val schema = parserResponse.getSchema
+      val schemaId = (respJson \ "schema" \ "id").asOpt[String].getOrElse { fail("No 'schema/id' element in reponse") }
    }
 }

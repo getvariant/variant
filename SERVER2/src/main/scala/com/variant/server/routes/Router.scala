@@ -16,6 +16,7 @@ import com.variant.core.error.ServerError
 import akka.http.scaladsl.server.ExceptionHandler
 import akka.http.scaladsl.server.MethodRejection
 import akka.http.scaladsl.model.headers.ProductVersion
+import akka.http.scaladsl.server.RequestContext
 
 /**
  * HTTP request router.
@@ -24,8 +25,8 @@ object Router {
 
    def apply(implicit server: VariantServer) = new Router
 
-   private[Router] val eh = CustomExceptionHandler()
-   private[Router] val rh = CustomRejectionHandler()
+   private[Router] val exceptionHandler = CustomExceptionHandler()
+   private[Router] val rejectionHandler = CustomRejectionHandler()
 }
 
 class Router(implicit server: VariantServer) extends LazyLogging {
@@ -41,8 +42,9 @@ class Router(implicit server: VariantServer) extends LazyLogging {
       val akkaHttp = "akka-http/" + server.actorSystem.settings.config.getString("akka.http.version")
       val variant = "variant/" + server.productVersion._2
       respondWithHeaders(Server(s"${variant} - ${akkaHttp}")) {
-         handleExceptions(eh) {
-            handleRejections(rh) {
+         handleExceptions(exceptionHandler) {
+            handleRejections(rejectionHandler) {
+
                concat(
 
                   // GET / - Health page
@@ -50,10 +52,39 @@ class Router(implicit server: VariantServer) extends LazyLogging {
 
                   // GET /schema/:name - pings a schema so that the client can create a connection.
                   pathPrefix("schema") {
+                     get {
+                        path(Segment) { name => implicit ctx => ctx.complete(SchemaRoute.get(name)) }
+                     }
+                  },
+                  // GET /session/:schema/:sid - pings a schema so that the client can create a connection.
+                  pathPrefix("session") {
                      concat(
-                        path(Segment) { name =>
-                           get { implicit ctx => ctx.complete(SchemaRoute.get(name)) }
-                        })
+
+                        // Get an existing session. Error if expired.
+                        get {
+                           path(Segment / Segment) { (schema, sid) => implicit ctx => ctx.complete(SessionRoute.get(schema, sid))
+                           }
+                        },
+                        // Get an existing session or create a new one (with a different ID) if expired.
+                        post {
+                           path(Segment / Segment) { (schema, sid) =>
+                              entity(as[String]) { body => implicit ctx =>
+                                 ctx.complete(SessionRoute.getOrCreate(schema, sid, body))
+                              }
+                           }
+                        } /*,
+                        // Save an existing session. *** DO NOT USE. ***
+                        // Only tests are allowed to use this in order to create a known session state.
+                        put {
+                           path(Segment / Segment) { (schema, sid) =>
+                              entity(as[String]) { body => implicit ctx =>
+                                 ctx.complete(SessionRoute.save(schema, sid, body))
+                              }
+                           }
+                        }
+                        *
+                        */
+                     )
                   })
             }
          }

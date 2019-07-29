@@ -21,7 +21,7 @@ trait EmbeddedServerSpec extends BaseSpec with ScalatestRouteTest {
    // alternate configuration parameters.
    private[this] var _server: VariantServer = VariantServer.builder.headless.build
 
-   def server = _server
+   implicit def server = _server
 
    // Seal the router in order not to have rejections.
    def router = Route.seal(Router(_server).routes)
@@ -76,5 +76,4 @@ trait EmbeddedServerSpec extends BaseSpec with ScalatestRouteTest {
             .build
       }
    }
-
 }
