@@ -10,6 +10,12 @@ import com.variant.server.impl.ConfigurationImpl
 import akka.http.scaladsl.server.Route
 import akka.http.scaladsl.model.HttpMethods
 import akka.http.scaladsl.model.HttpMethod
+import com.variant.core.session.CoreSession
+import akka.http.scaladsl.model.HttpResponse
+import com.variant.core.error.ServerError
+import akka.http.scaladsl.model.StatusCodes._
+import play.api.libs.json._
+import com.variant.server.schema.ServerSchemaParser
 
 /**
  * Embedded Server
@@ -76,4 +82,56 @@ trait EmbeddedServerSpec extends BaseSpec with ScalatestRouteTest {
             .build
       }
    }
+
+   /**
+    * Unmarshal the common sessionResponse
+    */
+   protected class SessionResponse(resp: HttpResponse)(implicit server: VariantServer) {
+      resp.status mustBe OK
+      private[this] val respString = entityAs[String]
+      respString mustNot be(null)
+      private[this] val respJson = Json.parse(respString)
+      private[this] val ssnSrc = (respJson \ "session").asOpt[String].getOrElse { fail("No 'session' element in reponse") }
+      private[this] val schemaSrc = (respJson \ "schema" \ "src").asOpt[String].getOrElse { fail("No 'schema/src' element in reponse") }
+      private[this] val parserResponse = ServerSchemaParser(implicitly).parse(schemaSrc)
+
+      parserResponse.hasMessages mustBe false
+
+      val session = new CoreSession(ssnSrc)
+      val schema = parserResponse.getSchema
+      val schemaId = (respJson \ "schema" \ "id").asOpt[String].getOrElse { fail("No 'schema/id' element in reponse") }
+   }
+   protected object SessionResponse {
+      def apply(resp: HttpResponse) = new SessionResponse(resp)
+   }
+
+   /**
+    * Unmarshal the common error response body
+    */
+   protected class ServerErrorResponse(resp: HttpResponse) {
+      resp.status mustBe BadRequest
+      private[this] val respString = entityAs[String]
+      respString mustNot be(null)
+      private[this] val respJson = Json.parse(respString)
+      val code = (respJson \ "code").as[Long]
+      val args = (respJson \ "args").as[List[String]]
+
+      def mustBe(error: ServerError, args: String*) {
+         this.code mustBe error.getCode
+         this.args mustBe args
+      }
+   }
+   protected object ServerErrorResponse {
+      def apply(resp: HttpResponse) = new ServerErrorResponse(resp)
+   }
+
+   /**
+    * Unmarshal our simple non-streaming response entity into a string.
+    *
+    * private def unmarshal(response: HttpResponse): String = {
+    * implicit val materializer = ActorMaterializer()
+    * Await.result(Unmarshal(response).to[String].recover[String] { case error ⇒ failTest("could not unmarshal") }, 1.second)
+    * }
+    *
+    */
 }
