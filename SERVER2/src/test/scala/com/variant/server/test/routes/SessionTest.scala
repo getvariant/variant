@@ -90,7 +90,6 @@ class SessionTest extends EmbeddedServerSpec {
       "respond SESSION_EXPIRED on GET non-existent session on valid schema" in {
 
          HttpRequest(method = HttpMethods.GET, uri = "/session/petclinic/foo") ~> router ~> check {
-            handled mustBe true
             ServerErrorResponse(response).mustBe(ServerError.SESSION_EXPIRED, "foo")
          }
       }
@@ -100,27 +99,23 @@ class SessionTest extends EmbeddedServerSpec {
       "respond OK on POST non-existent session with valid schema" in {
 
          HttpRequest(method = HttpMethods.POST, uri = s"/session/monstrosity/${sid}", entity = emptyTargetingTrackerBody) ~> router ~> check {
-            handled mustBe true
             val ssnResp = SessionResponse(response)
             ssnResp.session.getId mustNot be(sid)
             ssnResp.schema.getMeta.getName mustBe "monstrosity"
             sid = ssnResp.session.getId
          }
       }
-      /*
 
       "respond OK and existing session on GET" in {
 
-         val body = "just some junk that should be ignored"
-
-         assertResp(route(app, httpReq(GET, endpoint + "/monstrosity/foo").withBody(body)))
-            .isOk
-            .withBodyJson { json =>
-               StringUtils.digest((json \ "session").as[String]) mustBe
-                  StringUtils.digest(sessionJsonBigCovar.expand("sid" -> "foo").toString())
-            }
+         HttpRequest(method = HttpMethods.GET, uri = s"/session/monstrosity/${sid}", entity = "junk to be ignored") ~> router ~> check {
+            val ssnResp = SessionResponse(response)
+            ssnResp.session.getId mustBe sid
+            ssnResp.schema.getMeta.getName mustBe "monstrosity"
+         }
       }
 
+      /*
       "return OK and replace existing session on PUT" in {
 
          val reqBody = sessionJsonBigCovar.expand("sid" -> "foo")

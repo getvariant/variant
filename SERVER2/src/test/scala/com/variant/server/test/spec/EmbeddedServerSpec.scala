@@ -87,18 +87,22 @@ trait EmbeddedServerSpec extends BaseSpec with ScalatestRouteTest {
     * Unmarshal the common sessionResponse
     */
    protected class SessionResponse(resp: HttpResponse)(implicit server: VariantServer) {
+      handled mustBe true
+      if (resp.status == BadRequest) {
+         throw new Exception("Unexpected Error [" + ServerErrorResponse(resp).toString() + "]")
+      }
       resp.status mustBe OK
       private[this] val respString = entityAs[String]
       respString mustNot be(null)
       private[this] val respJson = Json.parse(respString)
-      private[this] val ssnSrc = (respJson \ "session").asOpt[String].getOrElse { fail("No 'session' element in reponse") }
+      private[this] val ssnSrc = (respJson \ "session").asOpt[String].getOrElse { failTest("No 'session' element in reponse") }
       private[this] val schemaSrc = (respJson \ "schema" \ "src").asOpt[String].getOrElse { fail("No 'schema/src' element in reponse") }
       private[this] val parserResponse = ServerSchemaParser(implicitly).parse(schemaSrc)
 
       parserResponse.hasMessages mustBe false
 
-      val session = new CoreSession(ssnSrc)
       val schema = parserResponse.getSchema
+      val session = CoreSession.fromJson(ssnSrc, schema)
       val schemaId = (respJson \ "schema" \ "id").asOpt[String].getOrElse { fail("No 'schema/id' element in reponse") }
    }
    protected object SessionResponse {
@@ -109,16 +113,21 @@ trait EmbeddedServerSpec extends BaseSpec with ScalatestRouteTest {
     * Unmarshal the common error response body
     */
    protected class ServerErrorResponse(resp: HttpResponse) {
+      handled mustBe true
       resp.status mustBe BadRequest
       private[this] val respString = entityAs[String]
       respString mustNot be(null)
       private[this] val respJson = Json.parse(respString)
-      val code = (respJson \ "code").as[Long]
+      val code = (respJson \ "code").as[Int]
       val args = (respJson \ "args").as[List[String]]
 
       def mustBe(error: ServerError, args: String*) {
          this.code mustBe error.getCode
          this.args mustBe args
+      }
+
+      override def toString = {
+         ServerError.byCode(code).asMessage(args: _*)
       }
    }
    protected object ServerErrorResponse {
