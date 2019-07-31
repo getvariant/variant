@@ -1,5 +1,6 @@
 package com.variant.server.routes
 
+import scala.collection.JavaConverters._
 import com.variant.core.error.ServerError
 import com.variant.core.session.SessionScopedTargetingStabile
 import com.variant.server.boot.VariantServer
@@ -28,31 +29,11 @@ object SessionRoute extends VariantRoute with LazyLogging {
     */
    def get(schemaName: String, sid: String)(implicit server: VariantServer): HttpResponse = {
 
-      // Schema must exist.
-      val schema = server.schemata.get(schemaName).getOrElse {
-         throw ServerExceptionRemote(ServerError.UNKNOWN_SCHEMA, schemaName)
+      val ssn = getSession(schemaName, sid) getOrElse {
+         throw ServerExceptionRemote(ServerError.SESSION_EXPIRED, sid)
       }
 
-      val ssn = server.ssnStore.get(sid) match {
-
-         case Some(ssn) =>
-            // Must match the schema name.
-            if (ssn.schemaGen.getMeta.getName != schemaName)
-               throw new ServerExceptionRemote(ServerError.WRONG_CONNECTION, schemaName)
-            ssn
-
-         case None =>
-            throw ServerExceptionRemote(ServerError.SESSION_EXPIRED, sid)
-      }
-
-      val entity = JsObject(Seq(
-         "session" -> JsString(ssn.toJson),
-         "schema" -> JsObject(Seq(
-            "id" -> JsString(ssn.schemaGen.id),
-            "src" -> JsString(ssn.schemaGen.source)))))
-
-      HttpResponse(StatusCodes.OK, entity = HttpEntity(ContentTypes.`application/json`, entity.toString()))
-
+      stdSessionResponse(ssn)
    }
 
    /**
@@ -62,52 +43,26 @@ object SessionRoute extends VariantRoute with LazyLogging {
     */
    def getOrCreate(schemaName: String, sid: String, body: String)(implicit server: VariantServer): HttpResponse = {
 
-      // Schema must exist.
-      val schema = server.schemata.get(schemaName).getOrElse {
-         throw ServerExceptionRemote(ServerError.UNKNOWN_SCHEMA, schemaName)
-      }
+      val ssn: SessionImpl = getSession(schemaName, sid).getOrElse {
 
-      val trackedExperiences = (Json.parse(body) \ "tt").asOpt[List[String]].getOrElse {
-         throw new ServerExceptionRemote(ServerError.MissingProperty, "tt")
-      }
-
-      val result: SessionImpl = server.ssnStore.get(sid) match {
-
-         // Have the session. Must match the schema name.
-         case Some(ssn) => {
-
-            if (ssn.schemaGen.getMeta.getName != schema)
-               throw new ServerExceptionRemote(ServerError.WRONG_CONNECTION, schemaName)
-
-            ssn
+         val liveGen = server.schemata.getLiveGen(schemaName).getOrElse {
+            throw new ServerExceptionRemote(ServerError.UNKNOWN_SCHEMA, schemaName)
          }
 
-         // Don't have the session. Try to create, but change the SID,
-         // so the client knows the session was recreated.
-         case None => {
-
-            val liveGen = server.schemata.getLiveGen(schemaName).getOrElse {
-               throw new ServerExceptionRemote(ServerError.UNKNOWN_SCHEMA, schemaName)
-            }
-
-            val newSsn = SessionImpl.empty(StringUtils.random64BitString(rand), liveGen)
-            val stabile = new SessionScopedTargetingStabile()
-            trackedExperiences.foreach { s => stabile.add(SessionScopedTargetingStabile.Entry.parse(s)) }
-            newSsn.setTargetingStabile(stabile)
-            server.ssnStore.put(newSsn)
-
-            newSsn
+         val trackedExperiences = (Json.parse(body) \ "tt").asOpt[List[String]].getOrElse {
+            throw new ServerExceptionRemote(ServerError.MissingProperty, "tt")
          }
+
+         val newSsn = SessionImpl.empty(StringUtils.random64BitString(rand), liveGen)
+         val stabile = new SessionScopedTargetingStabile()
+         trackedExperiences.foreach { s => stabile.add(SessionScopedTargetingStabile.Entry.parse(s)) }
+         newSsn.setTargetingStabile(stabile)
+         server.ssnStore.put(newSsn)
+
+         newSsn
       }
 
-      // If we're here, we have the session
-      val entity = JsObject(Seq(
-         "session" -> JsString(result.toJson),
-         "schema" -> JsObject(Seq(
-            "id" -> JsString(result.schemaGen.id),
-            "src" -> JsString(result.schemaGen.source)))))
-
-      HttpResponse(StatusCodes.OK, entity = HttpEntity(ContentTypes.`application/json`, entity.toString()))
+      stdSessionResponse(ssn)
    }
 
    /**
@@ -123,92 +78,78 @@ object SessionRoute extends VariantRoute with LazyLogging {
     *   IF given schema exists and has a live gen, create
     *   ELSE throw UnknownSchema error.
     *
+    *
+    * def save(schemaName: String, sid: String, body: String)(implicit server: VariantServer): HttpResponse = {
+    *
+    * val sid = (Json.parse(body) \ "sid").asOpt[String].getOrElse {
+    * throw new ServerExceptionRemote(ServerError.MissingProperty, "sid")
+    * }
+    *
+    * val gen = server.ssnStore.get(sid) match {
+    *
+    * case Some(ssn) =>
+    *
+    * // Must match the schema name.
+    * if (ssn.schemaGen.getMeta.getName != schemaName)
+    * throw new ServerExceptionRemote(ServerError.WRONG_CONNECTION, schemaName)
+    *
+    * ssn.schemaGen
+    *
+    * case None =>
+    * // Given schema must have a live gen.
+    * server.schemata.getLiveGen(schemaName).getOrElse {
+    * throw new ServerExceptionRemote(ServerError.UNKNOWN_SCHEMA, schemaName)
+    * }
+    * }
+    *
+    * val ssn = SessionImpl(body, gen)
+    * server.ssnStore.put(ssn)
+    *
+    * HttpResponse(StatusCodes.OK)
+    * }
+    *
     */
-   def save(schema: String, sid: String, body: String)(implicit server: VariantServer): HttpResponse = {
 
-      val sid = (Json.parse(body) \ "sid").asOpt[String].getOrElse {
-         throw new ServerExceptionRemote(ServerError.MissingProperty, "sid")
-      }
-
-      val gen = server.ssnStore.get(sid) match {
-
-         case Some(ssn) =>
-
-            // Must match the schema name.
-            if (ssn.schemaGen.getMeta.getName != schema)
-               throw new ServerExceptionRemote(ServerError.WRONG_CONNECTION, schema)
-
-            ssn.schemaGen
-
-         case None =>
-            // Given schema must have a live gen.
-            server.schemata.getLiveGen(schema).getOrElse {
-               throw new ServerExceptionRemote(ServerError.UNKNOWN_SCHEMA, schema)
-            }
-      }
-
-      val ssn = SessionImpl(body, gen)
-      server.ssnStore.put(ssn)
-
-      HttpResponse(StatusCodes.OK)
-   }
-   /*
    /**
-    * Client is sending a map to be merged with the shared state.
+    * Client is sending a map of attributes to be merged with the shared state.
     * Attributes sent will be added to the map, potentially replacing
-    * existing values. Attributes in the shared state that were not
-    * in the sent map remain in intact.
+    * existing values.
     */
-   def sendAttributeMap() = action { req =>
+   def sendAttributeMap(schemaName: String, sid: String, body: String)(implicit server: VariantServer): HttpResponse = {
 
-      val bodyJson = getBody(req).getOrElse {
-         throw new ServerExceptionRemote(EmptyBody)
+      val bodyJson = Json.parse(body)
+
+      val ssn = getSession(schemaName, sid).getOrElse {
+         throw ServerExceptionRemote(ServerError.SESSION_EXPIRED, sid)
       }
 
-      val sid = (bodyJson \ "sid").asOpt[String].getOrElse {
-         throw new ServerExceptionRemote(MissingProperty, "sid")
-      }
       val attrMap = (bodyJson \ "map").asOpt[Map[String, String]].getOrElse {
-         throw new ServerExceptionRemote(MissingProperty, "map")
+         throw new ServerExceptionRemote(ServerError.MissingProperty, "map")
       }
 
-      val ssn = server.ssnStore.getOrBust(sid)
-      //ssn.getAttributes.clear()
       ssn.getAttributes.putAll(attrMap.asJava)
 
-      // Serialize the session before adding the attribute.
-      val response = JsObject(Seq(
-         "session" -> JsString(ssn.toJson)))
-
-      Ok(response.toString())
+      stdSessionResponse(ssn)
    }
 
    /**
     * Client is sending a list of attribute names to be removed from this session.
     */
-   def deleteAttributes() = action { req =>
+   def deleteAttributes(schemaName: String, sid: String, body: String)(implicit server: VariantServer): HttpResponse = {
 
-      val bodyJson = getBody(req).getOrElse {
-         throw new ServerExceptionRemote(EmptyBody)
-      }
+      val bodyJson = Json.parse(body)
 
-      val sid = (bodyJson \ "sid").asOpt[String].getOrElse {
-         throw new ServerExceptionRemote(MissingProperty, "sid")
-      }
       val attrs = (bodyJson \ "attrs").asOpt[Array[String]].getOrElse {
-         throw new ServerExceptionRemote(MissingProperty, "attrs")
+         throw new ServerExceptionRemote(ServerError.MissingProperty, "attrs")
       }
 
-      val ssn = server.ssnStore.getOrBust(sid)
+      val ssn = getSession(schemaName, sid).getOrElse {
+         throw ServerExceptionRemote(ServerError.SESSION_EXPIRED, sid)
+      }
+
       attrs.foreach { ssn.getAttributes.remove _ }
 
-      // Serialize the session before adding the attribute.
-      val response = JsObject(Seq(
-         "session" -> JsString(ssn.toJson)))
-
-      Ok(response.toString())
+      stdSessionResponse(ssn)
    }
-   *
-   */
 
 }

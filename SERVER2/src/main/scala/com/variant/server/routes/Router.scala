@@ -56,11 +56,9 @@ class Router(implicit server: VariantServer) extends LazyLogging {
                         path(Segment) { name => implicit ctx => ctx.complete(SchemaRoute.get(name)) }
                      }
                   },
-                  // GET /session/:schema/:sid - pings a schema so that the client can create a connection.
                   pathPrefix("session") {
                      concat(
-
-                        // Get an existing session or send session expired error.
+                        // GET /session/:schema/:sid - get an existing session or send session expired error.
                         get {
                            path(Segment / Segment) { (schema, sid) => implicit ctx => ctx.complete(SessionRoute.get(schema, sid))
                            }
@@ -85,6 +83,22 @@ class Router(implicit server: VariantServer) extends LazyLogging {
                         *
                         */
                      )
+                  },
+                  pathPrefix("session/attr") {
+                     concat(
+                        // GET /session/:schema/:sid - get an existing session or send session expired error.
+                        put {
+                           path(Segment / Segment) { (schema, sid) => implicit ctx => ctx.complete(SessionRoute.get(schema, sid))
+                           }
+                        },
+                        // Get an existing session or create a new one (with a different ID) if expired.
+                        delete {
+                           path(Segment / Segment) { (schema, sid) =>
+                              entity(as[String]) { body => implicit ctx =>
+                                 ctx.complete(SessionRoute.getOrCreate(schema, sid, body))
+                              }
+                           }
+                        })
                   })
             }
          }

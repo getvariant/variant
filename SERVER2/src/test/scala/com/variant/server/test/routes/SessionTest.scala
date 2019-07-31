@@ -24,6 +24,7 @@ import akka.http.scaladsl.unmarshalling.Unmarshal
 import akka.http.scaladsl.testkit.RouteTest
 import akka.stream.ActorMaterializer
 import scala.concurrent.duration._
+import akka.http.scaladsl.model.ContentTypes
 
 /**
  * Session Controller Tests
@@ -206,6 +207,18 @@ class SessionTest extends EmbeddedServerSpec {
 
          HttpRequest(method = HttpMethods.POST, uri = s"/session/petclinic/${sid}", entity = emptyTargetingTrackerBody) ~> router ~> check {
             ServerErrorResponse(response).mustBe(ServerError.WRONG_CONNECTION, "petclinic")
+         }
+      }
+
+      "respond MethodNotAllowed on everythig except GET,POST" in {
+
+         httpMethods.filterNot(List(HttpMethods.GET, HttpMethods.POST).contains _).foreach { method =>
+            HttpRequest(method = method, uri = "/session/petclinic/foo") ~> router ~> check {
+               handled mustBe true
+               status mustBe MethodNotAllowed
+               contentType mustBe ContentTypes.`text/plain(UTF-8)`
+               entityAs[String] mustBe "HTTP method not allowed, supported methods: GET, POST"
+            }
          }
       }
    }
