@@ -28,11 +28,22 @@ object SessionRoute extends VariantRoute with LazyLogging {
     */
    def get(schemaName: String, sid: String)(implicit server: VariantServer): HttpResponse = {
 
-      val ssn = server.ssnStore.getOrBust(sid)
+      // Schema must exist.
+      val schema = server.schemata.get(schemaName).getOrElse {
+         throw ServerExceptionRemote(ServerError.UNKNOWN_SCHEMA, schemaName)
+      }
 
-      // Must match the schema name.
-      if (ssn.schemaGen.getMeta.getName != schemaName)
-         throw new ServerExceptionRemote(ServerError.WRONG_CONNECTION, schemaName)
+      val ssn = server.ssnStore.get(sid) match {
+
+         case Some(ssn) =>
+            // Must match the schema name.
+            if (ssn.schemaGen.getMeta.getName != schemaName)
+               throw new ServerExceptionRemote(ServerError.WRONG_CONNECTION, schemaName)
+            ssn
+
+         case None =>
+            throw ServerExceptionRemote(ServerError.SESSION_EXPIRED, sid)
+      }
 
       val entity = JsObject(Seq(
          "session" -> JsString(ssn.toJson),
@@ -49,7 +60,12 @@ object SessionRoute extends VariantRoute with LazyLogging {
     * or create in the live gen. This request should always come with the
     * targeting tracker content, but we only use it if we're creating the session.
     */
-   def getOrCreate(schema: String, sid: String, body: String)(implicit server: VariantServer): HttpResponse = {
+   def getOrCreate(schemaName: String, sid: String, body: String)(implicit server: VariantServer): HttpResponse = {
+
+      // Schema must exist.
+      val schema = server.schemata.get(schemaName).getOrElse {
+         throw ServerExceptionRemote(ServerError.UNKNOWN_SCHEMA, schemaName)
+      }
 
       val trackedExperiences = (Json.parse(body) \ "tt").asOpt[List[String]].getOrElse {
          throw new ServerExceptionRemote(ServerError.MissingProperty, "tt")
@@ -61,7 +77,7 @@ object SessionRoute extends VariantRoute with LazyLogging {
          case Some(ssn) => {
 
             if (ssn.schemaGen.getMeta.getName != schema)
-               throw new ServerExceptionRemote(ServerError.WRONG_CONNECTION, schema)
+               throw new ServerExceptionRemote(ServerError.WRONG_CONNECTION, schemaName)
 
             ssn
          }
@@ -70,8 +86,8 @@ object SessionRoute extends VariantRoute with LazyLogging {
          // so the client knows the session was recreated.
          case None => {
 
-            val liveGen = server.schemata.getLiveGen(schema).getOrElse {
-               throw new ServerExceptionRemote(ServerError.UNKNOWN_SCHEMA, schema)
+            val liveGen = server.schemata.getLiveGen(schemaName).getOrElse {
+               throw new ServerExceptionRemote(ServerError.UNKNOWN_SCHEMA, schemaName)
             }
 
             val newSsn = SessionImpl.empty(StringUtils.random64BitString(rand), liveGen)

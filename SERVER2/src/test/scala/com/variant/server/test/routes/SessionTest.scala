@@ -114,9 +114,8 @@ class SessionTest extends EmbeddedServerSpec {
             ssnResp.schema.getMeta.getName mustBe "monstrosity"
          }
       }
-
       /*
-      "return OK and replace existing session on PUT" in {
+      "respond OK and replace existing session on PUT" in {
 
          val reqBody = sessionJsonBigCovar.expand("sid" -> "foo")
          assertResp(route(app, httpReq(PUT, endpoint + "/monstrosity").withBody(reqBody)))
@@ -130,96 +129,84 @@ class SessionTest extends EmbeddedServerSpec {
                   StringUtils.digest(sessionJsonBigCovar.expand("sid" -> "foo"))
             }
       }
-
-      "return OK and create session on POST" in {
-
-         val sid = "bar"
-         var actualSid: String = null
-
-         assertResp(route(app, httpReq(POST, endpoint + "/monstrosity/" + sid).withBody(emptyTargetingTrackerBody)))
-            .isOk
-            .withBodySession { ssn =>
-               ssn.getId mustNot be (sid)
-               actualSid = ssn.getId
-               ssn.getSchema().getMeta().getName mustBe "monstrosity"
-         }
-
-         assertResp(route(app, httpReq(GET, endpoint + "/monstrosity/" + actualSid)))
-            .isOk
-            .withBodySession { ssn =>
-               ssn.getId mustBe actualSid
-               ssn.getSchema().getMeta().getName mustBe "monstrosity"
-         }
-      }
-
-     "not lose existing session with different key" in {
-
-         assertResp(route(app, httpReq(GET, endpoint + "/monstrosity/foo")))
-            .isOk
-            .withBodyJson { json =>
-               StringUtils.digest((json \ "session").as[String]) mustBe
-                  StringUtils.digest(sessionJsonBigCovar.expand("sid" -> "foo"))
-            }
-      }
+*/
 
       "keep an existing session alive over time" in {
 
          val halfExp = sessionTimeoutMillis / 2
          halfExp mustBe 500
-         for ( wait <- Seq(halfExp, halfExp, halfExp, halfExp) ) {
+         for (wait <- Seq(halfExp, halfExp, halfExp, halfExp)) {
             Thread.sleep(wait)
-            assertResp(route(app, httpReq(GET, endpoint + "/monstrosity/foo")))
-               .isOk
-               .withBodyJson { json =>
-                  StringUtils.digest((json \ "session").as[String]) mustBe
-                     StringUtils.digest(sessionJsonBigCovar.expand("sid" -> "foo").toString())
+            HttpRequest(method = HttpMethods.GET, uri = s"/session/monstrosity/${sid}") ~> router ~> check {
+               val ssnResp = SessionResponse(response)
+               ssnResp.session.getId mustBe sid
+               ssnResp.schema.getMeta.getName mustBe "monstrosity"
             }
          }
       }
 
-      "return SessionExpired on GET expired session" in {
+      "expire an existing session affter session timeout interfal" in {
 
          Thread.sleep(sessionTimeoutMillis + vacuumIntervalMillis);
 
-         ("foo" :: "bar" :: Nil).foreach { sid =>
-
-            assertResp(route(app, httpReq(GET, endpoint + "/monstrosity/" + sid)))
-               .isError(SESSION_EXPIRED, sid)
+         HttpRequest(method = HttpMethods.GET, uri = s"/session/monstrosity/${sid}") ~> router ~> check {
+            ServerErrorResponse(response).mustBe(ServerError.SESSION_EXPIRED, sid)
          }
-      }
 
-      "deserialize payload into session object" in {
-
-         val sid = newSid()
-         val ts = Instant.now()
-         val body = sessionJsonBigCovar.expand("sid" -> sid, "ts" -> ts)
-         assertResp(route(app, httpReq(PUT, endpoint + "/monstrosity").withBody(body)))
-            .isOk
-            .withNoBody
-
-         val ssnJson = server.ssnStore.get(sid).get.asInstanceOf[SessionImpl].toJson
-         ssnJson mustBe normalJson(sessionJsonBigCovar.expand("sid" -> sid, "ts" -> DateTimeFormatter.ISO_INSTANT.format(ts)))
-         val ssn = server.ssnStore.get(sid).get
-         ssn.getTimestamp mustBe ts
-         ssn.getId mustBe sid
-
-         Thread.sleep(2000);
          server.ssnStore.get(sid) mustBe empty
 
       }
 
-      var sid: String = null
+      "recreate an expired session with new SID" in {
 
-       "expire session as normal" in {
+         HttpRequest(method = HttpMethods.POST, uri = s"/session/monstrosity/${sid}", entity = emptyTargetingTrackerBody) ~> router ~> check {
+            val ssnResp = SessionResponse(response)
+            ssnResp.session.getId mustNot be(sid)
+            ssnResp.schema.getMeta.getName mustBe "monstrosity"
+            sid = ssnResp.session.getId
+         }
+      }
 
-         Thread.sleep(sessionTimeoutMillis + vacuumIntervalMillis);
+      "respond UNKNOWN_SCHEMA on get non-existent session over non-existent connection" in {
 
-         assertResp(route(app, httpReq(GET, endpoint + "/monstrosity/" + sid)))
-            .isError(SESSION_EXPIRED, sid)
+         HttpRequest(method = HttpMethods.GET, uri = s"/session/foo/bar") ~> router ~> check {
+            ServerErrorResponse(response).mustBe(ServerError.UNKNOWN_SCHEMA, "foo")
+         }
+      }
 
-       }
-       *
-       */
+      "respond UNKNOWN_SCHEMA on get existing session over non-existent connection" in {
+
+         HttpRequest(method = HttpMethods.GET, uri = s"/session/foo/${sid}") ~> router ~> check {
+            ServerErrorResponse(response).mustBe(ServerError.UNKNOWN_SCHEMA, "foo")
+         }
+      }
+
+      "respond WRONG_CONNECTION on get existing session over existing but wrong connection" in {
+
+         HttpRequest(method = HttpMethods.GET, uri = s"/session/petclinic/${sid}") ~> router ~> check {
+            ServerErrorResponse(response).mustBe(ServerError.WRONG_CONNECTION, "petclinic")
+         }
+      }
+
+      "respond UNKNOWN_SCHEMA on post non-existent session over non-existent connection" in {
+
+         HttpRequest(method = HttpMethods.POST, uri = s"/session/foo/bar", entity = emptyTargetingTrackerBody) ~> router ~> check {
+            ServerErrorResponse(response).mustBe(ServerError.UNKNOWN_SCHEMA, "foo")
+         }
+      }
+
+      "respond UNKNOWN_SCHEMA on post existing session over non-existent connection" in {
+
+         HttpRequest(method = HttpMethods.POST, uri = s"/session/foo/${sid}", entity = emptyTargetingTrackerBody) ~> router ~> check {
+            ServerErrorResponse(response).mustBe(ServerError.UNKNOWN_SCHEMA, "foo")
+         }
+      }
+
+      "respond WRONG_CONNECTION on post existing session over existing but wrong connection" in {
+
+         HttpRequest(method = HttpMethods.POST, uri = s"/session/petclinic/${sid}", entity = emptyTargetingTrackerBody) ~> router ~> check {
+            ServerErrorResponse(response).mustBe(ServerError.WRONG_CONNECTION, "petclinic")
+         }
+      }
    }
-
 }

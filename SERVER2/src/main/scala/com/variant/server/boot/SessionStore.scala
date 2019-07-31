@@ -105,49 +105,30 @@ class SessionStore(private val server: VariantServer) extends LazyLogging {
     */
    def get(sid: String): Option[SessionImpl] = {
 
-      sessionMap.get(sid) match {
+      sessionMap.get(sid) flatMap { e =>
 
-         case None => None
-
-         case Some(e) =>
-
-            if (!e.isExpired) {
-               e.touch()
-               Some(e.session)
-            } else {
-               None
-            }
+         if (e.isExpired) {
+            None
+         } else {
+            e.touch()
+            Some(e.session)
+         }
       }
    }
 
-   /**
-    * Retrieve a session by its ID. If does not exist, create in the live gen.
-    * Give exception if no schema or no live gen.
-    *
-    * Requestor's connection must be parallel to the session's.
-    *
-    * def getOrCreate(sid: String): SessionImpl = {
-    *
-    * get(sid) match {
-    * case Some(ssn) => ssn
-    * case None      => server.schemata.
-    * }
-    * }
-    * }
-    */
    /**
     * Retrieve a session by its ID, or throw SessionExpired if does not exist.
+    *
+    * def getOrBust(sid: String): SessionImpl = {
+    *
+    * val result = get(sid).getOrElse {
+    * logger.debug(s"Not found session [${sid}]")
+    * throw new ServerExceptionRemote(ServerError.SESSION_EXPIRED, sid)
+    * }
+    * logger.debug(s"Found session [${sid}]")
+    * result
+    * }
     */
-   def getOrBust(sid: String): SessionImpl = {
-
-      val result = get(sid).getOrElse {
-         logger.debug(s"Not found session [${sid}]")
-         throw new ServerExceptionRemote(ServerError.SESSION_EXPIRED, sid)
-      }
-      logger.debug(s"Found session [${sid}]")
-      result
-   }
-
    /**
     * The single entry point in session clean out.
     * return the number of deleted sessions for reporting.

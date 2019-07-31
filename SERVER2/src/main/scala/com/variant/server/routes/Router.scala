@@ -60,7 +60,7 @@ class Router(implicit server: VariantServer) extends LazyLogging {
                   pathPrefix("session") {
                      concat(
 
-                        // Get an existing session. Error if expired.
+                        // Get an existing session or send session expired error.
                         get {
                            path(Segment / Segment) { (schema, sid) => implicit ctx => ctx.complete(SessionRoute.get(schema, sid))
                            }

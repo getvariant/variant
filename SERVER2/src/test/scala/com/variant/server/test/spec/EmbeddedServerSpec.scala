@@ -16,6 +16,7 @@ import com.variant.core.error.ServerError
 import akka.http.scaladsl.model.StatusCodes._
 import play.api.libs.json._
 import com.variant.server.schema.ServerSchemaParser
+import org.scalatest.exceptions.TestFailedException
 
 /**
  * Embedded Server
@@ -89,7 +90,7 @@ trait EmbeddedServerSpec extends BaseSpec with ScalatestRouteTest {
    protected class SessionResponse(resp: HttpResponse)(implicit server: VariantServer) {
       handled mustBe true
       if (resp.status == BadRequest) {
-         throw new Exception("Unexpected Error [" + ServerErrorResponse(resp).toString() + "]")
+         throw new TestFailedException("Unexpected Error [" + ServerErrorResponse(resp).toString() + "]", 2)
       }
       resp.status mustBe OK
       private[this] val respString = entityAs[String]
@@ -122,6 +123,11 @@ trait EmbeddedServerSpec extends BaseSpec with ScalatestRouteTest {
       val args = (respJson \ "args").as[List[String]]
 
       def mustBe(error: ServerError, args: String*) {
+         if (this.code != error.getCode) {
+            throw new TestFailedException(
+               "Error [" + ServerErrorResponse(resp).toString() + "] was not equal [" + error.asMessage(args: _*) + "]", 1)
+         }
+
          this.code mustBe error.getCode
          this.args mustBe args
       }

@@ -50,6 +50,7 @@ class SessionImpl(val coreSession: CoreSession, val schemaGen: SchemaGen)(implic
     * Construct via deserialization.
     */
    def this(json: String, schemaGen: SchemaGen)(implicit server: VariantServer) {
+
       this(CoreSession.fromJson(json, schemaGen), schemaGen)
    }
 
