@@ -115,7 +115,7 @@ object SessionRoute extends VariantRoute with LazyLogging {
     * Attributes sent will be added to the map, potentially replacing
     * existing values.
     */
-   def sendAttributeMap(schemaName: String, sid: String, body: String)(implicit server: VariantServer): HttpResponse = {
+   def putAttributes(schemaName: String, sid: String, body: String)(implicit server: VariantServer): HttpResponse = {
 
       val bodyJson = Json.parse(body)
 

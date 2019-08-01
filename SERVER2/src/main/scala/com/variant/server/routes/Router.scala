@@ -50,19 +50,22 @@ class Router(implicit server: VariantServer) extends LazyLogging {
                   // GET / - Health page
                   pathEndOrSingleSlash { RootRoute.root },
 
-                  // GET /schema/:name - pings a schema so that the client can create a connection.
+                  // GET /schema/:name
+                  // Pings a schema so that the client can create a connection.
                   pathPrefix("schema") {
                      get {
                         path(Segment) { name => implicit ctx => ctx.complete(SchemaRoute.get(name)) }
                      }
                   },
-                  pathPrefix("session") {
+                  pathPrefix("session" ~ !"-attr") {
                      concat(
-                        // GET /session/:schema/:sid - get an existing session or send session expired error.
+                        // GET /session/:schema/:sid
+                        // Get an existing session or send session expired error.
                         get {
                            path(Segment / Segment) { (schema, sid) => implicit ctx => ctx.complete(SessionRoute.get(schema, sid))
                            }
                         },
+                        // POST /session/:schema/:sid
                         // Get an existing session or create a new one (with a different ID) if expired.
                         post {
                            path(Segment / Segment) { (schema, sid) =>
@@ -84,21 +87,22 @@ class Router(implicit server: VariantServer) extends LazyLogging {
                         */
                      )
                   },
-                  pathPrefix("session/attr") {
-                     concat(
-                        // GET /session/:schema/:sid - get an existing session or send session expired error.
-                        put {
-                           path(Segment / Segment) { (schema, sid) => implicit ctx => ctx.complete(SessionRoute.get(schema, sid))
-                           }
-                        },
-                        // Get an existing session or create a new one (with a different ID) if expired.
-                        delete {
-                           path(Segment / Segment) { (schema, sid) =>
-                              entity(as[String]) { body => implicit ctx =>
-                                 ctx.complete(SessionRoute.getOrCreate(schema, sid, body))
+                  pathPrefix("session-attr") {
+                     entity(as[String]) { body =>
+                        concat(
+                           // GET /session/:schema/:sid - get an existing session or send session expired error.
+                           put {
+                              path(Segment / Segment) { (schema, sid) => implicit ctx =>
+                                 ctx.complete(SessionRoute.putAttributes(schema, sid, body))
                               }
-                           }
-                        })
+                           },
+                           // Get an existing session or create a new one (with a different ID) if expired.
+                           delete {
+                              path(Segment / Segment) { (schema, sid) => implicit ctx =>
+                                 ctx.complete(SessionRoute.deleteAttributes(schema, sid, body))
+                              }
+                           })
+                     }
                   })
             }
          }

@@ -1,30 +1,17 @@
 package com.variant.server.test.routes
 
-import scala.collection.JavaConversions._
-import com.variant.server.test.util.ParameterizedString
-import com.variant.server.test.spec.EmbeddedServerSpec
-import com.variant.core.error.ServerError._
-import com.variant.core.util.StringUtils
-import com.variant.server.impl.SessionImpl
-import com.variant.core.Constants._
-import com.variant.core.schema.impl.SchemaImpl
-import com.variant.server.schema.ServerSchemaParser
-import java.time.format.DateTimeFormatter
 import java.time.Instant
-import akka.http.scaladsl.model.HttpRequest
-import akka.http.scaladsl.model.StatusCodes._
-import akka.http.scaladsl.model.HttpMethods
+import java.time.format.DateTimeFormatter
+
 import com.variant.core.error.ServerError
-import com.variant.core.schema.parser.SchemaParser
-import com.variant.core.session.CoreSession
-import com.variant.server.boot.VariantServer
-import akka.http.scaladsl.model.HttpResponse
-import scala.concurrent.Await
-import akka.http.scaladsl.unmarshalling.Unmarshal
-import akka.http.scaladsl.testkit.RouteTest
-import akka.stream.ActorMaterializer
-import scala.concurrent.duration._
+import com.variant.server.test.spec.EmbeddedServerSpec
+import com.variant.server.test.util.ParameterizedString
+
 import akka.http.scaladsl.model.ContentTypes
+import akka.http.scaladsl.model.HttpMethods
+import akka.http.scaladsl.model.HttpRequest
+import akka.http.scaladsl.model.StatusCodes.MethodNotAllowed
+import akka.http.scaladsl.model.StatusCodes.NotFound
 
 /**
  * Session Controller Tests
@@ -52,6 +39,9 @@ object SessionTest {
         "attrs": {"NAME1": "VALUE1", "NAME2": "VALUE2"}
       }
    """
+
+   val emptyTargetingTrackerBody = "{\"tt\":[]}"
+
 }
 
 class SessionTest extends EmbeddedServerSpec {
@@ -60,12 +50,13 @@ class SessionTest extends EmbeddedServerSpec {
 
    val endpoint = "/session"
 
+   /*
    val sessionJsonBigCovar = ParameterizedString(
       monsterSessionPrototype.format(DateTimeFormatter.ISO_INSTANT.format(Instant.now())))
 
    val sessionJsonPetclinic = ParameterizedString(
       sessionJsonPetclinicPrototype.format(DateTimeFormatter.ISO_INSTANT.format(Instant.now())))
-
+*/
    val sessionTimeoutMillis = server.config.sessionTimeout * 1000
    sessionTimeoutMillis mustEqual 1000
 
@@ -73,9 +64,7 @@ class SessionTest extends EmbeddedServerSpec {
 
    vacuumIntervalMillis mustEqual 1000
 
-   val emptyTargetingTrackerBody = "{\"tt\":[]}"
-
-   "SessionController" should {
+   "Session route" should {
 
       var genId: String = null
 
