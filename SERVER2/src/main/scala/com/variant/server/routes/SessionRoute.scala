@@ -123,8 +123,8 @@ object SessionRoute extends VariantRoute with LazyLogging {
          throw ServerExceptionRemote(ServerError.SESSION_EXPIRED, sid)
       }
 
-      val attrMap = (bodyJson \ "map").asOpt[Map[String, String]].getOrElse {
-         throw new ServerExceptionRemote(ServerError.MissingProperty, "map")
+      val attrMap = (bodyJson \ "attrs").asOpt[Map[String, String]].getOrElse {
+         throw new ServerExceptionRemote(ServerError.MissingProperty, "attrs")
       }
 
       ssn.getAttributes.putAll(attrMap.asJava)

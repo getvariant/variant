@@ -128,8 +128,12 @@ trait EmbeddedServerSpec extends BaseSpec with ScalatestRouteTest {
                "Error [" + ServerErrorResponse(resp).toString() + "] was not equal [" + error.asMessage(args: _*) + "]", 1)
          }
 
-         this.code mustBe error.getCode
-         this.args mustBe args
+         if (this.code != error.getCode || this.args != args)
+            throw new TestFailedException(
+               "Error [%s] was not equal to [%s]".format(
+                  ServerError.byCode(this.code).asMessage(this.args: _*),
+                  error.asMessage(args: _*)),
+               1)
       }
 
       override def toString = {

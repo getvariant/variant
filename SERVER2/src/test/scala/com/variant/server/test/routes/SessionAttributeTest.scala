@@ -15,6 +15,7 @@ import akka.http.scaladsl.model.HttpRequest
 import akka.http.scaladsl.model.HttpMethods
 import akka.http.scaladsl.model.StatusCodes._
 import akka.http.scaladsl.model.ContentTypes
+import com.variant.core.error.ServerError
 
 /**
  * Session Attribute Tests
@@ -22,6 +23,12 @@ import akka.http.scaladsl.model.ContentTypes
 class SessionAttributeTest extends EmbeddedServerSpec {
 
    import SessionTest._
+
+   val sessionTimeoutMillis = server.config.sessionTimeout * 1000
+   sessionTimeoutMillis mustEqual 1000
+
+   val vacuumIntervalMillis = server.config.sessionVacuumInterval * 1000
+   vacuumIntervalMillis mustEqual 1000
 
    "Session route" should {
 
@@ -56,7 +63,7 @@ class SessionAttributeTest extends EmbeddedServerSpec {
       "set new attributes" in {
 
          val body: JsValue = Json.obj(
-            "map" -> Map("foo" -> "bar", "another attribute" -> "another value"))
+            "attrs" -> Map("foo" -> "bar", "another attribute" -> "another value"))
 
          HttpRequest(method = HttpMethods.PUT, uri = s"/session-attr/petclinic/${sid}", entity = body.toString()) ~> router ~> check {
             val ssnResp = SessionResponse(response)
@@ -72,7 +79,7 @@ class SessionAttributeTest extends EmbeddedServerSpec {
       "replace a single attribute" in {
 
          val body: JsValue = Json.obj(
-            "map" -> Map("foo" -> "barr"))
+            "attrs" -> Map("foo" -> "barr"))
 
          HttpRequest(method = HttpMethods.PUT, uri = s"/session-attr/petclinic/${sid}", entity = body.toString()) ~> router ~> check {
             val ssnResp = SessionResponse(response)
@@ -84,10 +91,75 @@ class SessionAttributeTest extends EmbeddedServerSpec {
          server.ssnStore.get(sid).get.getAttributes.asScala mustBe Map("foo" -> "barr", "another attribute" -> "another value")
       }
 
+      "delete a single attribute" in {
+
+         val body: JsValue = Json.obj(
+            "attrs" -> List("foo"))
+
+         HttpRequest(method = HttpMethods.DELETE, uri = s"/session-attr/petclinic/${sid}", entity = body.toString()) ~> router ~> check {
+            val ssnResp = SessionResponse(response)
+            ssnResp.session.getId mustBe sid
+            ssnResp.schema.getMeta.getName mustBe "petclinic"
+            ssnResp.session.getAttributes.asScala mustBe Map("another attribute" -> "another value")
+         }
+
+         server.ssnStore.get(sid).get.getAttributes.asScala mustBe Map("another attribute" -> "another value")
+      }
+
+      "delete a non-existent attribute" in {
+
+         val body: JsValue = Json.obj(
+            "attrs" -> List("another attribute", "non-existent"))
+
+         HttpRequest(method = HttpMethods.DELETE, uri = s"/session-attr/petclinic/${sid}", entity = body.toString()) ~> router ~> check {
+            val ssnResp = SessionResponse(response)
+            ssnResp.session.getId mustBe sid
+            ssnResp.schema.getMeta.getName mustBe "petclinic"
+            ssnResp.session.getAttributes.asScala mustBe empty
+         }
+
+         server.ssnStore.get(sid).get.getAttributes.asScala mustBe empty
+      }
+
+      "respond UNKNOWN_SCHEMA on PUT over non-existent schema connection" in {
+
+         val body: JsValue = Json.obj(
+            "attrs" -> Map("foo" -> "bar"))
+
+         HttpRequest(method = HttpMethods.PUT, uri = s"/session-attr/bad/${sid}", entity = body.toString()) ~> router ~> check {
+            ServerErrorResponse(response) mustBe (ServerError.UNKNOWN_SCHEMA, "bad")
+         }
+      }
+
+      "respond WRONG_CONNECTION on PUT over wrong schema connection" in {
+
+         val body: JsValue = Json.obj(
+            "attrs" -> Map("foo" -> "bar"))
+
+         HttpRequest(method = HttpMethods.PUT, uri = s"/session-attr/monstrosity/${sid}", entity = body.toString()) ~> router ~> check {
+            ServerErrorResponse(response) mustBe (ServerError.WRONG_CONNECTION, "monstrosity")
+         }
+      }
+
+      "respond SESSION_EXPIRED trying to access an expired session" in {
+
+         // Let session expire naturally
+         Thread.sleep(sessionTimeoutMillis + vacuumIntervalMillis)
+         server.ssnStore.get(sid) mustBe None
+
+         val body: JsValue = Json.obj(
+            "attrs" -> Map("foo" -> "bar"))
+
+         HttpRequest(method = HttpMethods.PUT, uri = s"/session-attr/petclinic/${sid}", entity = body.toString()) ~> router ~> check {
+            ServerErrorResponse(response) mustBe (ServerError.SESSION_EXPIRED, sid)
+         }
+
+      }
+
       "respond MethodNotAllowed on everythig except PUT,DELETE" in {
 
          httpMethods.filterNot(List(HttpMethods.PUT, HttpMethods.DELETE).contains _).foreach { method =>
-            println(method)
+
             HttpRequest(method = method, uri = "/session-attr/petclinic/foo") ~> router ~> check {
                handled mustBe true
                status mustBe MethodNotAllowed
