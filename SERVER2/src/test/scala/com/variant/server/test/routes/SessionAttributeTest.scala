@@ -153,7 +153,6 @@ class SessionAttributeTest extends EmbeddedServerSpec {
          HttpRequest(method = HttpMethods.PUT, uri = s"/session-attr/petclinic/${sid}", entity = body.toString()) ~> router ~> check {
             ServerErrorResponse(response) mustBe (ServerError.SESSION_EXPIRED, sid)
          }
-
       }
 
       "respond MethodNotAllowed on everythig except PUT,DELETE" in {
