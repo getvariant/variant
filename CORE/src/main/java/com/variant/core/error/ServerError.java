@@ -39,7 +39,7 @@ public class ServerError extends UserError {
 			new ServerError(624, "Property '%s' must be a string");
 	
 	public static final ServerError EmptyBody = 
-			new ServerError(625, "Body expected but was null");
+			new ServerError(625, "Request body required");
 	
 	public static final ServerError MissingParamName = 
 			new ServerError(626, "Parameter name is missing");

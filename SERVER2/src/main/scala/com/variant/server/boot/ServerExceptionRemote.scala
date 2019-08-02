@@ -16,13 +16,13 @@ import akka.http.scaladsl.settings.ServerSettings
  *
  * @since 0.7
  */
-class ServerExceptionRemote(error: ServerError, args: String*) extends ServerException {
+class ServerExceptionRemote(val error: ServerError, args: String*) extends ServerException {
 
    /**
     * Remote errors take severity of the underlying error.
     * @return
     */
-   override def getSeverity: Severity = error.getSeverity
+   //override def getSeverity: Severity = error.getSeverity
 
    /**
     */

@@ -10,6 +10,7 @@ import com.variant.server.boot.VariantServer
 import com.variant.server.test.util.ServerLogTailer
 import com.variant.server.boot.ServerMessageLocal
 import com.variant.server.test.spec.EmbeddedServerSpec
+import com.variant.server.boot.ServerExceptionLocal
 
 /**
  * Test various schema deployment error scenarios
@@ -87,8 +88,7 @@ class ServerBootExceptionTest extends EmbeddedServerSpec with ConfigKeys {
       server.schemata.size mustBe 0
       server.bootExceptions.size mustEqual 1
       val ex = server.bootExceptions.head
-      ex.getSeverity mustEqual SCHEMATA_DIR_MISSING.getSeverity
-      ex.getMessage mustEqual SCHEMATA_DIR_MISSING.asMessage("non-existent")
+      ex mustEqual ServerExceptionLocal(SCHEMATA_DIR_MISSING, "non-existent")
       server.isUp mustBe false
    }
    /*

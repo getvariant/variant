@@ -13,6 +13,9 @@ import com.variant.server.impl.SessionImpl
 import akka.http.scaladsl.model.HttpResponse
 import akka.http.scaladsl.model.HttpEntity
 import akka.http.scaladsl.model.StatusCodes
+import scala.util.Try
+import scala.util.Success
+import scala.util.Failure
 
 trait VariantRoute {
 
@@ -46,6 +49,17 @@ trait VariantRoute {
          if (ssn.schemaGen.getMeta.getName != schemaName)
             throw new ServerExceptionRemote(ServerError.WRONG_CONNECTION, schemaName)
          ssn
+      }
+   }
+
+   // Parse request body
+   def parse(body: String) = {
+      if (body == null || body.size == 0)
+         throw ServerExceptionRemote(ServerError.EmptyBody)
+
+      Try[JsValue] { Json.parse(body) } match {
+         case Success(json) => json
+         case Failure(t) => throw ServerExceptionRemote(ServerError.InternalError, t.getMessage)
       }
    }
 

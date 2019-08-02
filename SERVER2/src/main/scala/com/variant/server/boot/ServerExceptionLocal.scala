@@ -10,10 +10,8 @@ import com.variant.server.api.ServerException;
  * @since 0.7
  */
 
-class ServerExceptionLocal(error: ServerMessageLocal, t: Throwable, args: String*)
+class ServerExceptionLocal(val error: ServerMessageLocal, t: Throwable, args: String*)
    extends ServerException(error.asMessage(args), t) {
-
-   override def getSeverity: Severity = error.getSeverity()
 
    override def getMessage: String = error.asMessage(args: _*);
 

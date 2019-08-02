@@ -90,13 +90,30 @@ class Router(implicit server: VariantServer) extends LazyLogging {
                   pathPrefix("session-attr") {
                      entity(as[String]) { body =>
                         concat(
-                           // GET /session/:schema/:sid - get an existing session or send session expired error.
+                           // PUT /session-attr/:schema/:sid - put attributes.
                            put {
                               path(Segment / Segment) { (schema, sid) => implicit ctx =>
                                  ctx.complete(SessionRoute.putAttributes(schema, sid, body))
                               }
                            },
-                           // Get an existing session or create a new one (with a different ID) if expired.
+                           // DELETE /session-attr/:schema/:sid - delete attributes.
+                           delete {
+                              path(Segment / Segment) { (schema, sid) => implicit ctx =>
+                                 ctx.complete(SessionRoute.deleteAttributes(schema, sid, body))
+                              }
+                           })
+                     }
+                  },
+                  pathPrefix("request") {
+                     entity(as[String]) { body =>
+                        concat(
+                           // POST /request/:schema/:sid - create a state request.
+                           post {
+                              path(Segment / Segment) { (schema, sid) => implicit ctx =>
+                                 ctx.complete(SessionRoute.putAttributes(schema, sid, body))
+                              }
+                           },
+                           // DELETE /request/:schema/:sid - commit or fail state request.
                            delete {
                               path(Segment / Segment) { (schema, sid) => implicit ctx =>
                                  ctx.complete(SessionRoute.deleteAttributes(schema, sid, body))

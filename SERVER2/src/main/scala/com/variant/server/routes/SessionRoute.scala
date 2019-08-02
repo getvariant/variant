@@ -19,6 +19,7 @@ import akka.http.scaladsl.model.ContentTypes
 import com.variant.server.impl.SessionImpl
 import com.variant.core.util.StringUtils
 import java.util.Random
+import scala.util.Try
 
 object SessionRoute extends VariantRoute with LazyLogging {
 
@@ -117,7 +118,7 @@ object SessionRoute extends VariantRoute with LazyLogging {
     */
    def putAttributes(schemaName: String, sid: String, body: String)(implicit server: VariantServer): HttpResponse = {
 
-      val bodyJson = Json.parse(body)
+      val bodyJson = parse(body)
 
       val ssn = getSession(schemaName, sid).getOrElse {
          throw ServerExceptionRemote(ServerError.SESSION_EXPIRED, sid)
@@ -137,7 +138,7 @@ object SessionRoute extends VariantRoute with LazyLogging {
     */
    def deleteAttributes(schemaName: String, sid: String, body: String)(implicit server: VariantServer): HttpResponse = {
 
-      val bodyJson = Json.parse(body)
+      val bodyJson = parse(body)
 
       val attrs = (bodyJson \ "attrs").asOpt[Array[String]].getOrElse {
          throw new ServerExceptionRemote(ServerError.MissingProperty, "attrs")

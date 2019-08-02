@@ -46,6 +46,14 @@ class SessionAttributeTest extends EmbeddedServerSpec {
          server.ssnStore.get(sid).get.getAttributes mustBe empty
       }
 
+      "respond  on PUT with empty body" in {
+
+         HttpRequest(method = HttpMethods.PUT, uri = s"/session-attr/petclinic/${sid}") ~> router ~> check {
+            println(entityAs[String])
+            ServerErrorResponse(response) mustBe ServerError.EmptyBody
+         }
+      }
+
       "respond OK on clear non-existent attributes" in {
 
          val body: JsValue = Json.obj(

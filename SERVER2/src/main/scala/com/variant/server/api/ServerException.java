@@ -1,6 +1,5 @@
 package com.variant.server.api;
 
-import com.variant.core.error.UserError.Severity;
 import com.variant.core.error.VariantException;
 /**
  * The super-type for of Variant server exception. 
@@ -30,9 +29,9 @@ public class ServerException extends VariantException {
 	/**
 	 * The default severity level.
 	 * @return
-	 */
+	 *
 	public Severity getSeverity() {
 		return Severity.ERROR;
 	}
-
+   */
 }

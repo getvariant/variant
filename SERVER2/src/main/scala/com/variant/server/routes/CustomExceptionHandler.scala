@@ -9,28 +9,32 @@ import com.typesafe.scalalogging.LazyLogging
 import com.variant.core.error.ServerError
 import com.variant.server.boot.ServerExceptionInternal
 import akka.http.scaladsl.model.ContentTypes
+import com.variant.core.error.UserError.Severity
 
 object CustomExceptionHandler extends LazyLogging {
 
    def apply() = ExceptionHandler {
 
       // Remote user error.
-      case e: ServerExceptionRemote =>
+      case ex: ServerExceptionRemote =>
 
-         logger.whenDebugEnabled {
-            logger.debug(s"Remote server error: ${e.getMessage}")
+         if (ex.error.isInternal()) {
+            logger.error("Internal API Error", ex)
+         }
+         else logger.whenDebugEnabled {
+            logger.debug(s"Remote server error: ${ex.getMessage}")
          }
 
-         complete(HttpResponse(StatusCodes.BadRequest, entity = e.toResponseEntity))
+         complete(HttpResponse(StatusCodes.BadRequest, entity = ex.toResponseEntity))
 
       // We barfed while carrying out a remote request.
-      case e: ServerExceptionInternal =>
+      case ex: ServerExceptionInternal =>
 
          logger.whenDebugEnabled {
-            logger.debug(s"Internal server error: ${e.getMessage}")
+            logger.debug(s"Internal server error: ${ex.getMessage}")
          }
 
-         complete(HttpResponse(StatusCodes.InternalServerError, entity = e.toRemoteException.toResponseEntity))
+         complete(HttpResponse(StatusCodes.InternalServerError, entity = ex.toRemoteException.toResponseEntity))
 
       // Uncaught error -- should never happen.
       case t: Throwable =>
