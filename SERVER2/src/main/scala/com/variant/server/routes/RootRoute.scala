@@ -14,13 +14,13 @@ import akka.http.scaladsl.model.headers.Server
 /**
  * "/" route
  */
-object RootRoute {
+object RootRoute extends VariantRoute {
 
    /**
     * "/" route.
     * Display health page.
     */
-   def root(implicit server: VariantServer) = {
+   def root(implicit server: VariantServer) = action {
 
       val msg: StringBuilder =
          new StringBuilder(s"${server.productVersion._1} release ${server.productVersion._2}") ++=
@@ -43,6 +43,6 @@ object RootRoute {
 
       msg ++= "\n"
 
-      complete(HttpResponse(StatusCodes.OK, entity = HttpEntity(ContentTypes.`text/plain(UTF-8)`, msg.toString)))
+      HttpResponse(StatusCodes.OK, entity = HttpEntity(ContentTypes.`text/plain(UTF-8)`, msg.toString))
    }
 }

@@ -28,7 +28,7 @@ object SessionRoute extends VariantRoute with LazyLogging {
    /**
     * Get a session by ID, if exists in any of the given schema's generations.
     */
-   def get(schemaName: String, sid: String)(implicit server: VariantServer): HttpResponse = {
+   def get(schemaName: String, sid: String)(implicit server: VariantServer): HttpResponse = action {
 
       val ssn = getSession(schemaName, sid) getOrElse {
          throw ServerExceptionRemote(ServerError.SESSION_EXPIRED, sid)
@@ -42,7 +42,7 @@ object SessionRoute extends VariantRoute with LazyLogging {
     * or create in the live gen. This request should always come with the
     * targeting tracker content, but we only use it if we're creating the session.
     */
-   def getOrCreate(schemaName: String, sid: String, body: String)(implicit server: VariantServer): HttpResponse = {
+   def getOrCreate(schemaName: String, sid: String, body: JsValue)(implicit server: VariantServer): HttpResponse = action {
 
       val ssn: SessionImpl = getSession(schemaName, sid).getOrElse {
 
@@ -50,7 +50,7 @@ object SessionRoute extends VariantRoute with LazyLogging {
             throw new ServerExceptionRemote(ServerError.UNKNOWN_SCHEMA, schemaName)
          }
 
-         val trackedExperiences = (Json.parse(body) \ "tt").asOpt[List[String]].getOrElse {
+         val trackedExperiences = (body \ "tt").asOpt[List[String]].getOrElse {
             throw new ServerExceptionRemote(ServerError.MissingProperty, "tt")
          }
 
@@ -116,15 +116,13 @@ object SessionRoute extends VariantRoute with LazyLogging {
     * Attributes sent will be added to the map, potentially replacing
     * existing values.
     */
-   def putAttributes(schemaName: String, sid: String, body: String)(implicit server: VariantServer): HttpResponse = {
-
-      val bodyJson = parse(body)
+   def putAttributes(schemaName: String, sid: String, body: JsValue)(implicit server: VariantServer): HttpResponse = action {
 
       val ssn = getSession(schemaName, sid).getOrElse {
          throw ServerExceptionRemote(ServerError.SESSION_EXPIRED, sid)
       }
 
-      val attrMap = (bodyJson \ "attrs").asOpt[Map[String, String]].getOrElse {
+      val attrMap = (body \ "attrs").asOpt[Map[String, String]].getOrElse {
          throw new ServerExceptionRemote(ServerError.MissingProperty, "attrs")
       }
 
@@ -136,11 +134,9 @@ object SessionRoute extends VariantRoute with LazyLogging {
    /**
     * Client is sending a list of attribute names to be removed from this session.
     */
-   def deleteAttributes(schemaName: String, sid: String, body: String)(implicit server: VariantServer): HttpResponse = {
+   def deleteAttributes(schemaName: String, sid: String, body: JsValue)(implicit server: VariantServer): HttpResponse = action {
 
-      val bodyJson = parse(body)
-
-      val attrs = (bodyJson \ "attrs").asOpt[Array[String]].getOrElse {
+      val attrs = (body \ "attrs").asOpt[Array[String]].getOrElse {
          throw new ServerExceptionRemote(ServerError.MissingProperty, "attrs")
       }
 

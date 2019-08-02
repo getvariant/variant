@@ -17,6 +17,10 @@ import akka.http.scaladsl.server.ExceptionHandler
 import akka.http.scaladsl.server.MethodRejection
 import akka.http.scaladsl.model.headers.ProductVersion
 import akka.http.scaladsl.server.RequestContext
+import scala.util.Failure
+import scala.util.Try
+import play.api.libs.json._
+import scala.util.Success
 
 /**
  * HTTP request router.
@@ -48,7 +52,7 @@ class Router(implicit server: VariantServer) extends LazyLogging {
                concat(
 
                   // GET / - Health page
-                  pathEndOrSingleSlash { RootRoute.root },
+                  pathEndOrSingleSlash { complete(RootRoute.root) },
 
                   // GET /schema/:name
                   // Pings a schema so that the client can create a connection.
@@ -70,7 +74,7 @@ class Router(implicit server: VariantServer) extends LazyLogging {
                         post {
                            path(Segment / Segment) { (schema, sid) =>
                               entity(as[String]) { body => implicit ctx =>
-                                 ctx.complete(SessionRoute.getOrCreate(schema, sid, body))
+                                 ctx.complete(SessionRoute.getOrCreate(schema, sid, parse(body)))
                               }
                            }
                         } /*,
@@ -93,13 +97,13 @@ class Router(implicit server: VariantServer) extends LazyLogging {
                            // PUT /session-attr/:schema/:sid - put attributes.
                            put {
                               path(Segment / Segment) { (schema, sid) => implicit ctx =>
-                                 ctx.complete(SessionRoute.putAttributes(schema, sid, body))
+                                 ctx.complete(SessionRoute.putAttributes(schema, sid, parse(body)))
                               }
                            },
                            // DELETE /session-attr/:schema/:sid - delete attributes.
                            delete {
                               path(Segment / Segment) { (schema, sid) => implicit ctx =>
-                                 ctx.complete(SessionRoute.deleteAttributes(schema, sid, body))
+                                 ctx.complete(SessionRoute.deleteAttributes(schema, sid, parse(body)))
                               }
                            })
                      }
@@ -110,19 +114,33 @@ class Router(implicit server: VariantServer) extends LazyLogging {
                            // POST /request/:schema/:sid - create a state request.
                            post {
                               path(Segment / Segment) { (schema, sid) => implicit ctx =>
-                                 ctx.complete(SessionRoute.putAttributes(schema, sid, body))
+                                 ctx.complete(SessionRoute.putAttributes(schema, sid, parse(body)))
                               }
                            },
                            // DELETE /request/:schema/:sid - commit or fail state request.
                            delete {
                               path(Segment / Segment) { (schema, sid) => implicit ctx =>
-                                 ctx.complete(SessionRoute.deleteAttributes(schema, sid, body))
+                                 ctx.complete(SessionRoute.deleteAttributes(schema, sid, parse(body)))
                               }
                            })
                      }
                   })
             }
          }
+      }
+   }
+
+   /**
+    *  Parse request body
+    */
+   def parse(body: String) = {
+
+      if (body == null || body.size == 0)
+         throw ServerExceptionRemote(ServerError.EmptyBody)
+
+      Try[JsValue] { Json.parse(body) } match {
+         case Success(json) => json
+         case Failure(t) => throw ServerExceptionRemote(ServerError.InternalError, t.getMessage)
       }
    }
 

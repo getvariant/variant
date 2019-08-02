@@ -73,7 +73,7 @@ class ServerBootExceptionTest extends EmbeddedServerSpec with ConfigKeys {
          server.schemata.size mustBe 0
          server.bootExceptions.size mustEqual 1
          val ex = server.bootExceptions.head
-         ex.getMessage mustEqual CONFIG_PROPERTY_NOT_SET.asMessage(SCHEMATA_DIR)
+         ex mustEqual ServerExceptionLocal(CONFIG_PROPERTY_NOT_SET, SCHEMATA_DIR)
          server.isUp mustBe false
       }
    }

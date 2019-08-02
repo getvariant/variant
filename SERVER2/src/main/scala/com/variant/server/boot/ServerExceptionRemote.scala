@@ -29,6 +29,14 @@ class ServerExceptionRemote(val error: ServerError, args: String*) extends Serve
    override def getMessage = error.asMessage(args: _*)
 
    /**
+    */
+   override def equals(that: Any) = {
+      that != null &&
+         that.isInstanceOf[ServerExceptionRemote] &&
+         getMessage == that.asInstanceOf[ServerExceptionRemote].getMessage
+   }
+
+   /**
     * Serialize the runtime error as json in a way that will allow the client to
     * deserialize it as an error.
     */

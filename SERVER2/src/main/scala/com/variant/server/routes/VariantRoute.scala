@@ -16,9 +16,17 @@ import akka.http.scaladsl.model.StatusCodes
 import scala.util.Try
 import scala.util.Success
 import scala.util.Failure
+import akka.http.scaladsl.server.Directives._
+import akka.http.scaladsl.server.StandardRoute
 
 trait VariantRoute {
 
+   def action(block: => HttpResponse)(implicit server: VariantServer): HttpResponse = {
+
+      if (server.isUp) block
+      else HttpResponse(StatusCodes.ServiceUnavailable)
+
+   }
    /**
     * Extract body from request context
     */
@@ -49,17 +57,6 @@ trait VariantRoute {
          if (ssn.schemaGen.getMeta.getName != schemaName)
             throw new ServerExceptionRemote(ServerError.WRONG_CONNECTION, schemaName)
          ssn
-      }
-   }
-
-   // Parse request body
-   def parse(body: String) = {
-      if (body == null || body.size == 0)
-         throw ServerExceptionRemote(ServerError.EmptyBody)
-
-      Try[JsValue] { Json.parse(body) } match {
-         case Success(json) => json
-         case Failure(t) => throw ServerExceptionRemote(ServerError.InternalError, t.getMessage)
       }
    }
 

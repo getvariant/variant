@@ -21,7 +21,7 @@ object SchemaRoute extends VariantRoute with LazyLogging {
     * Ping a schema by name. Called on VariantClient.connectTo(schema).
     * Our connections are stateless on the server, so the client simply pings to ensure the schema exists.
     */
-   def get(name: String)(implicit server: VariantServer, ctx: RequestContext): HttpResponse = {
+   def get(name: String)(implicit server: VariantServer, ctx: RequestContext): HttpResponse = action {
 
       server.schemata.get(name) match {
 

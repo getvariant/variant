@@ -15,6 +15,12 @@ class ServerExceptionLocal(val error: ServerMessageLocal, t: Throwable, args: St
 
    override def getMessage: String = error.asMessage(args: _*);
 
+   override def equals(that: Any) = {
+      that != null &&
+         that.isInstanceOf[ServerExceptionLocal] &&
+         getMessage == that.asInstanceOf[ServerExceptionLocal].getMessage
+   }
+
 }
 
 object ServerExceptionLocal {
