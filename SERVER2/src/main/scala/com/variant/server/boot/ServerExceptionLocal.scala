@@ -11,7 +11,7 @@ import com.variant.server.api.ServerException;
  */
 
 class ServerExceptionLocal(val error: ServerMessageLocal, t: Throwable, args: String*)
-   extends ServerException(error.asMessage(args), t) {
+   extends ServerException(error.asMessage(args: _*), t) {
 
    override def getMessage: String = error.asMessage(args: _*);
 

@@ -1,5 +1,7 @@
 package com.variant.server.test
 
+import scala.sys.process._
+
 import com.variant.server.boot.ServerExceptionLocal
 import com.variant.server.boot.ServerMessageLocal._
 import com.variant.server.impl.ConfigKeys
@@ -8,6 +10,9 @@ import com.variant.server.test.spec.EmbeddedServerSpec
 import akka.http.scaladsl.model.HttpMethods._
 import akka.http.scaladsl.model.HttpRequest
 import akka.http.scaladsl.model.StatusCodes._
+import com.variant.server.test.util.ServerLogTailer
+import akka.http.scaladsl.model.HttpMethods
+import com.variant.server.test.routes.SessionTest
 
 /**
  * Test various schema deployment error scenarios
@@ -88,7 +93,7 @@ class ServerBootExceptionTest extends EmbeddedServerSpec with ConfigKeys {
       ex mustEqual ServerExceptionLocal(SCHEMATA_DIR_MISSING, "non-existent")
    }
 
-   "return NotFound in every http request to unmapped path after SCHEMATA_DIR_MISSING" in {
+   "return NotFound in every unmapped http request after SCHEMATA_DIR_MISSING" in {
 
       server.isUp mustBe false
 
@@ -99,7 +104,7 @@ class ServerBootExceptionTest extends EmbeddedServerSpec with ConfigKeys {
 
    }
 
-   "return ServiceUnavailable in every http request to a mapped path after SCHEMATA_DIR_MISSING" in {
+   "return ServiceUnavailable in every mapped http request after SCHEMATA_DIR_MISSING" in {
 
       server.isUp mustBe false
 
@@ -110,7 +115,6 @@ class ServerBootExceptionTest extends EmbeddedServerSpec with ConfigKeys {
 
       HttpRequest(method = POST, uri = "/session/petclinic/foo") ~> router ~> check {
          handled mustBe true
-         println("****** " + entityAs[String])
          status mustBe ServiceUnavailable
       }
 
@@ -134,38 +138,37 @@ class ServerBootExceptionTest extends EmbeddedServerSpec with ConfigKeys {
          val ex = server.bootExceptions.head
          ex mustEqual ServerExceptionLocal(SCHEMATA_DIR_NOT_DIR, "schemata-file")
       }
-      /*
-      "return 503 in every http request after SCHEMATA_DIR_NOT_DIR" in {
-
-         server.isUp mustBe false
-
-         assertResp(route(app, httpReq(PUT, "/session/foo")))
-            .is(SERVICE_UNAVAILABLE)
-            .withNoBody
-
-         assertResp(route(app, httpReq(GET, "/session/foo/bar")))
-            .is(SERVICE_UNAVAILABLE)
-            .withNoBody
-
-         assertResp(route(app, httpReq(POST, "/session/foo/bar")))
-            .is(SERVICE_UNAVAILABLE)
-            .withNoBody
-
-      }
    }
 
    "Multiple schemata with duplicate schema name" should {
 
       "cause server to throw SCHEMA_NAME_DUPE" in {
 
+         val schemataDir = "/tmp/schemata-test"
+         s"rm -rf ${schemataDir}" !;
+         s"mkdir ${schemataDir}" !;
+         s"cp schemata/monster.schema ${schemataDir}/monster1.schema" !;
+         s"cp schemata/monster.schema ${schemataDir}/monster2.schema" !;
+
+         new ServerBuilder()
+            .withConfig(Map("variant.schemata.dir" -> schemataDir))
+            .reboot()
+
          val logTail = ServerLogTailer.last(3)
          server.schemata.size mustBe 1
          val errLine = logTail(0)
-         errLine.severity mustBe ERROR
-         errLine.message must include(SCHEMA_CANNOT_REPLACE.asMessage("ParserConjointOkayBigTestNoHooks", "schema1.json", "schema2.json"))
+         errLine.level mustBe ServerLogTailer.Error
+         errLine.message must include(SCHEMA_CANNOT_REPLACE.asMessage("monstrosity", "monster1.schema", "monster2.schema"))
          server.isUp mustBe true
       }
-      *
-      */
+
+      "ensure monster schema is accessible" in {
+
+         HttpRequest(method = HttpMethods.POST, uri = "/session/monstrosity/foo", entity = SessionTest.emptyTargetingTrackerBody) ~> router ~> check {
+            val ssnResp = SessionResponse(response)
+            ssnResp.schema.getMeta.getName mustBe "monstrosity"
+         }
+      }
+
    }
 }

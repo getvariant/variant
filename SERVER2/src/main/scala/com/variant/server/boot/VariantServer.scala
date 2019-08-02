@@ -213,8 +213,7 @@ private class VariantServerImpl(
     */
    def croak(t: Throwable) {
       t match {
-         case se: ServerException =>
-            bootExceptions += se;
+         case se: ServerException => bootExceptions += se;
          case e: Throwable => bootExceptions += new ServerException("Uncaught exception: " + e.getMessage, e)
       }
    }
