@@ -46,11 +46,20 @@ class SessionAttributeTest extends EmbeddedServerSpec {
          server.ssnStore.get(sid).get.getAttributes mustBe empty
       }
 
-      "respond  on PUT with empty body" in {
+      "respond EmptyBody on PUT with empty body" in {
 
          HttpRequest(method = HttpMethods.PUT, uri = s"/session-attr/petclinic/${sid}") ~> router ~> check {
-            println(entityAs[String])
             ServerErrorResponse(response) mustBe ServerError.EmptyBody
+         }
+      }
+
+      "respond InternalError on PUT with bad JSON" in {
+
+         HttpRequest(method = HttpMethods.PUT, uri = s"/session-attr/petclinic/${sid}", entity = "bad json") ~> router ~> check {
+            println(entityAs[String])
+            ServerErrorResponse(response) mustBe (
+               ServerError.InternalError,
+               "Unrecognized token 'bad': was expecting ('true', 'false' or 'null')\n at [Source: (String)\"bad json\"; line: 1, column: 4]")
          }
       }
 

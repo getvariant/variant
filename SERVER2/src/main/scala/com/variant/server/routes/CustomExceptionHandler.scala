@@ -20,8 +20,7 @@ object CustomExceptionHandler extends LazyLogging {
 
          if (ex.error.isInternal()) {
             logger.error("Internal API Error", ex)
-         }
-         else logger.whenDebugEnabled {
+         } else logger.whenDebugEnabled {
             logger.debug(s"Remote server error: ${ex.getMessage}")
          }
 
