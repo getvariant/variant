@@ -9,9 +9,10 @@ import com.variant.server.schema.ServerSchemaParser
 import akka.http.scaladsl.model.HttpRequest
 import akka.http.scaladsl.model.StatusCodes._
 import akka.http.scaladsl.model.ContentTypes
-import akka.http.scaladsl.model.HttpMethods
+import akka.http.scaladsl.model.HttpMethods._
 import play.api.libs.json._
 import com.variant.core.error.ServerError
+import akka.http.scaladsl.model.HttpMethods
 
 /*
  * Reusable event JSON objects.
@@ -61,7 +62,7 @@ class SchemaTest extends EmbeddedServerSpec {
 
       "respond OK on GET with valid schema" in {
 
-         HttpRequest(method = HttpMethods.GET, uri = "/schema/monstrosity") ~> router ~> check {
+         HttpRequest(method = GET, uri = "/schema/monstrosity") ~> router ~> check {
             handled mustBe true
             status mustBe OK
             val respBody = Json.parse(entityAs[String])
@@ -71,7 +72,7 @@ class SchemaTest extends EmbeddedServerSpec {
 
       "respond UNKNOWN_SCHEMA on GET with invalid schema" in {
 
-         HttpRequest(method = HttpMethods.GET, uri = "/schema/invalid") ~> router ~> check {
+         HttpRequest(method = GET, uri = "/schema/invalid") ~> router ~> check {
             handled mustBe true
             status mustBe BadRequest
             println(entityAs[String])

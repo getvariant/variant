@@ -48,7 +48,6 @@ class Router(implicit server: VariantServer) extends LazyLogging {
       respondWithHeaders(Server(s"${variant} - ${akkaHttp}")) {
          handleExceptions(exceptionHandler) {
             handleRejections(rejectionHandler) {
-
                concat(
 
                   // GET / - Health page
@@ -72,10 +71,8 @@ class Router(implicit server: VariantServer) extends LazyLogging {
                         // POST /session/:schema/:sid
                         // Get an existing session or create a new one (with a different ID) if expired.
                         post {
-                           path(Segment / Segment) { (schema, sid) =>
-                              entity(as[String]) { body => implicit ctx =>
-                                 ctx.complete(SessionRoute.getOrCreate(schema, sid, parse(body)))
-                              }
+                           path(Segment / Segment) { (schema, sid) => implicit ctx =>
+                              ctx.complete(SessionRoute.getOrCreate(schema, sid))
                            }
                         } /*,
                         // Save an existing session. *** DO NOT USE. ***
@@ -92,56 +89,37 @@ class Router(implicit server: VariantServer) extends LazyLogging {
                      )
                   },
                   pathPrefix("session-attr") {
-                     entity(as[String]) { body =>
-                        concat(
-                           // PUT /session-attr/:schema/:sid - put attributes.
-                           put {
-                              path(Segment / Segment) { (schema, sid) => implicit ctx =>
-                                 ctx.complete(SessionRoute.putAttributes(schema, sid, parse(body)))
-                              }
-                           },
-                           // DELETE /session-attr/:schema/:sid - delete attributes.
-                           delete {
-                              path(Segment / Segment) { (schema, sid) => implicit ctx =>
-                                 ctx.complete(SessionRoute.deleteAttributes(schema, sid, parse(body)))
-                              }
-                           })
-                     }
+                     concat(
+                        // PUT /session-attr/:schema/:sid - put attributes.
+                        put {
+                           path(Segment / Segment) { (schema, sid) => implicit ctx =>
+                              ctx.complete(SessionRoute.putAttributes(schema, sid))
+                           }
+                        },
+                        // DELETE /session-attr/:schema/:sid - delete attributes.
+                        delete {
+                           path(Segment / Segment) { (schema, sid) => implicit ctx =>
+                              ctx.complete(SessionRoute.deleteAttributes(schema, sid))
+                           }
+                        })
                   },
                   pathPrefix("request") {
-                     entity(as[String]) { body =>
-                        concat(
-                           // POST /request/:schema/:sid - create a state request.
-                           post {
-                              path(Segment / Segment) { (schema, sid) => implicit ctx =>
-                                 ctx.complete(SessionRoute.putAttributes(schema, sid, parse(body)))
-                              }
-                           },
-                           // DELETE /request/:schema/:sid - commit or fail state request.
-                           delete {
-                              path(Segment / Segment) { (schema, sid) => implicit ctx =>
-                                 ctx.complete(SessionRoute.deleteAttributes(schema, sid, parse(body)))
-                              }
-                           })
-                     }
+                     concat(
+                        // POST /request/:schema/:sid - create a state request.
+                        post {
+                           path(Segment / Segment) { (schema, sid) => implicit ctx =>
+                              ctx.complete(SessionRoute.putAttributes(schema, sid))
+                           }
+                        },
+                        // DELETE /request/:schema/:sid - commit or fail state request.
+                        delete {
+                           path(Segment / Segment) { (schema, sid) => implicit ctx =>
+                              ctx.complete(SessionRoute.deleteAttributes(schema, sid))
+                           }
+                        })
                   })
             }
          }
       }
    }
-
-   /**
-    *  Parse request body
-    */
-   def parse(body: String) = {
-
-      if (body == null || body.size == 0)
-         throw ServerExceptionRemote(ServerError.EmptyBody)
-
-      Try[JsValue] { Json.parse(body) } match {
-         case Success(json) => json
-         case Failure(t) => throw ServerExceptionRemote(ServerError.InternalError, t.getMessage)
-      }
-   }
-
 }

@@ -36,7 +36,7 @@ object ServerMessageLocal {
       new ServerMessageLocal(401, Severity.FATAL, "Schemata deploy directory [%s] does not exist");
 
    val SCHEMATA_DIR_NOT_DIR =
-      new ServerMessageLocal(402, Severity.FATAL, "Schemata deploy directory file [%s] exists but is not a directory");
+      new ServerMessageLocal(402, Severity.FATAL, "Schemata deploy directory [%s] exists but is not a directory");
 
    val EVENT_FLUSHER_NO_INTERFACE =
       new ServerMessageLocal(403, Severity.FATAL, "Event flusher class [%s] must implement interface [%s]");

@@ -18,27 +18,52 @@ import scala.util.Success
 import scala.util.Failure
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.StandardRoute
+import scala.concurrent.Await
+import scala.concurrent.duration._
+import com.variant.server.boot.ServerExceptionInternal
 
 trait VariantRoute {
 
+   /**
+    * Nullary action.
+    */
    def action(block: => HttpResponse)(implicit server: VariantServer): HttpResponse = {
-
       if (server.isUp) block
       else HttpResponse(StatusCodes.ServiceUnavailable)
-
    }
+
+   /**
+    * Action that expects a request body.
+    */
+   def action(block: (JsValue) => HttpResponse)(implicit server: VariantServer, ctx: RequestContext): HttpResponse = {
+
+      if (server.isUp) {
+
+         // We extract the body of the request instead of relying on a standard extractor so we can delay extraction
+         // until after we check if server is up.
+         implicit val system = server.actorSystem
+         implicit val materializer = ActorMaterializer()
+
+         // We're ignoring exceptions here, which should be okay, as they will be caught in the exception handler
+         // and there's no reason to intercept them here.
+         val body = Await.result(Unmarshal(ctx.request).to[String], 1.second)
+
+         block(parse(body))
+      } else {
+         HttpResponse(StatusCodes.ServiceUnavailable)
+      }
+   }
+
    /**
     * Extract body from request context
     */
    def body(implicit system: ActorSystem, reqCtx: RequestContext): JsValue = {
 
-      val req = reqCtx.request
-      if (req.entity.getContentType != ContentTypes.`application/json`) {
+      if (reqCtx.request.entity.getContentType != ContentTypes.`application/json`) {
          throw ServerExceptionRemote(ServerError.BadContentType)
       }
 
       implicit val materializer = ActorMaterializer
-
       Json.parse("blah")
    }
 
@@ -74,4 +99,19 @@ trait VariantRoute {
 
       HttpResponse(StatusCodes.OK, entity = HttpEntity(ContentTypes.`application/json`, entity.toString()))
    }
+
+   /**
+    *  Parse request body
+    */
+   def parse(body: String) = {
+
+      if (body == null || body.size == 0)
+         throw ServerExceptionRemote(ServerError.EmptyBody)
+
+      Try[JsValue] { Json.parse(body) } match {
+         case Success(json) => json
+         case Failure(t) => throw ServerExceptionRemote(ServerError.InternalError, t.getMessage)
+      }
+   }
+
 }
