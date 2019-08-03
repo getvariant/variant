@@ -104,7 +104,7 @@ class SessionTest extends EmbeddedServerSpec {
             ssnResp.schema.getMeta.getName mustBe "monstrosity"
          }
       }
-      /*
+      /* i don't think we call this fro the client, so PUT is currently not implemented.
       "respond OK and replace existing session on PUT" in {
 
          val reqBody = sessionJsonBigCovar.expand("sid" -> "foo")
@@ -120,7 +120,6 @@ class SessionTest extends EmbeddedServerSpec {
             }
       }
 */
-
       "keep an existing session alive over time" in {
 
          val halfExp = sessionTimeoutMillis / 2

@@ -13,38 +13,34 @@ import com.variant.server.api.StateRequest
 import com.variant.server.api.StateRequest.Status._
 import com.variant.server.impl.SessionImpl
 import com.variant.server.impl.StateRequestImpl
-import com.variant.server.util.JavaImplicits.оptional2Option
+import com.variant.server.util.JavaImplicits._
 
 import play.api.libs.json._
 import com.variant.server.impl.TraceEventImpl
 import com.typesafe.scalalogging.LazyLogging
 import akka.http.scaladsl.model.HttpResponse
-/*
+import akka.http.scaladsl.server.RequestContext
+import com.variant.core.error.ServerError
+
 object RequestRoute extends VariantRoute with LazyLogging {
 
    /**
     * POST
     * Create state request by targeting a session for a state.
     */
-   def create(schemaName: String, sid: String, body: String)(implicit server: VariantServer): HttpResponse = {
+   def post
+      (schemaName: String, sid: String, body: String)
+      (implicit server: VariantServer, ctx: RequestContext): HttpResponse = action { body =>
 
       val ssn = getSession(schemaName, sid) getOrElse {
          throw ServerExceptionRemote(ServerError.SESSION_EXPIRED, sid)
       }
 
-      val bodyJson = Json.parse(body)
-
-
-      val sid = (bodyJson \ "sid").asOpt[String].getOrElse {
-         throw new ServerExceptionRemote(MissingProperty, "sid")
-      }
-      val stateName = (bodyJson \ "state").asOpt[String].getOrElse {
+      val stateName = (body \ "state").asOpt[String].getOrElse {
          throw new ServerExceptionRemote(MissingProperty, "state")
       }
 
-      val stabile = (bodyJson \ "stab").asOpt[List[String]]
-
-      val ssn = server.ssnStore.getOrBust(sid)
+      val stabile = (body \ "stab").asOpt[List[String]]
 
       // It's an error to request another state, before committing/failing current request.
       //val req = Option(ssn.getStateRequest.orElse(null))
@@ -74,29 +70,22 @@ object RequestRoute extends VariantRoute with LazyLogging {
 
       ssn.schemaGen.runtime.targetForState(ssn, state.get)
 
-      val response = JsObject(Seq(
-         "session" -> JsString(ssn.asInstanceOf[SessionImpl].coreSession.toJson())
-      ))
-
-      Ok(response.toString)
+      stdSessionResponse(ssn)
    }
 
    /**
-    * PUT
+    * DELETE
     * Commit or fail a state request. Trigger the implicit state visited event.
     */
-   def commit() = action { req =>
+   def commit(schemaName: String, sid: String, body: String)
+      (implicit server: VariantServer, ctx: RequestContext): HttpResponse = action { body =>
 
-      val bodyJson = getBody(req).getOrElse {
-         throw new ServerExceptionRemote(EmptyBody)
-      }
-
-      val sid = (bodyJson \ "sid").asOpt[String].getOrElse {
-         throw new ServerExceptionRemote(MissingProperty, "sid")
+      val ssn = getSession(schemaName, sid) getOrElse {
+         throw ServerExceptionRemote(ServerError.SESSION_EXPIRED, sid)
       }
 
       val status = {
-         val ordinal = (bodyJson \ "status").asOpt[Int].getOrElse {
+         val ordinal = (body \ "status").asOpt[Int].getOrElse {
             throw new ServerExceptionRemote(MissingProperty, "status")
          }
          StateRequest.Status.values()(ordinal)
@@ -105,12 +94,10 @@ object RequestRoute extends VariantRoute with LazyLogging {
       if (!status.isIn(Committed, Failed))
          throw new ServerExceptionRemote(InvalidRequestStatus, status.toString())
 
-      val attrs = (bodyJson \ "attrs").asOpt[Map[String,String]].getOrElse {
+      val attrs = (body \ "attrs").asOpt[Map[String,String]].getOrElse {
          Map[String,String]()
       }
 
-
-      val ssn = server.ssnStore.getOrBust(sid)
       // Ok to assume we always have the request?
       val stateReq = ssn.getStateRequest.get.asInstanceOf[StateRequestImpl]
 
@@ -135,12 +122,7 @@ object RequestRoute extends VariantRoute with LazyLogging {
          }
 
       }
-      val response = JsObject(Seq(
-         "session" -> JsString(ssn.coreSession.toJson)
-      )).toString()
 
-      Ok(response)
+      stdSessionResponse(ssn)
    }
 }
-*
-*/

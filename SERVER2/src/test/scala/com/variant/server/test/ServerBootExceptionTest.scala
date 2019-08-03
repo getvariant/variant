@@ -19,50 +19,6 @@ import com.variant.server.test.routes.SessionTest
  */
 class ServerBootExceptionTest extends EmbeddedServerSpec with ConfigKeys {
 
-   /*
-   /**
-    * This will implicitly rebuild the server before each test.
-    */
-   implicit override def newAppForTest(testData: TestData): Application = {
-
-      if (testData.name.contains("CONFIG_PROPERTY_NOT_SET")) {
-         _app = new GuiceApplicationBuilder()
-            .configure(new Configuration(VariantApplicationLoader.config.withoutPath("variant.variant.schemata.dir")))
-            .build()
-         _app
-      } else if (testData.name.contains("SCHEMATA_DIR_MISSING")) {
-         _app = new GuiceApplicationBuilder()
-            .configure(new Configuration(VariantApplicationLoader.config))
-            .configure(Map("variant.variant.schemata.dir" -> "non-existent"))
-            .build()
-         _app
-      } else if (testData.name.contains("SCHEMATA_DIR_NOT_DIR")) {
-         _app = new GuiceApplicationBuilder()
-            .configure(new Configuration(VariantApplicationLoader.config))
-            .configure("variant.variant.schemata.dir" -> "test-schemata-file")
-            .build()
-         _app
-      } else if (testData.name.contains("SCHEMA_NAME_DUPE")) {
-         // Delete directory
-         val path: Path = Path("/tmp/schemata-test")
-         Try(path.deleteRecursively())
-
-         FileUtils.copyFile(new File("conf-test/ParserConjointOkayBigTestNoHooks.json"), new File("/tmp/schemata-test/schema1.json"))
-         FileUtils.copyFile(new File("conf-test/ParserConjointOkayBigTestNoHooks.json"), new File("/tmp/schemata-test/schema2.json"))
-         _app = new GuiceApplicationBuilder()
-            .configure(new Configuration(VariantApplicationLoader.config))
-            .configure("variant.variant.schemata.dir" -> "/tmp/schemata-test")
-            .build()
-         _app
-      } else {
-         _app = new GuiceApplicationBuilder()
-            .configure(new Configuration(VariantApplicationLoader.config))
-            .build()
-         _app
-      }
-   }
-*/
-
    "Server boot" should {
 
       "emit CONFIG_PROPERTY_NOT_SET if no schema.dir config" in {
