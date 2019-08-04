@@ -124,39 +124,34 @@ class RequestTest extends EmbeddedServerSpec with TraceEventsSpec {
 
       }
 
-      /*
       "create and commit new state request with SVE attributes" in {
 
-         var sid = newSid
-
          // Recreate session because the old one expired while we waited for the event writer.
-         assertResp(route(app, httpReq(POST, "/session/monstrosity/" + sid).withBody(emptyTargetingTrackerBody)))
-            .isOk
-            .withBodySession { ssn =>
-               ssn.getId mustNot be (sid)
-               sid = ssn.getId
-               ssn.getSchema.getMeta.getName mustBe "monstrosity"
-               ssn.getStateRequest() mustBe Optional.empty
+         var sid = newSid
+         HttpRequest(method = HttpMethods.POST, uri = s"/session/monstrosity/${sid}", entity = emptyTargetingTrackerBody) ~> router ~> check {
+            val ssnResp = SessionResponse(response)
+            ssnResp.session.getId mustNot be(sid)
+            ssnResp.schema.getMeta.getName mustBe "monstrosity"
+            sid = ssnResp.session.getId
          }
 
          // Target sesion for "state3"
          val reqBody1 = Json.obj(
-            "sid" -> sid,
-            "state" -> "state3"
-            ).toString
+            "state" -> "state3").toString
 
          // Target and get the request.
-         assertResp(route(app, httpReq(POST, "/request").withTextBody(reqBody1)))
-            .isOk
-            .withBodySession { ssn =>
-               val stateReq = ssn.getStateRequest.get
-               stateReq mustNot be (null)
-               stateReq.getStatus.ordinal mustBe InProgress.ordinal
-               stateReq.getLiveExperiences.size mustBe 5
-               stateReq.getResolvedParameters.size mustBe 1
-               stateReq.getSession.getId mustBe sid
-               stateReq.getState mustBe schema.getState("state3").get
-            }
+         HttpRequest(method = HttpMethods.POST, uri = s"/request/monstrosity/${sid}", entity = reqBody1) ~> router ~> check {
+            val ssnResp = SessionResponse(response)
+            ssnResp.session.getId mustBe sid
+            ssnResp.schema.getMeta.getName mustBe "monstrosity"
+            val stateReq = ssnResp.session.getStateRequest.get
+            stateReq mustNot be(null)
+            stateReq.getStatus.ordinal mustBe InProgress.ordinal
+            stateReq.getLiveExperiences.size mustBe 5
+            stateReq.getResolvedParameters.size mustBe 1
+            stateReq.getSession.getId mustBe sid
+            stateReq.getState mustBe schema.getState("state3").get
+         }
 
          val serverSsn = server.ssnStore.get(sid).get.asInstanceOf[SessionImpl]
 
@@ -164,47 +159,46 @@ class RequestTest extends EmbeddedServerSpec with TraceEventsSpec {
 
          // Commit with SVE attributes.
          val reqBody2 = Json.obj(
-            "sid" -> sid,
             "status" -> Committed.ordinal,
-            "attrs" -> Map("key1"->"val1", "key2"->"val2")
-         ).toString
+            "attrs" -> Map("key1" -> "val1", "key2" -> "val2")).toString
 
          var stateReq: CoreStateRequest = null
-         assertResp(route(app, httpReq(PUT, "/request").withTextBody(reqBody2)))
-            .isOk
-            .withBodyJson { json =>
-               val coreSsn = CoreSession.fromJson((json \ "session").as[String], schema)
-               stateReq = coreSsn.getStateRequest.get
-               stateReq mustNot be (null)
-               stateReq.getStatus.ordinal mustBe Committed.ordinal
-               stateReq.getLiveExperiences.size mustBe 5
-               stateReq.getResolvedParameters.size mustBe 1
-               stateReq.getSession.getId mustBe sid
-               stateReq.getState mustBe schema.getState("state3").get
+         HttpRequest(method = HttpMethods.DELETE, uri = s"/request/monstrosity/${sid}", entity = reqBody2) ~> router ~> check {
+            val ssnResp = SessionResponse(response)
+            ssnResp.session.getId mustBe sid
+            ssnResp.schema.getMeta.getName mustBe "monstrosity"
+            stateReq = ssnResp.session.getStateRequest.get
+            stateReq mustNot be(null)
+            stateReq.getStatus.ordinal mustBe Committed.ordinal
+            stateReq.getLiveExperiences.size mustBe 5
+            stateReq.getResolvedParameters.size mustBe 1
+            stateReq.getSession.getId mustBe sid
+            stateReq.getState mustBe schema.getState("state3").get
          }
 
          serverSsn.getStateRequest().get.getStatus.ordinal mustBe Committed.ordinal
 
          // Try committing again... Should work because we don't actually check for this on the server.
          // and trust that the client will check before sending the request and check again after receiving.
-         assertResp(route(app, httpReq(PUT, "/request").withTextBody(reqBody2)))
-            .isOk
+         HttpRequest(method = HttpMethods.DELETE, uri = s"/request/monstrosity/${sid}", entity = reqBody2) ~> router ~> check {
+            val ssnResp = SessionResponse(response)
+         }
 
          // Wait for event writer to flush and confirm we wrote 1 state visit event.
-         Thread.sleep(2000)
+         Thread.sleep(writer.maxDelayMillis)
          reader.read(e => e.sessionId == sid).size mustBe 1
          for (e <- reader.read(e => e.sessionId == sid)) {
             e.sessionId mustBe sid
             e.name mustBe Constants.SVE_NAME
             e.attributes.size mustBe 4
-            e.attributes mustBe Map("$STATE"->"state3", "$STATUS" -> "Committed", "key1"->"val1", "key2"->"val2")
-            e.eventExperiences.toSet[EventExperienceFromDatabase].map {x =>
+            e.attributes mustBe Map("$STATE" -> "state3", "$STATUS" -> "Committed", "key1" -> "val1", "key2" -> "val2")
+            e.eventExperiences.toSet[EventExperienceFromDatabase].map { x =>
                schema.getVariation(x.testName).get.getExperience(x.experienceName).get
-               } mustBe stateReq.getLiveExperiences.asScala.toSet
+            } mustBe stateReq.getLiveExperiences.asScala.toSet
          }
 
       }
-
+      /*
       "refuse to fail after commit" in {
 
          var sid = newSid
