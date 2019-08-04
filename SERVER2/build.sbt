@@ -75,3 +75,6 @@ Test / baseDirectory := file("test-base")
 //unmanagedClasspath in Test += baseDirectory.value / "src" / "universal" / "conf"
 unmanagedClasspath in Test += baseDirectory.value / "src" / "universal" / "ext/*"
 
+// To debug, uncomment and connect with eclipse after the VM is suspended.
+// javaOptions in Test ++= Seq("-Xdebug",  "-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=8000")
+

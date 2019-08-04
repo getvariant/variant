@@ -2,29 +2,26 @@ package com.variant.server.test.routes
 
 import java.util.Optional
 
-import scala.collection.JavaConverters._
+import scala.collection.JavaConverters.asScalaSetConverter
 
-import com.variant.server.api.StateRequest.Status._
-import com.variant.core.error.ServerError._
-import com.variant.core.session.CoreSession
+import com.variant.core.Constants
 import com.variant.core.session.CoreStateRequest
+import com.variant.server.api.StateRequest.Status.Committed
+import com.variant.server.api.StateRequest.Status.InProgress
 import com.variant.server.impl.SessionImpl
 import com.variant.server.test.spec.EmbeddedServerSpec
+import com.variant.server.test.spec.TraceEventsSpec
 import com.variant.server.test.util.EventExperienceFromDatabase
 import com.variant.server.test.util.TraceEventReader
 
-import play.api.libs.json._
-
-import com.variant.core.Constants
-import com.variant.server.api.TraceEvent
-import com.variant.server.impl.TraceEventImpl
-import akka.http.scaladsl.model.HttpRequest
 import akka.http.scaladsl.model.HttpMethods
+import akka.http.scaladsl.model.HttpRequest
+import play.api.libs.json.Json
 
 /**
  * Session Controller Tests
  */
-class RequestTest extends EmbeddedServerSpec {
+class RequestTest extends EmbeddedServerSpec with TraceEventsSpec {
 
    import SessionTest._
 
@@ -56,7 +53,7 @@ class RequestTest extends EmbeddedServerSpec {
       "create and commit new state request without SVE attributes" in {
 
          // Get existing session.
-         HttpRequest(method = HttpMethods.GET, uri = s"/session/monstrosity/${sid}", entity = "junk to be ignored") ~> router ~> check {
+         HttpRequest(method = HttpMethods.GET, uri = s"/session/monstrosity/${sid}") ~> router ~> check {
             val ssnResp = SessionResponse(response)
             ssnResp.session.getId mustBe sid
             ssnResp.schema.getMeta.getName mustBe "monstrosity"
@@ -65,22 +62,21 @@ class RequestTest extends EmbeddedServerSpec {
 
          // Target sesion for "state2"
          val reqBody1 = Json.obj(
-            "state" -> "state2"
-            ).toString
+            "state" -> "state2").toString
 
          // Target and get the request.
-         assertResp(route(app, httpReq(POST, "/request").withTextBody(reqBody1)))
-            .isOk
-            .withBodyJson { json =>
-               val coreSsn = CoreSession.fromJson((json \ "session").as[String], schema)
-               val stateReq = coreSsn.getStateRequest.get
-               stateReq mustNot be (null)
-               stateReq.getStatus.ordinal mustBe InProgress.ordinal
-               stateReq.getLiveExperiences.size mustBe 5
-               stateReq.getResolvedParameters.size mustBe 1
-               stateReq.getSession.getId mustBe sid
-               stateReq.getState mustBe schema.getState("state2").get
-            }
+         HttpRequest(method = HttpMethods.POST, uri = s"/request/monstrosity/${sid}", entity = reqBody1) ~> router ~> check {
+            val ssnResp = SessionResponse(response)
+            ssnResp.session.getId mustBe sid
+            ssnResp.schema.getMeta.getName mustBe "monstrosity"
+            val stateReq = ssnResp.session.getStateRequest.get
+            stateReq mustNot be(null)
+            stateReq.getStatus.ordinal mustBe InProgress.ordinal
+            stateReq.getLiveExperiences.size mustBe 5
+            stateReq.getResolvedParameters.size mustBe 1
+            stateReq.getSession.getId mustBe sid
+            stateReq.getState mustBe schema.getState("state2").get
+         }
 
          val serverSsn = server.ssnStore.get(sid).get.asInstanceOf[SessionImpl]
 
@@ -88,33 +84,32 @@ class RequestTest extends EmbeddedServerSpec {
 
          // Commit without SVE attributes.
          val reqBody2 = Json.obj(
-            "sid" -> sid,
-            "status" -> Committed.ordinal
-            ).toString
+            "status" -> Committed.ordinal).toString
 
          var stateReq: CoreStateRequest = null
-         assertResp(route(app, httpReq(PUT, "/request").withTextBody(reqBody2)))
-            .isOk
-            .withBodyJson { json =>
-               val coreSsn = CoreSession.fromJson((json \ "session").as[String], schema)
-               stateReq = coreSsn.getStateRequest.get
-               stateReq mustNot be (null)
-               stateReq.getStatus.ordinal mustBe Committed.ordinal
-               stateReq.getLiveExperiences.size mustBe 5
-               stateReq.getResolvedParameters.size mustBe 1
-               stateReq.getSession.getId mustBe sid
-               stateReq.getState mustBe schema.getState("state2").get
+         HttpRequest(method = HttpMethods.DELETE, uri = s"/request/monstrosity/${sid}", entity = reqBody2) ~> router ~> check {
+            val ssnResp = SessionResponse(response)
+            ssnResp.session.getId mustBe sid
+            ssnResp.schema.getMeta.getName mustBe "monstrosity"
+            stateReq = ssnResp.session.getStateRequest.get
+            stateReq mustNot be(null)
+            stateReq.getStatus.ordinal mustBe Committed.ordinal
+            stateReq.getLiveExperiences.size mustBe 5
+            stateReq.getResolvedParameters.size mustBe 1
+            stateReq.getSession.getId mustBe sid
+            stateReq.getState mustBe schema.getState("state2").get
          }
 
          serverSsn.getStateRequest().get.getStatus.ordinal mustBe Committed.ordinal
 
          // Try committing again... Should work because we don't actually check for this on the server.
          // and trust that the client will check before sending the request and check again after receiving.
-         assertResp(route(app, httpReq(PUT, "/request").withTextBody(reqBody2)))
-            .isOk
+         HttpRequest(method = HttpMethods.DELETE, uri = s"/request/monstrosity/${sid}", entity = reqBody2) ~> router ~> check {
+            val ssnResp = SessionResponse(response)
+         }
 
          // Wait for event writer to flush and confirm we wrote 1 state visit event.
-         Thread.sleep(2000)
+         Thread.sleep(writer.maxDelayMillis)
          reader.read(e => e.sessionId == sid).size mustBe 1
          for (e <- reader.read(e => e.sessionId == sid)) {
             e.sessionId mustBe sid
@@ -122,9 +117,9 @@ class RequestTest extends EmbeddedServerSpec {
             e.attributes.size mustBe 2
             e.attributes("$STATE") mustBe "state2"
             e.attributes("$STATUS") mustBe "Committed"
-            e.eventExperiences.toSet[EventExperienceFromDatabase].map {x =>
+            e.eventExperiences.toSet[EventExperienceFromDatabase].map { x =>
                schema.getVariation(x.testName).get.getExperience(x.experienceName).get
-               } mustBe stateReq.getLiveExperiences.asScala.toSet
+            } mustBe stateReq.getLiveExperiences.asScala.toSet
          }
 
       }

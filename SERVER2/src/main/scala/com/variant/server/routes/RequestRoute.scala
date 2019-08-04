@@ -28,9 +28,7 @@ object RequestRoute extends VariantRoute with LazyLogging {
     * POST
     * Create state request by targeting a session for a state.
     */
-   def post
-      (schemaName: String, sid: String, body: String)
-      (implicit server: VariantServer, ctx: RequestContext): HttpResponse = action { body =>
+   def targetRequest(schemaName: String, sid: String)(implicit server: VariantServer, ctx: RequestContext): HttpResponse = action { body =>
 
       val ssn = getSession(schemaName, sid) getOrElse {
          throw ServerExceptionRemote(ServerError.SESSION_EXPIRED, sid)
@@ -69,7 +67,6 @@ object RequestRoute extends VariantRoute with LazyLogging {
       }
 
       ssn.schemaGen.runtime.targetForState(ssn, state.get)
-
       stdSessionResponse(ssn)
    }
 
@@ -77,8 +74,7 @@ object RequestRoute extends VariantRoute with LazyLogging {
     * DELETE
     * Commit or fail a state request. Trigger the implicit state visited event.
     */
-   def commit(schemaName: String, sid: String, body: String)
-      (implicit server: VariantServer, ctx: RequestContext): HttpResponse = action { body =>
+   def commitOrFailRequest(schemaName: String, sid: String)(implicit server: VariantServer, ctx: RequestContext): HttpResponse = action { body =>
 
       val ssn = getSession(schemaName, sid) getOrElse {
          throw ServerExceptionRemote(ServerError.SESSION_EXPIRED, sid)
@@ -94,20 +90,20 @@ object RequestRoute extends VariantRoute with LazyLogging {
       if (!status.isIn(Committed, Failed))
          throw new ServerExceptionRemote(InvalidRequestStatus, status.toString())
 
-      val attrs = (body \ "attrs").asOpt[Map[String,String]].getOrElse {
-         Map[String,String]()
+      val attrs = (body \ "attrs").asOpt[Map[String, String]].getOrElse {
+         Map[String, String]()
       }
 
       // Ok to assume we always have the request?
       val stateReq = ssn.getStateRequest.get.asInstanceOf[StateRequestImpl]
 
       if (stateReq.getStatus == Committed && status == Failed)
-			throw new ServerExceptionRemote(CANNOT_FAIL);
+         throw new ServerExceptionRemote(CANNOT_FAIL);
 
-		else if (stateReq.getStatus == Failed && status == Committed)
-			throw new ServerExceptionRemote(CANNOT_COMMIT);
+      else if (stateReq.getStatus == Failed && status == Committed)
+         throw new ServerExceptionRemote(CANNOT_COMMIT);
 
-		else if (stateReq.getStatus == InProgress) {
+      else if (stateReq.getStatus == InProgress) {
 
          stateReq.asInstanceOf[StateRequestImpl].setStatus(status);
 
@@ -115,10 +111,10 @@ object RequestRoute extends VariantRoute with LazyLogging {
          // at this state. As opposed to custom events, state visited events
          // cannot be orphan because we didn't really visit that state.
          if (!stateReq.getLiveExperiences().isEmpty()) {
-         	val sve = new TraceEventImpl(SVE_NAME, attrs.asJava)
-				sve.getAttributes.put("$STATUS", stateReq.getStatus.toString);
-				sve.getAttributes.put("$STATE", stateReq.getState.getName);
-      	   ssn.triggerEvent(sve);
+            val sve = new TraceEventImpl(SVE_NAME, attrs.asJava)
+            sve.getAttributes.put("$STATUS", stateReq.getStatus.toString);
+            sve.getAttributes.put("$STATE", stateReq.getState.getName);
+            ssn.triggerEvent(sve);
          }
 
       }

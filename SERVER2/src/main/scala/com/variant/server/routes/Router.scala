@@ -108,13 +108,13 @@ class Router(implicit server: VariantServer) extends LazyLogging {
                         // POST /request/:schema/:sid - create a state request.
                         post {
                            path(Segment / Segment) { (schema, sid) => implicit ctx =>
-                              ctx.complete(SessionRoute.putAttributes(schema, sid))
+                              ctx.complete(RequestRoute.targetRequest(schema, sid))
                            }
                         },
                         // DELETE /request/:schema/:sid - commit or fail state request.
                         delete {
                            path(Segment / Segment) { (schema, sid) => implicit ctx =>
-                              ctx.complete(SessionRoute.deleteAttributes(schema, sid))
+                              ctx.complete(RequestRoute.commitOrFailRequest(schema, sid))
                            }
                         })
                   })
