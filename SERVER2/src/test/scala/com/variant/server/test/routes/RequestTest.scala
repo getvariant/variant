@@ -6,8 +6,7 @@ import scala.collection.JavaConverters.asScalaSetConverter
 
 import com.variant.core.Constants
 import com.variant.core.session.CoreStateRequest
-import com.variant.server.api.StateRequest.Status.Committed
-import com.variant.server.api.StateRequest.Status.InProgress
+import com.variant.server.api.StateRequest.Status._
 import com.variant.server.impl.SessionImpl
 import com.variant.server.test.spec.EmbeddedServerSpec
 import com.variant.server.test.spec.TraceEventsSpec
@@ -17,6 +16,7 @@ import com.variant.server.test.util.TraceEventReader
 import akka.http.scaladsl.model.HttpMethods
 import akka.http.scaladsl.model.HttpRequest
 import play.api.libs.json.Json
+import com.variant.core.error.ServerError
 
 /**
  * Session Controller Tests
@@ -198,37 +198,35 @@ class RequestTest extends EmbeddedServerSpec with TraceEventsSpec {
          }
 
       }
-      /*
+
       "refuse to fail after commit" in {
 
+         // Recreate session because the old one expired while we waited for the event writer.
          var sid = newSid
-
-         assertResp(route(app, httpReq(POST, "/session/monstrosity/" + sid).withBody(emptyTargetingTrackerBody)))
-            .isOk
-            .withBodySession { ssn =>
-               ssn.getId mustNot be (sid)
-               sid = ssn.getId
-               ssn.getSchema.getMeta.getName mustBe "monstrosity"
+         HttpRequest(method = HttpMethods.POST, uri = s"/session/monstrosity/${sid}", entity = emptyTargetingTrackerBody) ~> router ~> check {
+            val ssnResp = SessionResponse(response)
+            ssnResp.session.getId mustNot be(sid)
+            ssnResp.schema.getMeta.getName mustBe "monstrosity"
+            sid = ssnResp.session.getId
          }
 
-         // Target sesion for "state4"
+         // Target sesion for "state3"
          val reqBody1 = Json.obj(
-            "sid" -> sid,
-            "state" -> "state4"
-            ).toString
+            "state" -> "state4").toString
 
-         assertResp(route(app, httpReq(POST, "/request").withTextBody(reqBody1)))
-            .isOk
-            .withBodyJson { json =>
-               val coreSsn = CoreSession.fromJson((json \ "session").as[String], schema)
-               val stateReq = coreSsn.getStateRequest.get
-               stateReq mustNot be (null)
-               stateReq.getStatus.ordinal mustBe InProgress.ordinal
-               stateReq.getLiveExperiences.size mustBe 4
-               stateReq.getResolvedParameters.size mustBe 1
-               stateReq.getSession.getId mustBe sid
-               stateReq.getState mustBe schema.getState("state4").get
-            }
+         // Target and get the request.
+         HttpRequest(method = HttpMethods.POST, uri = s"/request/monstrosity/${sid}", entity = reqBody1) ~> router ~> check {
+            val ssnResp = SessionResponse(response)
+            ssnResp.session.getId mustBe sid
+            ssnResp.schema.getMeta.getName mustBe "monstrosity"
+            val stateReq = ssnResp.session.getStateRequest.get
+            stateReq mustNot be(null)
+            stateReq.getStatus.ordinal mustBe InProgress.ordinal
+            stateReq.getLiveExperiences.size mustBe 4
+            stateReq.getResolvedParameters.size mustBe 1
+            stateReq.getSession.getId mustBe sid
+            stateReq.getState mustBe schema.getState("state4").get
+         }
 
          val serverSsn = server.ssnStore.get(sid).get.asInstanceOf[SessionImpl]
 
@@ -236,35 +234,33 @@ class RequestTest extends EmbeddedServerSpec with TraceEventsSpec {
 
          // Commit with SVE attributes.
          val reqBody2 = Json.obj(
-            "sid" -> sid,
             "status" -> Committed.ordinal,
-            "attrs" -> Map("key1"->"val1", "key2"->"val2")
-         ).toString
+            "attrs" -> Map("key1" -> "val1", "key2" -> "val2")).toString
 
-         assertResp(route(app, httpReq(PUT, "/request").withTextBody(reqBody2)))
-            .isOk
-            .withBodyJson { json =>
-               val coreSsn = CoreSession.fromJson((json \ "session").as[String], schema)
-               val stateReq = coreSsn.getStateRequest.get
-               stateReq mustNot be (null)
-               stateReq.getStatus.ordinal mustBe Committed.ordinal
-               stateReq.getLiveExperiences.size mustBe 4
-               stateReq.getResolvedParameters.size mustBe 1
-               stateReq.getSession.getId mustBe sid
-               stateReq.getState mustBe schema.getState("state4").get
+         var stateReq: CoreStateRequest = null
+         HttpRequest(method = HttpMethods.DELETE, uri = s"/request/monstrosity/${sid}", entity = reqBody2) ~> router ~> check {
+            val ssnResp = SessionResponse(response)
+            ssnResp.session.getId mustBe sid
+            ssnResp.schema.getMeta.getName mustBe "monstrosity"
+            stateReq = ssnResp.session.getStateRequest.get
+            stateReq mustNot be(null)
+            stateReq.getStatus.ordinal mustBe Committed.ordinal
+            stateReq.getLiveExperiences.size mustBe 4
+            stateReq.getResolvedParameters.size mustBe 1
+            stateReq.getSession.getId mustBe sid
+            stateReq.getState mustBe schema.getState("state4").get
          }
 
          serverSsn.getStateRequest().get.getStatus.ordinal mustBe Committed.ordinal
 
          // Try failing...
          val reqBody3 = Json.obj(
-            "sid" -> sid,
             "status" -> Failed.ordinal,
-            "attrs" -> Map("key1"->"val1", "key2"->"val2")
-         ).toString
+            "attrs" -> Map("key1" -> "val1", "key2" -> "val2")).toString
 
-         assertResp(route(app, httpReq(PUT, "/request").withTextBody(reqBody3)))
-            .isError(CANNOT_FAIL)
+         HttpRequest(method = HttpMethods.DELETE, uri = s"/request/monstrosity/${sid}", entity = reqBody3) ~> router ~> check {
+            ServerErrorResponse(response).mustBe(ServerError.CANNOT_FAIL)
+         }
 
          // Only commit sve in written
          Thread.sleep(2000)
@@ -274,74 +270,70 @@ class RequestTest extends EmbeddedServerSpec with TraceEventsSpec {
          sve.sessionId mustBe sid
          sve.name mustBe Constants.SVE_NAME
          sve.attributes.size mustBe 4
-         sve.attributes mustBe Map("$STATE"->"state4", "$STATUS"->"Committed", "key1"->"val1", "key2"->"val2")
+         sve.attributes mustBe Map("$STATE" -> "state4", "$STATUS" -> "Committed", "key1" -> "val1", "key2" -> "val2")
 
       }
 
       "refulse to commit a failed request" in {
 
+         // Recreate session because the old one expired while we waited for the event writer.
          var sid = newSid
-
-         assertResp(route(app, httpReq(POST, "/session/monstrosity/" + sid).withBody(emptyTargetingTrackerBody)))
-            .isOk
-            .withBodySession { ssn =>
-               ssn.getId mustNot be (sid)
-               sid = ssn.getId
-               ssn.getSchema.getMeta.getName mustBe "monstrosity"
+         HttpRequest(method = HttpMethods.POST, uri = s"/session/monstrosity/${sid}", entity = emptyTargetingTrackerBody) ~> router ~> check {
+            val ssnResp = SessionResponse(response)
+            ssnResp.session.getId mustNot be(sid)
+            ssnResp.schema.getMeta.getName mustBe "monstrosity"
+            sid = ssnResp.session.getId
          }
 
-         // Target sesion for "state4"
+         // Target sesion for "state5"
          val reqBody1 = Json.obj(
-            "sid" -> sid,
-            "state" -> "state5"
-            ).toString
+            "state" -> "state5").toString
 
-         assertResp(route(app, httpReq(POST, "/request").withTextBody(reqBody1)))
-            .isOk
-            .withBodyJson { json =>
-               val coreSsn = CoreSession.fromJson((json \ "session").as[String], schema)
-               val stateReq = coreSsn.getStateRequest.get
-               stateReq mustNot be (null)
-               stateReq.getStatus.ordinal mustBe InProgress.ordinal
-               stateReq.getLiveExperiences.size mustBe 4
-               stateReq.getResolvedParameters.size mustBe 1
-               stateReq.getSession.getId mustBe sid
-               stateReq.getState mustBe schema.getState("state5").get
-            }
+         // Target and get the request.
+         HttpRequest(method = HttpMethods.POST, uri = s"/request/monstrosity/${sid}", entity = reqBody1) ~> router ~> check {
+            val ssnResp = SessionResponse(response)
+            ssnResp.session.getId mustBe sid
+            ssnResp.schema.getMeta.getName mustBe "monstrosity"
+            val stateReq = ssnResp.session.getStateRequest.get
+            stateReq mustNot be(null)
+            stateReq.getStatus.ordinal mustBe InProgress.ordinal
+            stateReq.getLiveExperiences.size mustBe 4
+            stateReq.getResolvedParameters.size mustBe 1
+            stateReq.getSession.getId mustBe sid
+            stateReq.getState mustBe schema.getState("state5").get
+         }
 
          val serverSsn = server.ssnStore.get(sid).get.asInstanceOf[SessionImpl]
          serverSsn.getStateRequest().get.getStatus.ordinal mustBe InProgress.ordinal
 
          // Fail with SVE attributes.
          val reqBody2 = Json.obj(
-            "sid" -> sid,
             "status" -> Failed.ordinal,
-            "attrs" -> Map("key1"->"val1", "key2"->"val2")
-         ).toString
+            "attrs" -> Map("key1" -> "val1", "key2" -> "val2")).toString
 
-         assertResp(route(app, httpReq(PUT, "/request").withTextBody(reqBody2)))
-            .isOk
-            .withBodyJson { json =>
-               val coreSsn = CoreSession.fromJson((json \ "session").as[String], schema)
-               val stateReq = coreSsn.getStateRequest.get
-               stateReq mustNot be (null)
-               stateReq.getStatus.ordinal mustBe Failed.ordinal
-               stateReq.getLiveExperiences.size mustBe 4
-               stateReq.getResolvedParameters.size mustBe 1
-               stateReq.getSession.getId mustBe sid
-               stateReq.getState mustBe schema.getState("state5").get
+         var stateReq: CoreStateRequest = null
+         HttpRequest(method = HttpMethods.DELETE, uri = s"/request/monstrosity/${sid}", entity = reqBody2) ~> router ~> check {
+            val ssnResp = SessionResponse(response)
+            ssnResp.session.getId mustBe sid
+            ssnResp.schema.getMeta.getName mustBe "monstrosity"
+            stateReq = ssnResp.session.getStateRequest.get
+            stateReq mustNot be(null)
+            stateReq.getStatus.ordinal mustBe Failed.ordinal
+            stateReq.getLiveExperiences.size mustBe 4
+            stateReq.getResolvedParameters.size mustBe 1
+            stateReq.getSession.getId mustBe sid
+            stateReq.getState mustBe schema.getState("state5").get
          }
 
          serverSsn.getStateRequest.get.getStatus.ordinal mustBe Failed.ordinal
 
          // Attempt to commit.
          val reqBody3 = Json.obj(
-            "sid" -> sid,
-            "status" -> Committed.ordinal
-         ).toString
+            "status" -> Committed.ordinal).toString
 
-         assertResp(route(app, httpReq(PUT, "/request").withTextBody(reqBody3)))
-            .isError(CANNOT_COMMIT)
+         HttpRequest(method = HttpMethods.DELETE, uri = s"/request/monstrosity/${sid}", entity = reqBody3) ~> router ~> check {
+            ServerErrorResponse(response).mustBe(ServerError.CANNOT_COMMIT)
+         }
 
          // Only failure sve in written
          Thread.sleep(2000)
@@ -351,76 +343,76 @@ class RequestTest extends EmbeddedServerSpec with TraceEventsSpec {
          sve.sessionId mustBe sid
          sve.name mustBe Constants.SVE_NAME
          sve.attributes.size mustBe 4
-         sve.attributes mustBe Map("$STATE"->"state5", "$STATUS"->"Failed", "key1"->"val1", "key2"->"val2")
+         sve.attributes mustBe Map("$STATE" -> "state5", "$STATUS" -> "Failed", "key1" -> "val1", "key2" -> "val2")
 
       }
 
-      "refulse to undo failed status" in {
+      "refulse to POST an InProgress status" in {
 
+         // Recreate session because the old one expired while we waited for the event writer.
          var sid = newSid
-
-         assertResp(route(app, httpReq(POST, "/session/monstrosity/" + sid).withBody(emptyTargetingTrackerBody)))
-            .isOk
-            .withBodySession { ssn =>
-               ssn.getId mustNot be (sid)
-               sid = ssn.getId
-               ssn.getSchema.getMeta.getName mustBe "monstrosity"
+         HttpRequest(method = HttpMethods.POST, uri = s"/session/monstrosity/${sid}", entity = emptyTargetingTrackerBody) ~> router ~> check {
+            val ssnResp = SessionResponse(response)
+            ssnResp.session.getId mustNot be(sid)
+            ssnResp.schema.getMeta.getName mustBe "monstrosity"
+            sid = ssnResp.session.getId
          }
 
-         // Target sesion for "state5"
+         // Target sesion for "state3"
          val reqBody1 = Json.obj(
-            "sid" -> sid,
-            "state" -> "state5"
-            ).toString
+            "state" -> "state5").toString
 
-         assertResp(route(app, httpReq(POST, "/request").withTextBody(reqBody1)))
-            .isOk
-            .withBodyJson { json =>
-               val coreSsn = CoreSession.fromJson((json \ "session").as[String], schema)
-               val stateReq = coreSsn.getStateRequest.get
-               stateReq mustNot be (null)
-               stateReq.getStatus.ordinal mustBe InProgress.ordinal
-               stateReq.getLiveExperiences.size mustBe 4
-               stateReq.getResolvedParameters.size mustBe 1
-               stateReq.getSession.getId mustBe sid
-               stateReq.getState mustBe schema.getState("state5").get
-            }
-
-         val serverSsn = server.ssnStore.get(sid).get.asInstanceOf[SessionImpl]
-         serverSsn.getStateRequest().get.getStatus.ordinal mustBe InProgress.ordinal
+         // Target and get the request.
+         HttpRequest(method = HttpMethods.POST, uri = s"/request/monstrosity/${sid}", entity = reqBody1) ~> router ~> check {
+            val ssnResp = SessionResponse(response)
+            ssnResp.session.getId mustBe sid
+            ssnResp.schema.getMeta.getName mustBe "monstrosity"
+            val stateReq = ssnResp.session.getStateRequest.get
+            stateReq mustNot be(null)
+            stateReq.getStatus.ordinal mustBe InProgress.ordinal
+            stateReq.getLiveExperiences.size mustBe 4
+            stateReq.getResolvedParameters.size mustBe 1
+            stateReq.getSession.getId mustBe sid
+            stateReq.getState mustBe schema.getState("state5").get
+         }
 
          // Fail with SVE attributes.
          val reqBody2 = Json.obj(
-            "sid" -> sid,
-            "status" -> Failed.ordinal,
-            "attrs" -> Map("key1"->"val1", "key2"->"val2")
-         ).toString
+            "status" -> InProgress.ordinal,
+            "attrs" -> Map("key1" -> "val1", "key2" -> "val2")).toString
 
-         assertResp(route(app, httpReq(PUT, "/request").withTextBody(reqBody2)))
-            .isOk
-            .withBodyJson { json =>
-               val coreSsn = CoreSession.fromJson((json \ "session").as[String], schema)
-               val stateReq = coreSsn.getStateRequest.get
-               stateReq mustNot be (null)
-               stateReq.getStatus.ordinal mustBe Failed.ordinal
-               stateReq.getLiveExperiences.size mustBe 4
-               stateReq.getResolvedParameters.size mustBe 1
-               stateReq.getSession.getId mustBe sid
-               stateReq.getState mustBe schema.getState("state5").get
+         HttpRequest(method = HttpMethods.DELETE, uri = s"/request/monstrosity/${sid}", entity = reqBody2) ~> router ~> check {
+            ServerErrorResponse(response).mustBe(ServerError.InvalidRequestStatus, "InProgress")
          }
 
-         serverSsn.getStateRequest().get.getStatus.ordinal mustBe Failed.ordinal
-
-         // Attempt to send invalid status
+         // Commit with SVE attributes.
          val reqBody3 = Json.obj(
-            "sid" -> sid,
-            "status" -> InProgress.ordinal
-         ).toString
+            "status" -> Committed.ordinal,
+            "attrs" -> Map("key1" -> "val1", "key2" -> "val2")).toString
 
-         assertResp(route(app, httpReq(PUT, "/request").withTextBody(reqBody3)))
-            .isError(InvalidRequestStatus, "InProgress")
+         var stateReq: CoreStateRequest = null
+         HttpRequest(method = HttpMethods.DELETE, uri = s"/request/monstrosity/${sid}", entity = reqBody3) ~> router ~> check {
+            val ssnResp = SessionResponse(response)
+            ssnResp.session.getId mustBe sid
+            ssnResp.schema.getMeta.getName mustBe "monstrosity"
+            stateReq = ssnResp.session.getStateRequest.get
+            stateReq mustNot be(null)
+            stateReq.getStatus.ordinal mustBe Committed.ordinal
+            stateReq.getLiveExperiences.size mustBe 4
+            stateReq.getResolvedParameters.size mustBe 1
+            stateReq.getSession.getId mustBe sid
+            stateReq.getState mustBe schema.getState("state5").get
+         }
 
-         // Only failure sve in written
+         // Attempt to send invalid status again
+         val reqBody4 = Json.obj(
+            "status" -> InProgress.ordinal).toString
+
+         HttpRequest(method = HttpMethods.DELETE, uri = s"/request/monstrosity/${sid}", entity = reqBody4) ~> router ~> check {
+            ServerErrorResponse(response).mustBe(ServerError.InvalidRequestStatus, "InProgress")
+         }
+
+         // Only commit sve in written
          Thread.sleep(2000)
          val events = reader.read(e => e.sessionId == sid)
          events.size mustBe 1
@@ -428,87 +420,79 @@ class RequestTest extends EmbeddedServerSpec with TraceEventsSpec {
          sve.sessionId mustBe sid
          sve.name mustBe Constants.SVE_NAME
          sve.attributes.size mustBe 4
-         sve.attributes mustBe Map("$STATE"->"state5", "$STATUS"->"Failed", "key1"->"val1", "key2"->"val2")
+         sve.attributes mustBe Map("$STATE" -> "state5", "$STATUS" -> "Committed", "key1" -> "val1", "key2" -> "val2")
 
       }
 
-      "refuse to create a new state request on top of an existing one" in {
+      "refuse to create a new state request before current request is committed/failed" in {
 
+         // Recreate session because the old one expired while we waited for the event writer.
          var sid = newSid
-
-         // create a new session.
-         assertResp(route(app, httpReq(POST, "/session/monstrosity/" + sid).withBody(emptyTargetingTrackerBody)))
-            .isOk
-            .withBodySession { ssn =>
-               ssn.getId mustNot be (sid)
-               sid = ssn.getId
-               ssn.getSchema.getMeta.getName mustBe "monstrosity"
+         HttpRequest(method = HttpMethods.POST, uri = s"/session/monstrosity/${sid}", entity = emptyTargetingTrackerBody) ~> router ~> check {
+            val ssnResp = SessionResponse(response)
+            ssnResp.session.getId mustNot be(sid)
+            ssnResp.schema.getMeta.getName mustBe "monstrosity"
+            sid = ssnResp.session.getId
          }
 
          // Target sesion for "state2"
          val reqBody1 = Json.obj(
-            "sid" -> sid,
-            "state" -> "state2"
-            ).toString
+            "state" -> "state2").toString
 
          // Target and get the request.
-         assertResp(route(app, httpReq(POST, "/request").withTextBody(reqBody1)))
-            .isOk
-            .withBodySession { ssn =>
-               val stateReq = ssn.getStateRequest.get
-               stateReq mustNot be (null)
-               stateReq.getStatus.ordinal mustBe InProgress.ordinal
-               stateReq.getLiveExperiences.size mustBe 5
-               stateReq.getResolvedParameters.size mustBe 1
-               stateReq.getSession.getId mustBe sid
-               stateReq.getState mustBe schema.getState("state2").get
-            }
+         HttpRequest(method = HttpMethods.POST, uri = s"/request/monstrosity/${sid}", entity = reqBody1) ~> router ~> check {
+            val ssnResp = SessionResponse(response)
+            ssnResp.session.getId mustBe sid
+            ssnResp.schema.getMeta.getName mustBe "monstrosity"
+            val stateReq = ssnResp.session.getStateRequest.get
+            stateReq mustNot be(null)
+            stateReq.getStatus.ordinal mustBe InProgress.ordinal
+            stateReq.getLiveExperiences.size mustBe 5
+            stateReq.getResolvedParameters.size mustBe 1
+            stateReq.getSession.getId mustBe sid
+            stateReq.getState mustBe schema.getState("state2").get
+         }
 
          // Target again and get the error.
-         assertResp(route(app, httpReq(POST, "/request").withTextBody(reqBody1)))
-            .isError(ACTIVE_REQUEST)
+         HttpRequest(method = HttpMethods.POST, uri = s"/request/monstrosity/${sid}", entity = reqBody1) ~> router ~> check {
+            ServerErrorResponse(response).mustBe(ServerError.ACTIVE_REQUEST)
+         }
 
          // Commit the request.
          val reqBody2 = Json.obj(
-            "sid" -> sid,
-            "status" -> Committed.ordinal
-            ).toString
+            "status" -> Committed.ordinal).toString
 
-         assertResp(route(app, httpReq(PUT, "/request").withTextBody(reqBody2)))
-            .isOk
-            .withBodySession { ssn =>
-               ssn.getId must be (sid)
-               ssn.getSchema.getMeta.getName mustBe "monstrosity"
-               val stateReq = ssn.getStateRequest.get
-               stateReq mustNot be (null)
-               stateReq.getStatus.ordinal mustBe Committed.ordinal
-               stateReq.getLiveExperiences.size mustBe 5
-               stateReq.getResolvedParameters.size mustBe 1
-               stateReq.getSession.getId mustBe sid
-               stateReq.getState mustBe schema.getState("state2").get
+         HttpRequest(method = HttpMethods.DELETE, uri = s"/request/monstrosity/${sid}", entity = reqBody2) ~> router ~> check {
+            val ssnResp = SessionResponse(response)
+            ssnResp.session.getId mustBe sid
+            ssnResp.schema.getMeta.getName mustBe "monstrosity"
+            val stateReq = ssnResp.session.getStateRequest.get
+            stateReq mustNot be(null)
+            stateReq.getStatus.ordinal mustBe Committed.ordinal
+            stateReq.getLiveExperiences.size mustBe 5
+            stateReq.getResolvedParameters.size mustBe 1
+            stateReq.getSession.getId mustBe sid
+            stateReq.getState mustBe schema.getState("state2").get
          }
 
          // Can target again.
          // Target sesion for "state3"
          val reqBody3 = Json.obj(
-            "sid" -> sid,
-            "state" -> "state3"
-            ).toString
+            "state" -> "state3").toString
 
          // Target and get the request.
-         assertResp(route(app, httpReq(POST, "/request").withTextBody(reqBody3)))
-            .isOk
-            .withBodySession { ssn =>
-               val stateReq = ssn.getStateRequest.get
-               stateReq mustNot be (null)
-               stateReq.getStatus.ordinal mustBe InProgress.ordinal
-               stateReq.getLiveExperiences.size mustBe 5
-               stateReq.getResolvedParameters.size mustBe 1
-               stateReq.getSession.getId mustBe sid
-               stateReq.getState mustBe schema.getState("state3").get
-            }
+         HttpRequest(method = HttpMethods.POST, uri = s"/request/monstrosity/${sid}", entity = reqBody3) ~> router ~> check {
+            val ssnResp = SessionResponse(response)
+            ssnResp.session.getId mustBe sid
+            ssnResp.schema.getMeta.getName mustBe "monstrosity"
+            val stateReq = ssnResp.session.getStateRequest.get
+            stateReq mustNot be(null)
+            stateReq.getStatus.ordinal mustBe InProgress.ordinal
+            stateReq.getLiveExperiences.size mustBe 5
+            stateReq.getResolvedParameters.size mustBe 1
+            stateReq.getSession.getId mustBe sid
+            stateReq.getState mustBe schema.getState("state3").get
+         }
       }
-      *
-      */
    }
 }

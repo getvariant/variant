@@ -114,8 +114,10 @@ trait EmbeddedServerSpec extends BaseSpec with ScalatestRouteTest {
     * Unmarshal the common error response body
     */
    protected class ServerErrorResponse(resp: HttpResponse) {
-      handled mustBe true
-      resp.status mustBe BadRequest
+      if (handled != true)
+         throw new TestFailedException("Request was not handled", 2)
+      if (resp.status != BadRequest)
+         throw new TestFailedException(s"Response status [${resp.status}] was not equal to [${BadRequest}]", 2)
       private[this] val respString = entityAs[String]
       respString mustNot be(null)
       private[this] val respJson = Json.parse(respString)
