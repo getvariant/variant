@@ -6,12 +6,15 @@ package com.variant.server.test.spec
  */
 import scala.sys.process._
 import org.scalatest.BeforeAndAfterAll
+import akka.http.scaladsl.testkit.ScalatestRouteTest
 
 /**
  * Tests which wish to operate on a temporary schemata directory
  * should mix this in.
  */
-trait TempSchemataDir extends EmbeddedServerSpec with BeforeAndAfterAll {
+trait TempSchemataDir extends BaseSpec with BeforeAndAfterAll {
+
+   self: EmbeddedServerSpec =>
 
    val sessionTimeoutSecs = 15 // Override test default of 1
    val dirWatcherLatencyMsecs = 10000 // takes this long for FS to notify the directory watcher service.

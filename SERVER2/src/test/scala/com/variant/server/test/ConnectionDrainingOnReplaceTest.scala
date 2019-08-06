@@ -14,13 +14,13 @@ import akka.http.scaladsl.model.HttpMethods
 import akka.http.scaladsl.model.HttpRequest
 import play.api.libs.json.Json
 
-/**
- * Test session drainage.
- */
-class ConnectionDrainingOnDeleteTest extends EmbeddedServerSpec with TempSchemataDir with Async {
+class ConnectionDrainingOnReplaceTest extends EmbeddedServerSpec with TempSchemataDir with Async {
 
    private val random = new Random(System.currentTimeMillis())
    private val SESSIONS = 100
+
+   //private val sessionJsonBig = ParameterizedString(SessionTest.sessionJsonBigCovarPrototype.format(System.currentTimeMillis()))
+   //private val sessionJsonPet = ParameterizedString(SessionTest.sessionJsonPetclinicPrototype.format(System.currentTimeMillis()))
 
    val sessionTimeoutMillis = server.config.sessionTimeout * 1000
    val vacuumIntervalMillis = server.config.sessionVacuumInterval * 1000
@@ -32,12 +32,12 @@ class ConnectionDrainingOnDeleteTest extends EmbeddedServerSpec with TempSchemat
       dirWatcherLatencyMsecs mustBe 10000
    }
 
+   val emptyTargetingTrackerBody = "{\"tt\":[]}"
+
    /**
     *
     */
-   "File System Schema Deployer on schema DELETE" should {
-
-      val emptyTargetingTrackerBody = "{\"tt\":[]}"
+   "File System Schema Deployer on schema ADD" should {
 
       "startup with two schemata" in {
 
@@ -47,6 +47,7 @@ class ConnectionDrainingOnDeleteTest extends EmbeddedServerSpec with TempSchemat
 
          // Let the directory watcher thread start before copying any files.
          Thread.sleep(100)
+
       }
 
       val ssnId2Monster = new Array[String](SESSIONS)
@@ -118,24 +119,45 @@ class ConnectionDrainingOnDeleteTest extends EmbeddedServerSpec with TempSchemat
          joinAll
       }
 
-      "delete schema monstrosity" in {
+      "replace schema monstrosity" in {
 
-         val oldGen = server.schemata.getLiveGen("monstrosity").get
+         val oldGen = server.schemata.get("monstrosity").get.liveGen.get
          oldGen.state mustBe Live
 
-         s"rm -rf ${schemataDir}/monster.schema" !
+         s"cp schemata/monster.schema ${schemataDir}" !
 
          Thread.sleep(dirWatcherLatencyMsecs)
 
          oldGen.state mustBe Dead
 
-         // Confirm the schema is gone.
-         server.schemata.size mustBe 1
-         server.schemata.getLiveGen("monstrosity") mustBe None
-         server.schemata.getLiveGen("petclinic").isDefined mustBe true
+         val newGen = server.schemata.get("monstrosity").get.liveGen.get
+         newGen.id mustNot be(oldGen.id)
+         newGen.state mustBe Live
+         server.schemata.size mustBe 2
+
       }
 
-      "permit session updates in both live and dead generations" in {
+      "permit session reads over dead generation" in {
+
+         for (i <- 0 until SESSIONS) async {
+            val sid = ssnId2Monster(i)
+            HttpRequest(method = HttpMethods.GET, uri = s"/session/petclinic/${sid}") ~> router ~> check {
+               ServerErrorResponse(response).mustBe(ServerError.WRONG_CONNECTION, "petclinic")
+            }
+         }
+
+         for (i <- 0 until SESSIONS) async {
+            val sid = ssnId2Petclinic(i)
+            HttpRequest(method = HttpMethods.GET, uri = s"/session/monstrosity/${sid}") ~> router ~> check {
+               ServerErrorResponse(response).mustBe(ServerError.WRONG_CONNECTION, "monstrosity")
+            }
+         }
+
+         joinAll
+
+      }
+
+      "permit session updates in both live and draining generations" in {
 
          for (i <- 0 until SESSIONS) async {
 
@@ -175,29 +197,24 @@ class ConnectionDrainingOnDeleteTest extends EmbeddedServerSpec with TempSchemat
 
       "permit session create over live generations" in {
 
-         var sid = newSid
-         HttpRequest(method = HttpMethods.POST, uri = s"/session/petclinic/${sid}", entity = emptyTargetingTrackerBody) ~> router ~> check {
-            val ssnResp = SessionResponse(response)
-            ssnResp.session.getId mustNot be(sid)
-            ssnResp.schema.getMeta.getName mustBe "petclinic"
-            sid = ssnResp.session.getId
-         }
+         for (i <- 0 until SESSIONS) async {
+            var sid = newSid
+            HttpRequest(method = HttpMethods.POST, uri = s"/session/monstrosity/${sid}", entity = emptyTargetingTrackerBody) ~> router ~> check {
+               val ssnResp = SessionResponse(response)
+               ssnResp.session.getId mustNot be(sid)
+               ssnResp.schema.getMeta.getName mustBe "petclinic"
+               sid = ssnResp.session.getId
+            }
 
-         HttpRequest(method = HttpMethods.GET, uri = s"/session/petclinic/${sid}") ~> router ~> check {
-            val ssnResp = SessionResponse(response)
-            ssnResp.session.getId mustBe sid
-            ssnResp.schema.getMeta.getName mustBe "petclinic"
-         }
-      }
-
-      "refuse session create in dead generation" in {
-
-         HttpRequest(method = HttpMethods.POST, uri = s"/session/monstrosity/${newSid}", entity = emptyTargetingTrackerBody) ~> router ~> check {
-            ServerErrorResponse(response).mustBe(ServerError.UNKNOWN_SCHEMA, "monstrosity")
+            HttpRequest(method = HttpMethods.GET, uri = s"/session/monstrosity/${sid}") ~> router ~> check {
+               val ssnResp = SessionResponse(response)
+               ssnResp.session.getId mustBe sid
+               ssnResp.schema.getMeta.getName mustBe "petclinic"
+            }
          }
       }
 
-      "expire all sessions and dispose of all dead generations after session timeout period" in {
+      "expire all sessions and dispose of all dead gens" in {
 
          Thread.sleep(sessionTimeoutMillis + vacuumIntervalMillis)
 
@@ -215,7 +232,9 @@ class ConnectionDrainingOnDeleteTest extends EmbeddedServerSpec with TempSchemat
             }
          }
 
-         // TODO: test that dead generations were vacuumed.
       }
+
+      // TODO: test that dead generations were vacuumed.
+
    }
 }
