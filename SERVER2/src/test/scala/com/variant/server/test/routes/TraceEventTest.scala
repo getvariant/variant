@@ -7,6 +7,8 @@ import com.variant.server.test.util.ParameterizedString
 
 import akka.http.scaladsl.model.HttpMethods
 import akka.http.scaladsl.model.HttpRequest
+import akka.http.scaladsl.model.ContentTypes
+import akka.http.scaladsl.model.StatusCodes.MethodNotAllowed
 import java.util.Optional
 import play.api.libs.json.Json
 import com.variant.server.test.util.TraceEventReader
@@ -393,6 +395,18 @@ class TraceEventTest extends EmbeddedServerSpec with TraceEventsSpec {
          event.eventExperiences.exists(_.testName == "test6") mustBe false
          event.eventExperiences.foreach(_.eventId mustBe event.id)
 
+      }
+
+      "respond MethodNotAllowed on everythig except POST" in {
+
+         httpMethods.filterNot(List(HttpMethods.POST).contains _).foreach { method =>
+            HttpRequest(method = method, uri = "/event/monstrosity/foo") ~> router ~> check {
+               handled mustBe true
+               status mustBe MethodNotAllowed
+               contentType mustBe ContentTypes.`text/plain(UTF-8)`
+               entityAs[String] mustBe "HTTP method not allowed, supported methods: POST"
+            }
+         }
       }
    }
 }
