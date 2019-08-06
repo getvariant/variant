@@ -117,6 +117,15 @@ class Router(implicit server: VariantServer) extends LazyLogging {
                               ctx.complete(RequestRoute.commitOrFailRequest(schema, sid))
                            }
                         })
+                  },
+                  pathPrefix("event") {
+                     concat(
+                        // POST /request/:schema/:sid - trigger a custom trace event.
+                        post {
+                           path(Segment / Segment) { (schema, sid) => implicit ctx =>
+                              ctx.complete(EventRoute.triggerEvent(schema, sid))
+                           }
+                        })
                   })
             }
          }

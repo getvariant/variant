@@ -58,7 +58,7 @@ class SessionAttributeTest extends EmbeddedServerSpec {
          HttpRequest(method = HttpMethods.PUT, uri = s"/session-attr/petclinic/${sid}", entity = "bad json") ~> router ~> check {
             println(entityAs[String])
             ServerErrorResponse(response) mustBe (
-               ServerError.InternalError,
+               ServerError.JsonParseError,
                "Unrecognized token 'bad': was expecting ('true', 'false' or 'null')\n at [Source: (String)\"bad json\"; line: 1, column: 4]")
          }
       }

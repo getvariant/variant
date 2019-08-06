@@ -35,7 +35,7 @@ class TraceEventReader(eventWriter: TraceEventWriter) {
     * @throws ClassNotFoundException
     * @throws SQLException
     */
-   def read(p: TraceEventFromDatabase => Boolean = (_ => true)) = {
+   def read(p: TraceEventFromDatabase => Boolean = (_ => true)): Array[TraceEventFromDatabase] = {
 
       val SELECT_EVENTS_SQL =
          "SELECT e.id, e.session_id, e.created_on, e.event_name, p.name, p.value " +
@@ -91,6 +91,6 @@ class TraceEventReader(eventWriter: TraceEventWriter) {
 
                eventMap.values()
             }
-         }).asScala.filter(p)
+         }).asScala.filter(p).toArray
    }
 }

@@ -263,7 +263,7 @@ class RequestTest extends EmbeddedServerSpec with TraceEventsSpec {
          }
 
          // Only commit sve in written
-         Thread.sleep(2000)
+         Thread.sleep(writer.maxDelayMillis)
          val events = reader.read(e => e.sessionId == sid)
          events.size mustBe 1
          val sve = events.head
@@ -336,7 +336,7 @@ class RequestTest extends EmbeddedServerSpec with TraceEventsSpec {
          }
 
          // Only failure sve in written
-         Thread.sleep(2000)
+         Thread.sleep(writer.maxDelayMillis)
          val events = reader.read(e => e.sessionId == sid)
          events.size mustBe 1
          val sve = events.head
@@ -413,7 +413,7 @@ class RequestTest extends EmbeddedServerSpec with TraceEventsSpec {
          }
 
          // Only commit sve in written
-         Thread.sleep(2000)
+         Thread.sleep(writer.maxDelayMillis)
          val events = reader.read(e => e.sessionId == sid)
          events.size mustBe 1
          val sve = events.head

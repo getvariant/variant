@@ -110,7 +110,7 @@ trait VariantRoute {
 
       Try[JsValue] { Json.parse(body) } match {
          case Success(json) => json
-         case Failure(t) => throw ServerExceptionRemote(ServerError.InternalError, t.getMessage)
+         case Failure(t) => throw ServerExceptionRemote(ServerError.JsonParseError, t.getMessage)
       }
    }
 
