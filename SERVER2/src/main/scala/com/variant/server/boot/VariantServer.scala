@@ -107,7 +107,7 @@ object VariantServer {
  * Concrete implementation of VariantServer with a private constructor.
  * The headless option is used by the tests, which are not interested in binding to the port.
  */
-private class VariantServerImpl(
+class VariantServerImpl(
    headless: Boolean,
    overrides: Map[String, _],
    deletions: Seq[String])(override implicit val actorSystem: ActorSystem)
@@ -203,7 +203,7 @@ private class VariantServerImpl(
    /**
     * Tests can override the default schema deployer to be able to deploy from a memory string.
     */
-   def useSchemaDeployer(newDeployer: SchemaDeployer) = {
+   def useSchemaDeployer(newDeployer: SchemaDeployer): Unit = {
       _schemaDeployer = newDeployer
       _schemaDeployer.bootstrap()
    }

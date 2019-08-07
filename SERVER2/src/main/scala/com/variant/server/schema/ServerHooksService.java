@@ -17,6 +17,7 @@ import com.variant.core.schema.impl.StateScopedHookImpl;
 import com.variant.core.schema.impl.VariationScopedHookImpl;
 import com.variant.core.schema.parser.HooksService;
 import com.variant.core.schema.parser.ParserResponse;
+import com.variant.server.api.ServerException;
 import com.variant.server.api.lifecycle.LifecycleEvent;
 import com.variant.server.api.lifecycle.LifecycleHook;
 import com.variant.server.api.lifecycle.StateAwareLifecycleEvent;
@@ -225,11 +226,10 @@ public class ServerHooksService extends HooksService {
 		   
 		   return null;
 
-		} catch (ServerExceptionLocal e) {
+		} catch (ServerException e) {
 			throw e;
 		
 		} catch (Exception e) {
-			e.printStackTrace();
 			LOG.error(ServerError.HOOK_UNHANDLED_EXCEPTION.asMessage(hookDef.getClassName(), e.getMessage()), e);
 			throw ServerExceptionRemote$.MODULE$.apply(ServerError.HOOK_UNHANDLED_EXCEPTION, LifecycleHook.class.getName(), e.getMessage());
 		}				
