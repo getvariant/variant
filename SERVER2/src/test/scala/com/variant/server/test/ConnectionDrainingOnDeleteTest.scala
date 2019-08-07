@@ -175,18 +175,20 @@ class ConnectionDrainingOnDeleteTest extends EmbeddedServerSpec with TempSchemat
 
       "permit session create over live generations" in {
 
-         var sid = newSid
-         HttpRequest(method = HttpMethods.POST, uri = s"/session/petclinic/${sid}", entity = emptyTargetingTrackerBody) ~> router ~> check {
-            val ssnResp = SessionResponse(response)
-            ssnResp.session.getId mustNot be(sid)
-            ssnResp.schema.getMeta.getName mustBe "petclinic"
-            sid = ssnResp.session.getId
-         }
+         for (i <- 0 until SESSIONS) async {
+            var sid = newSid
+            HttpRequest(method = HttpMethods.POST, uri = s"/session/petclinic/${sid}", entity = emptyTargetingTrackerBody) ~> router ~> check {
+               val ssnResp = SessionResponse(response)
+               ssnResp.session.getId mustNot be(sid)
+               ssnResp.schema.getMeta.getName mustBe "petclinic"
+               sid = ssnResp.session.getId
+            }
 
-         HttpRequest(method = HttpMethods.GET, uri = s"/session/petclinic/${sid}") ~> router ~> check {
-            val ssnResp = SessionResponse(response)
-            ssnResp.session.getId mustBe sid
-            ssnResp.schema.getMeta.getName mustBe "petclinic"
+            HttpRequest(method = HttpMethods.GET, uri = s"/session/petclinic/${sid}") ~> router ~> check {
+               val ssnResp = SessionResponse(response)
+               ssnResp.session.getId mustBe sid
+               ssnResp.schema.getMeta.getName mustBe "petclinic"
+            }
          }
       }
 

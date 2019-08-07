@@ -17,13 +17,14 @@ import akka.http.scaladsl.model.StatusCodes.NotFound
  * Session Controller Tests
  */
 object SessionTest {
+   /*
    val monsterSessionPrototype = """
      {"sid":"${sid:SID}",
-      "ts": "${ts:%s}", 
+      "ts": "${ts:%s}",
       "request": {
-            "state": "state1", 
+            "state": "state1",
             "status": 1,
-            "variant":{"test":"test2", "offset":1}, 
+            "variant":{"test":"test2", "offset":1},
             "exps": ["test1.A.true","test2.B.false","test3.C.false"]},
        "states": [{"state": "state1","count": 23}, {"state": "state2","count": 32}],
        "attrs": {"NAME1":"${attrValue:VALUE1}", "NAME2": "VALUE2"},
@@ -32,14 +33,14 @@ object SessionTest {
    """
    val sessionJsonPetclinicPrototype = """
       {"sid":"${sid:SID}",
-       "ts": "${ts:%s}", 
+       "ts": "${ts:%s}",
        "request": {"state": "newVisit", "status": 0,
                   "params": [{"name": "PARAM ONE", "value": "Param One Value"},{"name": "PARAM TWO", "value": "Param Two Value"}],
                   "exps": ["ScheduleVisitTest.withLink.false"]},
         "attrs": {"NAME1": "VALUE1", "NAME2": "VALUE2"}
       }
    """
-
+*/
    val emptyTargetingTrackerBody = "{\"tt\":[]}"
 
 }
