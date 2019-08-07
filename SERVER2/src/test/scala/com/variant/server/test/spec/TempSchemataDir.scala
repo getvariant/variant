@@ -21,7 +21,7 @@ trait TempSchemataDir extends BaseSpec with BeforeAndAfterAll {
    val schemataDir = "/tmp/schemata"
 
    // Subclasses may override this.
-   def schemata = Set[String](
+   lazy val schemata = Set[String](
       "schemata/monster.schema",
       "schemata/petclinic.schema")
 
@@ -38,9 +38,6 @@ trait TempSchemataDir extends BaseSpec with BeforeAndAfterAll {
             "variant.schemata.dir" -> schemataDir,
             "variant.session.timeout" -> sessionTimeoutSecs))
       .reboot()
-
-   server.bootExceptions.size mustEqual 0
-   server.schemata.size mustBe 2
 
    /**
     * Cleanup
