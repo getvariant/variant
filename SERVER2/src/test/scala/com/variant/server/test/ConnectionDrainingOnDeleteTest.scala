@@ -20,7 +20,7 @@ import play.api.libs.json.Json
 class ConnectionDrainingOnDeleteTest extends EmbeddedServerSpec with TempSchemataDir with Async {
 
    private val random = new Random(System.currentTimeMillis())
-   private val SESSIONS = 100
+   private val SESSIONS = 20
 
    val sessionTimeoutMillis = server.config.sessionTimeout * 1000
    val vacuumIntervalMillis = server.config.sessionVacuumInterval * 1000

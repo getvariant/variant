@@ -1,15 +1,15 @@
 package com.variant.server.test
 
+import java.io.File
+
 import scala.sys.process._
-import com.variant.core.error.UserError.Severity
+
+import com.variant.core.schema.parser.error.SemanticError
 import com.variant.core.schema.parser.error.SyntaxError
-import com.variant.server.boot.ServerMessageLocal
+import com.variant.server.boot.ServerMessageLocal._
 import com.variant.server.test.spec.EmbeddedServerSpec
 import com.variant.server.test.spec.TempSchemataDir
 import com.variant.server.test.util.ServerLogTailer
-import java.io.File
-import com.variant.core.schema.parser.error.ParserError
-import com.variant.core.schema.parser.error.SemanticError
 
 /**
  * Test various schema deployment scenarios
@@ -33,9 +33,9 @@ class SchemaDeployHotExceptionTest extends EmbeddedServerSpec with TempSchemataD
 
          val logLines = ServerLogTailer.last(7)
          //logLines.foreach {l => println(s"********* [$l]") }
-         logLines(0).message mustBe ServerMessageLocal.SCHEMA_DEPLOYING.asMessage("/tmp/schemata/monster-error.schema")
+         logLines(0).message mustBe SCHEMA_DEPLOYING.asMessage("/tmp/schemata/monster-error.schema")
          logLines(1).message must startWith(s"[${SyntaxError.JSON_SYNTAX_ERROR.getCode}]")
-         logLines(2).message mustBe ServerMessageLocal.SCHEMA_FAILED.asMessage("?", "/tmp/schemata/monster-error.schema")
+         logLines(2).message mustBe SCHEMA_FAILED.asMessage("?", "/tmp/schemata/monster-error.schema")
 
          // Let the directory watcher thread start before copying any files.
          Thread.sleep(100)
@@ -51,9 +51,9 @@ class SchemaDeployHotExceptionTest extends EmbeddedServerSpec with TempSchemataD
          server.schemata.size mustBe 1
 
          val logLines = ServerLogTailer.last(3)
-         logLines(0).message mustBe ServerMessageLocal.SCHEMA_DEPLOYING.asMessage("/tmp/schemata/monster-error.schema")
+         logLines(0).message mustBe SCHEMA_DEPLOYING.asMessage("/tmp/schemata/monster-error.schema")
          logLines(1).message must startWith(s"[${SyntaxError.JSON_SYNTAX_ERROR.getCode}]")
-         logLines(2).message must startWith(s"[${ServerMessageLocal.SCHEMA_FAILED.getCode}]")
+         logLines(2).message must startWith(s"[${SCHEMA_FAILED.getCode}]")
 
       }
 
@@ -70,7 +70,7 @@ class SchemaDeployHotExceptionTest extends EmbeddedServerSpec with TempSchemataD
          val schId = server.schemata.getLiveGen("monstrosity").get.id
          val logLines = ServerLogTailer.last(1)
          //println(logLines)
-         logLines(0).message mustBe ServerMessageLocal.SCHEMA_DEPLOYED.asMessage("monstrosity", "monster-error.schema");
+         logLines(0).message mustBe SCHEMA_DEPLOYED.asMessage("monstrosity", "monster-error.schema");
 
       }
 
@@ -84,9 +84,9 @@ class SchemaDeployHotExceptionTest extends EmbeddedServerSpec with TempSchemataD
          server.schemata.size mustBe 2
          val logLines = ServerLogTailer.last(3)
          //logLines.foreach {l => println(s"********* [$l]") }
-         logLines(0).message mustBe ServerMessageLocal.SCHEMA_DEPLOYING.asMessage(s"${schemataDir}/petclinic.schema")
+         logLines(0).message mustBe SCHEMA_DEPLOYING.asMessage(s"${schemataDir}/petclinic.schema")
          logLines(1).message mustBe SemanticError.NAME_MISSING.asMessage()
-         logLines(2).message mustBe ServerMessageLocal.SCHEMA_FAILED.asMessage("?", s"${schemataDir}/petclinic.schema")
+         logLines(2).message mustBe SCHEMA_FAILED.asMessage("?", s"${schemataDir}/petclinic.schema")
       }
 
       "redeploy corrected petclinic" in {
@@ -100,7 +100,7 @@ class SchemaDeployHotExceptionTest extends EmbeddedServerSpec with TempSchemataD
          val schId = server.schemata.getLiveGen("monstrosity").get.id
          val logLines = ServerLogTailer.last(1)
          //logLines.foreach {l => println(s"********* [$l]") }
-         logLines(0).message mustBe ServerMessageLocal.SCHEMA_DEPLOYED.asMessage("petclinic", "petclinic.schema")
+         logLines(0).message mustBe SCHEMA_DEPLOYED.asMessage("petclinic", "petclinic.schema")
       }
 
       "detect the updated petclinic and fail due to user defined class instntiation error" in {
@@ -115,9 +115,9 @@ class SchemaDeployHotExceptionTest extends EmbeddedServerSpec with TempSchemataD
          server.schemata.size mustBe 2
          val logLines = ServerLogTailer.last(3)
          //logLines.foreach {l => println(s"********* [$l]") }
-         logLines(0).message mustBe ServerMessageLocal.OBJECT_INSTANTIATION_ERROR.asMessage("com.variant.extapi.std.demo.BadClassName", "java.lang.ClassNotFoundException")
-         logLines(1).message mustBe ServerMessageLocal.OBJECT_INSTANTIATION_ERROR.asMessage("com.variant.extapi.std.demo.BadClassName", "java.lang.ClassNotFoundException")
-         logLines(2).message mustBe ServerMessageLocal.SCHEMA_FAILED.asMessage("petclinic", s"${schemataDir}/petclinic.schema")
+         logLines(0).message mustBe OBJECT_INSTANTIATION_ERROR.asMessage("com.variant.extapi.std.demo.BadClassName", "java.lang.ClassNotFoundException")
+         logLines(1).message mustBe OBJECT_INSTANTIATION_ERROR.asMessage("com.variant.extapi.std.demo.BadClassName", "java.lang.ClassNotFoundException")
+         logLines(2).message mustBe SCHEMA_FAILED.asMessage("petclinic", s"${schemataDir}/petclinic.schema")
       }
 
       "redeploy corrected petclinic again" in {
@@ -131,7 +131,7 @@ class SchemaDeployHotExceptionTest extends EmbeddedServerSpec with TempSchemataD
          val schId = server.schemata.getLiveGen("monstrosity").get.id
          val logLines = ServerLogTailer.last(1)
          //logLines.foreach {l => println(s"********* [$l]") }
-         logLines(0).message mustBe ServerMessageLocal.SCHEMA_DEPLOYED.asMessage("petclinic", "petclinic.schema")
+         logLines(0).message mustBe SCHEMA_DEPLOYED.asMessage("petclinic", "petclinic.schema")
       }
 
    }

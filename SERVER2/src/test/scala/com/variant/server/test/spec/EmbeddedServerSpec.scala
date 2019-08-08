@@ -2,6 +2,7 @@ package com.variant.server.test.spec
 
 import scala.collection.mutable
 import akka.http.scaladsl.testkit.ScalatestRouteTest
+import com.variant.core.error.UserError.Severity
 import com.variant.server.routes.Router
 import com.variant.server.boot.VariantServerImpl
 import com.variant.server.boot.VariantServer
@@ -97,10 +98,10 @@ trait EmbeddedServerSpec extends BaseSpec with ScalatestRouteTest {
       respString mustNot be(null)
       private[this] val respJson = Json.parse(respString)
       private[this] val ssnSrc = (respJson \ "session").asOpt[String].getOrElse { failTest("No 'session' element in reponse") }
-      private[this] val schemaSrc = (respJson \ "schema" \ "src").asOpt[String].getOrElse { fail("No 'schema/src' element in reponse") }
-      private[this] val parserResponse = ServerSchemaParser(implicitly).parse(schemaSrc)
+      private[this] val schemaSrc = (respJson \ "schema" \ "src").asOpt[String].getOrElse { failTest("No 'schema/src' element in reponse") }
 
-      parserResponse.hasMessages mustBe false
+      private[this] val parserResponse = ServerSchemaParser(implicitly).parse(schemaSrc)
+      parserResponse.hasMessages(Severity.ERROR) mustBe false
 
       val schema = parserResponse.getSchema
       val session = CoreSession.fromJson(ssnSrc, schema)

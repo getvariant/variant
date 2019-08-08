@@ -5,8 +5,11 @@ import java.util.Optional
 import scala.collection.JavaConverters.asScalaSetConverter
 
 import com.variant.core.Constants
+import com.variant.core.error.ServerError
 import com.variant.core.session.CoreStateRequest
-import com.variant.server.api.StateRequest.Status._
+import com.variant.server.api.StateRequest.Status.Committed
+import com.variant.server.api.StateRequest.Status.Failed
+import com.variant.server.api.StateRequest.Status.InProgress
 import com.variant.server.impl.SessionImpl
 import com.variant.server.test.spec.EmbeddedServerSpec
 import com.variant.server.test.spec.TraceEventsSpec
@@ -16,7 +19,6 @@ import com.variant.server.test.util.TraceEventReader
 import akka.http.scaladsl.model.HttpMethods
 import akka.http.scaladsl.model.HttpRequest
 import play.api.libs.json.Json
-import com.variant.core.error.ServerError
 
 /**
  * Session Controller Tests

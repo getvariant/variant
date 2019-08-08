@@ -16,8 +16,8 @@ trait TempSchemataDir extends BaseSpec with BeforeAndAfterAll {
 
    self: EmbeddedServerSpec =>
 
-   val sessionTimeoutSecs = 15 // Override test default of 1
    val dirWatcherLatencyMsecs = 10000 // takes this long for FS to notify the directory watcher service.
+   val sessionTimeoutSecs = 15 // Override test default of 1. We want sessions survive our waiting for the directory watcher.
    val schemataDir = "/tmp/schemata"
 
    // Subclasses may override this.

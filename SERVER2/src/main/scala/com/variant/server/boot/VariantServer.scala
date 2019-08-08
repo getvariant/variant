@@ -157,6 +157,7 @@ class VariantServerImpl(
 
    // Thread 2: Server backend init.
    val serverInitTask = Future {
+      actorSystem.actorOf(VacuumActor.props, name = "vacuumActor")
       useSchemaDeployer(SchemaDeployer.fromFileSystem(this))
    }
    // Block indefinitely for when both futures are completed...

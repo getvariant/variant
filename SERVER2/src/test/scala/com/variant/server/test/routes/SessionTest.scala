@@ -62,7 +62,6 @@ class SessionTest extends EmbeddedServerSpec {
    sessionTimeoutMillis mustEqual 1000
 
    val vacuumIntervalMillis = server.config.sessionVacuumInterval * 1000
-
    vacuumIntervalMillis mustEqual 1000
 
    "Session route" should {
