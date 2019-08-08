@@ -198,20 +198,6 @@ class SchemaDeployHotTest extends EmbeddedServerSpec with TempSchemataDir {
 
       }
 
-      "refuse to redeploy the third schema because monstrosity schema is still draining" in {
-
-         s"cp schemata/monster.schema ${schemataDir}/monster2.schema".!!
-
-         // Sleep awhile to let WatcherService.take() have a chance to detect.
-         Thread.sleep(dirWatcherLatencyMsecs)
-
-         val logLines = ServerLogTailer.last(2)
-         logLines(0).message must startWith(s"[${SCHEMA_CANNOT_REPLACE.getCode}]")
-         logLines(1).message must startWith(s"[${SCHEMA_FAILED.getCode}]")
-
-         server.schemata.size mustBe 2
-      }
-
       "redeploy the third schema after sessions expire" in {
 
          Thread.sleep(sessionTimeoutSecs * 1000)
@@ -229,7 +215,7 @@ class SchemaDeployHotTest extends EmbeddedServerSpec with TempSchemataDir {
          val monsterGen = server.schemata.get("monstrosity").get.liveGen.get
          monsterGen.getMeta.getName mustEqual "monstrosity"
       }
-      /*
+
       var sid = newSid()
 
       "create session in the third schema" in {
@@ -331,20 +317,17 @@ class SchemaDeployHotTest extends EmbeddedServerSpec with TempSchemataDir {
          val currentGen = server.schemata.get("monstrosity0").get.liveGen.get
 
          // Override
-         s"cp schemata/monstrer0.schema ${schemataDir}".!!
+         s"cp schemata/monster0.schema ${schemataDir}".!!
          // New file
          s"cp schemata/monster.schema ${schemataDir}".!!
 
-         // While we wait for the FS system to notify directory watcher, make sure
-         // the existing session is kept alive
-         val halfExp = sessionTimeoutSecs * 500
-         for (wait <- Seq(halfExp, halfExp, halfExp, halfExp)) {
-            Thread.sleep(wait)
-            HttpRequest(method = HttpMethods.GET, uri = s"/session/monstrosity/${sid}") ~> router ~> check {
-               val ssnResp = SessionResponse(response)
-               ssnResp.session.getId mustBe sid
-               ssnResp.schema.getMeta.getName mustBe "monstrosity"
-            }
+         Thread.sleep(dirWatcherLatencyMsecs)
+
+         // Session should still be there
+         HttpRequest(method = HttpMethods.GET, uri = s"/session/monstrosity0/${sid}") ~> router ~> check {
+            val ssnResp = SessionResponse(response)
+            ssnResp.session.getId mustBe sid
+            ssnResp.schema.getMeta.getName mustBe "monstrosity0"
          }
 
          currentGen.state mustBe Dead
@@ -374,7 +357,5 @@ class SchemaDeployHotTest extends EmbeddedServerSpec with TempSchemataDir {
             ssnResp.schema.getMeta.getName mustBe "monstrosity"
          }
       }
-      *
-      */
    }
 }

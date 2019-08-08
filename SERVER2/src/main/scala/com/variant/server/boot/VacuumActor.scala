@@ -48,25 +48,23 @@ class VacuumActor(server: VariantServer) extends Actor with LazyLogging {
       case VacuumNow =>
 
          val top = Instant.now
-
          logger.trace("Running vacuuming actor.")
-
+         var ssnCount = 0
          try {
             val now = System.currentTimeMillis();
 
-            // Remove expired sessions from the session store,
-            val deleteCount = server.ssnStore.vacuum()
+            // Vacuum expired sessions from the session store,
+            ssnCount = server.ssnStore.vacuum()
 
-            logger.trace(s"Vacuumed $deleteCount session(s)");
-            if (deleteCount > 0) logger.debug(s"Vacuumed $deleteCount session(s)");
-
-            // Remove drained schema generations and dead schemata.
+            // Vacuum drained schema generations and dead schemata.
             server.schemata.vacuum()
 
          } catch {
             case t: Throwable => logger.error(s"Ignored unexpected exception [${t.getMessage}]", t);
          } finally {
-            logger.trace("Vacuuming actor completed in %s".format(TimeUtils.formatDuration(JavaDuration.between(top, Instant.now))))
+            if (ssnCount > 0) logger.debug(s"Vacuumed ${ssnCount} session(s)")
+            else logger.trace(s"Vacuumed 0 session(s)")
+
             // Schedule the next run
             implicit val context = server.actorSystem.dispatcher
             server.actorSystem.scheduler.scheduleOnce(Duration(vacuumingFrequency, SECONDS), self, VacuumNow)

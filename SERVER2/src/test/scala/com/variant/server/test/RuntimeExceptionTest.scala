@@ -1,14 +1,11 @@
 package com.variant.server.test
 
-import com.variant.server.boot.ServerExceptionLocal
+import com.variant.core.error.ServerError
+import com.variant.server.boot.ServerExceptionRemote
+import com.variant.server.boot.VariantServerImpl
 import com.variant.server.impl.SessionImpl
 import com.variant.server.schema.SchemaDeployer
 import com.variant.server.test.spec.EmbeddedServerSpec
-import com.variant.server.test.spec.BaseSpec
-import com.variant.server.boot.VariantServerImpl
-import com.variant.server.boot.ServerMessageLocal
-import com.variant.core.error.ServerError
-import com.variant.server.boot.ServerExceptionRemote
 
 class RuntimeExceptionTest extends EmbeddedServerSpec {
 
