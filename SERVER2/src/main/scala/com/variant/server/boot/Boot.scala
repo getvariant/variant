@@ -13,6 +13,7 @@ import scala.util.Try
  */
 object Boot extends App with LazyLogging {
 
+   // All defaults build the regular production server.
    val server = VariantServer.builder.build
 
    // We shutdown server by sending it the INTERRUPT signal, which we catch right here.

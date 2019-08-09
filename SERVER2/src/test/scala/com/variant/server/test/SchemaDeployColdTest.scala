@@ -20,7 +20,7 @@ class SchemaDeployColdTest extends EmbeddedServerSpec with BeforeAndAfterAll {
       super.afterAll()
    }
 
-   "Server should come up with no schemata" in {
+   "Server should come up with 3 schemata" in {
       server.bootExceptions.size mustEqual 0
       server.schemata.size mustBe 3
       server.schemata.get("monstrosity").isDefined mustBe true
@@ -33,9 +33,9 @@ class SchemaDeployColdTest extends EmbeddedServerSpec with BeforeAndAfterAll {
 
    "Schema should deploy from config property variant.schemata.dir" in {
 
-      new ServerBuilder()
-         .withConfig(Map("variant.schemata.dir" -> "schemata-empty"))
-         .reboot()
+      reboot(
+         VariantServer.builder
+            .withConfiguration(Map("variant.schemata.dir" -> "schemata-empty")))
 
       server.bootExceptions.size mustEqual 0
       server.schemata.size mustBe 0
@@ -46,7 +46,7 @@ class SchemaDeployColdTest extends EmbeddedServerSpec with BeforeAndAfterAll {
       sys.props.contains("variant.schemata.dir") mustBe false
       sys.props += ("variant.schemata.dir" -> "schemata-errata")
 
-      new ServerBuilder().reboot()
+      reboot()
 
       server.bootExceptions.size mustEqual 0
       server.schemata.size mustBe 1

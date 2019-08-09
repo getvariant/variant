@@ -10,7 +10,7 @@ import com.variant.server.boot.VariantServer
 /**
  * Deploy single schema from a string in memory.
  */
-class SchemaDeployerString(schemaStrings: String*)(implicit server: VariantServer) extends AbstractSchemaDeployer() {
+class SchemaDeployerString(schemaStrings: String*)(implicit serverr: VariantServer) extends AbstractSchemaDeployer() {
 
    // Convert internal mutable map to an immutable one for the world
    //override def schemata = _schemata.toMap

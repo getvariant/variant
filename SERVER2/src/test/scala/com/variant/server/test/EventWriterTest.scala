@@ -69,24 +69,7 @@ class EventWriterTest extends EmbeddedServerSpec with TraceEventsSpec {
          event.name mustBe customName
          event.sessionId mustBe sid
          event.eventExperiences.size mustBe 4
-         println(event.eventExperiences)
-         event.eventExperiences.foreach(ee => {
-            ee.testName match {
-               case "test1" => {
-                  ee.experienceName mustBe "A"
-                  ee.isControl mustBe true
-               }
-               case "test2" => {
-                  ee.experienceName mustBe "B"
-                  ee.isControl mustBe false
-               }
-               case "test3" => {
-                  ee.experienceName mustBe "C"
-                  ee.isControl mustBe false
-               }
-               case t => throw new RuntimeException("Unexpected test %s".format(t))
-            }
-         })
+         event.eventExperiences.map(_.testName) mustBe Set("test2", "test3", "test5", "test6")
       }
 
       "not flush before EVENT_WRITER_MAX_DELAY if fewer than EVENT_WRITER_PERCENT_FULL" in {

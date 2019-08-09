@@ -2,19 +2,26 @@ package com.variant.server.test
 
 import com.variant.core.error.ServerError
 import com.variant.server.boot.ServerExceptionRemote
-import com.variant.server.boot.VariantServerImpl
 import com.variant.server.impl.SessionImpl
 import com.variant.server.schema.SchemaDeployer
 import com.variant.server.test.spec.EmbeddedServerSpec
+import com.variant.server.test.util.ServerLogTailer
+import com.variant.server.boot.VariantServer
+import com.variant.server.test.spec.TempSchemataDir
+import java.nio.file.Files
+import java.nio.file.Paths
 
-class RuntimeExceptionTest extends EmbeddedServerSpec {
+class RuntimeExceptionTest extends EmbeddedServerSpec with TempSchemataDir {
+
+   // Don't copy any files into the temp schemata dir on server startup
+   override lazy val schemata = Set.empty
 
    val schemaName = "RuntimeExceptionTest"
 
    val schemaSrc = s"""
 {
    'meta':{
-      'name':'$schemaName'
+      'name':'${schemaName}'
    },
    'states':[
       {'name':'state1'},
@@ -89,13 +96,15 @@ class RuntimeExceptionTest extends EmbeddedServerSpec {
 }
 """
 
+   Files.write(Paths.get(s"${schemataDir}/${schemaName}.json"), schemaSrc.getBytes)
+   Thread.sleep(dirWatcherLatencyMsecs)
+
    "Runtime" should {
 
       "throw WEIGHT_MISSING" in {
 
-         val schemaDeployer = SchemaDeployer.fromString(schemaSrc)
-         server.asInstanceOf[VariantServerImpl].useSchemaDeployer(schemaDeployer)
-         val response = schemaDeployer.parserResponses(0)
+         val lines = ServerLogTailer.last(5)
+         //lines.foreach(println)
          server.schemata.get(schemaName).isDefined mustBe true
          val schema = server.schemata.get(schemaName).get.liveGen.get
          val ssn = SessionImpl.empty(newSid(), schema)

@@ -27,6 +27,8 @@ import com.typesafe.config.ConfigFactory
 import com.typesafe.config.Config
 import akka.http.scaladsl.model.headers.ProductVersion
 import akka.http.scaladsl.settings.ServerSettings
+import play.api.libs.json._
+import play.api.libs.json.Json.JsValueWrapper
 
 /**
  * The Main class.
@@ -64,22 +66,28 @@ object VariantServer {
 
    class Builder {
 
-      private[this] var overrides: Map[String, _] = Map.empty
-      private[this] var deletions: Seq[String] = Seq.empty
-      private[this] var headless: Boolean = false
+      // TODO: these should only be accessible from VariantServerImpl,
+      // but I don't know how to do that yet...
+      var overrides: Map[String, _] = Map.empty
+      var deletions: Seq[String] = Seq.empty
+      var isHeadless: Boolean = false
 
+      /**
+       * Headless server has all the backend, but does not
+       * attach to and listen on network port.
+       */
       def headless(): Builder = {
-         this.headless = true
+         isHeadless = true
          this
       }
 
-      def withOverrides(overrides: Map[String, _]): Builder = {
-         this.overrides = overrides;
+      def withConfiguration(overrides: Map[String, _]): Builder = {
+         this.overrides ++= overrides;
          this
       }
 
-      def withDeletions(deletions: Seq[String]): Builder = {
-         this.deletions = deletions
+      def withoutConfiguration(deletions: Seq[String]): Builder = {
+         this.deletions ++= deletions
          this
       }
 
@@ -91,35 +99,51 @@ object VariantServer {
          implicit val actorSystem: ActorSystem = ActorSystem("VariantServer")
 
          try {
-            new VariantServerImpl(headless, overrides, deletions)
+            new VariantServerImpl(this)
          } catch {
             case t: Throwable =>
                actorSystem.terminate()
                throw t
          }
       }
+
+      /**
+       * Good for debugging.
+       */
+      override def toString = {
+         Json.prettyPrint(
+            Json.obj(
+               "overrides" ->
+                  Json.obj(overrides.map {
+                     case (k, v) =>
+                        println(s"** ${k} -> ${v}")
+                        val result: (String, JsValueWrapper) = k -> JsString(if (v == null) "null" else v.toString)
+                        result
+                  }.toSeq: _*),
+               "deletions" -> deletions,
+               "isHeadless" -> isHeadless))
+      }
+
    }
 
    def builder = new Builder
+
 }
 
 /**
  * Concrete implementation of VariantServer with a private constructor.
  * The headless option is used by the tests, which are not interested in binding to the port.
  */
-class VariantServerImpl(
-   headless: Boolean,
-   overrides: Map[String, _],
-   deletions: Seq[String])(override implicit val actorSystem: ActorSystem)
+class VariantServerImpl(builder: VariantServer.Builder)(override implicit val actorSystem: ActorSystem)
 
    extends VariantServer with LazyLogging {
+
+   logger.debug("Building server from builder:\n" + builder)
 
    private val startupTimeoutSeconds = 10
 
    private[this] var _schemaDeployer: SchemaDeployer = _
    private[this] var binding: Option[Http.ServerBinding] = None
-
-   //val userRegistryActor: ActorRef = system.actorOf(UserRegistryActor.props, "userRegistryActor")
 
    //
    // Attempt to load the external configuration first. Let it fail if a problem,
@@ -127,8 +151,8 @@ class VariantServerImpl(
    val config = {
       val external = ConfigLoader.load("/variant.conf", "/prod/variant-default.conf")
       // Apply overrides.
-      var withOverrides = ConfigFactory.parseMap(overrides.asJava).withFallback(external)
-      deletions.foreach { key => withOverrides = withOverrides.withoutPath(key) }
+      var withOverrides = ConfigFactory.parseMap(builder.overrides.asJava).withFallback(external)
+      builder.deletions.foreach { key => withOverrides = withOverrides.withoutPath(key) }
       new ConfigurationImpl(withOverrides)
    }
 
@@ -137,7 +161,7 @@ class VariantServerImpl(
 
    override lazy val schemata: Schemata = _schemaDeployer.schemata
    override val ssnStore = new SessionStore(this)
-   override def isUp = (headless || binding.isDefined) && bootExceptions.size == 0
+   override def isUp = (builder.isHeadless || binding.isDefined) && bootExceptions.size == 0
 
    // If debug, echo all config params.
    logger.whenDebugEnabled {
@@ -151,7 +175,7 @@ class VariantServerImpl(
 
    // Thread 1: Bind to TCP port, unless headless is true.
    val serverBindingTask: Future[Http.ServerBinding] = {
-      if (headless) Future.successful(null)
+      if (builder.isHeadless) Future.successful(null)
       else Http().bindAndHandle(new Router().routes, "localhost", config.httpPort)
    }
 
@@ -163,7 +187,7 @@ class VariantServerImpl(
    // Block indefinitely for when both futures are completed...
 
    Try { Await.result(serverBindingTask, Duration.Inf) } match {
-      case Success(b) => binding = if (headless) None else Some(b)
+      case Success(b) => binding = if (builder.isHeadless) None else Some(b)
       case Failure(t) => croak(t)
    }
 

@@ -13,6 +13,7 @@ import akka.http.scaladsl.model.StatusCodes._
 import com.variant.server.test.util.ServerLogTailer
 import akka.http.scaladsl.model.HttpMethods
 import com.variant.server.test.routes.SessionTest
+import com.variant.server.boot.VariantServer
 
 /**
  * Test various schema deployment error scenarios
@@ -23,9 +24,9 @@ class ServerBootExceptionTest extends EmbeddedServerSpec with ConfigKeys {
 
       "emit CONFIG_PROPERTY_NOT_SET if no schema.dir config" in {
 
-         new ServerBuilder()
-            .withoutKeys("variant.schemata.dir")
-            .reboot()
+         reboot(
+            VariantServer.builder
+               .withoutConfiguration(Seq("variant.schemata.dir")))
 
          server.isUp mustBe false
          server.schemata.size mustBe 0
@@ -38,9 +39,9 @@ class ServerBootExceptionTest extends EmbeddedServerSpec with ConfigKeys {
 
    "emit SCHEMATA_DIR_MISSING if schemata dir does not exist" in {
 
-      new ServerBuilder()
-         .withConfig(Map("variant.schemata.dir" -> "non-existent"))
-         .reboot()
+      reboot(
+         VariantServer.builder
+            .withConfiguration(Map("variant.schemata.dir" -> "non-existent")))
 
       server.isUp mustBe false
       server.schemata.size mustBe 0
@@ -84,9 +85,9 @@ class ServerBootExceptionTest extends EmbeddedServerSpec with ConfigKeys {
 
       "cause server to throw SCHEMATA_DIR_NOT_DIR" in {
 
-         new ServerBuilder()
-            .withConfig(Map("variant.schemata.dir" -> "schemata-file"))
-            .reboot()
+         reboot(
+            VariantServer.builder
+               .withConfiguration(Map("variant.schemata.dir" -> "schemata-file")))
 
          server.isUp mustBe false
          server.schemata.size mustBe 0
@@ -106,9 +107,9 @@ class ServerBootExceptionTest extends EmbeddedServerSpec with ConfigKeys {
          s"cp schemata/monster.schema ${schemataDir}/monster1.schema" !;
          s"cp schemata/monster.schema ${schemataDir}/monster2.schema" !;
 
-         new ServerBuilder()
-            .withConfig(Map("variant.schemata.dir" -> schemataDir))
-            .reboot()
+         reboot(
+            VariantServer.builder
+               .withConfiguration(Map("variant.schemata.dir" -> schemataDir)))
 
          val logTail = ServerLogTailer.last(3)
          server.schemata.size mustBe 1

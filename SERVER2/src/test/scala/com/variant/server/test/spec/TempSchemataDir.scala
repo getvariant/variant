@@ -7,37 +7,55 @@ package com.variant.server.test.spec
 import scala.sys.process._
 import org.scalatest.BeforeAndAfterAll
 import akka.http.scaladsl.testkit.ScalatestRouteTest
+import com.variant.server.boot.VariantServer
 
 /**
  * Tests which wish to operate on a temporary schemata directory
  * should mix this in.
  */
-trait TempSchemataDir extends BaseSpec with BeforeAndAfterAll {
+object TempSchemataDir {
 
-   self: EmbeddedServerSpec =>
+   private val sessionTimeoutSecs = 15 // Override test default of 1. We want sessions survive our waiting for the directory watcher.
+   private val schemataDirDefault = "/tmp/schemata"
+}
 
-   val dirWatcherLatencyMsecs = 10000 // takes this long for FS to notify the directory watcher service.
-   val sessionTimeoutSecs = 15 // Override test default of 1. We want sessions survive our waiting for the directory watcher.
-   val schemataDir = "/tmp/schemata"
+trait TempSchemataDir extends BaseSpec with BeforeAndAfterAll { self: EmbeddedServerSpec =>
 
-   // Subclasses may override this.
-   lazy val schemata = Set[String](
+   import TempSchemataDir._
+
+   val dirWatcherLatencyMsecs = 15000 // takes this long (!) for FS to notify the directory watcher service.
+
+   /**
+    * Subclasses may override the temp schemata directory.
+    */
+   protected lazy val schemataDir = schemataDirDefault
+
+   /**
+    *  Subclasses may override what files go into the temp schemata directory.
+    */
+   protected lazy val schemata = Set[String](
       "schemata/monster.schema",
       "schemata/petclinic.schema")
 
-   s"rm -rf ${schemataDir}" !;
-   s"mkdir ${schemataDir}" !
+   /**
+    * Individual tests may override server builder to control initial
+    */
+   override lazy val serverBuilder: Unit => VariantServer.Builder = { _ =>
 
-   schemata.foreach { f =>
-      s"cp ${f} ${schemataDir}" !
+      // create the temp schema directory so that the server comes up without errors.
+      s"rm -rf ${schemataDir}" !;
+      s"mkdir ${schemataDir}" !
+
+      schemata.foreach { f =>
+         s"cp ${f} ${schemataDir}" !
+      }
+
+      VariantServer.builder.headless
+         .withConfiguration(
+            Map(
+               "variant.schemata.dir" -> TempSchemataDir.schemataDirDefault,
+               "variant.session.timeout" -> sessionTimeoutSecs))
    }
-
-   new ServerBuilder()
-      .withConfig(
-         Map(
-            "variant.schemata.dir" -> schemataDir,
-            "variant.session.timeout" -> sessionTimeoutSecs))
-      .reboot()
 
    /**
     * Cleanup

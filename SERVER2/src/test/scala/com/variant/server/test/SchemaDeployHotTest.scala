@@ -25,6 +25,16 @@ import com.variant.core.error.ServerError
  */
 class SchemaDeployHotTest extends EmbeddedServerSpec with TempSchemataDir {
 
+   val sessionTimeoutMillis = server.config.sessionTimeout * 1000
+   val vacuumIntervalMillis = server.config.sessionVacuumInterval * 1000
+
+   "Confirm key settings" in {
+
+      sessionTimeoutMillis mustBe 15000
+      vacuumIntervalMillis mustBe 1000
+      dirWatcherLatencyMsecs mustBe 10000
+   }
+
    /**
     *
     */
@@ -200,7 +210,7 @@ class SchemaDeployHotTest extends EmbeddedServerSpec with TempSchemataDir {
 
       "redeploy the third schema after sessions expire" in {
 
-         Thread.sleep(sessionTimeoutSecs * 1000)
+         Thread.sleep(sessionTimeoutMillis)
 
          s"cp schemata/monster.schema ${schemataDir}/monster2.schema".!!
 
@@ -279,7 +289,7 @@ class SchemaDeployHotTest extends EmbeddedServerSpec with TempSchemataDir {
 
       "expire existing session as normal in the undeployed schema" in {
 
-         Thread.sleep(sessionTimeoutSecs * 1000);
+         Thread.sleep(sessionTimeoutMillis);
 
          HttpRequest(method = HttpMethods.GET, uri = s"/session/monstrosity/${sid}") ~> router ~> check {
             ServerErrorResponse(response).mustBe(ServerError.SESSION_EXPIRED, sid)

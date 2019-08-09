@@ -24,6 +24,11 @@ trait SchemaDeployer {
 
 }
 
+/**
+ * Note that non-file system deployers no longer work. Works is needed to make them work again
+ * if we need them. For now, if you need a custom schema, use mix-in the TempSchemaDir trait
+ * and create your custom schemata there.
+ */
 object SchemaDeployer {
 
    /**
@@ -34,12 +39,12 @@ object SchemaDeployer {
    /**
     * Factory method returns a deployer that reads schema from a memory string once.
     */
-   def fromString(schemaSrc: String*)(implicit server: VariantServer): SchemaDeployer = new SchemaDeployerString(schemaSrc: _*)
+   //def fromString(schemaSrc: String*)(implicit server: VariantServer): SchemaDeployer = new SchemaDeployerString(schemaSrc: _*)
 
    /**
     * Factory method returns a deployer that reads schema from a classpath resource once.
     */
-   def fromClasspath(resource: String)(implicit server: VariantServer): SchemaDeployer = new SchemaDeployerClasspath(resource)
+   //def fromClasspath(resource: String)(implicit server: VariantServer): SchemaDeployer = new SchemaDeployerClasspath(resource)
 
 }
 

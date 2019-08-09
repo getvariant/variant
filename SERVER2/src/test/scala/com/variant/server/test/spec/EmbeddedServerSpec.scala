@@ -24,13 +24,31 @@ import org.scalatest.exceptions.TestFailedException
  */
 trait EmbeddedServerSpec extends BaseSpec with ScalatestRouteTest {
 
-   // Build straight up server upon initialization
-   // Tests may use the builder object to build other server instances with
-   // alternate configuration parameters.
-   private[this] var _server: VariantServer = VariantServer.builder.headless.build
+   // Individual tests can mutate serverBuilder to build a custom server.
+   protected lazy val serverBuilder: Unit => VariantServer.Builder = { _ =>
+      VariantServer.builder.headless
+   }
+
+   // Build the server defined by the concrete descendant.
+   private[this] var _server: VariantServer = serverBuilder().build()
 
    implicit def server = _server
 
+   /**
+    * Recreate the underlying server from the given builder.
+    * Ensure that it's headless.
+    */
+   def reboot(builder: VariantServer.Builder) {
+      _server = builder.headless.build()
+   }
+
+   /**
+    * Recreate the underlying server from the default builder.
+    * Ensure that it's headless.
+    */
+   def reboot() {
+      _server = VariantServer.builder.headless.build()
+   }
    // Seal the router in order not to have rejections.
    def router = Route.seal(Router(_server).routes)
 
@@ -43,47 +61,6 @@ trait EmbeddedServerSpec extends BaseSpec with ScalatestRouteTest {
       HttpMethods.PATCH,
       HttpMethods.POST,
       HttpMethods.PUT)
-
-   /**
-    * Build another server. Implements a basic builder pattern.
-    */
-   class ServerBuilder {
-
-      // This will override the regularly loaded configuration
-      private[this] var overrides: Map[String, _] = Map.empty
-
-      // These keys will be deleted from regularly loaded configuration.
-      private[this] val deletions = mutable.ListBuffer[String]()
-
-      /**
-       * Add given mappings to the standard config, loaded externally by new VariantServerImpl
-       */
-      def withConfig(overrides: Map[String, _]): ServerBuilder = {
-         this.overrides = overrides
-         this
-      }
-
-      /**
-       * Remove given mappings from the standard config, loaded eternally by new VariantServerImpl
-       */
-      def withoutKeys(keys: String*): ServerBuilder = {
-         deletions ++= keys
-         this
-      }
-
-      /**
-       * Reboot server with given configuration.
-       */
-      def reboot() {
-
-         EmbeddedServerSpec.this._server.shutdown()
-         EmbeddedServerSpec.this._server = VariantServer.builder
-            .headless
-            .withOverrides(overrides)
-            .withDeletions(deletions)
-            .build
-      }
-   }
 
    /**
     * Unmarshal the common sessionResponse

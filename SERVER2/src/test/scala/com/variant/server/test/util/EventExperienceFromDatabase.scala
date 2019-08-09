@@ -23,4 +23,5 @@ class EventExperienceFromDatabase(
    val experienceName: String,
    val isControl: Boolean) {
 
+   override def toString() = Json.toJson(this).toString()
 }
