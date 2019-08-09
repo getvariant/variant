@@ -376,24 +376,38 @@ class TraceEventTest extends EmbeddedServerSpec with TraceEventsSpec {
             ssnResp.schema.getMeta.getName mustBe "monstrosity"
          }
 
-         // Read events back from the db, but must wait for the asych flusher.
+         // Read events back from the db, after waiting for the asych flusher.
          Thread.sleep(millisToSleep)
          val eventsFromDatabase = TraceEventReader(eventWriter).read(_.sessionId == sid)
          eventsFromDatabase.size mustBe 2
-         val event = eventsFromDatabase(0)
 
-         event.sessionId mustBe sid
-         event.createdOn.toEpochMilli mustBe (System.currentTimeMillis() - millisToSleep) +- 100
-         event.name mustBe eventName
-         event.eventExperiences.size mustBe 4
-         event.attributes.size mustBe 2
-         event.eventExperiences.exists(_.testName == "test1") mustBe true
-         event.eventExperiences.exists(_.testName == "test2") mustBe true
-         event.eventExperiences.exists(_.testName == "test3") mustBe false
-         event.eventExperiences.exists(_.testName == "test4") mustBe true
-         event.eventExperiences.exists(_.testName == "test5") mustBe true
-         event.eventExperiences.exists(_.testName == "test6") mustBe false
-         event.eventExperiences.foreach(_.eventId mustBe event.id)
+         val sve = eventsFromDatabase(0)
+         sve.sessionId mustBe sid
+         sve.createdOn.toEpochMilli mustBe (System.currentTimeMillis() - millisToSleep) +- 100
+         sve.name mustBe "$STATE_VISIT"
+         sve.eventExperiences.size mustBe 4
+         sve.attributes.size mustBe 2
+         sve.eventExperiences.exists(_.testName == "test1") mustBe true
+         sve.eventExperiences.exists(_.testName == "test2") mustBe true
+         sve.eventExperiences.exists(_.testName == "test3") mustBe false
+         sve.eventExperiences.exists(_.testName == "test4") mustBe true
+         sve.eventExperiences.exists(_.testName == "test5") mustBe true
+         sve.eventExperiences.exists(_.testName == "test6") mustBe false
+         sve.eventExperiences.foreach(_.eventId mustBe sve.id)
+
+         val customEvent = eventsFromDatabase(1)
+         customEvent.sessionId mustBe sid
+         customEvent.createdOn.toEpochMilli mustBe (System.currentTimeMillis() - millisToSleep) +- 100
+         customEvent.name mustBe eventName
+         customEvent.eventExperiences.size mustBe 4
+         customEvent.attributes.size mustBe 2
+         customEvent.eventExperiences.exists(_.testName == "test1") mustBe true
+         customEvent.eventExperiences.exists(_.testName == "test2") mustBe true
+         customEvent.eventExperiences.exists(_.testName == "test3") mustBe false
+         customEvent.eventExperiences.exists(_.testName == "test4") mustBe true
+         customEvent.eventExperiences.exists(_.testName == "test5") mustBe true
+         customEvent.eventExperiences.exists(_.testName == "test6") mustBe false
+         customEvent.eventExperiences.foreach(_.eventId mustBe customEvent.id)
 
       }
 

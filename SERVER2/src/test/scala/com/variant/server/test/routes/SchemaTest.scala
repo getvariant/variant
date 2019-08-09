@@ -75,7 +75,7 @@ class SchemaTest extends EmbeddedServerSpec {
          HttpRequest(method = GET, uri = "/schema/invalid") ~> router ~> check {
             handled mustBe true
             status mustBe BadRequest
-            println(entityAs[String])
+            //println(entityAs[String])
             val respBody = Json.parse(entityAs[String])
             (respBody \ "code").as[Long] mustBe ServerError.UNKNOWN_SCHEMA.getCode
             (respBody \ "args").as[List[String]] mustBe List("invalid")

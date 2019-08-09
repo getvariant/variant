@@ -116,7 +116,6 @@ object VariantServer {
                "overrides" ->
                   Json.obj(overrides.map {
                      case (k, v) =>
-                        println(s"** ${k} -> ${v}")
                         val result: (String, JsValueWrapper) = k -> JsString(if (v == null) "null" else v.toString)
                         result
                   }.toSeq: _*),

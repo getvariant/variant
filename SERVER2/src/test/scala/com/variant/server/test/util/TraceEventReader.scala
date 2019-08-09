@@ -30,7 +30,7 @@ class TraceEventReader(eventWriter: TraceEventWriter) {
    val jdbcConnection = new JdbcService(eventWriter).getConnection
 
    /**
-    * Read events as a collection
+    * Read events as a sequences sorted in ascendint order of timestamp.
     * @return
     * @throws ClassNotFoundException
     * @throws SQLException
@@ -91,6 +91,6 @@ class TraceEventReader(eventWriter: TraceEventWriter) {
 
                eventMap.values()
             }
-         }).asScala.filter(p).toArray
+         }).asScala.filter(p).toArray.sortWith(_.createdOn isBefore _.createdOn)
    }
 }

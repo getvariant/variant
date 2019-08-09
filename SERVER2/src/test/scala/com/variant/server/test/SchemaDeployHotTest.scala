@@ -25,16 +25,6 @@ import com.variant.core.error.ServerError
  */
 class SchemaDeployHotTest extends EmbeddedServerSpec with TempSchemataDir {
 
-   val sessionTimeoutMillis = server.config.sessionTimeout * 1000
-   val vacuumIntervalMillis = server.config.sessionVacuumInterval * 1000
-
-   "Confirm key settings" in {
-
-      sessionTimeoutMillis mustBe 15000
-      vacuumIntervalMillis mustBe 1000
-      dirWatcherLatencyMsecs mustBe 10000
-   }
-
    /**
     *
     */

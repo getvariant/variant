@@ -19,19 +19,6 @@ class ConnectionDrainingOnReplaceTest extends EmbeddedServerSpec with TempSchema
    private val random = new Random(System.currentTimeMillis())
    private val SESSIONS = 100
 
-   //private val sessionJsonBig = ParameterizedString(SessionTest.sessionJsonBigCovarPrototype.format(System.currentTimeMillis()))
-   //private val sessionJsonPet = ParameterizedString(SessionTest.sessionJsonPetclinicPrototype.format(System.currentTimeMillis()))
-
-   val sessionTimeoutMillis = server.config.sessionTimeout * 1000
-   val vacuumIntervalMillis = server.config.sessionVacuumInterval * 1000
-
-   "Confirm key settings" in {
-
-      sessionTimeoutMillis mustBe 15000
-      vacuumIntervalMillis mustBe 1000
-      dirWatcherLatencyMsecs mustBe 10000
-   }
-
    val emptyTargetingTrackerBody = "{\"tt\":[]}"
 
    /**
@@ -216,7 +203,7 @@ class ConnectionDrainingOnReplaceTest extends EmbeddedServerSpec with TempSchema
 
       "expire all sessions and dispose of all dead gens" in {
 
-         Thread.sleep(sessionTimeoutMillis + vacuumIntervalMillis)
+         Thread.sleep(sessionTimeoutMillis)
 
          for (i <- 0 until SESSIONS) async {
             val sid = ssnId2Monster(i)
