@@ -71,6 +71,9 @@ executableScriptName := "variant-ctl"
 fork := true
 Test / baseDirectory := file("test-base")
 
+// Do not truncate stack traces.
+testOptions in Test += Tests.Argument("-oF")
+
 // Append production resource directory "conf" so that its content is available
 // but behind the content of src/test/resources
 //unmanagedClasspath in Test += baseDirectory.value / "src" / "universal" / "conf"

@@ -34,11 +34,11 @@ class StandaloneServerSpec extends BaseSpec with BeforeAndAfterAll {
    // The standalone server
    protected val server = new StandaloneServer(serverDir, flusher)
 
-   "Server must come up with petclinic schema" in {
+   "Server must come up with exampleSchema schema" in {
 
       server.start()
 
-      HttpOperation.get("http://localhost:5377/connection/petclinic")
+      HttpOperation.get("http://localhost:5377/schema/exampleSchema")
          .exec().responseCode mustBe 200
    }
 
@@ -75,14 +75,14 @@ class StandaloneServer(serverDir: String, flusher: String) extends LazyLogging {
 
    // sbt, bless its soul, puts errors on standard out.
    val procLogger = ProcessLogger(
-      l => if (l.matches(".*error.*")) logger.info("<standaloneServer.sh OUT> " + l),
-      l => logger.error("<standaloneServer.sh ERR> " + l))
+      l => if (l.matches(".*error.*")) logger.info("<OUT> " + l),
+      l => logger.error("<ERR> " + l))
 
    // Build standalone server in serverDir.
    // Stdout is ignored. Stderr is sent to console.
    // Blocks until process terminates.
    // Remember that in test the current directory is test-base
-   var cc = Seq("../mbin/standaloneServer.sh", serverDir, flusher).!(procLogger)
+   var cc = Seq("../standalone-server/build.sh", serverDir, flusher).!(procLogger)
 
    if (cc != 0)
       throw new RuntimeException(s"standaloneServer.sh crashed with cc [${cc}]")
@@ -102,7 +102,7 @@ class StandaloneServer(serverDir: String, flusher: String) extends LazyLogging {
     *
     */
    def start(
-      // Optional list of -Dkey=value params to be passed to variant.sh in the form of a Map.
+      // Optional list of -Dkey=value params to be passed to variant in the form of a Map.
       //   e.g. Map("http.port" -> "1234") becomes -Dhttp.port=1234
       commandLineParams: Map[String, String] = Map(),
       // Optional timeout interval in seconds.
@@ -125,13 +125,13 @@ class StandaloneServer(serverDir: String, flusher: String) extends LazyLogging {
 
       // Run server asynchronously
       var paramString = ""
-      var port = "5377" // Default
+      var port = "5377"
 
       commandLineParams.foreach { t =>
          paramString += " -D" + t._1 + "=" + t._2
-         if (t._1 == "http.port") port = t._2
+         if (t._1 == "variant.http.port") port = t._2
       }
-      svrProc = (serverDir + "/bin/variant.sh start " + paramString.toString).run(svrLog)
+      svrProc = (serverDir + "/bin/variant start " + paramString).run(svrLog)
 
       // Block until we read the startup message.
       var started = false
@@ -177,16 +177,11 @@ class StandaloneServer(serverDir: String, flusher: String) extends LazyLogging {
     */
    def stop() {
 
-      (serverDir + "/bin/variant.sh stop").!
+      (serverDir + "/bin/variant stop").!
 
       // Wait until the server process exits.
       val svrExitStatus = svrProc.exitValue
       println(s"Server process completed with status ${svrExitStatus}")
-      /* It's 143, because we kill in variant.sh
-      if (svrExitStatus != null)
-         throw new RuntimeException(s"Server process exited with error status ${svrExitStatus}")
-         *
-         */
 
       out.clear()
       err.clear()

@@ -147,12 +147,18 @@ class VariantServerImpl(builder: VariantServer.Builder)(override implicit val ac
    //
    // Attempt to load the external configuration first. Let it fail if a problem,
    // since there's no future before a config.
-   val config = {
+   override val config: ConfigurationImpl = try {
       val external = ConfigLoader.load("/variant.conf", "/prod/variant-default.conf")
       // Apply overrides.
       var withOverrides = ConfigFactory.parseMap(builder.overrides.asJava).withFallback(external)
       builder.deletions.foreach { key => withOverrides = withOverrides.withoutPath(key) }
       new ConfigurationImpl(withOverrides)
+   } catch {
+      case t: Throwable => {
+         // Give up. We can't do without a good configuration.
+         logger.error(t.getMessage, t)
+         throw t
+      }
    }
 
    private implicit val materializer: ActorMaterializer = ActorMaterializer()

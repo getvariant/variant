@@ -12,11 +12,24 @@ import com.variant.server.api.Configuration
 import com.variant.server.boot.ServerMessageLocal._
 import com.variant.server.boot.ServerExceptionLocal
 import com.variant.server.util.JavaImplicits._
+import com.variant.core.util.ReflectUtils
 
 /**
  * Effective server configuration.
  */
 class ConfigurationImpl(config: Config) extends Configuration with ConfigKeys {
+
+   // Eagerly ensure that all params are accessible. This allows us to catch
+   // a misconfigured param at startup time.
+   // TODO we should do this reflectively, based on the methods declared in interface Configuration
+   httpsPort
+   schemataDir
+   sessionTimeout
+   sessionVacuumInterval
+   defaultEventFlusherClassName
+   defaultEventFlusherClassInit
+   eventWriterBufferSize
+   eventWriterMaxDelay
 
    /**
     * String getter. Throws exception if not set or wrong type.

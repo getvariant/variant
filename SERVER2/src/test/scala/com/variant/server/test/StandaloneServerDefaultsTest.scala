@@ -5,7 +5,7 @@ import java.util.Random
 
 import com.variant.core.util.StringUtils
 import com.variant.core.error.ServerError._
-import com.variant.core.error.UserError.Severity._
+import com.variant.core.util.LogTailer.Level._
 
 import com.variant.server.boot.VariantServer
 import com.variant.server.boot.ServerMessageLocal._
@@ -26,21 +26,21 @@ class StandaloneServerDefaultsTest extends StandaloneServerSpec {
 
       "send NOT_FOUND on a bad request" in {
 
-         HttpOperation.get("http://localhost:5377/variant").exec().responseCode mustBe NotFound
+         HttpOperation.get("http://localhost:5377/variant").exec().responseCode mustBe NotFound.intValue
 
-         HttpOperation.get("http://localhost:5377/bad").exec().responseCode mustBe NotFound
+         HttpOperation.get("http://localhost:5377/bad").exec().responseCode mustBe NotFound.intValue
 
-         HttpOperation.get("http://localhost:5377/variant/bad").exec().responseCode mustBe NotFound
+         HttpOperation.get("http://localhost:5377/variant/bad").exec().responseCode mustBe NotFound.intValue
       }
 
-      "deploy petclinic and write to the application log" in {
+      "deploy exampleSchema and write to the application log" in {
 
-         HttpOperation.get("http://localhost:5377/connection/petclinic")
-            .exec().responseCode mustBe OK
+         HttpOperation.get("http://localhost:5377/schema/exampleSchema")
+            .exec().responseCode mustBe OK.intValue
 
          val lines = ServerLogTailer.last(2, serverDir + "/log/variant.log")
          lines(0).level mustBe Info
-         lines(0).message mustBe SCHEMA_DEPLOYED.asMessage("petclinic", "petclinic.schema")
+         lines(0).message mustBe SCHEMA_DEPLOYED.asMessage("exampleSchema", "example.schema")
          lines(1).level mustBe INFO
          lines(1).message matches ".*\\[432\\].*bootstrapped.*"
 
@@ -49,16 +49,16 @@ class StandaloneServerDefaultsTest extends StandaloneServerSpec {
       "send health on a root request" in {
 
          val resp = HttpOperation.get("http://localhost:5377").exec()
-         resp.responseCode mustBe OK
+         resp.responseCode mustBe OK.intValue
          resp.bodyString.get must startWith("Variant AIM Server")
       }
 
       "start on a non-default port 1234" in {
 
          server.stop()
-         server.start(Map("http.port" -> "1234"))
+         server.start(Map("variant.http.port" -> "1234"))
 
-         HttpOperation.get("http://localhost:1234/connection/petclinic").exec().responseCode mustBe OK
+         HttpOperation.get("http://localhost:1234/schema/exampleSchema").exec().responseCode mustBe OK.intValue
 
       }
 
@@ -80,18 +80,14 @@ class StandaloneServerDefaultsTest extends StandaloneServerSpec {
 
          started mustBe false
 
-         val resp = HttpOperation.get("http://localhost:5377/connection/petclinic").exec()
-         resp.responseCode mustBe ServiceUnavailable
-
-         val lines = ServerLogTailer.last(4, serverDir + "/log/variant.log")
+         val lines = ServerLogTailer.last(1, serverDir + "/log/variant.log")
          lines(0).level mustBe ERROR
-         lines(0).message mustBe SERVER_BOOT_FAILED.asMessage("Variant AIM Server")
-         lines(1).level mustBe ERROR
-         lines(1).message mustBe CONFIG_PROPERTY_WRONG_TYPE.asMessage("variant.session.timeout", "NUMBER", "STRING")
-         lines(2).level mustBe INFO
-         lines(2).message mustBe "Variant AIM Server is shutting down"
-         lines(3).level mustBe INFO
-         lines(3).message must startWith(s"[${SERVER_SHUTDOWN.getCode}]")
+         lines(0).message mustBe CONFIG_PROPERTY_WRONG_TYPE.asMessage("variant.session.timeout", "NUMBER", "STRING")
+
+         // Misconfig causes server staartup to abort, so there's no server.
+         intercept[java.net.ConnectException] {
+            HttpOperation.get("http://localhost:5377").exec()
+         }
 
       }
 
@@ -126,8 +122,8 @@ class StandaloneServerDefaultsTest extends StandaloneServerSpec {
          lines(7).level mustBe WARN
          lines(7).message mustBe SCHEMA_FAILED.asMessage("monstrosity0", s"${serverDir}/schemata/monster0.schema")
 
-         val resp = HttpOperation.get("http://localhost:5377/connection/monstrosity").exec()
-         resp.responseCode mustBe BadRequest
+         val resp = HttpOperation.get("http://localhost:5377/schema/monstrosity").exec()
+         resp.responseCode mustBe BadRequest.intValue
          resp.getErrorContent mustBe UNKNOWN_SCHEMA.asMessage("monstrosity")
 
       }
