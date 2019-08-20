@@ -72,7 +72,7 @@ class ServerSchema(private val seed: SchemaGen) extends LazyLogging {
     */
    private[this] def undeployGen(gen: SchemaGen) {
       gen.state = SchemaGen.State.Dead
-      logger.info(s"Undeployed schema generation ID [${gen.id}] in schema [${name}]")
+      logger.info(s"Undeployed generation ID [${gen.id}] in schema [${name}]")
    }
 
    /**
@@ -81,7 +81,8 @@ class ServerSchema(private val seed: SchemaGen) extends LazyLogging {
    def undeployLiveGen() {
       liveGen.foreach { gen =>
          gen.state = SchemaGen.State.Dead
-         logger.info(s"Undeployed schema generation ID [${gen.id}] in schema [${name}]")
+         gen.eventWriter.shutdown()
+         logger.info(s"Undeployed generation ID [${gen.id}] in schema [${name}]")
       }
    }
 

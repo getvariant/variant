@@ -88,7 +88,7 @@ public class ServerFlusherService extends FlusherService {
 			}
 			
 			flusher = (TraceEventFlusher) flusherObj;
-			logger.info(String.format(
+			logger.debug(String.format(
 					"Registered event flusher [%s] for schema [%s]", 
 					f.getClassName(), parser.responseInProgress().getSchema().getMeta().getName()));
 						

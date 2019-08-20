@@ -18,20 +18,19 @@ stop)
    pid=$(running_pid)
    if [ -n "$pid" ]; then
       kill -2 $pid
-      echo "Variant Server stopped"
    fi
    ;;
    
 status)
    pid=$(running_pid)
    if [ -n "$pid" ] ; then 
-      echo "Variant Server running as PID $pid" 
+      echo "PID $pid" 
    else
-      echo "Variant Server not running"
+      echo "Not running"
    fi  
    ;;
 
-debug)  ## unpublished option ##
+debug)  ## unpublished remote debugging option ##
    bin/variant-ctl -agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=8000
    ;;
    

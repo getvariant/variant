@@ -17,6 +17,8 @@ object Boot extends App with LazyLogging {
    val server = VariantServer.builder.build
 
    // We shutdown server by sending it the INTERRUPT signal, which we catch right here.
+   // TODO This is a rather ungraceful shutdown because we're not letting in-flight requests
+   // to complete. See #253.
    Signal.handle(new Signal("INT"), new SignalHandler() {
       def handle(sig: Signal) {
          server.shutdown()

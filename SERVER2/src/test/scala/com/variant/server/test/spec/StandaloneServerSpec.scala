@@ -81,10 +81,11 @@ class StandaloneServer(serverDir: String, flusher: String) extends LazyLogging {
    // Build standalone server in serverDir.
    // Stdout is ignored. Stderr is sent to console.
    // Blocks until process terminates.
-   var cc = Seq("mbin/standaloneServer.sh", serverDir, flusher).!(procLogger)
+   // Remember that in test the current directory is test-base
+   var cc = Seq("../mbin/standaloneServer.sh", serverDir, flusher).!(procLogger)
 
    if (cc != 0)
-      throw new RuntimeException(s"mbin/standaloneServer.sh crashed with cc [${cc}]")
+      throw new RuntimeException(s"standaloneServer.sh crashed with cc [${cc}]")
 
    println(s"Built server in ${serverDir}")
 

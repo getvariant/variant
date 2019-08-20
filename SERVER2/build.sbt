@@ -7,9 +7,10 @@ import scalariform.formatter.preferences._
 
 import NativePackagerHelper._
 
+maintainer := "igor@getvariant.com"
 organization    := "com.variant"
 scalaVersion    := "2.12.7"
-name            := "Variant"
+name            := "Variant-Server"
 version         := "0.10.1"
 
 val akkaHttpVersion = "10.1.8"

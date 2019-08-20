@@ -220,6 +220,7 @@ class VariantServerImpl(builder: VariantServer.Builder)(override implicit val ac
    override def shutdown() {
       binding.map(_.unbind)
       binding = None
+      schemata.undeployAll()
       actorSystem.terminate()
       Await.result(actorSystem.whenTerminated, 2 seconds)
    }
