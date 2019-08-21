@@ -5,13 +5,12 @@ import java.util.Random
 
 import com.variant.core.util.StringUtils
 import com.variant.core.error.ServerError._
-import com.variant.core.util.LogTailer.Level._
 
 import com.variant.server.boot.VariantServer
 import com.variant.server.boot.ServerMessageLocal._
 import com.variant.server.test.spec.StandaloneServerSpec
 import com.variant.server.test.util.ServerLogTailer
-import com.variant.server.test.util.ServerLogTailer._
+import com.variant.server.test.util.ServerLogTailer.Level._
 import com.variant.core.httpc.HttpOperation
 import akka.http.scaladsl.model.StatusCodes._
 
@@ -41,7 +40,7 @@ class StandaloneServerDefaultsTest extends StandaloneServerSpec {
          val lines = ServerLogTailer.last(2, serverDir + "/log/variant.log")
          lines(0).level mustBe Info
          lines(0).message mustBe SCHEMA_DEPLOYED.asMessage("exampleSchema", "example.schema")
-         lines(1).level mustBe INFO
+         lines(1).level mustBe Info
          lines(1).message matches ".*\\[432\\].*bootstrapped.*"
 
       }
@@ -81,7 +80,7 @@ class StandaloneServerDefaultsTest extends StandaloneServerSpec {
          started mustBe false
 
          val lines = ServerLogTailer.last(1, serverDir + "/log/variant.log")
-         lines(0).level mustBe ERROR
+         lines(0).level mustBe Error
          lines(0).message mustBe CONFIG_PROPERTY_WRONG_TYPE.asMessage("variant.session.timeout", "NUMBER", "STRING")
 
          // Misconfig causes server staartup to abort, so there's no server.
@@ -105,13 +104,13 @@ class StandaloneServerDefaultsTest extends StandaloneServerSpec {
          server.start(Map("variant.config.resource" -> ("/" + resourceName)))
          val lines = ServerLogTailer.last(4, serverDir + "/log/variant.log")
 
-         lines(0).level mustBe INFO
+         lines(0).level mustBe Info
          lines(0).message mustBe SCHEMA_DEPLOYING.asMessage(s"${serverDir}/schemata/example.schema")
-         lines(1).level mustBe ERROR
+         lines(1).level mustBe Error
          lines(1).message mustBe OBJECT_INSTANTIATION_ERROR.asMessage("junk", "java.lang.ClassNotFoundException")
-         lines(2).level mustBe WARN
+         lines(2).level mustBe Warn
          lines(2).message mustBe SCHEMA_FAILED.asMessage("exampleSchema", s"${serverDir}/schemata/example.schema")
-         lines(3).level mustBe INFO
+         lines(3).level mustBe Info
          lines(3).message matches ".*\\[432\\].*bootstrapped.*"
 
          val resp = HttpOperation.get("http://localhost:5377/schema/monstrosity").exec()
@@ -125,14 +124,13 @@ class StandaloneServerDefaultsTest extends StandaloneServerSpec {
          server.stop()
 
          server.start(
-            Map("variant.config.file" -> "non-existent"),
-            5,
-            () => {
-               val lines = server.err.toArray[String](new Array[String](10))
-               lines.foreach(l => println("************ " + l))
-               lines(0) must include("cannot start the server")
-               lines(1) must include(CONFIG_FILE_NOT_FOUND.asMessage("non-existent"))
-            })
+            commandLineParams = Map("variant.config.file" -> "non-existent"),
+            onTimeout = () => ( /*don't throw timeout exception*/ ))
+
+         val lines = ServerLogTailer.last(1, serverDir + "/log/variant.log")
+         lines(0).level mustBe Error
+         lines(0).message mustBe CONFIG_FILE_NOT_FOUND.asMessage("non-existent")
+
       }
 
       "Fail to start with bad alternate config as resource" in {
@@ -140,13 +138,13 @@ class StandaloneServerDefaultsTest extends StandaloneServerSpec {
          server.stop()
 
          server.start(
-            Map("variant.config.resource" -> "non-existent"),
-            5,
-            () => {
-               val errLines = server.err.toArray[String](new Array[String](10))
-               errLines(0) must include("cannot start the server")
-               errLines(1) must include(CONFIG_RESOURCE_NOT_FOUND.asMessage("non-existent"))
-            })
+            commandLineParams = Map("variant.config.resource" -> "non-existent"),
+            onTimeout = () => ( /*don't throw timeout exception*/ ))
+
+         val lines = ServerLogTailer.last(1, serverDir + "/log/variant.log")
+         lines(0).level mustBe Error
+         lines(0).message mustBe CONFIG_RESOURCE_NOT_FOUND.asMessage("non-existent")
+
       }
 
       "Fail to start when conflicting alternate configs" in {
@@ -154,13 +152,12 @@ class StandaloneServerDefaultsTest extends StandaloneServerSpec {
          server.stop()
 
          server.start(
-            Map("variant.config.file" -> "foo", "variant.config.resource" -> "bar"),
-            5,
-            () => {
-               val errLines = server.err.toArray[String](new Array[String](10))
-               errLines(0) must include("cannot start the server")
-               errLines(1) must include(CONFIG_BOTH_FILE_AND_RESOURCE_GIVEN.asMessage())
-            })
+            commandLineParams = Map("variant.config.file" -> "foo", "variant.config.resource" -> "bar"),
+            onTimeout = () => ( /*don't throw timeout exception*/ ))
+
+         val lines = ServerLogTailer.last(1, serverDir + "/log/variant.log")
+         lines(0).level mustBe Error
+         lines(0).message mustBe CONFIG_BOTH_FILE_AND_RESOURCE_GIVEN.asMessage()
       }
    }
 }

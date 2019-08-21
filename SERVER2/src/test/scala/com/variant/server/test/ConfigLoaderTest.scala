@@ -1,11 +1,11 @@
 package com.variant.server.test
 
-import com.variant.core.error.CoreException._
-import com.variant.core.error.CoreException
 import com.variant.server.boot.ConfigLoader
 import com.variant.server.boot.ServerMessageLocal._
 import com.variant.server.test.spec.ServerlessSpec
 import com.variant.server.test.spec.BaseSpec
+import com.variant.server.boot.ServerExceptionInternal
+import com.variant.server.boot.ServerExceptionLocal
 
 class ConfigLoaderTest extends BaseSpec {
 
@@ -41,7 +41,7 @@ class ConfigLoaderTest extends BaseSpec {
          System.clearProperty("variant.foo");
 
          // No Default is a problem
-         val caughtEx = intercept[CoreException.Internal] {
+         val caughtEx = intercept[ServerExceptionInternal] {
             ConfigLoader.load("foo.bar", "bad.conf")
          }
          caughtEx.getMessage mustBe "Could not find default config resource [bad.conf]"
@@ -53,7 +53,7 @@ class ConfigLoaderTest extends BaseSpec {
          System.setProperty("variant.config.file", "non-existent");
          System.clearProperty("variant.config.resource");
 
-         val caughtEx = intercept[CoreException.User] {
+         val caughtEx = intercept[ServerExceptionLocal] {
             ConfigLoader.load("variant.conf", "/variant-default.conf");
          }
          caughtEx.getMessage mustBe CONFIG_FILE_NOT_FOUND.asMessage("non-existent");
@@ -64,12 +64,12 @@ class ConfigLoaderTest extends BaseSpec {
          System.setProperty("variant.config.resource", "non-existent");
          System.clearProperty("variant.config.file");
 
-         val caughtEx1 = intercept[CoreException.User] {
+         val caughtEx1 = intercept[ServerExceptionLocal] {
             ConfigLoader.load("bad.cond", "/variant-default.conf");
          }
          caughtEx1.getMessage mustBe CONFIG_RESOURCE_NOT_FOUND.asMessage("non-existent");
 
-         val caughtEx2 = intercept[CoreException.User] {
+         val caughtEx2 = intercept[ServerExceptionLocal] {
             ConfigLoader.load("variant.conf", "/variant-default.conf");
          }
          caughtEx2.getMessage mustBe CONFIG_RESOURCE_NOT_FOUND.asMessage("non-existent");

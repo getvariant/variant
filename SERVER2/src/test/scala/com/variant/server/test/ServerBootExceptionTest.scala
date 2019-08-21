@@ -4,16 +4,20 @@ import scala.sys.process._
 
 import com.variant.server.boot.ServerExceptionLocal
 import com.variant.server.boot.ServerMessageLocal._
-import com.variant.server.impl.ConfigKeys
-import com.variant.server.test.spec.EmbeddedServerSpec
-
-import akka.http.scaladsl.model.HttpMethods._
-import akka.http.scaladsl.model.HttpRequest
-import akka.http.scaladsl.model.StatusCodes._
-import com.variant.server.test.util.ServerLogTailer
-import akka.http.scaladsl.model.HttpMethods
-import com.variant.server.test.routes.SessionTest
 import com.variant.server.boot.VariantServer
+import com.variant.server.impl.ConfigKeys
+import com.variant.server.test.routes.SessionTest
+import com.variant.server.test.spec.EmbeddedServerSpec
+import com.variant.server.test.util.ServerLogTailer
+import com.variant.server.test.util.ServerLogTailer.Level._
+
+import akka.http.scaladsl.model.HttpMethods
+import akka.http.scaladsl.model.HttpMethods.GET
+import akka.http.scaladsl.model.HttpMethods.POST
+import akka.http.scaladsl.model.HttpMethods.PUT
+import akka.http.scaladsl.model.HttpRequest
+import akka.http.scaladsl.model.StatusCodes.NotFound
+import akka.http.scaladsl.model.StatusCodes.ServiceUnavailable
 
 /**
  * Test various schema deployment error scenarios
@@ -114,7 +118,7 @@ class ServerBootExceptionTest extends EmbeddedServerSpec with ConfigKeys {
          val logTail = ServerLogTailer.last(3)
          server.schemata.size mustBe 1
          val errLine = logTail(0)
-         errLine.level mustBe ServerLogTailer.Error
+         errLine.level mustBe Error
          errLine.message must include(SCHEMA_CANNOT_REPLACE.asMessage("monstrosity", "monster1.schema", "monster2.schema"))
          server.isUp mustBe true
       }

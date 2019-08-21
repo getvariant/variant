@@ -4,10 +4,10 @@ import scala.sys.process._
 
 import com.variant.core.error.UserError.Severity
 import com.variant.core.schema.parser.error.SyntaxError
-//import com.variant.core.util.IoUtils
 import com.variant.server.boot.ServerMessageLocal
 import com.variant.server.boot.VariantServer
 import com.variant.server.test.util.ServerLogTailer
+import com.variant.server.test.util.ServerLogTailer.Level._
 
 import com.variant.server.test.spec.EmbeddedServerSpec
 import org.scalatest.BeforeAndAfterAll
@@ -51,9 +51,9 @@ class SchemaDeployEmptyTest extends EmbeddedServerSpec with BeforeAndAfterAll {
          server.schemata.size mustBe 0
          server.bootExceptions.size mustEqual 0
          val lastTwoLines = ServerLogTailer.last(2)
-         lastTwoLines(0).level mustBe ServerLogTailer.Info
+         lastTwoLines(0).level mustBe Info
          lastTwoLines(0).message mustBe ServerMessageLocal.EMPTY_SCHEMATA.asMessage(schemataDir)
-         lastTwoLines(1).level mustBe ServerLogTailer.Info
+         lastTwoLines(1).level mustBe Info
          lastTwoLines(1).message must startWith("[" + ServerMessageLocal.SERVER_BOOT_OK.getCode + "]")
       }
 
@@ -67,9 +67,9 @@ class SchemaDeployEmptyTest extends EmbeddedServerSpec with BeforeAndAfterAll {
          server.schemata.size mustBe 0
 
          val lastTwoLines = ServerLogTailer.last(2)
-         lastTwoLines(0).level mustBe ServerLogTailer.Error
+         lastTwoLines(0).level mustBe Error
          lastTwoLines(0).message must startWith("[" + SyntaxError.JSON_SYNTAX_ERROR.getCode + "]")
-         lastTwoLines(1).level mustBe ServerLogTailer.Warn
+         lastTwoLines(1).level mustBe Warn
          lastTwoLines(1).message must startWith("[" + ServerMessageLocal.SCHEMA_FAILED.getCode + "]")
 
       }

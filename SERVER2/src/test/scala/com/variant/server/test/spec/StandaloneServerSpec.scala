@@ -29,7 +29,7 @@ class StandaloneServerSpec extends BaseSpec with BeforeAndAfterAll {
    protected lazy val serverDir = "/private/tmp/standaloneServer"
 
    // The flusher to use. Valid values: 'null', 'mysql', or 'postgres'. Tests may overide this.
-   protected lazy val flusher = "null"
+   protected lazy val flusher = "none"
 
    // The standalone server
    protected val server = new StandaloneServer(serverDir, flusher)

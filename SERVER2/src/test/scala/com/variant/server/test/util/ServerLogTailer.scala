@@ -12,11 +12,13 @@ import com.variant.core.util.apache.ReversedLinesFileReader
  */
 object ServerLogTailer {
 
-   val Trace = LogTailer.Level.TRACE
-   val Debug = LogTailer.Level.DEBUG
-   val Info = LogTailer.Level.INFO
-   val Warn = LogTailer.Level.WARN
-   val Error = LogTailer.Level.ERROR
+   object Level {
+      val Trace = LogTailer.Level.TRACE
+      val Debug = LogTailer.Level.DEBUG
+      val Info = LogTailer.Level.INFO
+      val Warn = LogTailer.Level.WARN
+      val Error = LogTailer.Level.ERROR
+   }
 
    def last(n: Integer, fileName: String = "log/variant.log"): Seq[Entry] = {
 

@@ -154,8 +154,15 @@ class VariantServerImpl(builder: VariantServer.Builder)(override implicit val ac
       builder.deletions.foreach { key => withOverrides = withOverrides.withoutPath(key) }
       new ConfigurationImpl(withOverrides)
    } catch {
+      // Give up. We can't do without a good configuration.
+      case e: ServerException => {
+         // Don't print stack trace in the server log if expected exception:
+         // hopefully, the error message is enough to debug the problem.
+         logger.error(e.getMessage)
+         throw e
+      }
       case t: Throwable => {
-         // Give up. We can't do without a good configuration.
+         // Badness. Print error stack to the log.
          logger.error(t.getMessage, t)
          throw t
       }
