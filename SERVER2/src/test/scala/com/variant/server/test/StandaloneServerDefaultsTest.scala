@@ -103,24 +103,16 @@ class StandaloneServerDefaultsTest extends StandaloneServerSpec {
 
          // This will cause monster schemas to fail because they don't specity their own flushers.
          server.start(Map("variant.config.resource" -> ("/" + resourceName)))
-         val lines = ServerLogTailer.last(12, serverDir + "/log/variant.log")
+         val lines = ServerLogTailer.last(4, serverDir + "/log/variant.log")
 
          lines(0).level mustBe INFO
-         lines(0).message mustBe SCHEMA_DEPLOYING.asMessage(s"${serverDir}/schemata/monster.schema")
+         lines(0).message mustBe SCHEMA_DEPLOYING.asMessage(s"${serverDir}/schemata/example.schema")
          lines(1).level mustBe ERROR
          lines(1).message mustBe OBJECT_INSTANTIATION_ERROR.asMessage("junk", "java.lang.ClassNotFoundException")
-         lines(2).level mustBe ERROR
-         lines(2).message mustBe OBJECT_INSTANTIATION_ERROR.asMessage("junk", "java.lang.ClassNotFoundException")
-         lines(3).level mustBe WARN
-         lines(3).message mustBe SCHEMA_FAILED.asMessage("monstrosity", s"${serverDir}/schemata/monster.schema")
-         lines(4).level mustBe INFO
-         lines(4).message mustBe SCHEMA_DEPLOYING.asMessage(s"${serverDir}/schemata/monster0.schema")
-         lines(5).level mustBe ERROR
-         lines(5).message mustBe OBJECT_INSTANTIATION_ERROR.asMessage("junk", "java.lang.ClassNotFoundException")
-         lines(6).level mustBe ERROR
-         lines(6).message mustBe OBJECT_INSTANTIATION_ERROR.asMessage("junk", "java.lang.ClassNotFoundException")
-         lines(7).level mustBe WARN
-         lines(7).message mustBe SCHEMA_FAILED.asMessage("monstrosity0", s"${serverDir}/schemata/monster0.schema")
+         lines(2).level mustBe WARN
+         lines(2).message mustBe SCHEMA_FAILED.asMessage("exampleSchema", s"${serverDir}/schemata/example.schema")
+         lines(3).level mustBe INFO
+         lines(3).message matches ".*\\[432\\].*bootstrapped.*"
 
          val resp = HttpOperation.get("http://localhost:5377/schema/monstrosity").exec()
          resp.responseCode mustBe BadRequest.intValue
@@ -136,9 +128,10 @@ class StandaloneServerDefaultsTest extends StandaloneServerSpec {
             Map("variant.config.file" -> "non-existent"),
             5,
             () => {
-               val errLines = server.err.toArray[String](new Array[String](10))
-               errLines(0) must include("cannot start the server")
-               errLines(1) must include(CONFIG_FILE_NOT_FOUND.asMessage("non-existent"))
+               val lines = server.err.toArray[String](new Array[String](10))
+               lines.foreach(l => println("************ " + l))
+               lines(0) must include("cannot start the server")
+               lines(1) must include(CONFIG_FILE_NOT_FOUND.asMessage("non-existent"))
             })
       }
 

@@ -16,7 +16,7 @@ import akka.http.scaladsl.settings.ServerSettings
  *
  * @since 0.7
  */
-class ServerExceptionRemote(val error: ServerError, args: String*) extends ServerException {
+case class ServerExceptionRemote(val error: ServerError, args: String*) extends ServerException {
 
    /**
     * Remote errors take severity of the underlying error.

@@ -9,7 +9,7 @@ import com.variant.core.error.ServerError
  *
  * @since 0.7
  */
-class ServerExceptionInternal(msg: String, t: Throwable) extends ServerException(msg, t) {
+case class ServerExceptionInternal(msg: String, t: Throwable) extends ServerException(msg, t) {
 
    def this(msg: String) = this(msg, null)
 
