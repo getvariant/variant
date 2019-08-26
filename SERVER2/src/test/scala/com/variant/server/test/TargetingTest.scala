@@ -159,7 +159,7 @@ class TargetingTest extends EmbeddedServerSpec with TempSchemataDir with Async {
             Files.write(Paths.get(s"${schemataDir}/${name}.json"), schema.getBytes)
          }
 
-         Thread.sleep(dirWatcherLatencyMsecs)
+         Thread.sleep(dirWatcherLatencyMillis)
          server.schemata.size mustBe 5
 
          server.bootExceptions.size mustBe 0
@@ -323,7 +323,7 @@ class TargetingTest extends EmbeddedServerSpec with TempSchemataDir with Async {
 
          Files.write(Paths.get(s"${schemataDir}/${schemaName}.json"), schemaString.getBytes)
 
-         Thread.sleep(dirWatcherLatencyMsecs)
+         Thread.sleep(dirWatcherLatencyMillis)
 
          server.schemata.size mustBe 6
          server.bootExceptions.size mustBe 0

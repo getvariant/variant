@@ -97,7 +97,7 @@ class RuntimeExceptionTest extends EmbeddedServerSpec with TempSchemataDir {
 """
 
    Files.write(Paths.get(s"${schemataDir}/${schemaName}.json"), schemaSrc.getBytes)
-   Thread.sleep(dirWatcherLatencyMsecs)
+   Thread.sleep(dirWatcherLatencyMillis)
 
    "Runtime" should {
 

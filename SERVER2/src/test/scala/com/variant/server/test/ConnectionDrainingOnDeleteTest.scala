@@ -115,7 +115,7 @@ class ConnectionDrainingOnDeleteTest extends EmbeddedServerSpec with TempSchemat
 
          s"rm -rf ${schemataDir}/monster.schema" !
 
-         Thread.sleep(dirWatcherLatencyMsecs)
+         Thread.sleep(dirWatcherLatencyMillis)
 
          oldGen.state mustBe Dead
 

@@ -15,7 +15,13 @@ import com.variant.server.boot.VariantServer
  */
 object TempSchemataDir {
 
-   private val sessionTimeoutSecs = 17 // Override test default of 1. We want sessions survive our waiting for the directory watcher.
+   // takes this long (!) for FS to notify the directory watcher service.
+   // the latency is particularly pronounced when running the entire harness with `test`
+   private val dirWatcherLatencySecs = 15
+
+   // Override test default of 1. We want sessions survive our waiting for the directory watcher.
+   private val sessionTimeoutSecs = dirWatcherLatencySecs + 2
+
    private val schemataDirDefault = "/tmp/schemata"
 }
 
@@ -23,7 +29,8 @@ trait TempSchemataDir extends BaseSpec with BeforeAndAfterAll { self: EmbeddedSe
 
    import TempSchemataDir._
 
-   val dirWatcherLatencyMsecs = 15000 // takes this long (!) for FS to notify the directory watcher service.
+   val dirWatcherLatencyMillis = dirWatcherLatencySecs * 1000
+
    val sessionTimeoutMillis = sessionTimeoutSecs * 1000
 
    /**

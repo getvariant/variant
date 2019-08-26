@@ -113,7 +113,7 @@ class ConnectionDrainingOnReplaceTest extends EmbeddedServerSpec with TempSchema
 
          s"cp schemata/monster.schema ${schemataDir}" !
 
-         Thread.sleep(dirWatcherLatencyMsecs)
+         Thread.sleep(dirWatcherLatencyMillis)
 
          oldGen.state mustBe Dead
 

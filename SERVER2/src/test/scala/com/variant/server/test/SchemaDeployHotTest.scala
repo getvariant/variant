@@ -47,7 +47,7 @@ class SchemaDeployHotTest extends EmbeddedServerSpec with TempSchemataDir {
          s"cp schemata/monster0.schema ${schemataDir}".!!
 
          // Sleep awhile to let WatcherService.take() have a chance to detect.
-         Thread.sleep(dirWatcherLatencyMsecs);
+         Thread.sleep(dirWatcherLatencyMillis);
 
          server.schemata.size mustBe 3
          val monstr0Gen = server.schemata.get("monstrosity0").get.liveGen.get
@@ -63,7 +63,7 @@ class SchemaDeployHotTest extends EmbeddedServerSpec with TempSchemataDir {
          val currentGen = server.schemata.get("petclinic").get.liveGen.get
 
          s"cp schemata/petclinic.schema ${schemataDir}/petclinic.schema".!!
-         Thread.sleep(dirWatcherLatencyMsecs)
+         Thread.sleep(dirWatcherLatencyMillis)
 
          val newGen = server.schemata.get("petclinic").get.liveGen.get
          newGen.id mustNot be(currentGen.id)
@@ -85,7 +85,7 @@ class SchemaDeployHotTest extends EmbeddedServerSpec with TempSchemataDir {
          val currentGen = server.schemata.get("petclinic").get.liveGen.get
 
          s"cp schemata/petclinic.schema ${schemataDir}/petclinic2.schema".!!
-         Thread.sleep(dirWatcherLatencyMsecs)
+         Thread.sleep(dirWatcherLatencyMillis)
 
          val newGen = server.schemata.get("petclinic").get.liveGen.get
          newGen.id must be(currentGen.id)
@@ -110,7 +110,7 @@ class SchemaDeployHotTest extends EmbeddedServerSpec with TempSchemataDir {
          val currentGen = server.schemata.get("monstrosity").get.liveGen.get
 
          s"cp schemata-errata/monster-warning.schema ${schemataDir}/monster.schema".!!
-         Thread.sleep(dirWatcherLatencyMsecs)
+         Thread.sleep(dirWatcherLatencyMillis)
 
          val newGen = server.schemata.get("monstrosity").get.liveGen.get
          newGen.id mustNot be(currentGen.id)
@@ -140,7 +140,7 @@ class SchemaDeployHotTest extends EmbeddedServerSpec with TempSchemataDir {
          }
 
          s"rm ${schemataDir}/monster.schema".!!
-         Thread.sleep(dirWatcherLatencyMsecs)
+         Thread.sleep(dirWatcherLatencyMillis)
 
          server.schemata.get("monstrosity").get.liveGen.isDefined mustBe false
 
@@ -154,7 +154,7 @@ class SchemaDeployHotTest extends EmbeddedServerSpec with TempSchemataDir {
       "refuse to deploy a schema with syntax errors" in {
 
          s"cp schemata-errata/monster-error.schema ${schemataDir}".!!
-         Thread.sleep(dirWatcherLatencyMsecs)
+         Thread.sleep(dirWatcherLatencyMillis)
 
          val logLines = ServerLogTailer.last(2)
          logLines(0).message must startWith(s"[${SyntaxError.JSON_SYNTAX_ERROR.getCode}]")
@@ -171,7 +171,7 @@ class SchemaDeployHotTest extends EmbeddedServerSpec with TempSchemataDir {
       "ignore deletion of an orphan file unbounded to a live schema" in {
 
          s"rm ${schemataDir}/monster-error.schema".!!
-         Thread.sleep(dirWatcherLatencyMsecs)
+         Thread.sleep(dirWatcherLatencyMillis)
 
          server.schemata.size mustBe 2
          val monster0Gen = server.schemata.get("monstrosity0").get.liveGen.get
@@ -184,7 +184,7 @@ class SchemaDeployHotTest extends EmbeddedServerSpec with TempSchemataDir {
       "refuse to re-deploy a schema with semantic errors" in {
 
          s"cp schemata-errata/petclinic.schema ${schemataDir}/petclinic2.schema".!!
-         Thread.sleep(dirWatcherLatencyMsecs)
+         Thread.sleep(dirWatcherLatencyMillis)
 
          val logLines = ServerLogTailer.last(2)
          logLines(0).message must startWith(s"[${SemanticError.CONTROL_EXPERIENCE_MISSING.getCode}]")
@@ -205,7 +205,7 @@ class SchemaDeployHotTest extends EmbeddedServerSpec with TempSchemataDir {
          s"cp schemata/monster.schema ${schemataDir}/monster2.schema".!!
 
          // Sleep awhile to let WatcherService.take() have a chance to detect.
-         Thread.sleep(dirWatcherLatencyMsecs)
+         Thread.sleep(dirWatcherLatencyMillis)
 
          server.schemata.size mustBe 3
          val monster0Gen = server.schemata.get("monstrosity0").get.liveGen.get
@@ -234,7 +234,7 @@ class SchemaDeployHotTest extends EmbeddedServerSpec with TempSchemataDir {
          val currentGen = server.schemata.get("monstrosity").get.liveGen.get
 
          s"rm ${schemataDir}/monster2.schema".!!
-         Thread.sleep(dirWatcherLatencyMsecs)
+         Thread.sleep(dirWatcherLatencyMillis)
 
          // Schema gen should be vacuumed.
          currentGen.state mustBe Dead
@@ -292,7 +292,7 @@ class SchemaDeployHotTest extends EmbeddedServerSpec with TempSchemataDir {
          s"cp schemata/monster0.schema ${schemataDir}".!!
          s"cp schemata/petclinic.schema ${schemataDir}".!!
 
-         Thread.sleep(dirWatcherLatencyMsecs)
+         Thread.sleep(dirWatcherLatencyMillis)
 
          server.schemata.size mustBe 2
          val monstr0Gen = server.schemata.get("monstrosity0").get.liveGen.get
@@ -321,7 +321,7 @@ class SchemaDeployHotTest extends EmbeddedServerSpec with TempSchemataDir {
          // New file
          s"cp schemata/monster.schema ${schemataDir}".!!
 
-         Thread.sleep(dirWatcherLatencyMsecs)
+         Thread.sleep(dirWatcherLatencyMillis)
 
          // Session should still be there
          HttpRequest(method = HttpMethods.GET, uri = s"/session/monstrosity0/${sid}") ~> router ~> check {

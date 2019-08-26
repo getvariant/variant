@@ -27,7 +27,7 @@ class SchemaDeployHotExceptionTest extends EmbeddedServerSpec with TempSchemataD
     */
    "Server" should {
 
-      "startup with no schemata due to a syntax error" in {
+      "startup with petclinic schema only" in {
 
          server.schemata.size mustBe 1
 
@@ -38,7 +38,7 @@ class SchemaDeployHotExceptionTest extends EmbeddedServerSpec with TempSchemataD
          logLines(2).message mustBe SCHEMA_FAILED.asMessage("?", "/tmp/schemata/monster-error.schema")
 
          // Let the directory watcher thread start before copying any files.
-         Thread.sleep(100)
+         Thread.sleep(dirWatcherLatencyMillis)
       }
 
       "detect the touched file and still fail due to the same error" in {
@@ -46,12 +46,12 @@ class SchemaDeployHotExceptionTest extends EmbeddedServerSpec with TempSchemataD
          s"touch ${schemataDir}/monster-error.schema".!!
 
          // Sleep awhile to let WatcherService.take() have a chance to detect.
-         Thread.sleep(dirWatcherLatencyMsecs);
+         Thread.sleep(dirWatcherLatencyMillis);
 
          server.schemata.size mustBe 1
 
          val logLines = ServerLogTailer.last(3)
-         logLines(0).message mustBe SCHEMA_DEPLOYING.asMessage("/tmp/schemata/monster-error.schema")
+         logLines(0).message mustBe SCHEMA_DEPLOYING.asMessage(s"${schemataDir}/monster-error.schema")
          logLines(1).message must startWith(s"[${SyntaxError.JSON_SYNTAX_ERROR.getCode}]")
          logLines(2).message must startWith(s"[${SCHEMA_FAILED.getCode}]")
 
@@ -64,7 +64,7 @@ class SchemaDeployHotExceptionTest extends EmbeddedServerSpec with TempSchemataD
          s"mv /tmp/monster-error.schema ${schemataDir}" !!
 
          // Sleep awhile to let WatcherService.take() have a chance to detect.
-         Thread.sleep(dirWatcherLatencyMsecs);
+         Thread.sleep(dirWatcherLatencyMillis);
 
          server.schemata.size mustBe 2
          val schId = server.schemata.getLiveGen("monstrosity").get.id
@@ -79,7 +79,7 @@ class SchemaDeployHotExceptionTest extends EmbeddedServerSpec with TempSchemataD
          (s"""grep -v 'name':'petclinic' schemata/petclinic.schema""" #> new File(s"${schemataDir}/petclinic.schema")) !!
 
          // Sleep awhile to let WatcherService.take() have a chance to detect.
-         Thread.sleep(dirWatcherLatencyMsecs);
+         Thread.sleep(dirWatcherLatencyMillis);
 
          server.schemata.size mustBe 2
          val logLines = ServerLogTailer.last(3)
@@ -94,7 +94,7 @@ class SchemaDeployHotExceptionTest extends EmbeddedServerSpec with TempSchemataD
          s"cp schemata/petclinic.schema ${schemataDir}" !!
 
          // Sleep awhile to let WatcherService.take() have a chance to detect.
-         Thread.sleep(dirWatcherLatencyMsecs);
+         Thread.sleep(dirWatcherLatencyMillis);
 
          server.schemata.size mustBe 2
          val schId = server.schemata.getLiveGen("monstrosity").get.id
@@ -110,7 +110,7 @@ class SchemaDeployHotExceptionTest extends EmbeddedServerSpec with TempSchemataD
          s"cp /tmp/petclinic.schema ${schemataDir}" !!
 
          // Sleep awhile to let WatcherService.take() have a chance to detect.
-         Thread.sleep(dirWatcherLatencyMsecs);
+         Thread.sleep(dirWatcherLatencyMillis);
 
          server.schemata.size mustBe 2
          val logLines = ServerLogTailer.last(3)
@@ -125,7 +125,7 @@ class SchemaDeployHotExceptionTest extends EmbeddedServerSpec with TempSchemataD
          s"cp schemata/petclinic.schema ${schemataDir}" !!
 
          // Sleep awhile to let WatcherService.take() have a chance to detect.
-         Thread.sleep(dirWatcherLatencyMsecs);
+         Thread.sleep(dirWatcherLatencyMillis);
 
          server.schemata.size mustBe 2
          val schId = server.schemata.getLiveGen("monstrosity").get.id
@@ -133,6 +133,5 @@ class SchemaDeployHotExceptionTest extends EmbeddedServerSpec with TempSchemataD
          //logLines.foreach {l => println(s"********* [$l]") }
          logLines(0).message mustBe SCHEMA_DEPLOYED.asMessage("petclinic", "petclinic.schema")
       }
-
    }
 }
