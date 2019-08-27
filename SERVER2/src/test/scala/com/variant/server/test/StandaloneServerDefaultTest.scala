@@ -1,7 +1,6 @@
 package com.variant.server.test
 
 import java.io.PrintWriter
-import java.util.Random
 
 import com.variant.core.util.StringUtils
 import com.variant.core.error.ServerError._
@@ -17,9 +16,7 @@ import akka.http.scaladsl.model.StatusCodes._
 /**
  * Test the server running in a separate process.
  */
-class StandaloneServerDefaultsTest extends StandaloneServerSpec {
-
-   val rand = new Random()
+class StandaloneServerDefaultTest extends StandaloneServerSpec {
 
    "Server" should {
 
@@ -49,7 +46,7 @@ class StandaloneServerDefaultsTest extends StandaloneServerSpec {
          lines(0).level mustBe Info
          lines(0).message mustBe SCHEMA_DEPLOYED.asMessage("exampleSchema", "example.schema")
          lines(1).level mustBe Info
-         lines(1).message matches ".*\\[432\\].*bootstrapped.*"
+         lines(1).message must include regex s"\\[${SERVER_BOOT_OK.getCode}\\].*started on port"
 
       }
 
@@ -73,7 +70,7 @@ class StandaloneServerDefaultsTest extends StandaloneServerSpec {
 
          server.stop()
 
-         val fileName = "/tmp/" + StringUtils.random64BitString(rand)
+         val fileName = "/tmp/" + StringUtils.random64BitString(new java.util.Random)
          new PrintWriter(fileName) {
             write("variant.session.timeout = invalid") // String instead of number
             close
@@ -102,7 +99,7 @@ class StandaloneServerDefaultsTest extends StandaloneServerSpec {
 
          server.stop()
 
-         val resourceName = StringUtils.random64BitString(rand)
+         val resourceName = StringUtils.random64BitString(new java.util.Random)
          new PrintWriter(serverDir + "/conf/" + resourceName) {
             write("variant.event.flusher.class.name = junk")
             close
@@ -119,7 +116,7 @@ class StandaloneServerDefaultsTest extends StandaloneServerSpec {
          lines(2).level mustBe Warn
          lines(2).message mustBe SCHEMA_FAILED.asMessage("exampleSchema", s"${serverDir}/schemata/example.schema")
          lines(3).level mustBe Info
-         lines(3).message matches ".*\\[432\\].*bootstrapped.*"
+         lines(3).message must include regex s"\\[${SERVER_BOOT_OK.getCode}\\].*started on port"
 
          val resp = HttpOperation.get("http://localhost:5377/schema/monstrosity").exec()
          resp.responseCode mustBe BadRequest.intValue

@@ -42,7 +42,16 @@ public interface ParserMessage {
 	 */
 	public Location getLocation();
 
-	/**
+   /**
+    * Some parse errors carry an interesting exception (e.g. failure to instantiate flusher or hook objects)
+    * which we want to stash and later print in the log.
+    * 
+    * @return An object of type {@link Location}.
+    * @since 0.8
+    */
+   public Exception getException();
+
+   /**
 	 * Location, in the schema source, where a parser message is emitted.
 	 * Caller will be able to examine the implementation for methods which
 	 * will help in identifying the exact location in the source file.

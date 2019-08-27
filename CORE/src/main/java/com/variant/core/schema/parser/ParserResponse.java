@@ -134,7 +134,17 @@ public class ParserResponse {
 		return result;
 	}
 
-	/**
+   /**
+    * Same, plus a stack trace we don't want to lose.
+    * @param error
+    */
+   public ParserMessage addMessage(UserError error, Exception e, String...args) {
+      ParserMessage result = new ParserMessageImpl(error, e, args);
+      addMessageCommon(result);
+      return result;
+   }
+
+   /**
 	 * 
 	 * @param schemaName
 	 */

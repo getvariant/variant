@@ -14,6 +14,7 @@ public class ParserMessageImpl implements ParserMessage {
 	private final Severity severity;
 	private final String message;
 	private final int code;	
+	private final Exception exception;
 	private Location location = null;
 
 	/**
@@ -23,6 +24,7 @@ public class ParserMessageImpl implements ParserMessage {
 		severity = error.getSeverity();
 		message = error.asMessage((Object[])args);
 		code = error.getCode();
+		exception = null;
 		this.location = location;
 	}
 
@@ -34,9 +36,23 @@ public class ParserMessageImpl implements ParserMessage {
 		severity = error.getSeverity();
 		message = error.asMessage((Object[])args);
 		code = error.getCode();
+		exception = null;
 	}
 
-	//---------------------------------------------------------------------------------------------//
+	/**
+	 * Same as above, but with an exception we don't want to lose.
+	 * @param error
+	 * @param exception
+	 * @param args
+	 */
+   public ParserMessageImpl(UserError error, Exception exception, String...args) {
+      severity = error.getSeverity();
+      message = error.asMessage((Object[])args);
+      code = error.getCode();
+      this.exception = exception;
+   }
+
+   //---------------------------------------------------------------------------------------------//
 	//                                          PUBLIC                                             //
 	//---------------------------------------------------------------------------------------------//
 
@@ -68,7 +84,14 @@ public class ParserMessageImpl implements ParserMessage {
 		return location;
 	}
 	
-	//---------------------------------------------------------------------------------------------//
+   /**
+    */
+   @Override
+   public Exception getException() {
+      return exception;
+   }
+
+   //---------------------------------------------------------------------------------------------//
 	//                                         PUBLIC EXT                                          //
 	//---------------------------------------------------------------------------------------------//
 	

@@ -23,7 +23,7 @@ object RootRoute extends VariantRoute {
    def root(implicit server: VariantServer) = action {
 
       val msg: StringBuilder =
-         new StringBuilder(s"${server.productVersion._1} release ${server.productVersion._2}") ++=
+         new StringBuilder(s"${VariantServer.productVersion._1} release ${VariantServer.productVersion._2}") ++=
             ".\n" ++=
             "Uptime: %s.\n".format(TimeUtils.formatDuration(server.uptime))
 

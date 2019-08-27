@@ -44,9 +44,11 @@ abstract class AbstractSchemaDeployer(implicit server: VariantServer) extends Sc
     */
    private def logParserMessage(msg: ParserMessage): Unit = {
       msg.getSeverity match {
-         case Severity.FATAL | Severity.ERROR => logger.error(msg.toString())
-         case Severity.WARN => logger.warn(msg.toString())
-         case Severity.INFO => logger.info(msg.toString())
+         case Severity.FATAL | Severity.ERROR =>
+            if (msg.getException == null) logger.error(msg.toString)
+            else logger.error(msg.toString(), msg.getException)
+         case Severity.WARN => logger.warn(msg.toString)
+         case Severity.INFO => logger.info(msg.toString)
       }
    }
 }

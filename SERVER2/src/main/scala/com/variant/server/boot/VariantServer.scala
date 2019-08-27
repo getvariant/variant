@@ -36,9 +36,6 @@ import play.api.libs.json.Json.JsValueWrapper
  */
 trait VariantServer {
 
-   // TODO Need to get this from sbt
-   val productVersion = ("Variant AIM Server", "0.10.1")
-
    val config: Configuration
 
    val schemata: Schemata
@@ -63,6 +60,9 @@ trait VariantServer {
  * Server factories
  */
 object VariantServer {
+
+   // TODO Need to get this from sbt
+   val productVersion = ("Variant AIM Server", "0.10.1")
 
    class Builder {
 
@@ -136,6 +136,8 @@ object VariantServer {
 class VariantServerImpl(builder: VariantServer.Builder)(override implicit val actorSystem: ActorSystem)
 
    extends VariantServer with LazyLogging {
+
+   import VariantServer._
 
    logger.debug("Building server from builder:\n" + builder)
 

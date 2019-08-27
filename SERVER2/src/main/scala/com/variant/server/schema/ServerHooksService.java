@@ -129,13 +129,8 @@ public class ServerHooksService extends HooksService {
 							hookDef.getClassName(), ((VariationScopedHookImpl)hookDef).location.getPath()));
 			}
 		}
-		catch (ConfigException.Parse e) {
-			LOG.error(ServerMessageLocal.OBJECT_INSTANTIATION_ERROR().asMessage(hookDef.getClassName(), e.getClass().getName()), e);
-			parserResponse.addMessage(ServerMessageLocal.OBJECT_INSTANTIATION_ERROR(), hookDef.getClassName(), e.getClass().getName());
-		}
 		catch (Exception e) {
-			LOG.error(ServerMessageLocal.OBJECT_INSTANTIATION_ERROR().asMessage(hookDef.getClassName(), e.getClass().getName()), e);
-			parserResponse.addMessage(ServerMessageLocal.OBJECT_INSTANTIATION_ERROR(), hookDef.getClassName(), e.getClass().getName());
+			parserResponse.addMessage(ServerMessageLocal.OBJECT_INSTANTIATION_ERROR(), e, hookDef.getClassName(), e.getClass().getName());
 		}
 
 	}

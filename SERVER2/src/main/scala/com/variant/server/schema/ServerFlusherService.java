@@ -93,17 +93,8 @@ public class ServerFlusherService extends FlusherService {
 					f.getClassName(), parser.responseInProgress().getSchema().getMeta().getName()));
 						
 		}
-		catch (ConfigException.Parse e) {
-         // We log here, even though the schema deployer will echo the error again, in order to log e's call stack.
-			///Actually, it's not clear what use is a stacktrace with no client code on it. Commenting out. 
-		   ///logger.error(ServerMessageLocal.OBJECT_INSTANTIATION_ERROR().asMessage(f.getClassName(), e.getClass().getName()), e);
-			response.addMessage(ServerMessageLocal.OBJECT_INSTANTIATION_ERROR(), f.getClassName(), e.getClass().getName());
-		}
 		catch (Exception e) {
-			// We log here, even though the schema deployer will echo the error again, in order to log e's call stack.
-         ///Actually, it's not clear what use is a stacktrace with no client code on it. Commenting out.
-		   ///logger.error(ServerMessageLocal.OBJECT_INSTANTIATION_ERROR().asMessage(f.getClassName(), e.getClass().getName()), e);
-			response.addMessage(ServerMessageLocal.OBJECT_INSTANTIATION_ERROR(), f.getClassName(), e.getClass().getName());
+			response.addMessage(ServerMessageLocal.OBJECT_INSTANTIATION_ERROR(), e, f.getClassName(), e.getClass().getName());
 		}
 	}
 
