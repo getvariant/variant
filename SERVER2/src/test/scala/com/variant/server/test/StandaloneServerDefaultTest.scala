@@ -27,11 +27,7 @@ class StandaloneServerDefaultTest extends StandaloneServerSpec {
          // But the full harness (with `test`) fails without the try block with weird socket
          // exceptions. Mystery.
          try {
-            HttpOperation.get("http://localhost:5377/variant").exec().responseCode mustBe NotFound.intValue
-
-            HttpOperation.get("http://localhost:5377/bad").exec().responseCode mustBe NotFound.intValue
-
-            HttpOperation.get("http://localhost:5377/variant/bad").exec().responseCode mustBe NotFound.intValue
+            HttpOperation.get("http://localhost:5377/foo").exec().responseCode mustBe NotFound.intValue
          } catch {
             case t: Throwable => println("************** " + t.getMessage)
          }

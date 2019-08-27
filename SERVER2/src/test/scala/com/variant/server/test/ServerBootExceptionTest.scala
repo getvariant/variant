@@ -18,7 +18,6 @@ import akka.http.scaladsl.model.HttpMethods.PUT
 import akka.http.scaladsl.model.HttpRequest
 import akka.http.scaladsl.model.StatusCodes.NotFound
 import akka.http.scaladsl.model.StatusCodes.ServiceUnavailable
-import com.variant.core.httpc.HttpOperation
 
 /**
  * Test various schema deployment error scenarios
@@ -35,10 +34,6 @@ class ServerBootExceptionTest extends EmbeddedServerSpec with ConfigKeys {
                   .withoutConfiguration(Seq("variant.schemata.dir")))
          }.getMessage mustBe CONFIG_PROPERTY_NOT_SET.asMessage("variant.schemata.dir")
 
-         // Misconfig causes server staartup to abort, so there's no server.
-         intercept[java.net.ConnectException] {
-            HttpOperation.get("http://localhost:5377").exec()
-         }
       }
    }
 
@@ -97,8 +92,6 @@ class ServerBootExceptionTest extends EmbeddedServerSpec with ConfigKeys {
          server.isUp mustBe false
          server.schemata.size mustBe 0
          server.bootExceptions.size mustEqual 1
-         val ex = server.bootExceptions.head
-         ex mustEqual ServerExceptionLocal(SCHEMATA_DIR_NOT_DIR, "schemata-file")
       }
    }
 

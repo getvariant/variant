@@ -19,9 +19,9 @@ import com.variant.server.boot.ServerMessageLocal
 /**
  * Test the server running in a separate process.
  */
-class StandaloneServerMysqlTest extends StandaloneServerSpec {
+class StandaloneServerPostgresTest extends StandaloneServerSpec {
 
-   override lazy val flusher = "mysql"
+   override lazy val flusher = "postgres"
 
    "Server" should {
 
@@ -47,7 +47,7 @@ class StandaloneServerMysqlTest extends StandaloneServerSpec {
       "fail to deploy without the right JDBC driver in ext/" in {
 
          server.stop()
-         s"rm ${serverDir}/ext/mysql-connector-java-8.0.11.jar".!!
+         s"rm ${serverDir}/ext/postgresql-42.2.5.jar".!!
          server.start()
 
          val resp1 = HttpOperation.get("http://localhost:5377/schema/monstrosity").exec()
@@ -56,7 +56,7 @@ class StandaloneServerMysqlTest extends StandaloneServerSpec {
 
          val lines = ServerLogTailer.last(3, serverDir + "/log/variant.log")
          lines(0).level mustBe Error
-         lines(0).message mustBe OBJECT_INSTANTIATION_ERROR.asMessage("com.variant.extapi.std.flush.jdbc.TraceEventFlusherMysql", "java.lang.reflect.InvocationTargetException")
+         lines(0).message mustBe OBJECT_INSTANTIATION_ERROR.asMessage("com.variant.extapi.std.flush.jdbc.TraceEventFlusherPostgres", "java.lang.reflect.InvocationTargetException")
          lines(1).level mustBe Warn
          lines(1).message mustBe SCHEMA_FAILED.asMessage("exampleSchema", s"${serverDir}/schemata/example.schema")
          lines(2).level mustBe Info
@@ -70,7 +70,7 @@ class StandaloneServerMysqlTest extends StandaloneServerSpec {
          server.stop()
 
          // Our current directory at test runtime is /test-base
-         s"cp ../standalone-server/ext/mysql-connector-java-8.0.11.jar ${serverDir}/ext/" !!;
+         s"cp ../standalone-server/ext/postgresql-42.2.5.jar ${serverDir}/ext/" !!;
 
          server.start()
 

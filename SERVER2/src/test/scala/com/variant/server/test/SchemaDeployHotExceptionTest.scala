@@ -114,8 +114,8 @@ class SchemaDeployHotExceptionTest extends EmbeddedServerSpec with TempSchemataD
 
          server.schemata.size mustBe 2
          val logLines = ServerLogTailer.last(3)
-         //logLines.foreach {l => println(s"********* [$l]") }
-         logLines(0).message mustBe OBJECT_INSTANTIATION_ERROR.asMessage("com.variant.extapi.std.demo.BadClassName", "java.lang.ClassNotFoundException")
+         //logLines.foreach { l => println(s"********* [$l]") }
+         logLines(0).message mustBe SCHEMA_DEPLOYING.asMessage(s"${schemataDir}/petclinic.schema")
          logLines(1).message mustBe OBJECT_INSTANTIATION_ERROR.asMessage("com.variant.extapi.std.demo.BadClassName", "java.lang.ClassNotFoundException")
          logLines(2).message mustBe SCHEMA_FAILED.asMessage("petclinic", s"${schemataDir}/petclinic.schema")
       }
