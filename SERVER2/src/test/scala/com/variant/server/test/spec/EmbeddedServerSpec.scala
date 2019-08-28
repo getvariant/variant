@@ -39,6 +39,7 @@ trait EmbeddedServerSpec extends BaseSpec with ScalatestRouteTest {
     * Ensure that it's headless.
     */
    def reboot(builder: VariantServer.Builder) {
+      _server = null
       _server = builder.headless.build()
    }
 
@@ -47,7 +48,9 @@ trait EmbeddedServerSpec extends BaseSpec with ScalatestRouteTest {
     * Ensure that it's headless.
     */
    def reboot() {
-      _server = VariantServer.builder.headless.build()
+      _server = null
+      _server = serverBuilder().build()
+      //_server = VariantServer.builder.headless.build()
    }
    // Seal the router in order not to have rejections.
    def router = Route.seal(Router(_server).routes)

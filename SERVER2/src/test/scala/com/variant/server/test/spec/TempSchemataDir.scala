@@ -50,7 +50,7 @@ trait TempSchemataDir extends BaseSpec with BeforeAndAfterAll { self: EmbeddedSe
     */
    override lazy val serverBuilder: Unit => VariantServer.Builder = { _ =>
 
-      // create the temp schema directory so that the server comes up without errors.
+      // Recreate the temp schema directory so that the server comes up without errors.
       s"rm -rf ${schemataDir}" !;
       s"mkdir ${schemataDir}" !
 
