@@ -16,6 +16,9 @@ import com.variant.server.test.hooks.Hook2Constructors
  */
 class HookInstantiationTest extends EmbeddedServerSpec with TempSchemataDir {
 
+   // No schemata to start with
+   override lazy val schemata = Set.empty
+
    /*
    *
    */

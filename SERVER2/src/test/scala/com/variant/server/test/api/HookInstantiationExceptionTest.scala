@@ -25,10 +25,11 @@ class HookInstantiationExceptionTest extends EmbeddedServerSpec with TempSchemat
 
       "emit HOOK_CLASS_NO_INTERFACE if class doesn't implement Userook" in {
 
-         val schemaSrc = """
+         val schemaName = "HookNoInterface"
+         val schemaSrc = s"""
 {                                                                              
    'meta':{                                                             		    	    
-      'name':'HookNoInterface',
+      'name':'${schemaName}',
       'hooks':[                                                         
          {                         
    			'class':'com.variant.server.test.hooks.HookNoInterface'     
@@ -61,18 +62,20 @@ class HookInstantiationExceptionTest extends EmbeddedServerSpec with TempSchemat
 }"""
 
          // Write this string
-         new PrintWriter(s"${schemataDir}/HookNoInterface.schema") {
+         new PrintWriter(s"${schemataDir}/${schemaName}.schema") {
             write(schemaSrc)
             close
          }
 
          Thread.sleep(dirWatcherLatencyMillis)
 
+         server.schemata.get(schemaName).isDefined mustBe false
+
          val lines = ServerLogTailer.last(2)
          lines(0).level mustBe Error
          lines(0).message mustBe HOOK_CLASS_NO_INTERFACE.asMessage("com.variant.server.test.hooks.HookNoInterface", "com.variant.server.api.lifecycle.LifecycleHook")
          lines(1).level mustBe Warn
-         lines(1).message mustBe SCHEMA_FAILED.asMessage("HookNoInterface", s"${schemataDir}/HookNoInterface.schema")
+         lines(1).message mustBe SCHEMA_FAILED.asMessage(schemaName, s"${schemataDir}/${schemaName}.schema")
       }
    }
 
@@ -84,10 +87,11 @@ class HookInstantiationExceptionTest extends EmbeddedServerSpec with TempSchemat
       ////////////////////
       "emit OBJECT_INSTANTIATION_ERROR for a non-existent hook class" in {
 
-         val schemaSrc = """
+         val schemaName = "BadHookClass"
+         val schemaSrc = s"""
 {
    'meta':{
-      'name':'BadHookClass',
+      'name':'${schemaName}',
       'hooks':[
          {
    			'class':'bad.class.name'
@@ -120,27 +124,30 @@ class HookInstantiationExceptionTest extends EmbeddedServerSpec with TempSchemat
 }"""
 
          // Write this string
-         new PrintWriter(s"${schemataDir}/BadHookClass.schema") {
+         new PrintWriter(s"${schemataDir}/${schemaName}.schema") {
             write(schemaSrc)
             close
          }
 
          Thread.sleep(dirWatcherLatencyMillis)
 
+         server.schemata.get(schemaName).isDefined mustBe false
+
          val lines = ServerLogTailer.last(2)
          lines(0).level mustBe Error
          lines(0).message mustBe OBJECT_INSTANTIATION_ERROR.asMessage("bad.class.name", "java.lang.ClassNotFoundException")
          lines(1).level mustBe Warn
-         lines(1).message mustBe SCHEMA_FAILED.asMessage("BadHookClass", s"${schemataDir}/BadHookClass.schema")
+         lines(1).message mustBe SCHEMA_FAILED.asMessage(schemaName, s"${schemataDir}/${schemaName}.schema")
       }
 
       ////////////////////
       "emit OBJECT_CONSTRUCTOR_ERROR for an existing hook class with non-public constructor" in {
 
-         val schemaSrc = """
+         val schemaName = "HookPrivateConstructor"
+         val schemaSrc = s"""
 {
    'meta':{
-      'name':'HookPrivateConstructor',
+      'name':'${schemaName}',
       'hooks':[
          {
    			'class':'com.variant.server.test.hooks.HookPrivateConstructor'
@@ -173,27 +180,30 @@ class HookInstantiationExceptionTest extends EmbeddedServerSpec with TempSchemat
 }"""
 
          // Write this string
-         new PrintWriter(s"${schemataDir}/HookPrivateConstructor.schema") {
+         new PrintWriter(s"${schemataDir}/${schemaName}.schema") {
             write(schemaSrc)
             close
          }
 
          Thread.sleep(dirWatcherLatencyMillis)
 
+         server.schemata.get(schemaName).isDefined mustBe false
+
          val lines = ServerLogTailer.last(2)
          lines(0).level mustBe Error
          lines(0).message mustBe OBJECT_CONSTRUCTOR_ERROR.asMessage("com.variant.server.test.hooks.HookPrivateConstructor", "java.lang.IllegalAccessException")
          lines(1).level mustBe Warn
-         lines(1).message mustBe SCHEMA_FAILED.asMessage("HookPrivateConstructor", s"${schemataDir}/HookPrivateConstructor.schema")
+         lines(1).message mustBe SCHEMA_FAILED.asMessage(schemaName, s"${schemataDir}/${schemaName}.schema")
       }
 
       ////////////////////
       "emit OBJECT_CONSTRUCTION_ERROR for an existing hook class with wrong signature constructor" in {
 
-         val schemaSrc = """
+         val schemaName = "HookWrongSignatureConstructor"
+         val schemaSrc = s"""
 {
    'meta':{
-      'name':'HookWrongSignatureConstructor',
+      'name':'${schemaName}',
       'hooks':[
          {
    			'class':'com.variant.server.test.hooks.HookWrongSignatureConstructor'
@@ -226,27 +236,30 @@ class HookInstantiationExceptionTest extends EmbeddedServerSpec with TempSchemat
 }"""
 
          // Write this string
-         new PrintWriter(s"${schemataDir}/HookWrongSignatureConstructor.schema") {
+         new PrintWriter(s"${schemataDir}/${schemaName}.schema") {
             write(schemaSrc)
             close
          }
 
          Thread.sleep(dirWatcherLatencyMillis)
 
+         server.schemata.get(schemaName).isDefined mustBe false
+
          val lines = ServerLogTailer.last(2)
          lines(0).level mustBe Error
          lines(0).message mustBe OBJECT_CONSTRUCTOR_ERROR.asMessage("com.variant.server.test.hooks.HookWrongSignatureConstructor")
          lines(1).level mustBe Warn
-         lines(1).message mustBe SCHEMA_FAILED.asMessage("HookWrongSignatureConstructor", s"${schemataDir}/HookWrongSignatureConstructor.schema")
+         lines(1).message mustBe SCHEMA_FAILED.asMessage(schemaName, s"${schemataDir}/${schemaName}.schema")
       }
 
       ////////////////////
       "emit HOOK_STATE_SCOPE_VIOLATION when qualification hoook is defined at state level" in {
 
-         val schemaSrc = """
+         val schemaName = "TestQualificationHookSimple"
+         val schemaSrc = s"""
 {
    'meta':{
-      'name':'TestQualificationHookSimple'
+      'name':'${schemaName}'
    },
 	'states':[
 		{
@@ -284,26 +297,29 @@ class HookInstantiationExceptionTest extends EmbeddedServerSpec with TempSchemat
 }"""
 
          // Write this string
-         new PrintWriter(s"${schemataDir}/TestQualificationHookSimple.schema") {
+         new PrintWriter(s"${schemataDir}/${schemaName}.schema") {
             write(schemaSrc)
             close
          }
 
          Thread.sleep(dirWatcherLatencyMillis)
 
+         server.schemata.get(schemaName).isDefined mustBe false
+
          val lines = ServerLogTailer.last(2)
          lines(0).level mustBe Error
          lines(0).message mustBe HOOK_STATE_SCOPE_VIOLATION.asMessage("/states[0]/hooks[0]/", "com.variant.server.api.lifecycle.VariationQualificationLifecycleEvent")
          lines(1).level mustBe Warn
-         lines(1).message mustBe SCHEMA_FAILED.asMessage("TestQualificationHookSimple", s"${schemataDir}/TestQualificationHookSimple.schema")
+         lines(1).message mustBe SCHEMA_FAILED.asMessage(schemaName, s"${schemataDir}/${schemaName}.schema")
       }
 
       "fail if empty init object and only nullary construcor" in {
 
-         val schemaSrc = """
+         val schemaName = "HookNullaryConstructor1"
+         val schemaSrc = s"""
 {
    'meta':{
-      'name':'HookNullaryConstructor1',
+      'name':'${schemaName}',
       'hooks':[
          {
    			'class':'com.variant.server.test.hooks.HookNullaryConstructor',
@@ -340,27 +356,30 @@ class HookInstantiationExceptionTest extends EmbeddedServerSpec with TempSchemat
    ]
 }"""
          // Write this string
-         new PrintWriter(s"${schemataDir}/HookNullaryConstructor1.schema") {
+         new PrintWriter(s"${schemataDir}/${schemaName}.schema") {
             write(schemaSrc)
             close
          }
 
          Thread.sleep(dirWatcherLatencyMillis)
 
+         server.schemata.get(schemaName).isDefined mustBe false
+
          val lines = ServerLogTailer.last(2)
          lines(0).level mustBe Error
          lines(0).message mustBe OBJECT_CONSTRUCTOR_ERROR.asMessage("com.variant.server.test.hooks.HookNullaryConstructor")
          lines(1).level mustBe Warn
-         lines(1).message mustBe SCHEMA_FAILED.asMessage("HookNullaryConstructor1", s"${schemataDir}/HookNullaryConstructor1.schema")
+         lines(1).message mustBe SCHEMA_FAILED.asMessage(schemaName, s"${schemataDir}/${schemaName}.schema")
       }
 
       ////////////////
       "fail if no one-arg constructor" in {
 
-         val schemaSrc = """
+         val schemaName = "HookNullaryConstructor2"
+         val schemaSrc = s"""
 {
    'meta':{
-      'name':'HookNullaryConstructor2',
+      'name':'${schemaName}',
       'hooks':[
          {
    			'class':'com.variant.server.test.hooks.HookNullaryConstructor',
@@ -398,18 +417,20 @@ class HookInstantiationExceptionTest extends EmbeddedServerSpec with TempSchemat
 }"""
 
          // Write this string
-         new PrintWriter(s"${schemataDir}/HookNullaryConstructor2.schema") {
+         new PrintWriter(s"${schemataDir}/${schemaName}.schema") {
             write(schemaSrc)
             close
          }
 
          Thread.sleep(dirWatcherLatencyMillis)
 
+         server.schemata.get(schemaName).isDefined mustBe false
+
          val lines = ServerLogTailer.last(2)
          lines(0).level mustBe Error
          lines(0).message mustBe OBJECT_CONSTRUCTOR_ERROR.asMessage("com.variant.server.test.hooks.HookNullaryConstructor")
          lines(1).level mustBe Warn
-         lines(1).message mustBe SCHEMA_FAILED.asMessage("HookNullaryConstructor2", s"${schemataDir}/HookNullaryConstructor2.schema")
+         lines(1).message mustBe SCHEMA_FAILED.asMessage(schemaName, s"${schemataDir}/${schemaName}.schema")
 
       }
    }
