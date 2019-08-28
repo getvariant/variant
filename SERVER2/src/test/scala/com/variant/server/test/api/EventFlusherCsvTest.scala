@@ -203,7 +203,6 @@ class EventFlusherCsvTest extends EmbeddedServerSpec with TempSchemataDir {
 }"""
       val outFileName = "/tmp/EventFlusherCsvTest.csv";
 
-      //-\\
       "override defaults" in {
 
          // Write this string
