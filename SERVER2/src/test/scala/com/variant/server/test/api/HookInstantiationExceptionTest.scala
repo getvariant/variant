@@ -297,6 +297,120 @@ class HookInstantiationExceptionTest extends EmbeddedServerSpec with TempSchemat
          lines(1).level mustBe Warn
          lines(1).message mustBe SCHEMA_FAILED.asMessage("TestQualificationHookSimple", s"${schemataDir}/TestQualificationHookSimple.schema")
       }
-   }
 
+      "fail if empty init object and only nullary construcor" in {
+
+         val schemaSrc = """
+{
+   'meta':{
+      'name':'HookNullaryConstructor1',
+      'hooks':[
+         {
+   			'class':'com.variant.server.test.hooks.HookNullaryConstructor',
+            'init':{}
+   	   }
+      ]
+   },
+	'states':[
+	   {'name':'state1'}
+   ],
+	'variations':[
+	   {
+		   'name':'test1',
+	      'experiences':[
+            {
+				   'name':'A',
+				   'weight':10,
+				   'isControl':true
+	         },
+		      {
+		         'name':'B',
+				   'weight':20
+				}
+	      ],
+			'onStates':[
+			   {
+				   'stateRef':'state1',
+				   'variants':[
+				      {'experienceRef':'B'}
+			      ]
+	         }
+	      ]
+	   }
+   ]
+}"""
+         // Write this string
+         new PrintWriter(s"${schemataDir}/HookNullaryConstructor1.schema") {
+            write(schemaSrc)
+            close
+         }
+
+         Thread.sleep(dirWatcherLatencyMillis)
+
+         val lines = ServerLogTailer.last(2)
+         lines(0).level mustBe Error
+         lines(0).message mustBe OBJECT_CONSTRUCTOR_ERROR.asMessage("com.variant.server.test.hooks.HookNullaryConstructor")
+         lines(1).level mustBe Warn
+         lines(1).message mustBe SCHEMA_FAILED.asMessage("HookNullaryConstructor1", s"${schemataDir}/HookNullaryConstructor1.schema")
+      }
+
+      ////////////////
+      "fail if no one-arg constructor" in {
+
+         val schemaSrc = """
+{
+   'meta':{
+      'name':'HookNullaryConstructor2',
+      'hooks':[
+         {
+   			'class':'com.variant.server.test.hooks.HookNullaryConstructor',
+            'init':{'foo':'bar'}
+   	   }
+      ]
+   },
+	'states':[
+	   {'name':'state1'}
+   ],
+	'variations':[
+	   {
+		   'name':'test1',
+	      'experiences':[
+            {
+				   'name':'A',
+				   'weight':10,
+				   'isControl':true
+	         },
+		      {
+		         'name':'B',
+				   'weight':20
+				}
+	      ],
+			'onStates':[
+			   {
+				   'stateRef':'state1',
+				   'variants':[
+				      {'experienceRef':'B'}
+			      ]
+	         }
+	      ]
+	   }
+   ]
+}"""
+
+         // Write this string
+         new PrintWriter(s"${schemataDir}/HookNullaryConstructor2.schema") {
+            write(schemaSrc)
+            close
+         }
+
+         Thread.sleep(dirWatcherLatencyMillis)
+
+         val lines = ServerLogTailer.last(2)
+         lines(0).level mustBe Error
+         lines(0).message mustBe OBJECT_CONSTRUCTOR_ERROR.asMessage("com.variant.server.test.hooks.HookNullaryConstructor")
+         lines(1).level mustBe Warn
+         lines(1).message mustBe SCHEMA_FAILED.asMessage("HookNullaryConstructor2", s"${schemataDir}/HookNullaryConstructor2.schema")
+
+      }
+   }
 }
