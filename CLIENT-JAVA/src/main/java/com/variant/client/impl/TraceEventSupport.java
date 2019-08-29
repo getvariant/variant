@@ -76,7 +76,7 @@ abstract public class TraceEventSupport implements TraceEvent {
 	 * Serialize to JSON string.
 	 * @return
 	 * @throws JsonProcessingException 
-	 */
+	 *
 	public static String toJson(TraceEvent event) {
 		try {
 			StringWriter result = new StringWriter(1024);
@@ -103,9 +103,10 @@ abstract public class TraceEventSupport implements TraceEvent {
 	
 	/**
 	 * 
-	 */
+	 *
 	@Override
 	public String toString() {
 		return toJson(this);
 	}
+	**/
 }

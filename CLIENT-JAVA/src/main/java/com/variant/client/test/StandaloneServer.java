@@ -37,7 +37,7 @@ public class StandaloneServer {
 				
 		// The script
 		String sysVar = System.getProperty("variant.server.project.dir");
-		script = (sysVar == null ? defaultPathToServerProject : sysVar) + "/mbin/standaloneServer.sh";
+		script = (sysVar == null ? defaultPathToServerProject : sysVar) + "/standalone-server/build.sh";
 		
 		// Run the command
 		String command = script + " build " + serverDir;
@@ -68,7 +68,7 @@ public class StandaloneServer {
 	public void start(Map<String,String> config) throws Exception {
 		
 		// Build the command
-		String command = serverDir + "/bin/variant.sh start";
+		String command = serverDir + "/bin/variant start";
 		for (Map.Entry<String,String> entry: config.entrySet()) {
 			command += " -D" + entry.getKey() + "=" + entry.getValue();
 		}
@@ -82,7 +82,7 @@ public class StandaloneServer {
 				command,
 				line -> {
 					System.out.println("<OUT> " + line);
-					if (line.matches(".*Variant AIM Server .* bootstrapped .*")) instantiated.set(true);
+					if (line.matches(".*Variant AIM Server .* started on .*")) instantiated.set(true);
 				}, 
 				line -> {
 					System.out.println("<ERR> " + line); 					
@@ -116,7 +116,7 @@ public class StandaloneServer {
 	 * Stop the server.
 	 */
 	public void stop() throws Exception {
-		String command = serverDir + "/bin/variant.sh stop";
+		String command = serverDir + "/bin/variant stop";
 		LOG.info("Stopping standalone server [" + command + "]");
 		if (NativeProcess.exec(command) != 0) 
 			throw new RuntimeException("Unable to stop server");

@@ -111,7 +111,7 @@ public class Server {
 	}
 	
 	//---------------------------------------------------------------------------------------------//
-	//                                        /CONNECTION                                          //
+	//                                          /SCHEMA                                            //
 	//---------------------------------------------------------------------------------------------//
 
 	/**
@@ -126,7 +126,7 @@ public class Server {
 		String schema = variantUri.getPath().substring(1); // remove the leading /
 		
 		try {
-			HttpResponse resp = adapter.get(serverUrl + "connection/" + schema);
+			HttpResponse resp = adapter.get(serverUrl + "schema/" + schema);
 			return Payload.Connection.parse(resp);
 		}
 		catch (VariantException ce) {
@@ -227,7 +227,7 @@ public class Server {
 	}
 
 	//---------------------------------------------------------------------------------------------//
-	//                                       /SESSION/ATTR                                         //
+	//                                       /SESSION-ATTR                                         //
 	//---------------------------------------------------------------------------------------------//
 
 	/**
@@ -243,8 +243,7 @@ public class Server {
 		try {
 			JsonGenerator jsonGen = new JsonFactory().createGenerator(body);
 			jsonGen.writeStartObject();
-			jsonGen.writeStringField("sid", ssn.getId());
-			jsonGen.writeObjectFieldStart("map");
+			jsonGen.writeObjectFieldStart("attrs");
 			for (Map.Entry<String, String> e: ssn.getCoreSession().getAttributes().entrySet()) {
 				jsonGen.writeStringField(e.getKey(), e.getValue());
 			}
@@ -258,7 +257,8 @@ public class Server {
 
 		Payload.Session response = new CommonExceptionHandler<Payload.Session>() {
 			@Override Payload.Session block() throws Exception {
-				HttpResponse resp = adapter.put(serverUrl + "session/attr", body.toString());
+            String uri = serverUrl + "session-attr/" + ssn.getConnection().getSchemaName() + "/" + ssn.getId();
+				HttpResponse resp = adapter.put(uri, body.toString());
 				return Payload.Session.parse(ssn.getConnection(), resp);
 			}
 		}.run(ssn);
@@ -279,7 +279,6 @@ public class Server {
 		try {
 			JsonGenerator jsonGen = new JsonFactory().createGenerator(body);
 			jsonGen.writeStartObject();
-			jsonGen.writeStringField("sid", ssn.getId());
 			jsonGen.writeArrayFieldStart("attrs");
 			for (String name: names) {
 				jsonGen.writeString(name);
@@ -293,7 +292,8 @@ public class Server {
 		}
 		Payload.Session response = new CommonExceptionHandler<Payload.Session>() {
 			@Override Payload.Session block() throws Exception {
-				HttpResponse resp = adapter.delete(serverUrl + "session/attr", body.toString());
+            String uri = serverUrl + "session-attr/" + ssn.getConnection().getSchemaName() + "/" + ssn.getId();
+				HttpResponse resp = adapter.delete(uri, body.toString());
 				return Payload.Session.parse(ssn.getConnection(), resp);
 			}
 		}.run(ssn);
@@ -317,7 +317,6 @@ public class Server {
 		try {
 			JsonGenerator jsonGen = new JsonFactory().createGenerator(body);
 			jsonGen.writeStartObject();
-			jsonGen.writeStringField("sid", ssn.getId());
 			jsonGen.writeStringField("state", state);
 			// If this is the first target request, we need to send the content
 			// of the targeting tracker, because it's not yet reflected in the
@@ -343,7 +342,8 @@ public class Server {
 		Payload.Session response = new CommonExceptionHandler<Payload.Session>() {
 			
 			@Override Payload.Session block() throws Exception {
-				HttpResponse resp = adapter.post(serverUrl + "request", body.toString()); 
+			   String uri = serverUrl + "request/" + ssn.getConnection().getSchemaName() + "/" + ssn.getId();
+				HttpResponse resp = adapter.post(uri, body.toString()); 
 				return Payload.Session.parse(ssn.getConnection(), resp);
 			}
 		}.run(ssn);
@@ -374,7 +374,6 @@ public class Server {
 		try {
 			JsonGenerator jsonGen = new JsonFactory().createGenerator(body);
 			jsonGen.writeStartObject();
-			jsonGen.writeStringField("sid", ssn.getId());
 			jsonGen.writeNumberField("status", status.ordinal());
 			if (sve != null && sve.getAttributes().size() > 0) {
 				jsonGen.writeObjectFieldStart("attrs");
@@ -394,7 +393,8 @@ public class Server {
 		Payload.Session response =  new CommonExceptionHandler<Payload.Session>() {
 			
 			@Override Payload.Session block() throws Exception {
-				HttpResponse resp = adapter.put(serverUrl + "request", body.toString());
+			   String uri = serverUrl + "request/" + ssn.getConnection().getSchemaName() + "/" + ssn.getId();
+				HttpResponse resp = adapter.delete(uri, body.toString());
 				return Payload.Session.parse(ssn.getConnection(), resp);
 			}
 		}.run(ssn);
@@ -419,8 +419,14 @@ public class Server {
 			JsonGenerator jsonGen = new JsonFactory().createGenerator(body);
 			jsonGen.writeStartObject();
 			jsonGen.writeStringField("sid", ssn.getId());
-			jsonGen.writeFieldName("event");
-			jsonGen.writeRawValue(TraceEventSupport.toJson(event));
+         jsonGen.writeStringField("name", event.getName());
+         if (!event.getAttributes().isEmpty()) {
+            jsonGen.writeObjectFieldStart("attrs");
+            for (Map.Entry<String,String> e: event.getAttributes().entrySet()) {
+               jsonGen.writeStringField(e.getKey(), e.getValue());
+            }
+            jsonGen.writeEndObject();
+         }
 			jsonGen.writeEndObject();
 			jsonGen.flush();
 		}
@@ -430,7 +436,8 @@ public class Server {
 
 		new CommonExceptionHandlerVoid() {
 			@Override void voidBlock() throws Exception {
-				adapter.post(serverUrl + "event", body.toString());
+            String uri = serverUrl + "event/" + ssn.getConnection().getSchemaName() + "/" + ssn.getId();
+				adapter.post(uri, body.toString());
 			}
 		}.run(ssn);
 	}

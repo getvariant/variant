@@ -5,6 +5,7 @@ import static org.junit.Assert.*;
 import com.variant.client.Connection;
 import com.variant.client.Session;
 import com.variant.client.StateRequest;
+import com.variant.client.UnknownSchemaException;
 import com.variant.client.VariantClient;
 import com.variant.client.VariantException;
 import com.variant.client.impl.ConnectionImpl;
@@ -128,7 +129,7 @@ public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 		Thread.sleep(dirWatcherLatencyMillis);
 
 		// Short session timeout => all sessions should be gone
-		// and throw SessionExpired exception on any mutating op which goes over the network.
+		// and throw UnknownSchemaException exception on any mutating op which goes over the network.
 		
 		for (int i = 0; i < SESSIONS; i++) {
 			final int _i = i;
@@ -142,13 +143,12 @@ public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 				assertNotNull(ssn.getTimestamp());
 				assertEquals(conn1, ssn.getConnection());
 				assertEquals(1000, ssn.getTimeoutMillis());
-				assertFalse(conn1.getSessionById(sessions1[_i].getId()).isPresent());
 								
 				// All else should throw session expired exception.
 				new ClientExceptionInterceptor() {
 					
 					@Override public void toRun() {
-						switch (_i % 9) {
+						switch (_i % 10) {
 						case 0: ssn.getTraversedStates(); break;
 						case 1: ssn.getTraversedVariations(); break;
 						case 2: ssn.getDisqualifiedVariations(); break;
@@ -158,14 +158,15 @@ public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 						case 6: ssn.getAttributes().remove("foo"); break;
 						case 7: ssn.targetForState(ssn.getSchema().getState("state" + ((_i % 5) + 1)).get()); break;
 						case 8: req.commit(); break;
+						case 9: conn1.getSessionById(sessions1[_i].getId());
 						}
 					}
 					
 					@Override public void onThrown(VariantException e) {
-						assertEquals(ServerError.SESSION_EXPIRED, e.getError());
+						assertEquals(ServerError.UNKNOWN_SCHEMA, e.getError());
 					}
 					
-				}.assertThrown();
+				}.assertThrown(UnknownSchemaException.class);
 		
 			});
 		}

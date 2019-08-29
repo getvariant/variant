@@ -14,6 +14,7 @@ import org.apache.http.util.EntityUtils;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.variant.client.SessionExpiredException;
 import com.variant.client.VariantException;
 import com.variant.client.impl.ClientInternalError;
 import com.variant.core.error.ServerError;
@@ -58,15 +59,14 @@ public class HttpResponse {
 			// Reconstitute the server error.
 			map = jacksonDataMapper.readValue(body, Map.class);
 			Integer code = (Integer) map.get("code");
-			boolean isInternal = (Boolean) map.get("isInternal");
 			List<String> args = (List<String>) map.get("args");
 			ServerError error = ServerError.byCode(code);
 			
-			if (isInternal) {
+			if (error.isInternal()) {
 				return new com.variant.core.error.VariantException.Internal(ClientInternalError.INTERNAL_SERVER_ERROR, error.asMessage(args.toArray()));
 			}
-			else {
-				return new VariantException(error, args.toArray());
+			else {	   
+			  return new VariantException(error, args.toArray());
 			}
 		}
 		catch(IOException parseException) {
