@@ -1,0 +1,35 @@
+/*
+ * Minimal variation schema example.
+ *
+ * Copyright © 2019 Variant, Inc. All Rights Reserved.
+ */
+
+{
+   'meta':{
+      'name':'exampleSchema'
+   },
+   'states':[
+   	{
+   	  'name':'state1'
+      }
+   ],
+   'variations': [
+      {
+         'name':'var1',
+         'experiences':[                              
+            {                                                
+               'name':'control',
+               'isControl':true                              
+            },                                               
+            {                                                
+               'name':'treatment'
+            }                                              
+         ],                                                  
+         'onStates':[
+            {
+               'stateRef':'state1'
+            }
+         ]
+      }
+   ]
+}

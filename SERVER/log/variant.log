@@ -1,0 +1,12 @@
+2019-07-18 16:20:21 DEBUG - c.v.s.boot.ConfigLoader - Found default config resource [/prod/variant-default.conf] as [/Users/Igor/src/variant/SERVER2/bin/prod/variant-default.conf]
+2019-07-18 16:20:21 INFO - c.v.s.boot.ConfigLoader - Found  config resource [/variant.conf] as [/Users/Igor/src/variant/SERVER2/src/universal/conf/variant.conf]
+2019-07-18 16:20:22 DEBUG - c.v.s.boot.VariantServerImpl - event.writer.buffer.size -> 20000
+2019-07-18 16:20:22 DEBUG - c.v.s.boot.VariantServerImpl - http.port -> 5377
+2019-07-18 16:20:22 DEBUG - c.v.s.boot.VariantServerImpl - session.timeout -> 900
+2019-07-18 16:20:22 DEBUG - c.v.s.boot.VariantServerImpl - event.flusher.class.name -> com.variant.extapi.std.flush.TraceEventFlusherServerLog
+2019-07-18 16:20:22 DEBUG - c.v.s.boot.VariantServerImpl - event.writer.max.delay -> 30
+2019-07-18 16:20:22 DEBUG - c.v.s.boot.VariantServerImpl - schemata.dir -> schemata
+2019-07-18 16:20:22 DEBUG - c.v.s.boot.VariantServerImpl - session.vacuum.interval -> 10
+2019-07-18 16:20:22 DEBUG - c.v.s.boot.VariantServerImpl - event.flusher.class.init -> Optional.empty
+2019-07-18 16:20:22 ERROR - c.v.s.boot.VariantServerImpl - [401] Schemata deploy directory [schemata] does not exist
+2019-07-18 16:20:22 ERROR - c.v.s.boot.VariantServerImpl - [434] Variant AIM Server release 0.10.1 failed to bootstrap due to previous errors

@@ -1,90 +1,84 @@
-//
-// Variant Server build config
-//
+/*
+ * Server SBT build.
+ */
+ 
+ // Used by the Scalariform formatter
+import scalariform.formatter.preferences._
 
-scalaVersion := "2.12.8"
+import NativePackagerHelper._
 
-val coreVersion = "0.10.0"
-name := "Variant"
-version := coreVersion
+maintainer := "igor@getvariant.com"
+organization    := "com.variant"
+scalaVersion    := "2.12.7"
+name            := "Variant-Server"
+version         := "0.10.1"
 
-lazy val root = (project in file(".")).enablePlugins(PlayScala)
+val akkaHttpVersion = "10.1.8"
+val akkaVersion     = "2.6.0-M4"
+val coreVersion     = "0.10.1"
 
-// Add local Maven repo for com.variant artifacts built with Maven.
+// Add local Maven repo for com.variant.core artifacts built with Maven.
 resolvers += Resolver.mavenLocal
 
+enablePlugins(JavaServerAppPackaging)
+
 libraryDependencies ++= Seq(
+  "com.typesafe.akka" %% "akka-http"            % akkaHttpVersion,
+  "com.typesafe.akka" %% "akka-http-spray-json" % akkaHttpVersion,
+  "com.typesafe.akka" %% "akka-http-xml"        % akkaHttpVersion,
+  "com.typesafe.akka" %% "akka-stream"          % akkaVersion,
+  "com.typesafe.play" %% "play-json"            % "2.7.0",
+
+  "com.typesafe.akka" %% "akka-http-testkit"    % akkaHttpVersion % Test,
+  "com.typesafe.akka" %% "akka-testkit"         % akkaVersion     % Test,
+  "com.typesafe.akka" %% "akka-stream-testkit"  % akkaVersion     % Test,
+  "org.scalatest"     %% "scalatest"            % "3.0.5"         % Test,
   
-  // Required by Play!
-  jdbc,
-  //cache,
-  ws,
-  guice,  // Separate dependency as of Play 2.6
-  openId,  // Separate dependency as of Play 2.6
-  openId,  // Separate dependency as of Play 2.6
-  
-  "com.typesafe.play"      %% "play-json"          % "2.6.0",
-  "com.typesafe.play"      %% "play-iteratees"     % "2.6.1",
-  
-  "org.scalatestplus.play" %% "scalatestplus-play" % "3.0.0" % Test,
+  "ch.qos.logback"             % "logback-classic"  % "1.2.3",
+  "com.typesafe.scala-logging" %% "scala-logging"    % "3.9.2",
+ 
+   // H2 In mem DB in test 
+  "com.h2database"     % "h2"                   % "1.4.191"       % Test,
   
   // Variant Core
-  "com.variant"            % "variant-core"        % coreVersion,  
+  "com.variant"            % "variant-core"        % coreVersion
   
-  // We should not need this any more because there's no JDBC dependencies in app
-  // and those in test are resolved at run time via the unmanaged /ext path.
-  // Postgres 9.1 JDBC driver in test
-  //"postgresql"             % "postgresql"  % "9.1-901-1.jdbc4"   , % Test
-  
-  // H2 In mem DB in test 
-  "com.h2database"         % "h2"          % "1.4.191"           % Test,
-  
-  // Need to install CORS filter
-  filters
-  )
+)
+     
+// Scalariform plugin enforces formatting convention on all dirty files which required recompilation.
+// The following overrides default formatter settings. The plugin always fills indents with spaces.
+// Be sure your local IDE settings are in sync.
+scalariformPreferences := scalariformPreferences.value
+    .setPreference(IndentSpaces, 3)
 
-// Capture SBT build info in a source file available at compile time.
-/** No longer works in sbt 13.******************\
-sourceGenerators in Compile += (sourceManaged in Compile, version, name) map { (d, v, n) =>
-  val file = d / "SbtService.scala"
-  IO.write(file, """package com.variant.server.boot
-    |object SbtService {
-    |  val version = "%s"
-    |  val name = "%s"
-    |}
-    |""".stripMargin.format(v, n))
-  Seq(file)
-}
-*************************************************/
+// ...and prepend it to the startup script's classpath.
+scriptClasspath := Seq("../conf/") ++ scriptClasspath.value
 
-// Disable scaladoc in 'dist' task.
-sources in (Compile,doc) := Seq.empty
+// ...and add ext/ to script's classpath.
+scriptClasspath := Seq("../ext/*") ++ scriptClasspath.value
+
+// Disable scaladoc generation for packaging
 publishArtifact in (Compile, packageDoc) := false
 
+// Rename the executable script, so that our own wrapper can be called 'variant'
+executableScriptName := "variant-ctl"
+
 //
-// ScalaTest related settings
+// Test related settings.
 //
+// Change current directory to `test-base` for `test`, `testQuick`, and `testOnly`
+// For this to work, fork must be set to true, i.e. each run is in a separate JVM
+fork := true
+Test / baseDirectory := file("test-base")
 
-//fork := true  // without this JVM options won't hold
+// Do not truncate stack traces. (Use when needed for debugging)
+// testOptions in Test += Tests.Argument("-oF")
 
-// Full stack traces (truncated by default)
-testOptions in Test += Tests.Argument("-oF") 
-
-// Test scoped classpath directory - need this for tests that deploy schema from classpath.
-unmanagedClasspath in Test += baseDirectory.value / "conf-test"
-unmanagedClasspath in Runtime += baseDirectory.value / "conf-test"
-
-// Java sources compilation level
-javacOptions ++= Seq("-source", "1.8", "-target", "1.8")
-
-// Include the standard extension for tests to see the flusher classes.
-unmanagedClasspath in Test += baseDirectory.value / "distr/ext/*"
-//unmanagedClasspath in Runtime += baseDirectory.value / "distr/ext/*"
-
-
-// Config overrides for run and test.
-javaOptions in Test += "-Dvariant.config.file=conf-test/variant.conf"
-javaOptions in Runtime += "-Dvariant.config.file=conf-test/variant.conf"
+// Append production resource directory "conf" so that its content is available
+// but behind the content of src/test/resources
+//unmanagedClasspath in Test += baseDirectory.value / "src" / "universal" / "conf"
+unmanagedClasspath in Test += baseDirectory.value / "src" / "universal" / "ext/*"
 
 // To debug, uncomment and connect with eclipse after the VM is suspended.
 // javaOptions in Test ++= Seq("-Xdebug",  "-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=8000")
+

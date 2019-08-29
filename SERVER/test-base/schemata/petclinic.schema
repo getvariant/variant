@@ -1,0 +1,81 @@
+/*
+ * Variant Java client + servlet adapter demo application.
+ * Demonstrates instrumentation of an experiment and a concurrent feature toggle.
+ * See https://github.com/getvariant/variant-java-demo for details.
+ *
+ * Copyright © 2019 Variant, Inc. All Rights Reserved.
+ */
+
+{
+   'meta':{
+      'name':'petclinic',
+      'comment':'Variant schema for the Pet Clinic demo application',
+      'flusher': {
+        'class':'com.variant.extapi.std.flush.TraceEventFlusherCsv',
+        'init':{'header':true, 'file':'/tmp/variant-trace-events-petclinic.csv'}
+       }
+   },
+
+   'states':[
+      {'name':'vets'},
+      {'name':'newVisit'} 
+   ],                                                        
+
+   'variations':[
+
+      /*
+       * Vet's hourly rate feature toggle on the vets page only.
+       * Demonstrates lazy instrumentation.
+       */ 
+
+     {                                                      
+         'name':'VetsHourlyRateFeature',
+         'experiences':[                                     
+            {                                                
+               'name':'existing',                                   
+               'weight':1,                                  
+               'isControl':true                              
+            },                                               
+            {                                                
+               'name':'rateColumn',
+               'weight':3                                   
+            }              
+         ],                                                  
+         'onStates':[
+            {'stateRef':'vets'}
+         ]
+      },
+
+      /*
+       * The Schedule-a-Visit Experiment on 2 pages.
+       * Demonstrate eager instrumentation and conjoint variation concurrency.
+       */
+      
+      {                                                      
+         'name':'ScheduleVisitTest',
+         'conjointVariationRefs':['VetsHourlyRateFeature'], 
+         'experiences':[                              
+            {                                                
+               'name':'noLink',                                   
+               'weight':1,                                  
+               'isControl':true                              
+            },                                               
+            {                                                
+               'name':'withLink',
+               'weight':3                                   
+            }                                              
+         ],                                                  
+         'onStates':[
+            {'stateRef':'vets'},
+            {'stateRef':'newVisit'}
+         ],
+         'hooks': [
+         {
+            // Disqualify blacklisted users.
+            'class':'com.variant.extapi.std.demo.UserQualifyingHook',
+            'init': {'blackList':['Nikita Krushchev']}
+         } 
+         ]
+      }
+   ]
+}
