@@ -305,7 +305,7 @@ public class SessionImpl implements Session {
 		}
 		
 		if (coreSession == null) 
-			throw new VariantException.Internal("Null Core Session");
+			throw VariantException.internal("Null Core Session");
 		
 		// The new core session which this object wraps.
 		this.coreSession = (CoreSession) coreSession;

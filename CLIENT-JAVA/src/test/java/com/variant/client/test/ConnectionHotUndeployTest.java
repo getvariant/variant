@@ -53,7 +53,7 @@ public class ConnectionHotUndeployTest extends ClientBaseTestWithServer {
          }
          
          @Override public void onThrown(VariantException e) {
-            assertEquals(ServerError.UNKNOWN_SCHEMA, e.getError());
+            assertEquals(ServerError.UNKNOWN_SCHEMA, e.error);
          }
          
       }.assertThrown();
@@ -66,7 +66,7 @@ public class ConnectionHotUndeployTest extends ClientBaseTestWithServer {
 			}
 			
 			@Override public void onThrown(VariantException e) {
-				assertEquals(ServerError.UNKNOWN_SCHEMA, e.getError());
+				assertEquals(ServerError.UNKNOWN_SCHEMA, e.error);
 			}
 			
 		}.assertThrown();
@@ -79,7 +79,7 @@ public class ConnectionHotUndeployTest extends ClientBaseTestWithServer {
 			}
 			
 			@Override public void onThrown(VariantException e) {
-				assertEquals(ServerError.UNKNOWN_SCHEMA, e.getError());
+				assertEquals(ServerError.UNKNOWN_SCHEMA, e.error);
 			}
 			
 		}.assertThrown();

@@ -15,6 +15,8 @@ import com.variant.client.VariantClient;
 import com.variant.client.VariantException;
 import com.variant.client.net.Payload;
 import com.variant.client.util.MethodTimingWrapper;
+import static com.variant.client.impl.ClientUserError.*;
+
 import com.variant.core.error.UserError.Severity;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.parser.ParserMessage;
@@ -67,7 +69,7 @@ public class ConnectionImpl implements Connection {
 			return (SessionIdTracker) ReflectUtils.instantiate(klass, Object[].class, userData);
 		}
 		catch (Exception e) {
-			throw new VariantException.Internal("Unable to instantiate session ID tracker class [" + klass.getName() +"]", e);
+			throw new VariantException(SESSION_ID_TRCKER_INSTANTIATION_ERROR, e, klass.getName());
 		}
 	}
 	
@@ -85,7 +87,7 @@ public class ConnectionImpl implements Connection {
 			return (TargetingTracker) ReflectUtils.instantiate(klass, Object[].class, userData);
 		}
 		catch (Exception e) {
-			throw new VariantException.Internal("Unable to instantiate targeting tracker class [" + klass.getName() +"]", e);
+			throw VariantException.internal("Unable to instantiate targeting tracker class [" + klass.getName() +"]", e);
 		}
 
 	}
@@ -122,7 +124,7 @@ public class ConnectionImpl implements Connection {
 			// If the server returned a different SID, re-set the SID tracker.
 			// This can only happen if we were called with create=true.
 			if (!create && !result.getId().equals(sessionId)) {
-				throw new VariantException.Internal("New SID not expected");
+				throw VariantException.internal("New SID not expected");
 			}
 			// Use the SID that came from the server, not the one we sent, because
 			// if what we sent wasn't found on the server and we asked to create,
@@ -180,7 +182,7 @@ public class ConnectionImpl implements Connection {
 		if (resp.hasMessages(Severity.ERROR)) {
 			StringBuilder buff = new StringBuilder("Unable to parse schema:\n");
 			for (ParserMessage msg: resp.getMessages()) buff.append("    ").append(msg.toString()).append("\n");
-			throw new VariantException.Internal(buff.toString());
+			throw VariantException.internal(buff.toString());
 		}
 		Schema schema = new SchemaImpl(payload.schemaId, resp.getSchema());
 		

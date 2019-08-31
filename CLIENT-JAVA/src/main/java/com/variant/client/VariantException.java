@@ -1,5 +1,6 @@
 package com.variant.client;
 
+import com.variant.client.impl.ClientInternalError;
 import com.variant.core.error.UserError;
 
 /**
@@ -8,56 +9,57 @@ import com.variant.core.error.UserError;
  * @since 0.7
  */
 @SuppressWarnings("serial")
-public class VariantException extends com.variant.core.error.VariantException {
+public class VariantException extends RuntimeException {
 	
-	private UserError error = null;
-	private Object[] args = null;
+   public final UserError error;
+	public final String[] args;
+	public final Throwable cause;
 	
-	/**
-	 * Exposed for the use by client code.
-	 * @param msg
-	 */
-	public VariantException(String msg) {
-		super(msg);
-	}
+   /**
+    * 
+    * @param template
+    * @param args
+    */
+   public VariantException(UserError error, Throwable cause, String...args) {
+      this.error = error;
+      this.cause = cause;
+      this.args = args;
+   }
 
-	/**
+   /**
 	 * 
 	 * @param template
 	 * @param args
 	 */
-	public VariantException(UserError error, Object...args) {
-		super();
-		this.error = error;
-		this.args = args;
+	public VariantException(UserError error, String...args) {
+	   this(error, null, args);
 	}
 
-	/**
-	 * 
-	 * @param template
-	 * @param t
-	 * @param args
-	 */
-	public VariantException(Throwable t, UserError error, Object...args) {
-		super.initCause(t);
-		this.error = error;
-		this.args = args;
-	}
-	
-	/**
-	 * 
-	 * @return
-	 */
-	public UserError getError() {
-		return error;
-	}
-	
-	/**
+   /**
 	 * 
 	 * @return
 	 */
 	@Override
 	public String getMessage() {
-		return error == null ? super.getMessage() : error.asMessage(args);
+		return error.asMessage((Object[])args);
 	}
+	
+	/**
+	 */
+	public static VariantException internal(String message, Throwable cause) {
+      return new VariantException(ClientInternalError.INTERNAL_ERROR, cause, message);
+   }
+
+   /**
+    */
+   public static VariantException internal(String message) {
+      return new VariantException(ClientInternalError.INTERNAL_ERROR, message);
+   }
+
+   /**
+    */
+   public static VariantException internal(ClientInternalError error, String...args) {
+      return new VariantException(error, args);
+   }
+
 }

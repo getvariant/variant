@@ -163,7 +163,7 @@ public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 					}
 					
 					@Override public void onThrown(VariantException e) {
-						assertEquals(ServerError.UNKNOWN_SCHEMA, e.getError());
+						assertEquals(ServerError.UNKNOWN_SCHEMA, e.error);
 					}
 					
 				}.assertThrown(UnknownSchemaException.class);
@@ -202,7 +202,7 @@ public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 					}
 					
 					@Override public void onThrown(VariantException e) {
-						assertEquals(ServerError.SESSION_EXPIRED, e.getError());
+						assertEquals(ServerError.SESSION_EXPIRED, e.error);
 					}
 					
 				}.assertThrown();
@@ -245,7 +245,7 @@ public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 					 }
 					
 					@Override public void onThrown(VariantException e) {
-						assertEquals(ServerError.SESSION_EXPIRED, e.getError());
+						assertEquals(ServerError.SESSION_EXPIRED, e.error);
 					}
 					
 				}.assertThrown();
@@ -262,7 +262,7 @@ public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 			}
 
 			@Override public void onThrown(VariantException e) {
-				assertEquals(ServerError.UNKNOWN_SCHEMA, e.getError());
+				assertEquals(ServerError.UNKNOWN_SCHEMA, e.error);
 			}
 			
 		}.assertThrown();
@@ -404,7 +404,7 @@ public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 					}
 					
 					@Override public void onThrown(VariantException e) {
-						assertEquals(ServerError.ACTIVE_REQUEST, e.getError());
+						assertEquals(ServerError.ACTIVE_REQUEST, e.error);
 					}
 
 				}.assertThrown();
@@ -436,7 +436,7 @@ public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 			}
 			
 			@Override public void onThrown(VariantException e) {
-				assertEquals(ServerError.UNKNOWN_SCHEMA, e.getError());
+				assertEquals(ServerError.UNKNOWN_SCHEMA, e.error);
 			}
 
 		}.assertThrown();

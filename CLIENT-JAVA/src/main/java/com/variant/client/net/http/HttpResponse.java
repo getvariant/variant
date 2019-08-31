@@ -48,7 +48,7 @@ public class HttpResponse {
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	com.variant.core.error.VariantException toVariantException() {
+	VariantException toVariantException() {
 
 		ObjectMapper jacksonDataMapper = new ObjectMapper();
 		jacksonDataMapper.configure(JsonParser.Feature.ALLOW_SINGLE_QUOTES, true);
@@ -63,14 +63,14 @@ public class HttpResponse {
 			ServerError error = ServerError.byCode(code);
 			
 			if (error.isInternal()) {
-				return new com.variant.core.error.VariantException.Internal(ClientInternalError.INTERNAL_SERVER_ERROR, error.asMessage(args.toArray()));
+				return VariantException.internal(ClientInternalError.INTERNAL_SERVER_ERROR, error.asMessage(args.toArray()));
 			}
 			else {	   
-			  return new VariantException(error, args.toArray());
+			  return new VariantException(error, args.toArray(new String[args.size()]));
 			}
 		}
 		catch(IOException parseException) {
-			return new VariantException.Internal(ClientInternalError.INTERNAL_SERVER_ERROR, parseException.getMessage());
+			return VariantException.internal(ClientInternalError.INTERNAL_SERVER_ERROR, parseException.getMessage());
 		}
 	
 	}

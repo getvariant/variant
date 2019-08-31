@@ -30,23 +30,27 @@ public class ClientUserError extends UserError {
 			new ClientUserError(273, "Session ID tracker class [%s] must implement interface [" + SessionIdTracker.class.getName() +"]");
 
 	public static final ClientUserError SESSION_ID_TRACKER_MISSING =
-			new ClientUserError(274, "Session ID tracker class must be specified (use 'withSessionIdTracker()' method)");
+			new ClientUserError(274, "Session ID tracker class must be specified (use 'VariantClient.Builder.withSessionIdTracker()' method)");
 
-	public static final ClientUserError MALFORMED_VARIANT_URI =
-			new ClientUserError(275, "Malformed Variant URI [%s]");
+   public static final ClientUserError SESSION_ID_TRCKER_INSTANTIATION_ERROR =
+         new ClientUserError(275, "Unable to instantiate session ID tracker class [%s] due to error [%s]");
+
+   public static final ClientUserError MALFORMED_VARIANT_URI =
+			new ClientUserError(276, "Malformed Variant URI [%s]");
 
 	public static final ClientUserError CANNOT_TRIGGER_SVE =
-			new ClientUserError(276, "State visited event cannot be triggered");
+			new ClientUserError(277, "State visited event cannot be triggered");
 
 	public static final ClientUserError PARAM_CANNOT_BE_NULL =
-			new ClientUserError(280, "Method parameter [%s] cannot be null");
+			new ClientUserError(278, "Method parameter [%s] cannot be null");
 
-
+	/*
 	public static final ClientUserError LIFECYCLE_LISTENER_EXCEPTION =
-			new ClientUserError(281, "Unhandled exception [%s] in lifecycle listener class [%s]");
-
+			new ClientUserError(???, "Unhandled exception [%s] in lifecycle listener class [%s]");
+   */
+	
 	public static final ClientUserError SERVER_CONNECTION_TIMEOUT =
-			new ClientUserError(282, "Unable to connect to Variant server at [%s]");
+			new ClientUserError(280, "Unable to connect to Variant server at [%s]");
 
    /**
     * 

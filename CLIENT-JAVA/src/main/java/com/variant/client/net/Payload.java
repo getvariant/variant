@@ -34,7 +34,7 @@ abstract public class Payload {
 				Map<String,?> map = mapper.readValue(resp.body, Map.class);
 				Integer ssnto = (Integer) map.get("ssnto");
 				if (ssnto == null)
-					throw new VariantException.Internal(NET_PAYLOAD_ELEMENT_MISSING, "ssnto", Connection.class.getName());
+					throw VariantException.internal(NET_PAYLOAD_ELEMENT_MISSING, "ssnto", Connection.class.getName());
 				
 				return new Connection(ssnto);
 			}
@@ -42,8 +42,8 @@ abstract public class Payload {
 				throw va;
 			}
 			catch (Throwable t) {
-				throw new VariantException(t, 
-						ClientInternalError.INTERNAL_ERROR, String.format("Unable to parse payload type [%s]", Session.class.getName()));
+			   // OK to swallow t?
+				throw VariantException.internal(ClientInternalError.INTERNAL_ERROR, String.format("Unable to parse payload type [%s]", Session.class.getName()));
 			}
 		}
 		
@@ -80,7 +80,7 @@ abstract public class Payload {
 
 				coreSsnSrc = (String) map.get("session");
 				if (coreSsnSrc == null)
-					throw new VariantException.Internal(NET_PAYLOAD_ELEMENT_MISSING, "session", Session.class.getName());
+					throw VariantException.internal(NET_PAYLOAD_ELEMENT_MISSING, "session", Session.class.getName());
 
 				@SuppressWarnings("unchecked")
 				Map<String,String> schema = (Map<String,String>) map.get("schema");
@@ -88,9 +88,9 @@ abstract public class Payload {
 					schemaSrc = schema.get("src");
 					schemaId = schema.get("id");
 					if (schemaSrc == null)
-						throw new VariantException.Internal(NET_PAYLOAD_ELEMENT_MISSING, "schema/src", Connection.class.getName());
+						throw VariantException.internal(NET_PAYLOAD_ELEMENT_MISSING, "schema/src", Connection.class.getName());
 					if (schemaId == null)
-						throw new VariantException.Internal(NET_PAYLOAD_ELEMENT_MISSING, "schema/id", Connection.class.getName());
+						throw VariantException.internal(NET_PAYLOAD_ELEMENT_MISSING, "schema/id", Connection.class.getName());
 				}
 				
 
@@ -100,8 +100,8 @@ abstract public class Payload {
 				throw va;
 			}
 			catch (Throwable t) {
-					throw new VariantException(
-							ClientInternalError.INTERNAL_ERROR, String.format("Unable to parse payload type [%s]", Session.class.getName()), t);
+			   // ok to swallow t?
+					throw VariantException.internal(ClientInternalError.INTERNAL_ERROR, String.format("Unable to parse payload type [%s]", Session.class.getName()));
 			}
 		}
 	}

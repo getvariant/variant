@@ -208,7 +208,7 @@ public class TraceEventsTest extends ClientBaseTestWithServer {
 				ssn.triggerTraceEvent(req.getStateVisitedEvent());
 			}
 			@Override public void onThrown(VariantException e) {
-				assertEquals(ClientUserError.CANNOT_TRIGGER_SVE, e.getError());
+				assertEquals(ClientUserError.CANNOT_TRIGGER_SVE, e.error);
 			}
 		}.assertThrown(VariantException.class);
 

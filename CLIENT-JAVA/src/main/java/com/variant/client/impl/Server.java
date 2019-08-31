@@ -46,7 +46,7 @@ public class Server {
 		/**
 		 * Call to server backed by a local session object.
 		 * All sessions should use this. All real work happens in {@link #run(String)}.
-		 * Here we only intercept the session expired exception thrown earlier and
+		 * Here we only intercept the session expired exception thrown earlier
 		 * and mark session expired.
 		 */
 		T run(SessionImpl ssn) {
@@ -67,22 +67,16 @@ public class Server {
 			try { 
 				return block(); 
 			}
-			// Intercept certain user exceptions.
-			catch (VariantException ce) {
-				if (ce.getError() == ServerError.SESSION_EXPIRED) {
-					throw new SessionExpiredException(sid);
-				}
-				else throw ce;
+			catch (VariantException ve) {
+			   // Transform most likely exceptions into their own type.
+				if (ve.error == ServerError.SESSION_EXPIRED) throw new SessionExpiredException(sid);
+				else if (ve.error == ServerError.UNKNOWN_SCHEMA) throw  new UnknownSchemaException(ve.args[0]);         
+				else throw ve;
 			}
 
-			// Pass through internal exceptions
-			catch (VariantException.Internal ce) { 
-				throw ce;
-			}
-
-			// Something unexpected - wrap as an Internal.
+			// Should never happen at this point.
 			catch (Exception e) {
-				throw new VariantException.Internal("Unexpected Exception", e);
+				throw VariantException.internal("Unexpected Exception", e);
 			}
 		}
 				
@@ -130,7 +124,7 @@ public class Server {
 			return Payload.Connection.parse(resp);
 		}
 		catch (VariantException ce) {
-			if (ce.getError() == ServerError.UNKNOWN_SCHEMA) {
+			if (ce.error == ServerError.UNKNOWN_SCHEMA) {
 				throw new UnknownSchemaException(schema);
 			}
 			else throw ce;
@@ -196,7 +190,7 @@ public class Server {
 			jsonGen.flush();
 		}
 		catch (Exception e) {
-			throw new VariantException.Internal("Unable to serialize payload", e);
+			throw VariantException.internal("Unable to serialize payload", e);
 		}
 		
 		return new CommonExceptionHandler<Payload.Session>() {
@@ -252,7 +246,7 @@ public class Server {
 			jsonGen.flush();
 		}
 		catch (Exception e) {
-			throw new VariantException.Internal("Unable to serialize payload", e);
+			throw VariantException.internal("Unable to serialize payload", e);
 		}
 
 		Payload.Session response = new CommonExceptionHandler<Payload.Session>() {
@@ -288,7 +282,7 @@ public class Server {
 			jsonGen.flush();
 		}
 		catch (Exception e) {
-			throw new VariantException.Internal("Unable to serialize payload", e);
+			throw VariantException.internal("Unable to serialize payload", e);
 		}
 		Payload.Session response = new CommonExceptionHandler<Payload.Session>() {
 			@Override Payload.Session block() throws Exception {
@@ -336,7 +330,7 @@ public class Server {
 			jsonGen.flush();
 		}
 		catch (Exception e) {
-			throw new VariantException.Internal("Unable to serialize payload", e);
+			throw VariantException.internal("Unable to serialize payload", e);
 		}
 
 		Payload.Session response = new CommonExceptionHandler<Payload.Session>() {
@@ -387,7 +381,7 @@ public class Server {
 			jsonGen.flush();
 		}
 		catch (Exception e) {
-			throw new VariantException.Internal("Unable to serialize payload", e);
+			throw VariantException.internal("Unable to serialize payload", e);
 		}
 		
 		Payload.Session response =  new CommonExceptionHandler<Payload.Session>() {
@@ -431,7 +425,7 @@ public class Server {
 			jsonGen.flush();
 		}
 		catch (Exception e) {
-			throw new VariantException.Internal("Unable to serialize payload", e);
+			throw VariantException.internal("Unable to serialize payload", e);
 		}
 
 		new CommonExceptionHandlerVoid() {

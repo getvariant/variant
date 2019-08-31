@@ -95,7 +95,7 @@ public class SessionTest extends ClientBaseTestWithServer {
 					ssn.targetForState(state2);
 				}
 				@Override public void onThrown(VariantException e) {
-					assertEquals(ServerError.SESSION_EXPIRED, e.getError());
+					assertEquals(ServerError.SESSION_EXPIRED, e.error);
 				}
 			}.assertThrown(SessionExpiredException.class);
 			

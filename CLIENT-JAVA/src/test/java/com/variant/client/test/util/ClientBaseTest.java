@@ -33,7 +33,7 @@ public abstract class ClientBaseTest extends VariantBaseTest {
 		final public void assertThrown(UserError error, Object...args) {
 			VariantException result = super.run();
 			assertNotNull("No exception was thrown", result);
-			assertEquals("Expected exception was not thrown", result.getError(), error);
+			assertEquals("Expected exception was not thrown", result.error, error);
 		}
 		
 		/**

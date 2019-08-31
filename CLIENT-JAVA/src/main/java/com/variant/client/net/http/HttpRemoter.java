@@ -100,12 +100,12 @@ public class HttpRemoter {
 				
 			case HttpStatus.SC_BAD_REQUEST:
 				
-				com.variant.core.error.VariantException ce = result.toVariantException();
+				VariantException ce = result.toVariantException();
 				if (LOG.isDebugEnabled()) LOG.debug("Server Error " + ce.getMessage());
 				throw ce;
 			
 			default:
-				throw new VariantException.Internal(
+				throw VariantException.internal(
 						String.format("Unexpected response from server: [%s %s : %s]",
 								req.getMethod(), req.getURI(), result.status)
 				);
@@ -119,7 +119,7 @@ public class HttpRemoter {
 			throw new ServerConnectException(req.getURI().getHost());
 		}
 		catch (Throwable e) {
-			throw new VariantException.Internal("Unexpected exception in [" + req.getRequestLine() + "]", e);
+			throw VariantException.internal("Unexpected exception in [" + req.getRequestLine() + "]", e);
 		} finally {
 			if (resp != null) {
 				try {resp.close();}					

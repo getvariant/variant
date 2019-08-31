@@ -102,7 +102,7 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 				req.fail();
 			}
 			@Override public void onThrown(VariantException e) {
-				assertEquals(ServerError.CANNOT_FAIL, e.getError());
+				assertEquals(ServerError.CANNOT_FAIL, e.error);
 			}
 		}.assertThrown(VariantException.class);
 	}
@@ -205,7 +205,7 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 			   	ssn2.targetForState(state3);
 			}
 			@Override public void onThrown(VariantException e) {
-				assertEquals(ServerError.ACTIVE_REQUEST, e.getError());
+				assertEquals(ServerError.ACTIVE_REQUEST, e.error);
 			}
 		}.assertThrown();
 
@@ -217,7 +217,7 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 				ssn2.getStateRequest().get().fail();
 			}
 			@Override public void onThrown(VariantException e) {
-				assertEquals(ServerError.CANNOT_FAIL, e.getError());
+				assertEquals(ServerError.CANNOT_FAIL, e.error);
 			}
 		}.assertThrown(VariantException.class);
 		
@@ -255,7 +255,7 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 				req1.commit();
 			}
 			@Override public void onThrown(VariantException e) {
-				assertEquals(ServerError.CANNOT_COMMIT, e.getError());
+				assertEquals(ServerError.CANNOT_COMMIT, e.error);
 			}
 		}.assertThrown(VariantException.class);
 
@@ -265,7 +265,7 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 				req2.commit();
 			}
 			@Override public void onThrown(VariantException e) {
-				assertEquals(ServerError.CANNOT_COMMIT, e.getError());
+				assertEquals(ServerError.CANNOT_COMMIT, e.error);
 			}
 		}.assertThrown(VariantException.class);
 
@@ -303,7 +303,7 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 				req.commit();
 			}
 			@Override public void onThrown(VariantException e) {
-				assertEquals(ServerError.SESSION_EXPIRED, e.getError());
+				assertEquals(ServerError.SESSION_EXPIRED, e.error);
 			}
 		}.assertThrown(SessionExpiredException.class);
 	}
@@ -325,7 +325,7 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 				ssn.targetForState(schema.getState("vets").get());
 			}
 			@Override public void onThrown(VariantException e) {
-				assertEquals(ServerError.HOOK_UNHANDLED_EXCEPTION, e.getError());
+				assertEquals(ServerError.HOOK_UNHANDLED_EXCEPTION, e.error);
 			}
 		}.assertThrown();		
 		
