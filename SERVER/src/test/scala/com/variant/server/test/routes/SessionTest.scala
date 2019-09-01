@@ -156,17 +156,17 @@ class SessionTest extends EmbeddedServerSpec {
          }
       }
 
-      "respond UNKNOWN_SCHEMA on get non-existent session over non-existent connection" in {
+      "respond SESSION_EXPIRED on get non-existent session over non-existent connection" in {
 
          HttpRequest(method = HttpMethods.GET, uri = s"/session/foo/bar") ~> router ~> check {
-            ServerErrorResponse(response).mustBe(ServerError.UNKNOWN_SCHEMA, "foo")
+            ServerErrorResponse(response).mustBe(ServerError.SESSION_EXPIRED, "bar")
          }
       }
 
-      "respond UNKNOWN_SCHEMA on get existing session over non-existent connection" in {
+      "respond WRONG_CONNECTION on get existing session over non-existent connection" in {
 
          HttpRequest(method = HttpMethods.GET, uri = s"/session/foo/${sid}") ~> router ~> check {
-            ServerErrorResponse(response).mustBe(ServerError.UNKNOWN_SCHEMA, "foo")
+            ServerErrorResponse(response).mustBe(ServerError.WRONG_CONNECTION, "foo")
          }
       }
 
@@ -184,10 +184,10 @@ class SessionTest extends EmbeddedServerSpec {
          }
       }
 
-      "respond UNKNOWN_SCHEMA on post existing session over non-existent connection" in {
+      "respond WRONG_CONNECTION on post existing session over non-existent connection" in {
 
          HttpRequest(method = HttpMethods.POST, uri = s"/session/foo/${sid}", entity = emptyTargetingTrackerBody) ~> router ~> check {
-            ServerErrorResponse(response).mustBe(ServerError.UNKNOWN_SCHEMA, "foo")
+            ServerErrorResponse(response).mustBe(ServerError.WRONG_CONNECTION, "foo")
          }
       }
 

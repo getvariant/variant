@@ -69,18 +69,20 @@ trait VariantRoute {
 
    /**
     * Extract the session from the session store, making sure that
-    * 1. schema exists.
-    * 2. if session exists, its schema gen must match the schema name.
+    * if session exists, its schema gen must match the schema name.
     */
    def getSession(schemaName: String, sid: String)(implicit server: VariantServer): Option[SessionImpl] = {
 
-      val schema = server.schemata.get(schemaName).getOrElse {
-         throw ServerExceptionRemote(ServerError.UNKNOWN_SCHEMA, schemaName)
-      }
-
       server.ssnStore.get(sid) map { ssn =>
-         if (ssn.schemaGen.getMeta.getName != schemaName)
-            throw new ServerExceptionRemote(ServerError.WRONG_CONNECTION, schemaName)
+         server.schemata.get(schemaName) match {
+            case Some(schema) =>
+               // Schema in request exists, but does not match the one to which this session is connected.
+               if (ssn.schemaGen.getMeta.getName != schemaName)
+                  throw new ServerExceptionRemote(ServerError.WRONG_CONNECTION, schemaName)
+            case None =>
+               // Schema in request does not exist. Give the same error.
+               throw new ServerExceptionRemote(ServerError.WRONG_CONNECTION, schemaName)
+         }
          ssn
       }
    }

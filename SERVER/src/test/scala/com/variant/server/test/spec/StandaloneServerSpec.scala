@@ -64,7 +64,7 @@ class StandaloneServerSpec extends BaseSpec with BeforeAndAfterAll {
     * Kill any server on the system.
     */
    override def beforeAll() {
-      "ps -ef | grep java | grep 'com.variant.server.boot.Boot' | awk '{print $2}' | xargs kill".!;
+      ("ps -ef" #| "grep java" #| "grep 'com.variant.server.boot.Boot'" #| "awk '{print $2}'" #| "xargs kill").!;
    }
 
    /**

@@ -85,7 +85,7 @@ class RequestExceptionTest extends EmbeddedServerSpec {
          }
       }
 
-      "return UNKNOWN_SCHEMA on an attempt to target" in {
+      "return WRONG_CONNECTION if targeting over a non-existent connection" in {
 
          // New session
          var sid = newSid
@@ -101,11 +101,11 @@ class RequestExceptionTest extends EmbeddedServerSpec {
             "state" -> "state2").toString
 
          HttpRequest(method = HttpMethods.POST, uri = s"/request/badness/${sid}", entity = reqBody1) ~> router ~> check {
-            ServerErrorResponse(response).mustBe(ServerError.UNKNOWN_SCHEMA, "badness")
+            ServerErrorResponse(response).mustBe(ServerError.WRONG_CONNECTION, "badness")
          }
       }
 
-      "return UNKNOWN_SCHEMA on an attempt to fail" in {
+      "return WRONG_CONNECTION on an attempt to fail over a non-existent connection" in {
 
          // New session
          var sid = newSid
@@ -137,7 +137,7 @@ class RequestExceptionTest extends EmbeddedServerSpec {
             "status" -> Committed.ordinal).toString
 
          HttpRequest(method = HttpMethods.DELETE, uri = s"/request/badness/${sid}", entity = reqBody2) ~> router ~> check {
-            ServerErrorResponse(response).mustBe(ServerError.UNKNOWN_SCHEMA, "badness")
+            ServerErrorResponse(response).mustBe(ServerError.WRONG_CONNECTION, "badness")
          }
       }
 

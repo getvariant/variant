@@ -138,13 +138,13 @@ class SessionAttributeTest extends EmbeddedServerSpec {
          server.ssnStore.get(sid).get.getAttributes.asScala mustBe empty
       }
 
-      "respond UNKNOWN_SCHEMA on PUT over non-existent schema connection" in {
+      "respond WRONG_CONNECTION on PUT over non-existent schema connection" in {
 
          val body: JsValue = Json.obj(
             "attrs" -> Map("foo" -> "bar"))
 
          HttpRequest(method = HttpMethods.PUT, uri = s"/session-attr/bad/${sid}", entity = body.toString()) ~> router ~> check {
-            ServerErrorResponse(response) mustBe (ServerError.UNKNOWN_SCHEMA, "bad")
+            ServerErrorResponse(response) mustBe (ServerError.WRONG_CONNECTION, "bad")
          }
       }
 
