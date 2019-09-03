@@ -32,11 +32,16 @@ public class TraceEventReader {
 	/**
 	 * 
 	 */
-	public TraceEventReader() throws SQLException {
+	public TraceEventReader() {
 		Properties props = new Properties();
 		props.setProperty("user", "variant");
 		props.setProperty("password", "variant");
-		conn = DriverManager.getConnection("jdbc:postgresql://localhost/variant", props);		
+		try {
+		   conn = DriverManager.getConnection("jdbc:postgresql://localhost/variant", props);
+		}
+		catch (Throwable t) {
+		   throw new RuntimeException("Unable to connect to Postgres databaes", t);
+		}
 	}
 	
    /**
@@ -90,6 +95,7 @@ public class TraceEventReader {
 								eventExperiencesResultSet.getBoolean(4));
 						eventMap.get(eventId).eventExperiences.add(ee);
 					}
+					stmt.close();
 					return eventMap.values();
 				}
 			}
@@ -101,5 +107,12 @@ public class TraceEventReader {
 				.filter(p)
 				.sorted((e1,e2) -> e1.createdOn.compareTo(e2.createdOn))
 				.collect(Collectors.<TraceEventFromDatabase>toList());
+	}
+	
+	/**
+	 * Don't forget to close connection.
+	 */
+	public void close() throws Exception {
+	   conn.close();
 	}
 }

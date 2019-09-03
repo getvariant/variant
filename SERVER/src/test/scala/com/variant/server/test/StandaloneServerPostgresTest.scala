@@ -1,5 +1,5 @@
 package com.variant.server.test
-/*
+
 import java.io.PrintWriter
 
 import scala.sys.process._
@@ -80,5 +80,3 @@ class StandaloneServerPostgresTest extends StandaloneServerSpec {
       }
    }
 }
-*
-*/

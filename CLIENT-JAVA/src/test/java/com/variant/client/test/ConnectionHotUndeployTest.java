@@ -42,21 +42,9 @@ public class ConnectionHotUndeployTest extends ClientBaseTestWithServer {
 
       IoUtils.delete(SCHEMATA_DIR + "/monster.schema");
 		Thread.sleep(dirWatcherLatencyMillis);
-		
-		// Session should be timed out by now => connection is gone.
-		
+				
       // Can't access expired session
-      new ClientExceptionInterceptor() {
-         
-         @Override public void toRun() {
-            conn1.getSession("foo").isPresent();
-         }
-         
-         @Override public void onThrown(VariantException e) {
-            assertEquals(ServerError.UNKNOWN_SCHEMA, e.error);
-         }
-         
-      }.assertThrown();
+      assertFalse(conn1.getSession(foo1.getId()).isPresent());
 
       // Can't create another session
 		new ClientExceptionInterceptor() {

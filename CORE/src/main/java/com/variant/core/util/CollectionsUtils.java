@@ -1,9 +1,13 @@
 package com.variant.core.util;
 
+import static org.junit.Assert.assertEquals;
+
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -18,7 +22,7 @@ import com.variant.core.util.Tuples.Pair;
  * @author Igor
  *
  */
-public class CollectionsUtils {
+final public class CollectionsUtils {
 
 	public static final List<?> EMPTY_LIST = list();
 	
@@ -133,6 +137,10 @@ public class CollectionsUtils {
 		return result;
 	}
 
+	/*----------------------------------------------------------------------------------*\
+                                      toString()
+   \*----------------------------------------------------------------------------------*/
+
 	/**
 	 * Object[] toString();
 	 * @param c
@@ -204,4 +212,117 @@ public class CollectionsUtils {
 	public static String toString(Map<?,?> map) {
 		return toString(map, ", ");
 	}
+	
+   /*----------------------------------------------------------------------------------*\
+                                     equals()
+   \*----------------------------------------------------------------------------------*/
+
+	  /**
+    * Assert that two lists are the same, including order.
+    * Custom comparator.
+    *  
+    * @param 
+    */
+	public static <T> boolean equalAsLists(List<T> actual, List<T> expected, Comparator<T> comparator) {
+      
+      assertEquals("Actual list of size " + actual.size() + "was not equal expected size " + expected.size(), actual.size(), expected.size());
+      
+      Iterator<T> actualIter = actual.iterator(); 
+      Iterator<T> expectedIter = expected.iterator(); 
+      while (actualIter.hasNext()) {
+         if (comparator.compare(actualIter.next(), expectedIter.next()) != 0) return false;
+      }
+      return true;
+   }
+
+   /**
+    * Same as above with the natural comparator
+    *  
+    * @param 
+    */
+	public static <T> boolean equalAsLists(List<T> actual, List<T> expected) {
+
+      Comparator<T> comp = new Comparator<T>() {
+         @Override
+         public int compare(Object o1, Object o2) {return o1.equals(o2) ? 0 : 1;}
+      };
+      return equalAsSets(actual, expected, comp);
+   }
+
+   /**
+    * Same as above for varargs
+    * @param actual
+    * @param expected
+    *
+   protected <T> void assertEqualAsSets(Collection<T> actual, @SuppressWarnings("unchecked") T...expected) {
+      assertEqualAsSets(actual, Arrays.asList(expected));
+   }
+   */
+
+   /**
+    * Same as above for maps
+    * @param actual
+    * @param expected
+    */
+	public static <K,V> boolean equalAsSets(Map<K,V> actual, Map<K,V> expected) {
+      return equalAsSets(actual.entrySet(), expected.entrySet());
+   }
+
+   /**
+    * Same as above with custom comparator over entries.
+    * @param actual
+    * @param expected
+    */
+	public static <K,V> boolean equalAsSets(Map<K,V> actual, Map<K,V> expected, Comparator<Map.Entry<K, V>> comp) {
+      return equalAsSets(actual.entrySet(), expected.entrySet(), comp);
+   }
+
+   /**
+    * Are two given collections set-equivalent, i.e. for each element in one, 
+    * there's an equal element in the other.
+    *  
+    * @param comparator Custom comparator
+    */
+   public static <T> boolean equalAsSets(Collection<T> actual, Collection<T> expected, Comparator<T> comparator) {
+      
+      for (T a: actual) {
+         boolean found = false;
+         for (T e: expected) {
+            if (comparator.compare(a,e) == 0) {
+               found = true;
+               break;
+            }
+         }
+         if (!found) return false;
+      }
+      
+      for (T e: expected) {
+         boolean found = false;
+         for (T a: actual) {
+            if (comparator.compare(a,e) == 0) {
+               found = true;
+               break;
+            }
+         }
+         if (!found) return false;
+      }
+      
+      return true;
+   }
+
+   /**
+    * Same as above with the natural comparator
+    *  
+    * @param 
+    */
+   public static <T> boolean equalAsSets(Collection<T> actual, Collection<T> expected) {
+
+      Comparator<T> comp = new Comparator<T>() {
+         @Override
+         public int compare(Object o1, Object o2) {return o1.equals(o2) ? 0 : 1;}
+      };
+      
+      return equalAsSets(actual, expected, comp);
+   }
+
 }

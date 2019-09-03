@@ -5,7 +5,7 @@ import static org.junit.Assert.*;
 import com.variant.client.Connection;
 import com.variant.client.Session;
 import com.variant.client.StateRequest;
-import com.variant.client.UnknownSchemaException;
+import com.variant.client.SessionExpiredException;
 import com.variant.client.VariantClient;
 import com.variant.client.VariantException;
 import com.variant.client.impl.ConnectionImpl;
@@ -143,12 +143,13 @@ public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 				assertNotNull(ssn.getTimestamp());
 				assertEquals(conn1, ssn.getConnection());
 				assertEquals(1000, ssn.getTimeoutMillis());
+            assertFalse(conn1.getSessionById(sessions1[_i].getId()).isPresent());
 								
 				// All else should throw session expired exception.
 				new ClientExceptionInterceptor() {
 					
 					@Override public void toRun() {
-						switch (_i % 10) {
+						switch (_i % 9) {
 						case 0: ssn.getTraversedStates(); break;
 						case 1: ssn.getTraversedVariations(); break;
 						case 2: ssn.getDisqualifiedVariations(); break;
@@ -158,15 +159,14 @@ public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 						case 6: ssn.getAttributes().remove("foo"); break;
 						case 7: ssn.targetForState(ssn.getSchema().getState("state" + ((_i % 5) + 1)).get()); break;
 						case 8: req.commit(); break;
-						case 9: conn1.getSessionById(sessions1[_i].getId());
 						}
 					}
 					
 					@Override public void onThrown(VariantException e) {
-						assertEquals(ServerError.UNKNOWN_SCHEMA, e.error);
+						assertEquals(ServerError.SESSION_EXPIRED, e.error);
 					}
 					
-				}.assertThrown(UnknownSchemaException.class);
+				}.assertThrown(SessionExpiredException.class);
 		
 			});
 		}
@@ -183,7 +183,7 @@ public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 				assertNotNull(ssn.getTimestamp());
 				assertEquals(conn2, ssn.getConnection());
 				assertEquals(1000, ssn.getTimeoutMillis());
-			    assertFalse(conn2.getSessionById(sessions1[_i].getId()).isPresent());
+			   assertFalse(conn2.getSessionById(sessions1[_i].getId()).isPresent());
 			    
 				// Mutating methods.
 				new ClientExceptionInterceptor() {

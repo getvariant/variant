@@ -22,6 +22,7 @@ import com.variant.core.schema.parser.ParserMessage;
 import com.variant.core.schema.parser.ParserResponse;
 import com.variant.core.session.CoreSession;
 import com.variant.core.session.SessionScopedTargetingStabile;
+import com.variant.core.util.CollectionsUtils;
 import com.variant.core.util.StringUtils;
 
 
@@ -146,44 +147,20 @@ abstract public class VariantBaseTest {
 	 * Custom comparator.
 	 *  
 	 * @param 
-	 */
+	 *
 	protected static <T> void assertEqualAsSets(Collection<T> actual, Collection<T> expected, Comparator<T> comp) {
 		
-		for (T a: actual) {
-			boolean found = false;
-			for (T e: expected) {
-				if (comp.compare(a,e) == 0) {
-					found = true;
-					break;
-				}
-			}
-			assertTrue("Actual element " + a + " not found among expected elements", found);
-		}
-		
-		for (T e: expected) {
-			boolean found = false;
-			for (T a: actual) {
-				if (comp.compare(a,e) == 0) {
-					found = true;
-					break;
-				}
-			}
-			assertTrue("Expected element " + e + " not found among actual elements", found);
-		}
+	   assertTrue(CollectionsUtils.equalAsSets(actual, expected, comp));
 	}
 
 	/**
-	 * Same as above with the trivial comparator
+	 * Same as above with the natural comparator
 	 *  
 	 * @param 
-	 */
+	 *
 	protected static <T> void assertEqualAsSets(Collection<T> actual, Collection<T> expected) {
 
-		Comparator<T> comp = new Comparator<T>() {
-			@Override
-			public int compare(Object o1, Object o2) {return o1.equals(o2) ? 0 : 1;}
-		};
-		assertEqualAsSets(actual, expected, comp);
+		assertTrue(CollectionsUtils.equalAsSets(actual, expected));
 	}
 
 	/**
@@ -191,7 +168,7 @@ abstract public class VariantBaseTest {
 	 * Custom comparator.
 	 *  
 	 * @param 
-	 */
+	 *
 	protected static <T> void assertEqualAsLists(List<T> actual, List<T> expected, Comparator<T> comp) {
 		
 		assertEquals("Actual list of size " + actual.size() + "was not equal expected size " + expected.size(), actual.size(), expected.size());
@@ -212,7 +189,7 @@ abstract public class VariantBaseTest {
 	 * Same as above with the trivial comparator
 	 *  
 	 * @param 
-	 */
+	 *
 	protected static <T> void assertEqualAsLists(List<T> actual, List<T> expected) {
 
 		Comparator<T> comp = new Comparator<T>() {
@@ -226,7 +203,7 @@ abstract public class VariantBaseTest {
 	 * Same as above for varargs
 	 * @param actual
 	 * @param expected
-	 */
+	 *
 	protected <T> void assertEqualAsSets(Collection<T> actual, @SuppressWarnings("unchecked") T...expected) {
 		assertEqualAsSets(actual, Arrays.asList(expected));
 	}
@@ -235,7 +212,7 @@ abstract public class VariantBaseTest {
 	 * Same as above for maps
 	 * @param actual
 	 * @param expected
-	 */
+	 *
 	protected <K,V> void assertEqualAsSets(Map<K,V> actual, Map<K,V> expected) {
 		assertEqualAsSets(actual.entrySet(), expected.entrySet());
 	}
@@ -244,11 +221,11 @@ abstract public class VariantBaseTest {
 	 * Same as above with custom comparator over entries.
 	 * @param actual
 	 * @param expected
-	 */
+	 *
 	protected <K,V> void assertEqualAsSets(Map<K,V> actual, Map<K,V> expected, Comparator<Map.Entry<K, V>> comp) {
 		assertEqualAsSets(actual.entrySet(), expected.entrySet(), comp);
 	}
-
+*/
 	//---------------------------------------------------------------------------------------------//
 	//                                  EXCEPTION INTERCEPTORS                                     //
 	//---------------------------------------------------------------------------------------------//

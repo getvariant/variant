@@ -1,14 +1,10 @@
 package com.variant.client.impl;
 
-import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.fasterxml.jackson.core.JsonFactory;
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.variant.client.TraceEvent;
-import com.variant.core.error.CoreException;
+import com.variant.core.util.CollectionsUtils;
 
 abstract public class TraceEventSupport implements TraceEvent {
 	
@@ -65,48 +61,11 @@ abstract public class TraceEventSupport implements TraceEvent {
 		return result;
 	}
 
-	//---------------------------------------------------------------------------------------------//
-	//                                       Serialization                                          //
-	//---------------------------------------------------------------------------------------------//
-	
-	private static final String FIELD_NAME_NAME = "name";
-	private static final String FIELD_NAME_ATTRIBUTES = "attrs";
+   @Override
+   public boolean equals(Object other) {
+      if (! (other instanceof TraceEvent)) return false;
+      TraceEvent o = (TraceEvent) other;
+      return name.equals(o.getName()) && CollectionsUtils.equalAsSets(attributes, o.getAttributes());      
+   }
 
-	/**
-	 * Serialize to JSON string.
-	 * @return
-	 * @throws JsonProcessingException 
-	 *
-	public static String toJson(TraceEvent event) {
-		try {
-			StringWriter result = new StringWriter(1024);
-			JsonGenerator jsonGen = new JsonFactory().createGenerator(result);
-			jsonGen.writeStartObject();
-			jsonGen.writeStringField(FIELD_NAME_NAME, event.getName());
-			
-			if (!event.getAttributes().isEmpty()) {
-				jsonGen.writeObjectFieldStart(FIELD_NAME_ATTRIBUTES);
-				for (Map.Entry<String,String> e: event.getAttributes().entrySet()) {
-					jsonGen.writeStringField(e.getKey(), e.getValue());
-				}
-				jsonGen.writeEndObject();
-			}
-			
-			jsonGen.writeEndObject();
-			jsonGen.flush();
-			return result.toString();
-		}
-		catch (Exception e) {
-			throw new CoreException.Internal("Unable to serialize session", e);
-		}
-	}
-	
-	/**
-	 * 
-	 *
-	@Override
-	public String toString() {
-		return toJson(this);
-	}
-	**/
 }

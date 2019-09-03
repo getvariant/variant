@@ -20,11 +20,11 @@ import com.variant.client.impl.SchemaImpl;
 import com.variant.client.impl.StateVisitedEvent;
 import com.variant.client.test.util.ClientBaseTestWithServer;
 import com.variant.client.test.util.event.TraceEventFromDatabase;
-import com.variant.client.test.util.event.TraceEventReader;
 import com.variant.core.error.ServerError;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.State;
 import com.variant.core.schema.Variation;
+import com.variant.core.util.CollectionsUtils;
 
 public class StateRequestTest extends ClientBaseTestWithServer {
 
@@ -34,7 +34,7 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 			.withTargetingTrackerClass(TargetingTrackerHeadless.class)
 			.build();
 		
-	public StateRequestTest() {
+	public StateRequestTest() throws Exception {
 		restartServer();
 	}
 	
@@ -270,7 +270,7 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 		}.assertThrown(VariantException.class);
 
 		Thread.sleep(EVENT_WRITER_MAX_DELAY);
-		List<TraceEventFromDatabase> events = new TraceEventReader().read(e -> e.sessionId.equals(ssn1.getId()));
+		List<TraceEventFromDatabase> events = traceEventReader.read(e -> e.sessionId.equals(ssn1.getId()));
 		assertEquals(1, events.size());
 		TraceEventFromDatabase event = events.get(0);
 		assertEquals("$STATE_VISIT", event.name);
@@ -368,10 +368,10 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 
 		assertEquals(InProgress, req1.getStatus());
 		assertEquals(InProgress, req2.getStatus());
-	   	assertEqualAsSets(req2.getLiveExperiences(), req1.getLiveExperiences());
-	   	assertEqualAsSets(req2.getResolvedParameters(), req1.getResolvedParameters());
+	   	assertTrue(CollectionsUtils.equalAsSets(req2.getLiveExperiences(), req1.getLiveExperiences()));
+	   	assertTrue(CollectionsUtils.equalAsSets(req2.getResolvedParameters(), req1.getResolvedParameters()));
 	   	assertEquals(req2.getResolvedStateVariant().toString(), req1.getResolvedStateVariant().toString());
-	   	assertEquals(req2.getStateVisitedEvent().toString(), req1.getStateVisitedEvent().toString());
+	   	assertEquals(req2.getStateVisitedEvent(), req1.getStateVisitedEvent());
 	   	
 	   	// Commit in req2
 		assertEquals(InProgress, req2.getStatus());

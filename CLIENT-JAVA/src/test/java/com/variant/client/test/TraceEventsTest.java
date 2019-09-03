@@ -16,11 +16,11 @@ import com.variant.client.impl.StateVisitedEvent;
 import com.variant.client.impl.TraceEventSupport;
 import com.variant.client.test.util.ClientBaseTestWithServer;
 import com.variant.client.test.util.event.TraceEventFromDatabase;
-import com.variant.client.test.util.event.TraceEventReader;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.State;
 import com.variant.core.util.CollectionsUtils;
 import com.variant.core.util.Tuples.Pair;
+
 
 public class TraceEventsTest extends ClientBaseTestWithServer {
 
@@ -33,7 +33,7 @@ public class TraceEventsTest extends ClientBaseTestWithServer {
 	/**
 	 * Start the server with long enough session expiration
 	 */
-	public TraceEventsTest() {
+	public TraceEventsTest() throws Exception {
 		// We need sessions to survive the wait for events.
 		long ssnTimeoutSec = EVENT_WRITER_MAX_DELAY / 1000 + 3;
 		restartServer(CollectionsUtils.pairsToMap(new Pair<String,String>("variant.session.timeout", String.valueOf(ssnTimeoutSec))));
@@ -86,14 +86,14 @@ public class TraceEventsTest extends ClientBaseTestWithServer {
 		req2.commit();
 		
 		Thread.sleep(EVENT_WRITER_MAX_DELAY);
-		List<TraceEventFromDatabase> events = new TraceEventReader().read(e -> e.sessionId.equals(ssn1.getId()));
+		List<TraceEventFromDatabase> events = traceEventReader.read(e -> e.sessionId.equals(ssn1.getId()));
 		assertEquals(1, events.size());
 		TraceEventFromDatabase event = events.get(0);
 		//System.out.println(event);
 		assertEquals(StateVisitedEvent.SVE_NAME, event.name);
-		assertEqualAsSets(
+		assertTrue(CollectionsUtils.equalAsSets(
 				CollectionsUtils.pairsToMap(new Pair("$STATE", "state2"), new Pair("$STATUS", "Committed"), new Pair("sve2 atr key", "sve2 attr value")), 
-				event.attributes);
+				event.attributes));
 		assertEquals(5, event.eventExperiences.size());
 		assertTrue(event.eventExperiences.stream().anyMatch(ee -> ee.testName.equals("test1")));
 		assertTrue(event.eventExperiences.stream().anyMatch(ee -> ee.testName.equals("test2")));
@@ -108,7 +108,7 @@ public class TraceEventsTest extends ClientBaseTestWithServer {
 		req1.commit();
 		assertEquals(Committed, req1.getStatus());
 		Thread.sleep(EVENT_WRITER_MAX_DELAY);
-		assertEquals(1, new TraceEventReader().read(e -> e.sessionId.equals(ssn1.getId())).size());
+		assertEquals(1, traceEventReader.read(e -> e.sessionId.equals(ssn1.getId())).size());
 
 	}
 
@@ -134,14 +134,14 @@ public class TraceEventsTest extends ClientBaseTestWithServer {
 		req1.commit();
 		
 		Thread.sleep(EVENT_WRITER_MAX_DELAY);
-		List<TraceEventFromDatabase> events = new TraceEventReader().read(e -> e.sessionId.equals(ssn.getId()));
+		List<TraceEventFromDatabase> events = traceEventReader.read(e -> e.sessionId.equals(ssn.getId()));
 		assertEquals(1, events.size());
 		TraceEventFromDatabase event = events.get(0);
 		//System.out.println(event);
 		assertEquals(StateVisitedEvent.SVE_NAME, event.name);
-		assertEqualAsSets(
+		assertTrue(CollectionsUtils.equalAsSets(
 				CollectionsUtils.pairsToMap(new Pair("$STATE", "state2"), new Pair("$STATUS", "Committed"), new Pair("foo", "bar")), 
-				event.attributes);
+				event.attributes));
 		assertEquals(5, event.eventExperiences.size());
 		assertTrue(event.eventExperiences.stream().anyMatch(ee -> ee.testName.equals("test1")));
 		assertTrue(event.eventExperiences.stream().anyMatch(ee -> ee.testName.equals("test2")));
@@ -167,14 +167,14 @@ public class TraceEventsTest extends ClientBaseTestWithServer {
 		req2.commit();
 		
 		Thread.sleep(EVENT_WRITER_MAX_DELAY);
-		events = new TraceEventReader().read(e -> e.sessionId.equals(ssn.getId()));
+		events = traceEventReader.read(e -> e.sessionId.equals(ssn.getId()));
 		assertEquals(2, events.size());
 		event = events.get(1);
 		//System.out.println(event);
 		assertEquals(StateVisitedEvent.SVE_NAME, event.name);
-		assertEqualAsSets(
+		assertTrue(CollectionsUtils.equalAsSets(
 				CollectionsUtils.pairsToMap(new Pair("$STATE", "state5"), new Pair("$STATUS", "Committed")), 
-				event.attributes);
+				event.attributes));
 		assertEquals(4, event.eventExperiences.size());
 		assertTrue(event.eventExperiences.stream().anyMatch(ee -> ee.testName.equals("test1")));
 		assertFalse(event.eventExperiences.stream().anyMatch(ee -> ee.testName.equals("test2")));
@@ -237,7 +237,7 @@ public class TraceEventsTest extends ClientBaseTestWithServer {
 	   	req.commit();
 	   	
 		Thread.sleep(EVENT_WRITER_MAX_DELAY);
-		List<TraceEventFromDatabase> events = new TraceEventReader().read(e -> e.sessionId.equals(ssn.getId()));
+		List<TraceEventFromDatabase> events = traceEventReader.read(e -> e.sessionId.equals(ssn.getId()));
 		assertEquals(3, events.size());
 		//events.forEach(e -> System.out.println("***\n" + e));
 

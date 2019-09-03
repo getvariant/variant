@@ -7,6 +7,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.variant.core.util.IoUtils;
+
 /**
  * Start server process in a subprocess.
  * This is main so that adapters can take advantate of it.
@@ -120,5 +122,20 @@ public class StandaloneServer {
 		LOG.info("Stopping standalone server [" + command + "]");
 		if (NativeProcess.exec(command) != 0) 
 			throw new RuntimeException("Unable to stop server");
+	}
+	
+	/**
+	 * Destroy the server.
+	 */
+	public void destroy() throws Exception {
+
+	   // Just in case if caller didn't stop the server.
+	   stop(); 
+	   
+	   // Destroy native server process.
+	   server.destroy();
+	   
+	   // Delete server directory
+	   // IoUtils.delete(serverDir);  Errors out, but not critical to remove the dir.
 	}
 }

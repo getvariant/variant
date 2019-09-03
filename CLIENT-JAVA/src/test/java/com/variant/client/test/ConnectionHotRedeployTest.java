@@ -17,7 +17,6 @@ import com.variant.core.util.IoUtils;
 public class ConnectionHotRedeployTest extends ClientBaseTestWithServer {
 	
 	// Sole client
-	// Sole client
 	private VariantClient client = new VariantClient.Builder()
 			.withSessionIdTrackerClass(SessionIdTrackerHeadless.class)
 			.withTargetingTrackerClass(TargetingTrackerHeadless.class)

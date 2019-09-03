@@ -3,7 +3,10 @@ package com.variant.client.test.util;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.junit.AfterClass;
+
 import com.variant.client.test.StandaloneServer;
+import com.variant.client.test.util.event.TraceEventReader;
 import com.variant.core.util.IoUtils;
 import com.variant.core.util.StringUtils;
 
@@ -14,20 +17,25 @@ import com.variant.core.util.StringUtils;
 abstract public class ClientBaseTestWithServer extends ClientBaseTest {
 				
 	// Remote server location
-	public final static String SERVER_DIR = "/tmp/remote-server";
+	protected final static String SERVER_DIR = "/tmp/remote-server";
 	
 	// Remote server should mount this schemata dir
-	public final static String SCHEMATA_DIR = "/tmp/remote-schemata";
+	protected final static String SCHEMATA_DIR = "/tmp/remote-schemata";
 	
 	// Schema files location in the local project
-	public final static String SCHEMATA_DIR_SRC = "src/test/resources/schemata-remote/";
+	protected final static String SCHEMATA_DIR_SRC = "src/test/resources/schemata-remote/";
 
 	// Event writer max delay hardcoded here. Must match what's in 
 	// standalone-server/conf/variant.conf
-	public final static long EVENT_WRITER_MAX_DELAY = 2000;
+	protected final static long EVENT_WRITER_MAX_DELAY = 2000;
 	
 	// Filesystem watcher takes this long to react.
-	public final static int dirWatcherLatencyMillis = 12000;
+	protected final static int dirWatcherLatencyMillis = 12000;
+	
+	// Trace event reader. Concrete tests should use this one, instead of initializing their own.
+	// This way we can definitively close it, avoiding connection leaks. Note that connection opened
+	// in local tests will not be closed after the client application quits. I am not sure why.
+	protected final static TraceEventReader traceEventReader = new TraceEventReader();
 	
 	// JUnits's way is to run the static @BeforeClass for each instantiation,
 	// i.e. for each test. That's not what we want. We'll build the server
@@ -61,15 +69,15 @@ abstract public class ClientBaseTestWithServer extends ClientBaseTest {
 	 * 
 	 * @param config Additional server-side config parameters may be set to override the default.
 	 */
-	protected static void restartServer(Map<String,String> config) {
+	protected static void restartServer(Map<String,String> config) throws Exception {
 
-		stopServer();
+		server.stop();
 		
 		try {
 			// Rebuild the schemata dir.
 			IoUtils.emptyDir(SCHEMATA_DIR);
-		    IoUtils.fileCopy(SCHEMATA_DIR_SRC + "monster.schema", SCHEMATA_DIR + "/monster.schema");
-		    IoUtils.fileCopy(SCHEMATA_DIR_SRC + "petclinic.schema", SCHEMATA_DIR + "/petclinic.schema");
+			IoUtils.fileCopy(SCHEMATA_DIR_SRC + "monster.schema", SCHEMATA_DIR + "/monster.schema");
+		   IoUtils.fileCopy(SCHEMATA_DIR_SRC + "petclinic.schema", SCHEMATA_DIR + "/petclinic.schema");
 		}
 		catch (Exception e) {
 			throw new RuntimeException("Unable to start server", e);
@@ -93,22 +101,31 @@ abstract public class ClientBaseTestWithServer extends ClientBaseTest {
 	 * Start the standalone server convenience method.
 	 * Additional server-side config parameters may be set to override the default.
 	 */
-	protected static void restartServer() {
+	protected static void restartServer() throws Exception {
 		restartServer(new HashMap<String,String>());
 	}
 
 	/**
 	 * Stop the standalone server.
-	 * Additional server-side config parameters may be set to override the default.
 	 */
-	protected static void stopServer() {
-		try {
-			server.stop();
-		}
-		catch (Exception e) {
-			throw new RuntimeException("Unable to stop server", e);
-		}
+	protected static void stopServer() throws Exception{
+	   server.stop();
 	}
 
+   /**
+    * Destroy the standalone server.
+    */
+   protected static void destroyServer() throws Exception{
+      server.destroy();
+   }
+
+   @AfterClass
+   public static void cleanup() throws Exception {
+   
+      traceEventReader.close();
+      destroyServer();
+      IoUtils.delete(SCHEMATA_DIR);
+   }    
+	
 }
 
