@@ -1,8 +1,5 @@
 package com.variant.client;
 
-import com.variant.client.impl.ClientUserError;
-
-
 /**
  * Thrown when client is unable to obtain a network connection to Variant server.
  * 
@@ -12,7 +9,7 @@ import com.variant.client.impl.ClientUserError;
 public class ServerConnectException extends VariantException {
 	
 	public ServerConnectException(String url) {
-		super(ClientUserError.SERVER_CONNECTION_TIMEOUT, url);
+		super(VariantError.SERVER_CONNECTION_TIMEOUT, url);
 	}
 
 }

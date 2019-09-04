@@ -6,7 +6,7 @@
 
 #!/bin/bash
 
-export version=0.10.0
+export version=0.10.1
 export version2=""
 
 function usage() {
@@ -40,7 +40,7 @@ cp $variant_root/CORE/target/variant-core*.jar $servlet_adapter_root/lib
 #
 # SERVER
 #
-${variant_root}/SERVER/mbin/release.sh
+${variant_root}/SERVER/release.sh
 cp $variant_root/SERVER/target/universal/variant-server-${version}.zip ${stage_dir}/server/variant-server-${version}${version2}.zip
 cp $variant_root/SERVER/target/universal/variant-server-extapi-${version}.jar $extapi_root/lib
 zip -rj ${stage_dir}/server/variant-server-extapi-${version}${version2}.zip $variant_root/SERVER/target/universal/variant-server-extapi-${version}.jar

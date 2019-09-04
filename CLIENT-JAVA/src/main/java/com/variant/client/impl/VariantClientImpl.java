@@ -6,6 +6,7 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.variant.client.VariantError;
 import com.variant.client.Connection;
 import com.variant.client.VariantClient;
 import com.variant.client.VariantException;
@@ -52,7 +53,7 @@ public class VariantClientImpl implements VariantClient {
 			// Parse the uri param
 			URI uri = URI.create(stringUri);
 			if (uri.getHost() == null || uri.getPath() == null || uri.getPort() < 0) {
-				throw new VariantException(ClientUserError.MALFORMED_VARIANT_URI, stringUri);
+				throw new VariantException(VariantError.MALFORMED_VARIANT_URI, stringUri);
 			}
 	
 			String schema = uri.getPath().substring(1);  // lose the leading /

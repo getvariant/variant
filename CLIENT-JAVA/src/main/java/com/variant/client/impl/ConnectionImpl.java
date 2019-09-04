@@ -1,5 +1,6 @@
 package com.variant.client.impl;
 
+import static com.variant.client.VariantError.*;
 import static com.variant.client.impl.ConfigKeys.SESSION_ID_TRACKER_CLASS;
 import static com.variant.client.impl.ConfigKeys.TARGETING_TRACKER_CLASS;
 
@@ -15,8 +16,6 @@ import com.variant.client.VariantClient;
 import com.variant.client.VariantException;
 import com.variant.client.net.Payload;
 import com.variant.client.util.MethodTimingWrapper;
-import static com.variant.client.impl.ClientUserError.*;
-
 import com.variant.core.error.UserError.Severity;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.parser.ParserMessage;

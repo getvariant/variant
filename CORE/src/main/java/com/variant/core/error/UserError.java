@@ -28,7 +28,7 @@ Range   Base         Major Area               Minor Area
 251-270              Internal
 271-300              User
 
-300-400 -- Available
+300-400 Client Adapter may use this range.
 
 401-600 Server Local 
 401-420              Server bootstrap

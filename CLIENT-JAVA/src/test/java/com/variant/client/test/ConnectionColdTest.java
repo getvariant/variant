@@ -4,13 +4,13 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 
+import com.variant.client.VariantError;
 import com.variant.client.Connection;
 import com.variant.client.ServerConnectException;
 import com.variant.client.Session;
 import com.variant.client.UnknownSchemaException;
 import com.variant.client.VariantClient;
 import com.variant.client.VariantException;
-import com.variant.client.impl.ClientUserError;
 import com.variant.client.impl.ConnectionImpl;
 import com.variant.client.test.util.ClientBaseTestWithServer;
 import com.variant.core.error.ServerError;
@@ -117,7 +117,7 @@ public class ConnectionColdTest extends ClientBaseTestWithServer {
 			
 			@Override public void onThrown(VariantException e) {
 				assertEquals(
-						ClientUserError.SERVER_CONNECTION_TIMEOUT.asMessage("localhost"), 
+						VariantError.SERVER_CONNECTION_TIMEOUT.asMessage("localhost"), 
 						e.getMessage());
 			}
 			
@@ -131,7 +131,7 @@ public class ConnectionColdTest extends ClientBaseTestWithServer {
 			
 			@Override public void onThrown(VariantException e) {
 				assertEquals(
-						ClientUserError.SERVER_CONNECTION_TIMEOUT.asMessage("localhost"), 
+						VariantError.SERVER_CONNECTION_TIMEOUT.asMessage("localhost"), 
 						e.getMessage());
 			}
 			
@@ -146,7 +146,7 @@ public class ConnectionColdTest extends ClientBaseTestWithServer {
 			
 			@Override public void onThrown(VariantException e) {
 				assertEquals(
-						ClientUserError.SERVER_CONNECTION_TIMEOUT.asMessage("localhost"), 
+						VariantError.SERVER_CONNECTION_TIMEOUT.asMessage("localhost"), 
 						e.getMessage());
 			}
 			

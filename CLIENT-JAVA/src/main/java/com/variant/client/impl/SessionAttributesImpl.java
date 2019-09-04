@@ -1,6 +1,6 @@
 package com.variant.client.impl;
 
-import static com.variant.client.impl.ClientUserError.PARAM_CANNOT_BE_NULL;
+import static com.variant.client.VariantError.PARAM_CANNOT_BE_NULL;
 
 import java.util.Collection;
 import java.util.Map;

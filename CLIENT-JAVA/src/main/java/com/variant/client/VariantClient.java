@@ -7,7 +7,6 @@ import static com.variant.client.impl.ConfigKeys.TARGETING_TRACKER_CLASS;
 
 import java.util.HashMap;
 
-import com.variant.client.impl.ClientUserError;
 import com.variant.client.impl.VariantClientImpl;
 import com.variant.core.util.immutable.ImmutableMap;
 
@@ -85,7 +84,7 @@ public interface VariantClient {
 		public Builder withTargetingTrackerClass(Class<? extends TargetingTracker> klass) {
 
 			if (!TargetingTracker.class.isAssignableFrom(klass))
-				throw new VariantException(ClientUserError.TARGETING_TRACKER_NO_INTERFACE, klass.getName());
+				throw new VariantException(VariantError.TARGETING_TRACKER_NO_INTERFACE, klass.getName());
 		
 			props.put(TARGETING_TRACKER_CLASS, klass);
 			return this;
@@ -100,7 +99,7 @@ public interface VariantClient {
 		public Builder withSessionIdTrackerClass(Class<? extends SessionIdTracker> klass) {
 
 			if (!SessionIdTracker.class.isAssignableFrom(klass))
-				throw new VariantException(ClientUserError.SESSION_ID_TRACKER_NO_INTERFACE, klass.getName());
+				throw new VariantException(VariantError.SESSION_ID_TRACKER_NO_INTERFACE, klass.getName());
 
 			props.put(SESSION_ID_TRACKER_CLASS, klass);
 			return this;
@@ -118,10 +117,10 @@ public interface VariantClient {
 		public VariantClient build() {
 			
 			if (props.get(TARGETING_TRACKER_CLASS) == null)
-				throw new VariantException(ClientUserError.TARGETING_TRACKER_MISSING);
+				throw new VariantException(VariantError.TARGETING_TRACKER_MISSING);
 			
 			if (props.get(SESSION_ID_TRACKER_CLASS) == null)
-				throw new VariantException(ClientUserError.SESSION_ID_TRACKER_MISSING);
+				throw new VariantException(VariantError.SESSION_ID_TRACKER_MISSING);
 
 			return new VariantClientImpl(new ImmutableMap<String, Object>(props));
 		}

@@ -5,13 +5,13 @@ import static org.junit.Assert.*;
 
 import java.util.List;
 
+import com.variant.client.VariantError;
 import com.variant.client.Connection;
 import com.variant.client.Session;
 import com.variant.client.StateRequest;
 import com.variant.client.TraceEvent;
 import com.variant.client.VariantClient;
 import com.variant.client.VariantException;
-import com.variant.client.impl.ClientUserError;
 import com.variant.client.impl.StateVisitedEvent;
 import com.variant.client.impl.TraceEventSupport;
 import com.variant.client.test.util.ClientBaseTestWithServer;
@@ -208,7 +208,7 @@ public class TraceEventsTest extends ClientBaseTestWithServer {
 				ssn.triggerTraceEvent(req.getStateVisitedEvent());
 			}
 			@Override public void onThrown(VariantException e) {
-				assertEquals(ClientUserError.CANNOT_TRIGGER_SVE, e.error);
+				assertEquals(VariantError.CANNOT_TRIGGER_SVE, e.error);
 			}
 		}.assertThrown(VariantException.class);
 

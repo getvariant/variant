@@ -17,7 +17,7 @@ if [[ x != "x$1" ]]; then
 fi
 
 # Project root.
-cd $(dirname $0)/..
+cd $(dirname $0)
 project_root=$(pwd)
 
 sbt clean dist
