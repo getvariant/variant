@@ -80,4 +80,12 @@ public interface Configuration {
     */
    int httpsPort();
 
+   /**
+    * Trace event flush size. This limits the number of FlushableTraceEvent objects in the collections passed to
+    * {@link TraceEventFlusher#flush(java.util.Collection)} method.
+    * 
+    * @since 0.10
+    */
+   int eventFlushSizse();
+
 }

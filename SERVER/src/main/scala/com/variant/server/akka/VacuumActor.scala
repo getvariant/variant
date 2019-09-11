@@ -1,14 +1,12 @@
-package com.variant.server.boot
+package com.variant.server.akka
 
 import scala.concurrent.duration._
-import scala.collection.mutable
-import com.variant.server.api.Configuration
 import akka.actor.Actor
 import com.typesafe.scalalogging.LazyLogging
 import java.time.Instant
-import java.time.{ Duration => JavaDuration }
-import com.variant.core.util.TimeUtils
 import akka.actor.Props
+import akka.actor.actorRef2Scala
+import com.variant.server.boot.VariantServer
 
 /**
  * Vacuuming actor.
@@ -20,6 +18,8 @@ import akka.actor.Props
 object VacuumActor {
 
    def props(implicit server: VariantServer): Props = Props(new VacuumActor(server))
+
+   val name  = "VacuumActor"
 
    /**
     * The only message VacuumActor responds to

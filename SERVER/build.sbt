@@ -14,7 +14,7 @@ name            := "Variant-Server"
 version         := "0.10.1"
 
 val akkaHttpVersion = "10.1.8"
-val akkaVersion     = "2.6.0-M4"
+val akkaVersion     = "2.5.25"
 val coreVersion     = "0.10.1"
 
 // Add local Maven repo for com.variant.core artifacts built with Maven.

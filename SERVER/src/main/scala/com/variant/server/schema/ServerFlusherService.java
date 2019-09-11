@@ -1,14 +1,10 @@
 package com.variant.server.schema;
 
-import java.net.URL;
-import java.net.URLClassLoader;
-import java.nio.file.Paths;
 import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.typesafe.config.ConfigException;
 import com.variant.core.schema.Flusher;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.parser.FlusherService;
@@ -70,10 +66,8 @@ public class ServerFlusherService extends FlusherService {
 		ParserResponse response = parser.responseInProgress();
 		
 		try {
-			// Create the Class object for the supplied LifecycleHook implementation.
-		   //for (URL url: ((URLClassLoader) ServerFlusherService.class.getClassLoader()).getURLs()) {
-		   //   System.out.println("****************** " + url);
-		   //}
+
+		   // Create the Class object for the supplied LifecycleHook implementation.
 			Object flusherObj = ClassUtil.instantiate(f.getClassName(), f.getInit());
 			
 			if (flusherObj == null) {
@@ -113,5 +107,5 @@ public class ServerFlusherService extends FlusherService {
 	 */
 	public Schema getSchema() {
 		return parser.responseInProgress().getSchema();
-	}
+	}	
 }

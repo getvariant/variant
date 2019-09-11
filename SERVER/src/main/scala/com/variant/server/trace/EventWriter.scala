@@ -11,22 +11,15 @@ import com.variant.core.util.TimeUtils
 import com.typesafe.scalalogging.LazyLogging
 import akka.event.jul.Logger
 
-class TraceEventWriter(private val flushService: ServerFlusherService)(implicit server: VariantServer) extends LazyLogging with ConfigKeys {
+class TraceEventWriter
+      (private val flushService: ServerFlusherService)
+      (implicit server: VariantServer) 
+   extends LazyLogging with ConfigKeys {
 
    private val config = server.config
 
    val flusher = flushService.getFlusher
 
-   val maxBufferSize = config.eventWriterBufferSize
-
-   // We're full if 50% or more of max buffer is taken.
-   val fullSize = math.round(maxBufferSize * 0.5F)
-
-   // We're empty if 1% or less of max buffer is taken.
-   val emptySize = math.round(maxBufferSize * 0.01F)
-
-   // Force flush after this long, even if still empty.
-   val maxDelayMillis = config.eventWriterMaxDelay * 1000
 
    // The underlying buffer is a non-blocking, unbounded queue. We will enforce the soft upper bound,
    // refusing inserts that will put the queue size over the limit, but not worrying about
@@ -60,7 +53,15 @@ class TraceEventWriter(private val flushService: ServerFlusherService)(implicit 
     * Cannot be used after this.
     */
    def shutdown() {
+      // Destroy the flusher thread.
+      // TODO this should be an actor
       flusherThread.interrupt()
+
+      // One last flush
+      flush()
+
+      flusher.destroy()
+
       logger.debug("Event writer shutdown.");
    }
 

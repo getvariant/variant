@@ -6,6 +6,8 @@ import com.variant.server.boot.ServerMessageLocal
 import com.variant.server.boot.ServerExceptionLocal
 import com.variant.server.boot.ServerExceptionInternal
 import com.typesafe.scalalogging.LazyLogging
+import com.variant.server.boot.VariantServer
+import com.variant.server.akka.FlusherActor
 
 /**
  * A mutable set of schema generations, all sharing the same schema name and origin.
@@ -17,7 +19,10 @@ import com.typesafe.scalalogging.LazyLogging
  *
  * Cleaned up by the vacuum thread after all generations are gone.
  */
-class ServerSchema(private val seed: SchemaGen) extends LazyLogging {
+class ServerSchema
+      (private val seed: SchemaGen)
+      (implicit server: VariantServer) 
+   extends LazyLogging {
 
    // The top of the stack is the live gen.
    private[this] val gens = new ListBuffer[SchemaGen]()
@@ -50,10 +55,9 @@ class ServerSchema(private val seed: SchemaGen) extends LazyLogging {
          throw ServerExceptionLocal(ServerMessageLocal.SCHEMA_CANNOT_REPLACE, name, origin, gen.origin)
 
       val oldLive = liveGen
-      gen.state = SchemaGen.State.Live
       gen +=: gens
-      oldLive.foreach { undeployGen(_) }
-
+      gen.goLive()
+      oldLive.map { undeployGen(_) }
    }
 
    /**
@@ -70,17 +74,13 @@ class ServerSchema(private val seed: SchemaGen) extends LazyLogging {
    /**
     * Undeploy a particular gen
     */
-   private[this] def undeployGen(gen: SchemaGen) {
-      gen.state = SchemaGen.State.Dead
-      gen.eventWriter.shutdown()
-      logger.info(s"Undeployed generation ID [${gen.id}] in schema [${name}]")
-   }
+   private[this] def undeployGen(gen: SchemaGen) { gen.goDead() }
 
    /**
     * Undeploy the live gen
     */
    def undeployLiveGen() {
-      liveGen.foreach { gen =>
+      liveGen.map { gen =>
          gen.state = SchemaGen.State.Dead
          gen.eventWriter.shutdown()
          logger.info(s"Undeployed generation ID [${gen.id}] in schema [${name}]")

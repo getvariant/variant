@@ -105,6 +105,8 @@ class ConfigurationImpl(config: Config) extends Configuration with ConfigKeys {
 
    override def eventWriterMaxDelay: Int = getInt(EVENT_WRITER_MAX_DELAY)
 
+   override def eventflushSize: Int = getInt(EVENT_FLUSH_SIZE)
+
    /*--------------------------------------------------------------------------------*/
    /*                                  PUBLIC EXT                                    */
    /*--------------------------------------------------------------------------------*/

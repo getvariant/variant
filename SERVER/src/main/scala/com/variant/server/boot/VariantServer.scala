@@ -29,6 +29,9 @@ import akka.http.scaladsl.model.headers.ProductVersion
 import akka.http.scaladsl.settings.ServerSettings
 import play.api.libs.json._
 import play.api.libs.json.Json.JsValueWrapper
+import com.variant.server.akka.VacuumActor
+import com.variant.server.akka.Actors
+import akka.actor.Actor
 
 /**
  * The Main class.
@@ -135,7 +138,7 @@ object VariantServer {
  */
 class VariantServerImpl(builder: VariantServer.Builder)(override implicit val actorSystem: ActorSystem)
 
-   extends VariantServer with LazyLogging {
+   extends VariantServer with Actor with LazyLogging {
 
    import VariantServer._
 
@@ -195,7 +198,7 @@ class VariantServerImpl(builder: VariantServer.Builder)(override implicit val ac
 
    // Thread 2: Server backend init.
    val serverInitTask = Future {
-      actorSystem.actorOf(VacuumActor.props, name = "vacuumActor")
+      actorSystem.actorOf(VacuumActor.props, name = VacuumActor.name)
       useSchemaDeployer(SchemaDeployer.fromFileSystem(this))
    }
    // Block indefinitely for when both futures are completed...
