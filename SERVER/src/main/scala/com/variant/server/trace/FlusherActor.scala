@@ -1,14 +1,10 @@
-package com.variant.server.akka
-
+package com.variant.server.trace
+/*
 import akka.actor.Actor
 import com.typesafe.scalalogging.LazyLogging
 import java.time.Instant
 import akka.actor.Props
-import akka.actor.actorRef2Scala
-import com.variant.server.boot.VariantServer
 import com.variant.server.api.FlushableTraceEvent
-import java.util.concurrent.ConcurrentLinkedQueue
-import scala.concurrent.duration.FiniteDuration
 import scala.concurrent.duration._
 import com.variant.server.api.TraceEventFlusher
 import com.variant.core.util.TimeUtils
@@ -19,9 +15,17 @@ import java.time.Duration
  */
 object FlusherActor {
 
+   // Globally accessible sole vacuum actor.
+   private[this] var _ref: ActorRef = _
+
+   def ref = _ref
+   
+   // Start the sole vacuum actor.
+   def start(server: VariantServer) {
+      _ref = server.actorSystem.actorOf(Props(new FlusherActor(server)), name = "FlusherActor")
+   }
    def props(flusher: TraceEventFlusher): Props = Props(new FlusherActor(flusher))
    
-   val name = "FlusherActor"
 
    /**
     * Protocol.
@@ -30,7 +34,7 @@ object FlusherActor {
        
 }
 
-class FlusherActor(flusher: TraceEventFlusher) extends Actor with LazyLogging {
+private class FlusherActor(flusher: TraceEventFlusher) extends Actor with LazyLogging {
 
    import FlusherActor._
 
@@ -51,7 +55,12 @@ class FlusherActor(flusher: TraceEventFlusher) extends Actor with LazyLogging {
             case t: Throwable => {
                logger.error("Unhandled exception (ignored)", t)
             }
-         }   
+         }
+         finally {
+            
+         }
    }
 
 }
+
+*/

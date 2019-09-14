@@ -7,7 +7,7 @@ import com.variant.server.boot.ServerExceptionLocal
 import com.variant.server.boot.ServerExceptionInternal
 import com.typesafe.scalalogging.LazyLogging
 import com.variant.server.boot.VariantServer
-import com.variant.server.akka.FlusherActor
+import com.variant.server.trace.FlusherActor
 
 /**
  * A mutable set of schema generations, all sharing the same schema name and origin.

@@ -10,7 +10,7 @@ class SpinLock {
     * Execute a block of code in isolation, protected by this spin lock.
     * Hides the lock/unlock details.
     */
-   def synchronized(block: =>Unit) {
+   def synchronized[T](block: =>T): T = {
       lock()      
       try { 
          block 

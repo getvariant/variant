@@ -1,4 +1,4 @@
-package com.variant.server.akka
+package com.variant.server.boot
 
 import scala.concurrent.duration._
 import akka.actor.Actor
@@ -6,7 +6,7 @@ import com.typesafe.scalalogging.LazyLogging
 import java.time.Instant
 import akka.actor.Props
 import akka.actor.actorRef2Scala
-import com.variant.server.boot.VariantServer
+import akka.actor.ActorRef
 
 /**
  * Vacuuming actor.
@@ -17,9 +17,15 @@ import com.variant.server.boot.VariantServer
  */
 object VacuumActor {
 
-   def props(implicit server: VariantServer): Props = Props(new VacuumActor(server))
+   // Globally accessible sole vacuum actor.
+   private[this] var _ref: ActorRef = _
 
-   val name  = "VacuumActor"
+   def ref = _ref
+    
+   // Start the sole vacuum actor.
+   def start(server: VariantServer) {
+      _ref = server.actorSystem.actorOf(Props(new VacuumActor(server)), name = "VacuumActor")
+   }
 
    /**
     * The only message VacuumActor responds to
@@ -27,7 +33,7 @@ object VacuumActor {
    case object VacuumNow
 }
 
-class VacuumActor(server: VariantServer) extends Actor with LazyLogging {
+private class VacuumActor(server: VariantServer) extends Actor with LazyLogging {
 
    import VacuumActor._
 

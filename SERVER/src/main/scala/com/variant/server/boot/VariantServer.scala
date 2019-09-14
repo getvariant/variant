@@ -10,7 +10,6 @@ import scala.concurrent.duration.Duration
 import scala.util.Failure
 import scala.util.Success
 import scala.util.Try
-
 import com.typesafe.scalalogging.LazyLogging
 import com.variant.core.util.TimeUtils
 import com.variant.server.api.Configuration
@@ -19,7 +18,6 @@ import com.variant.server.impl.ConfigurationImpl
 import com.variant.server.routes.Router
 import com.variant.server.schema.SchemaDeployer
 import com.variant.server.schema.Schemata
-
 import akka.actor.ActorSystem
 import akka.http.scaladsl.Http
 import akka.stream.ActorMaterializer
@@ -29,9 +27,9 @@ import akka.http.scaladsl.model.headers.ProductVersion
 import akka.http.scaladsl.settings.ServerSettings
 import play.api.libs.json._
 import play.api.libs.json.Json.JsValueWrapper
-import com.variant.server.akka.VacuumActor
-import com.variant.server.akka.Actors
 import akka.actor.Actor
+import com.variant.server.trace.FlusherRouter
+import com.variant.server.trace.EventBufferCache
 
 /**
  * The Main class.
@@ -46,6 +44,8 @@ trait VariantServer {
    val ssnStore: SessionStore
 
    val actorSystem: ActorSystem
+   
+   def eventBufferCache: EventBufferCache
 
    val bootExceptions = mutable.ArrayBuffer[ServerException]()
 
@@ -148,7 +148,8 @@ class VariantServerImpl(builder: VariantServer.Builder)(override implicit val ac
 
    private[this] var _schemaDeployer: SchemaDeployer = _
    private[this] var binding: Option[Http.ServerBinding] = None
-
+   private[this] var _eventBufferCache: EventBufferCache = _
+   
    //
    // Attempt to load the external configuration first. Let it fail if a problem,
    // since there's no future before a config.
@@ -198,7 +199,9 @@ class VariantServerImpl(builder: VariantServer.Builder)(override implicit val ac
 
    // Thread 2: Server backend init.
    val serverInitTask = Future {
-      actorSystem.actorOf(VacuumActor.props, name = VacuumActor.name)
+      _eventBufferCache = new EventBufferCache(this)
+      VacuumActor.start(this)
+      FlusherRouter.start(this)
       useSchemaDeployer(SchemaDeployer.fromFileSystem(this))
    }
    // Block indefinitely for when both futures are completed...

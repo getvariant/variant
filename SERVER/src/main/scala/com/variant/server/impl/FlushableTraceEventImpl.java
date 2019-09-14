@@ -19,6 +19,7 @@ import com.variant.server.api.FlushableTraceEvent;
 import com.variant.server.api.Session;
 import com.variant.server.api.StateRequest;
 import com.variant.server.api.TraceEvent;
+import com.variant.server.schema.ServerFlusherService;
 
 /**
  * Flushable event implementation suitable for the server.
@@ -39,18 +40,20 @@ public class FlushableTraceEventImpl implements FlushableTraceEvent, Serializabl
 	private final Instant timestamp = Instant.now();
 	// Live experiences in effect at the time the event was triggered.
 	private final Set<Experience> liveExperiences = new HashSet<Experience>();
-
+	private final ServerFlusherService flusherService;
+	
 	/**
 	 * Constructor
 	 * @return
 	 */
-	public FlushableTraceEventImpl(TraceEvent event, Session session) {
+	public FlushableTraceEventImpl(TraceEvent event, SessionImpl session) {
 		this.userEvent =  event;
 		this.sessionId = session.getId();
 		Optional<StateRequest> reqOpt = session.getStateRequest();
-		if (reqOpt.isPresent()) 
+		if (reqOpt.isPresent()) {
 			for (Experience e: reqOpt.get().getLiveExperiences()) liveExperiences.add(e);
-	
+		}
+		flusherService = session.getSchemaGen().getFlusherService();
 	}
 
 	
@@ -100,6 +103,10 @@ public class FlushableTraceEventImpl implements FlushableTraceEvent, Serializabl
 	 */
 	public TraceEvent getOriginalEvent() {
 		return userEvent;
+	}
+	
+	public ServerFlusherService getFlusherService() {
+	   return flusherService;
 	}
 	
 	/**

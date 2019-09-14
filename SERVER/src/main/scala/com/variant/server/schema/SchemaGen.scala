@@ -11,7 +11,7 @@ import com.variant.server.impl.TraceEventWriter
 import com.variant.server.util.JavaImplicits._
 import com.variant.server.boot.VariantServer
 import com.variant.server.boot.ServerExceptionInternal
-import com.variant.server.akka.FlusherActor
+import com.variant.server.trace.FlusherActor
 import akka.actor.ActorRef
 import akka.actor.PoisonPill
 

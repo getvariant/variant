@@ -10,46 +10,25 @@ import scala.concurrent.duration.FiniteDuration
 import java.util.concurrent.TimeUnit
 import java.time.Instant
 import com.variant.server.util.SpinLock
+import com.variant.server.api.TraceEventFlusher
+import com.variant.server.schema.ServerFlusherService
+import com.variant.server.impl.FlushableTraceEventImpl
+import com.variant.server.boot.VariantServer
+import akka.actor.ActorRef
+import com.variant.server.akka.FlusherRouter
 
 /**
- * Trace event queue.
- * Event producers put events to this queue. `FlusherActor`s take events from this queue 
- * and pass them to `Flusher`s.
- * 
- *  The Underlying data structure is Java's concurrent infinitely growable ConcurrentLinkedQueue,
- *  whose size() method has linear complexity. Since we use size() quite a bit, we introduce the
- *  atomic counter to make the complexity of size() constant.
- * 
+ * Trace event buffer cache.
+ *
  */
-class EventBufferCache(val bufferSize: Int, val buffers: Int) {
+class EventBufferCache(server: VariantServer) {   
 
-   private object Entry {
-      val FREE = 0
-      val CURRENT = 1
-      val PENDING = 2
-      val FLUSHING = 3
-   }
+   val bufferSize = server.config.eventFlushSizse
+   val buffers = Math.ceil(server.config.eventWriterBufferSize.asInstanceOf[Float]/bufferSize).toInt
    
-   private class Entry {
-  
-      import Entry._
-  
-      var timestamp = Instant.now
-      var status: Int = FREE
-      val buffer = new Array[FlushableTraceEvent](bufferSize)
-      val bufferIx = new AtomicInteger(0)     
-   }
+   // Buffer header table (BHT)
+   private[this] val headerTable = new Array[Header](buffers)
 
-   // Cache entries
-   private[this] val entryList = new Array[Entry](buffers)
-   
-   // Overflow buffer for events that came during switch to new buffer.
-   private[this] val overflowBuffer = new Array[FlushableTraceEvent](Math.ceil(bufferSize.asInstanceOf[Double]/2).toInt)
-   private[this] val overflowBufferIx = new AtomicInteger(0)
-      
-   // Index of the current entry in the entry list.
-   private[this] var currentEntry: Option[Entry] = None
-   
    /**
     * We were unable to find room for an event and need to discard it.
     * When this happens, we want to emit warning messages every once in a while.
@@ -61,87 +40,120 @@ class EventBufferCache(val bufferSize: Int, val buffers: Int) {
    private[this] var lastDiscardMessageTimetamp = Instant.now
    private[this] val discardCount = new AtomicInteger(0) 
    
+   private[this] val headerTableLatch = new SpinLock
+
    /**
     * Find new current buffer. Must be thread safe because may be called by foreground threads 
     * and by agents via read().
     */
-   private[this] def advanceCurrentBuffer() {
-      
-      // Switch to the next free buffer, if any.
-      currBufferAdvanceSpinLock.synchronized {
+   private[this] def findFreeBufferFor(event: FlushableTraceEventImpl): Boolean = {
 
-         currentEntry = 
-            entryList
-               .filter(_.status == Entry.FREE)
-               .reduceOption{ (x,y) => if (x.timestamp.isBefore(y.timestamp)) x else y }
-         
+      headerTableLatch.synchronized {
+ 
+         // Confirm there's still no current buffer for the given flusher service.
+         headerTable.find(head => head.status == HeaderStatus.CURRENT && head.flusherService == event.getFlusherService) match {
+            
+         case Some(head: Header) =>
+            // The current buffer has just been created by another thread. Use it
+            // NB: we are ignoring the extremely unlikely case that this new current buffer that was just created.
+            // may already be full.
+            head.buffer(head.bufferIx.incrementAndGet) = event;
+            true
+            
+         case None =>
+            // Indeed, no current buffer for the given flusher service. Look for a free buffer now
+            // and if successful make in the new current buffer.
+            
+            headerTable.find(_.status == HeaderStatus.FREE) match {
+               
+               // We found a free buffer. Make it current, suitable for the event and store the event at slot 0.
+               case Some(head) => 
+                  head.status = HeaderStatus.CURRENT
+                  head.buffer(0) = event
+                  head.bufferIx.set(0)
+                  head.flusherService = event.getFlusherService
+                  true
+                  
+               case None =>   
+                  false
+            }         
+         }
       }
-      
-      // Ping F
    }
-   val currBufferAdvanceSpinLock = new SpinLock
    
    /**
     * Add single event to the queue. Must be thread safe because called by foreground threads.
     */
-   def write(event: FlushableTraceEvent) {
-      
-      currentEntry match {
+   def write(event: FlushableTraceEventImpl) {
+
+      headerTable.find {
+         head => head.status == HeaderStatus.CURRENT && head.flusherService == event.getFlusherService 
+      }
+      match {
          
-         case Some(ce) =>
-            // We got current entry in the buffer cache table.
-            val buffIx = ce.bufferIx.incrementAndGet()
-            if (buffIx < bufferSize) {
-               // Current buffer has room. Insert there.
-               ce.buffer(buffIx) = event
+      case Some(head: Header) =>
+         // We found the current header.
+         val buffIx = head.bufferIx.incrementAndGet()
+         if (buffIx < bufferSize) {
+            // Current buffer has room, use it!
+            head.buffer(buffIx) = event
+         }
+         else if (buffIx >= bufferSize) {
+
+            // If we are first to overflow the current buffer, send it off to the flusher router.
+            if (buffIx == bufferSize) {
+               // Current buffer just ran out of room and it's on us to try looking for a new one.
+               head.status = HeaderStatus.FLUSHING
+               FlusherRouter.ref ! FlusherRouter.Flush(head)
             }
-            else if (buffIx == bufferSize) {
-               // Current buffer just ran out of room and it's on us to try looking for new current buffer.
-               /// Current Entry Switch
-            }
-            else {
-               // Current buffer just ran out of room, and some one else is looking for the new current buffer.
-               // Optimistically, try adding to the overflow buffer.
-               val overflowBuffIx = overflowBufferIx.incrementAndGet()
-               if (overflowBuffIx < overflowBuffer.size) {
-                  // Overflow buffer has room
-                  overflowBuffer(overflowBuffIx) = event
-               }
-               else {
-                  // The overflow buffer also ran out of room
-                  discard(event)
-               }
+
+            // Try to find a new current buffer and if successful stick the event in there.
+            if (!findFreeBufferFor(event)) {
+               discard(event)
             }
             
-         case None =>
-            // No current entry in the buffer cache table.  Try to make one.
-            advanceCurrentBuffer()
-            
-            // If we were able to find a free buffer and make it current, reenter this method. In theory,
-            // it's a race condition, but in practice it's not likely that the current buffer will get all filled
-            // up underneath us.
-            if (currentEntry.isDefined) write(event)
-            else discard(event)
+         }
+         
+      case None =>
+            // No current buffer.  
+            // Try to find a new current buffer and if successful stick the event in there.
+            if (!findFreeBufferFor(event)) {
+               discard(event)
+            }
       }
    }
    
    /**
-    * Read and delete from the queue at most given number of elements.
-    * Return the number of events we've actually put in the buffer.
+    * Called by FlusherRouter actor whenever it determines that min flushing delay has been reached since the last flush.
     */
-   def read(buffer: Array[FlushableTraceEvent]): Int = {
-   
-      var counter = 0
-      var next: FlushableTraceEvent = null
-      do {
-         next = queue.poll()
-         if (next != null) {
-            buffer(counter) = next
-            counter += 1 
-         }
-      } while (counter < buffer.size && next != null)
+   def flushAll() {
 
-         _size.addAndGet(-counter)
+      headerTableLatch.synchronized {
+         
+         headerTable.filter(_.status == HeaderStatus.CURRENT).foreach { head =>
+            head.status = HeaderStatus.FLUSHING
+            FlusherRouter.ref ! FlusherRouter.Flush(head)
+         }
+      }
    }
  
+}
+
+/**
+ * Buffer header.
+ */
+object HeaderStatus {
+   val FREE = 0
+   val CURRENT = 1
+   val FLUSHING = 2
+}
+
+class Header(bufferSize: Int) {
+    
+   var status: Int = HeaderStatus.FREE
+   val buffer = new Array[FlushableTraceEvent](bufferSize)
+   val bufferIx = new AtomicInteger(0)
+   
+   // Target flusher service which will be responsible for flushing this event
+   var flusherService: ServerFlusherService = _
 }
