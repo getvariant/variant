@@ -39,15 +39,14 @@ object SchemaGen {
 class SchemaGen(val response: ParserResponse, val origin: String)(implicit server: VariantServer) extends CoreSchema {
 
    import SchemaGen._
-   
+
    private[this] val coreSchema = response.getSchema
 
    private[this] var _state = State.New
-   
+
    private[this] var flusherActorRef: ActorRef = _
 
    val id = StringUtils.random64BitString(SchemaGen.rand)
-
 
    /**
     * Number of sessions connected to this schema generation.
@@ -79,24 +78,24 @@ class SchemaGen(val response: ParserResponse, val origin: String)(implicit serve
    /*------------------------------------ Public Extensions ------------------------------------*/
 
    def state = _state
-   
+
    val runtime = new Runtime(this)
 
    val source = response.getSchemaSrc
-   
+
    val hooksService = response.getParser.getHooksService.asInstanceOf[ServerHooksService]
-   
+
    val flusherService = response.getParser.getFlusherService.asInstanceOf[ServerFlusherService]
-   
+
    //val eventWriter = new TraceEventWriter(flusherService)
 
    def goLive() {
       if (state != State.New) throw ServerExceptionInternal(s"Inconsistent state ${state} when New expected")
       _state = State.Live
       flusherActorRef = server.actorSystem.actorOf(FlusherActor.props, name = FlusherActor.name)
-      
+
    }
-   
+
    def goDead() {
       if (state != State.Live) throw ServerExceptionInternal(s"Inconsistent state ${state} when Live expected")
       _state = State.Dead

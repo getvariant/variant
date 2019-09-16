@@ -19,9 +19,7 @@ import com.variant.server.trace.FlusherActor
  *
  * Cleaned up by the vacuum thread after all generations are gone.
  */
-class ServerSchema
-      (private val seed: SchemaGen)
-      (implicit server: VariantServer) 
+class ServerSchema(private val seed: SchemaGen)(implicit server: VariantServer)
    extends LazyLogging {
 
    // The top of the stack is the live gen.

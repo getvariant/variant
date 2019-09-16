@@ -44,7 +44,7 @@ trait VariantServer {
    val ssnStore: SessionStore
 
    val actorSystem: ActorSystem
-   
+
    def eventBufferCache: EventBufferCache
 
    val bootExceptions = mutable.ArrayBuffer[ServerException]()
@@ -149,7 +149,7 @@ class VariantServerImpl(builder: VariantServer.Builder)(override implicit val ac
    private[this] var _schemaDeployer: SchemaDeployer = _
    private[this] var binding: Option[Http.ServerBinding] = None
    private[this] var _eventBufferCache: EventBufferCache = _
-   
+
    //
    // Attempt to load the external configuration first. Let it fail if a problem,
    // since there's no future before a config.

@@ -19,19 +19,19 @@ object FlusherActor {
    private[this] var _ref: ActorRef = _
 
    def ref = _ref
-   
+
    // Start the sole vacuum actor.
    def start(server: VariantServer) {
       _ref = server.actorSystem.actorOf(Props(new FlusherActor(server)), name = "FlusherActor")
    }
    def props(flusher: TraceEventFlusher): Props = Props(new FlusherActor(flusher))
-   
+
 
    /**
     * Protocol.
     */
    final case class Flush(buff: Array[FlushableTraceEvent], size: Int)
-       
+
 }
 
 private class FlusherActor(flusher: TraceEventFlusher) extends Actor with LazyLogging {
@@ -57,10 +57,10 @@ private class FlusherActor(flusher: TraceEventFlusher) extends Actor with LazyLo
             }
          }
          finally {
-            
+
          }
    }
 
 }
 
-*/
+*/ 

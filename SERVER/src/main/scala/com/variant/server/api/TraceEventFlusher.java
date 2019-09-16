@@ -66,5 +66,5 @@ public interface TraceEventFlusher {
     * @since 0.10
     */
    default void destroy() throws Exception {}
-	
+
 }

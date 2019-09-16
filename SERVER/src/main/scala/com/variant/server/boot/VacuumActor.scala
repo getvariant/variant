@@ -21,7 +21,7 @@ object VacuumActor {
    private[this] var _ref: ActorRef = _
 
    def ref = _ref
-    
+
    // Start the sole vacuum actor.
    def start(server: VariantServer) {
       _ref = server.actorSystem.actorOf(Props(new VacuumActor(server)), name = "VacuumActor")

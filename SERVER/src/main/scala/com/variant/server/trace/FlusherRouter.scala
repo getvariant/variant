@@ -12,18 +12,23 @@ import scala.concurrent.duration._
 import com.variant.server.schema.ServerFlusherService
 import com.variant.server.api.TraceEventFlusher
 import akka.actor.ActorRef
-import com.variant.server.trace.FlusherActor
 import scala.concurrent.Future
+import com.variant.server.trace.EventBufferCache
+import com.variant.server.boot.ServerExceptionInternal
+import com.variant.core.util.TimeUtils
+import java.time.Duration
+import scala.concurrent.ExecutionContext
+import java.util.concurrent.ExecutorService
+import akka.dispatch.ExecutorServiceFactory
+import java.util.concurrent.Executors
+import scala.util.{Success, Failure}
+import com.variant.server.boot.ServerMessageLocal
 
 /**
  * Trace event flusher Actor.
  */
 object FlusherRouter {
 
-   def props(service: ServerFlusherService): Props = {
-      
-      Props(new FlusherActor(server))
-   }   
    private[this] var _ref: ActorRef = _
    
       // Start the sole vacuum actor.
@@ -38,84 +43,63 @@ object FlusherRouter {
     */
    final case class Flush(header: EventBufferCache.Header)
 
-   final object FlushAll
-
 }
 
-private class FlusherRouter 
-   (flusherService: ServerFlusherService) 
-   (impilcit server: VariantServer) extends Actor with LazyLogging {
+private class FlusherRouter(server: VariantServer) extends Actor with LazyLogging {
 
-   import FlusherAdminActor._
+   import FlusherRouter._
 
-   // Event bufferFlush each time there's flushSize worth of events available,
-   // but not less frequently than configurable max delay
-   val maxDelayMillis = server.config.eventWriterMaxDelay * 1000
-   
-   //val 
-   /**
-    * Event buffer cache will send us buffers as soon as they fill up.
-    * But in order to accommodate the max delay config parameter,
-    * we schedule additional flushes here.
-    */
-   override def preStart() = {
-      
-      // Create the flusher actors
-      flusherActors(1) = flusherService.getFlusher
-      
-      implicit val ec = server.actorSystem.dispatcher
-      context.system.scheduler.schedule(
-            initialDelay = FiniteDuration(maxDelayMillis, MILLISECONDS),
-            interval = FiniteDuration(maxDelayMillis, MILLISECONDS)) 
-         {
-            self ! FlushAll
-         }
-   }
+   val poolSize = Math.ceil(Runtime.getRuntime.availableProcessors * server.config.eventFlushParallelism).toInt
+         
+   implicit val ec = ExecutionContext.fromExecutor(Executors.newFixedThreadPool(poolSize))
 
    /**
     * Process the flush msg.
     */
    override def receive() = {
-
-      case Flush(header: BufferCache.Header) =>
+            
+      case Flush(header: EventBufferCache.Header) =>
+         
+         val flusher = header.flusherService.getFlusher  // Just one for now.
          
          Future {
-
-         } 
+            
+            // We can trust bufferIx, so long as it's <= max siize.
+            val actualLength = header.bufferIx.get min header.buffer.length 
+            
+            // Consistency check. 
+            for (i <- 0 to actualLength) {
+               if (header.buffer(i) == null) {
+                  throw ServerExceptionInternal("Inconsitent buffer")
+               }
+            }
+            
+            doFlush(header, actualLength, flusher)
+            
+         } onComplete {
+             
+            case Success(_) =>  // AOK nothing todo.
+               
+            case Failure(t: Throwable) =>
+               logger.error(ServerMessageLocal.FLUSHER_CLIENT_ERROR.asMessage(flusher.toString))
+         }
          
-      cashe FlushAll => 
-         flusherService.
-   }
-
-   /**
-    * We're going down. Flush what's still on the queue.
-    */
-   override def postStop() {
-      flush()      
    }
    
    /**
     * Flush the buffer pointed to by a given header.
     */
-   private[this] def doFlush(header: BufferCache.Header, flusher: TraceEventFlusher) {
+   private[this] def doFlush(header: EventBufferCache.Header, size: Int, flusher: TraceEventFlusher) {
 
       val start = Instant.now
-            
-      logger.debug(s"About to flush ${size} events...")
-      try {
-         
-         // We can trust the buffer index, so long as it's < buff size.
-         val len = header.bufferIx.get min bufferSize
       
-         // Consistency check. 
-         for (i <- 0 to len) {
-            if (header.buffer(i) == null)
-               throw ServerExceptionInternal("Inconsitent buffer")
-            }
-         }
-
-         flusher.flush(header.buffer, len)
-         logger.info(s"Flushed ${len} event(s) in " + TimeUtils.formatDuration(Duration.between(start, Instant.now())))
+      
+      logger.debug(s"About to flush ${size} trace events")
+      try {
+               
+         flusher.flush(header.buffer, size)
+         
+         logger.info(s"Flushed ${size} event(s) in " + TimeUtils.formatDuration(Duration.between(start, Instant.now())))
       } catch {
          case t: Throwable => {
             logger.error("Unhandled exception (ignored)", t)
@@ -126,7 +110,7 @@ private class FlusherRouter
          // We null out the array as extra precaution, in case next time
          // this buffer is flushed the client code in TraceEventFlusher.flush()
          // fails to honor the size parameter and attempts to flush all events.
-         for (i <- 0 to head.buffer.length) head.buffer(i) = null
+         for (i <- 0 to header.buffer.length) header.buffer(i) = null
       }
    }
 

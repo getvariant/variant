@@ -65,7 +65,7 @@ object ServerMessageLocal {
    val HOOK_STATE_SCOPE_VIOLATION =
       new ServerMessageLocal(427, Severity.ERROR, "Lifecycle hook defined at [%s], cannot listen to lifecycle event [%s]");
 
-   val HOOK_TEST_SCOPE_VIOLATION =
+   val HOOK_VARIATION_SCOPE_VIOLATION =
       new ServerMessageLocal(428, Severity.ERROR, "Lifecycle hook defined at [%s], cannot listen to lifecycle event [%s]");
 
    /*	val FLUSHER_NOT_CONFIGURED =
@@ -88,6 +88,15 @@ object ServerMessageLocal {
 
    val SERVER_SHUTDOWN =
       new ServerMessageLocal(435, Severity.INFO, "%s shutdown on  port [%s], uptime %s.");
+
+   //
+   // 501-520 Misc Runtime
+   //
+   val TRASHED_EVENTS_COUNT =
+      new ServerMessageLocal(501, Severity.WARN, "Trashed [%s] trace events in the last [%s]. Consider increasing variant.event.writer.buffer.size");
+
+   val FLUSHER_CLIENT_ERROR =
+      new ServerMessageLocal(502, Severity.ERROR, "Flusher [%s] thew unexpected exception");
 
 }
 

@@ -11,15 +11,12 @@ import com.variant.core.util.TimeUtils
 import com.typesafe.scalalogging.LazyLogging
 import akka.event.jul.Logger
 
-class TraceEventWriter
-      (private val flushService: ServerFlusherService)
-      (implicit server: VariantServer) 
+class TraceEventWriter(private val flushService: ServerFlusherService)(implicit server: VariantServer)
    extends LazyLogging with ConfigKeys {
 
    private val config = server.config
 
    val flusher = flushService.getFlusher
-
 
    // The underlying buffer is a non-blocking, unbounded queue. We will enforce the soft upper bound,
    // refusing inserts that will put the queue size over the limit, but not worrying about

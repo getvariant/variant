@@ -82,6 +82,23 @@ class ConfigurationImpl(config: Config) extends Configuration with ConfigKeys {
       }
    }
 
+   /**
+    * Float getter.
+    * @param key
+    * @return
+    */
+   private[this] def getFloat(key: String): Float = {
+      try {
+         config.getDouble(key).toFloat
+      } catch {
+         case e: ConfigException.Missing =>
+            throw ServerExceptionLocal(CONFIG_PROPERTY_NOT_SET, key)
+
+         case e: ConfigException.WrongType =>
+            throw ServerExceptionLocal(CONFIG_PROPERTY_WRONG_TYPE, key, ConfigValueType.NUMBER.toString, config.getValue(key).valueType.toString)
+      }
+   }
+
    /*--------------------------------------------------------------------------------*/
    /*                               PUBLIC INTERFACE                                 */
    /*--------------------------------------------------------------------------------*/
@@ -106,6 +123,8 @@ class ConfigurationImpl(config: Config) extends Configuration with ConfigKeys {
    override def eventWriterMaxDelay: Int = getInt(EVENT_WRITER_MAX_DELAY)
 
    override def eventflushSize: Int = getInt(EVENT_FLUSH_SIZE)
+
+   override def eventFlushParallelism: Float = getFloat(EVENT_FLUSH_PARALLELISM)
 
    /*--------------------------------------------------------------------------------*/
    /*                                  PUBLIC EXT                                    */
