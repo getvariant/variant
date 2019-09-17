@@ -7,12 +7,9 @@ import com.variant.core.schema.{ Schema => CoreSchema }
 import com.variant.core.schema.parser.ParserResponse
 import com.variant.core.util.StringUtils
 import com.variant.server.boot.Runtime
-import com.variant.server.impl.TraceEventWriter
 import com.variant.server.util.JavaImplicits._
 import com.variant.server.boot.VariantServer
 import com.variant.server.boot.ServerExceptionInternal
-import com.variant.server.trace.FlusherActor
-import akka.actor.ActorRef
 import akka.actor.PoisonPill
 
 /**
@@ -43,8 +40,6 @@ class SchemaGen(val response: ParserResponse, val origin: String)(implicit serve
    private[this] val coreSchema = response.getSchema
 
    private[this] var _state = State.New
-
-   private[this] var flusherActorRef: ActorRef = _
 
    val id = StringUtils.random64BitString(SchemaGen.rand)
 
@@ -92,15 +87,12 @@ class SchemaGen(val response: ParserResponse, val origin: String)(implicit serve
    def goLive() {
       if (state != State.New) throw ServerExceptionInternal(s"Inconsistent state ${state} when New expected")
       _state = State.Live
-      flusherActorRef = server.actorSystem.actorOf(FlusherActor.props, name = FlusherActor.name)
 
    }
 
    def goDead() {
       if (state != State.Live) throw ServerExceptionInternal(s"Inconsistent state ${state} when Live expected")
       _state = State.Dead
-      flusherActorRef ! PoisonPill
-
    }
 
    /**

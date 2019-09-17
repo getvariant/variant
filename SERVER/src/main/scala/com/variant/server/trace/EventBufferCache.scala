@@ -5,7 +5,6 @@ import java.util.concurrent.atomic.AtomicInteger
 
 import scala.concurrent.duration._
 
-import com.variant.server.akka.FlusherRouter
 import com.variant.server.api.FlushableTraceEvent
 import com.variant.server.boot.VariantServer
 import com.variant.server.impl.FlushableTraceEventImpl
@@ -15,23 +14,24 @@ import com.variant.server.util.SpinLock
 import scala.collection.mutable.ListBuffer
 
 object EventBufferCache {
-   
+
    class Header(bufferSize: Int) {
       var status: Int = HeaderStatus.FREE
       var timestamp: Long = 0
       val buffer = new Array[FlushableTraceEvent](bufferSize)
       val bufferIx = new AtomicInteger(0)
-   
+
       // Target flusher service which will be responsible for flushing this event
       var flusherService: ServerFlusherService = _
    }
-   
+
    object HeaderStatus {
       val FREE = 0
       val CURRENT = 1
       val FLUSHING = 2
    }
 
+   def apply(server: VariantServer) = new EventBufferCache()(server)
 }
 
 /**
@@ -41,8 +41,8 @@ object EventBufferCache {
 class EventBufferCache(implicit server: VariantServer) {
 
    import EventBufferCache._
-   
-   val bufferSize = server.config.eventFlushSizse
+
+   val bufferSize = server.config.eventFlushSize
    val buffers = Math.ceil(server.config.eventWriterBufferSize.asInstanceOf[Float] / bufferSize).toInt
 
    // Buffer header table (BHT)
@@ -55,12 +55,11 @@ class EventBufferCache(implicit server: VariantServer) {
    // Schedule a force flush of those buffers whose age exceeds the
    // configurable max delay value.
    val maxDelayMillis = server.config.eventWriterMaxDelay * 1000
-               
+
    implicit val ec = server.actorSystem.dispatcher
    server.actorSystem.scheduler.schedule(
-         initialDelay = FiniteDuration(maxDelayMillis, MILLISECONDS),
-         interval = FiniteDuration(maxDelayMillis, MILLISECONDS)) 
-      {
+      initialDelay = FiniteDuration(maxDelayMillis, MILLISECONDS),
+      interval = FiniteDuration(maxDelayMillis, MILLISECONDS)) {
          flushOlderThan(maxDelayMillis)
       }
 
@@ -107,23 +106,23 @@ class EventBufferCache(implicit server: VariantServer) {
    /**
     * Flush all current buffers older than some duration. Used for
     * 1) Enforce the minimum delay.
-    * 2) The side-effect of above is that no buffer will be permanently clogged 
+    * 2) The side-effect of above is that no buffer will be permanently clogged
     *    if some schema stopped generating trace.
     * 3) Flushing all the buffers on server shutdown.
     */
    private def flushOlderThan(ageMillis: Long) {
 
       val minTimestamp = System.currentTimeMillis() - ageMillis
-      
+
       // To reduce the size of the critical section, protected by the spin lock,
       // we collect the buffers in a list so as to message the fluser router
       // outside of the critical section.
       val flushableList = ListBuffer[Header]()
-      
+
       headerTableLatch.synchronized {
 
          headerTable
-            .filter { header => 
+            .filter { header =>
                header.status == HeaderStatus.CURRENT && header.timestamp < minTimestamp
             }
             .foreach { header =>
@@ -131,7 +130,7 @@ class EventBufferCache(implicit server: VariantServer) {
                flushableList += header
             }
       }
-      
+
       flushableList.foreach { FlusherRouter.ref ! FlusherRouter.Flush(_) }
    }
 
@@ -140,7 +139,7 @@ class EventBufferCache(implicit server: VariantServer) {
     * Call this on server shutdown only.
     */
    def flushAll = flushOlderThan(0)
-   
+
    /**
     * Add single event to the queue. Must be thread safe because called by foreground threads.
     */

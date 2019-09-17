@@ -7,7 +7,6 @@ import com.variant.server.boot.ServerExceptionLocal
 import com.variant.server.boot.ServerExceptionInternal
 import com.typesafe.scalalogging.LazyLogging
 import com.variant.server.boot.VariantServer
-import com.variant.server.trace.FlusherActor
 
 /**
  * A mutable set of schema generations, all sharing the same schema name and origin.
@@ -79,9 +78,8 @@ class ServerSchema(private val seed: SchemaGen)(implicit server: VariantServer)
     */
    def undeployLiveGen() {
       liveGen.map { gen =>
-         gen.state = SchemaGen.State.Dead
-         gen.eventWriter.shutdown()
-         logger.info(s"Undeployed generation ID [${gen.id}] in schema [${name}]")
+         gen.goDead()
+         logger.debug(s"Undeployed generation ID [${gen.id}] in schema [${name}]")
       }
    }
 

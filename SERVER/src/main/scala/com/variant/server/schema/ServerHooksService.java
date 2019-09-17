@@ -102,7 +102,7 @@ public class ServerHooksService extends HooksService {
 			// 2. State-scoped hookDef must define an implementation which listens to a state aware event.
 			if (hookDef instanceof VariationScopedHook && ! VariationAwareLifecycleEvent.class.isAssignableFrom(hookImpl.getLifecycleEventClass())) {
 				parserResponse.addMessage(
-						ServerMessageLocal.HOOK_TEST_SCOPE_VIOLATION(), 
+						ServerMessageLocal.HOOK_VARIATION_SCOPE_VIOLATION(), 
 						((VariationScopedHookImpl)hookDef).location.getPath(), hookImpl.getLifecycleEventClass().getName());				
 			}
 

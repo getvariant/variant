@@ -45,7 +45,7 @@ trait VariantServer {
 
    val actorSystem: ActorSystem
 
-   def eventBufferCache: EventBufferCache
+   val eventBufferCache: EventBufferCache
 
    val bootExceptions = mutable.ArrayBuffer[ServerException]()
 
@@ -136,9 +136,7 @@ object VariantServer {
  * Concrete implementation of VariantServer with a private constructor.
  * The headless option is used by the tests, which are not interested in binding to the port.
  */
-class VariantServerImpl(builder: VariantServer.Builder)(override implicit val actorSystem: ActorSystem)
-
-   extends VariantServer with Actor with LazyLogging {
+class VariantServerImpl(builder: VariantServer.Builder)(override implicit val actorSystem: ActorSystem) extends VariantServer with LazyLogging {
 
    import VariantServer._
 
@@ -180,6 +178,7 @@ class VariantServerImpl(builder: VariantServer.Builder)(override implicit val ac
    override lazy val schemata: Schemata = _schemaDeployer.schemata
    override val ssnStore = new SessionStore(this)
    override def isUp = (builder.isHeadless || binding.isDefined) && bootExceptions.size == 0
+   override val eventBufferCache = _eventBufferCache
 
    // If debug, echo all config params.
    logger.whenDebugEnabled {
@@ -199,7 +198,7 @@ class VariantServerImpl(builder: VariantServer.Builder)(override implicit val ac
 
    // Thread 2: Server backend init.
    val serverInitTask = Future {
-      _eventBufferCache = new EventBufferCache(this)
+      _eventBufferCache = EventBufferCache(this)
       VacuumActor.start(this)
       FlusherRouter.start(this)
       useSchemaDeployer(SchemaDeployer.fromFileSystem(this))

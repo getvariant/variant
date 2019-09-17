@@ -1,5 +1,5 @@
 package com.variant.server.impl
-
+/*
 import java.util.LinkedList
 import java.util.concurrent.ConcurrentLinkedQueue
 import com.variant.server.api.FlushableTraceEvent
@@ -162,3 +162,4 @@ class TraceEventWriter(private val flushService: ServerFlusherService)(implicit 
    }
 
 }
+*/ 

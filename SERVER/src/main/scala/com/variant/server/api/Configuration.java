@@ -72,7 +72,7 @@ public interface Configuration {
     * 
     * @since 0.10
     */
-   int eventFlushSizse();
+   int eventFlushSize();
 
    /**
     * Trace event writer's maximum degree of flushing parallelism. Variant server will execute up to N

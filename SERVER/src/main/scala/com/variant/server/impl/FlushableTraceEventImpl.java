@@ -53,7 +53,7 @@ public class FlushableTraceEventImpl implements FlushableTraceEvent, Serializabl
 		if (reqOpt.isPresent()) {
 			for (Experience e: reqOpt.get().getLiveExperiences()) liveExperiences.add(e);
 		}
-		flusherService = session.getSchemaGen().getFlusherService();
+		flusherService = session.getSchema().flusherService();
 	}
 
 	
