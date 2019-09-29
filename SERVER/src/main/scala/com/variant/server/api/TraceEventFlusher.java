@@ -60,8 +60,8 @@ public interface TraceEventFlusher {
 	void flush(FlushableTraceEvent[] events, int size) throws Exception;
 	
    /**
-    * <p>Called by the server, whenever this event flusher is being undeployed. Client code can use
-    * this callback to do housekeeping tasks such as closing database connections.
+    * <p>Called by the server, whenever this event flusher is being destroyed because the associated schema generation is being undeployed.
+    * Client code can use this callback to do housekeeping tasks such as closing database connections.
     * 
     * @since 0.10
     */

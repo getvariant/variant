@@ -33,7 +33,7 @@ trait TraceEventsSpec extends LazyLogging with BeforeAndAfterAll { this: Embedde
 
          case Some(schema) =>
 
-            val jdbc = new JdbcService(schema.eventWriter)
+            val jdbc = new JdbcService(schema.flusherService.getFlusher)
 
             try {
                jdbc.getVendor match {

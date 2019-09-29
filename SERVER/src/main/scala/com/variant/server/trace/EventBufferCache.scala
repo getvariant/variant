@@ -42,7 +42,8 @@ class EventBufferCache(implicit server: VariantServer) {
 
    import EventBufferCache._
 
-   val bufferSize = server.config.eventFlushSize
+   // Public for tests
+   val bufferSize = server.config.eventWriterFlushSize
    val buffers = Math.ceil(server.config.eventWriterBufferSize.asInstanceOf[Float] / bufferSize).toInt
 
    // Buffer header table (BHT)

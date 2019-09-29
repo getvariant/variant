@@ -48,7 +48,7 @@ private class FlusherRouter(server: VariantServer) extends Actor with LazyLoggin
 
    import FlusherRouter._
 
-   val poolSize = Math.ceil(Runtime.getRuntime.availableProcessors * server.config.eventFlushParallelism).toInt
+   val poolSize = Math.ceil(Runtime.getRuntime.availableProcessors * server.config.eventWriterFlushParallelism).toInt
 
    implicit val ec = ExecutionContext.fromExecutor(Executors.newFixedThreadPool(poolSize))
 

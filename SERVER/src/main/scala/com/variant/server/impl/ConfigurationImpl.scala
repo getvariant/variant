@@ -122,9 +122,9 @@ class ConfigurationImpl(config: Config) extends Configuration with ConfigKeys {
 
    override def eventWriterMaxDelay: Int = getInt(EVENT_WRITER_MAX_DELAY)
 
-   override def eventFlushSize: Int = getInt(EVENT_FLUSH_SIZE)
+   override def eventWriterFlushSize: Int = getInt(EVENT_WRITER_FLUSH_SIZE)
 
-   override def eventFlushParallelism: Float = getFloat(EVENT_FLUSH_PARALLELISM)
+   override def eventWriterFlushParallelism: Float = getFloat(EVENT_WRITER_FLUSH_PARALLELISM)
 
    /*--------------------------------------------------------------------------------*/
    /*                                  PUBLIC EXT                                    */

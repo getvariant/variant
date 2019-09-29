@@ -135,7 +135,7 @@ class EventFlusherCsvTest extends EmbeddedServerSpec with TempSchemataDir {
             val ssnResp = SessionResponse(response)
          }
 
-         val eventWriterMaxDelayMillis = schema.eventWriter.maxDelayMillis
+         val eventWriterMaxDelayMillis = server.config.eventWriterMaxDelay * 1000
          eventWriterMaxDelayMillis mustBe 2000
 
          Thread.sleep(eventWriterMaxDelayMillis * 2)
@@ -273,7 +273,7 @@ class EventFlusherCsvTest extends EmbeddedServerSpec with TempSchemataDir {
             val ssnResp = SessionResponse(response)
          }
 
-         val eventWriterMaxDelayMillis = schema.eventWriter.maxDelayMillis
+         val eventWriterMaxDelayMillis = server.config.eventWriterMaxDelay * 1000
          eventWriterMaxDelayMillis mustBe 2000
 
          Thread.sleep(eventWriterMaxDelayMillis * 2)

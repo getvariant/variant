@@ -72,7 +72,7 @@ public interface Configuration {
     * 
     * @since 0.10
     */
-   int eventFlushSize();
+   int eventWriterFlushSize();
 
    /**
     * Trace event writer's maximum degree of flushing parallelism. Variant server will execute up to N
@@ -82,7 +82,7 @@ public interface Configuration {
     * 
     * @since 0.10
     */
-   float eventFlushParallelism();
+   float eventWriterFlushParallelism();
 
    /**
 	 * HTTP port. Provided by the <code>http.port</code> configuration property.

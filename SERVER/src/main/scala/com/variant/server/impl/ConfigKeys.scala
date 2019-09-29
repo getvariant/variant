@@ -9,8 +9,8 @@ trait ConfigKeys {
    // Public keys
    val EVENT_FLUSHER_CLASS_NAME = PREFIX + "event.flusher.class.name";
    val EVENT_FLUSHER_CLASS_INIT = PREFIX + "event.flusher.class.init";
-   val EVENT_FLUSH_SIZE = PREFIX + "event.writer.flush.size";
-   val EVENT_FLUSH_PARALLELISM = PREFIX + "event.writer.flush.parallelism";
+   val EVENT_WRITER_FLUSH_SIZE = PREFIX + "event.writer.flush.size";
+   val EVENT_WRITER_FLUSH_PARALLELISM = PREFIX + "event.writer.flush.parallelism";
    val EVENT_WRITER_BUFFER_SIZE = PREFIX + "event.writer.buffer.size";
    val EVENT_WRITER_MAX_DELAY = PREFIX + "event.writer.max.delay";
    val HTTP_PORT = PREFIX + "http.port";

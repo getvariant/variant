@@ -80,7 +80,7 @@ class EventFlusherTest extends EmbeddedServerSpec with TempSchemataDir {
          schema.getMeta.getFlusher() mustBe Optional.empty
 
          // As defined in conf-test/variant.conf
-         schema.eventWriter.flusher.getClass.getName mustBe "com.variant.extapi.std.flush.jdbc.TraceEventFlusherH2"
+         schema.flusherService.getFlusher.getClass.getName mustBe "com.variant.extapi.std.flush.jdbc.TraceEventFlusherH2"
       }
 
       "emit EVENT_FLUSHER_CLASS_NAME if none defined in conf." in {
@@ -160,7 +160,7 @@ class EventFlusherTest extends EmbeddedServerSpec with TempSchemataDir {
          schema.getMeta.getFlusher() mustNot be(null)
 
          // As defined in conf-test/variant.conf
-         schema.eventWriter.flusher.getClass mustBe classOf[com.variant.extapi.std.flush.TraceEventFlusherNull]
+         schema.flusherService.getFlusher.getClass mustBe classOf[com.variant.extapi.std.flush.TraceEventFlusherNull]
 
       }
    }
