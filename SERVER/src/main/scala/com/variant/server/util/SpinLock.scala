@@ -2,9 +2,13 @@ package com.variant.server.util
 
 class SpinLock {
 
-   def lock() = ???
+   def lock() {
+      println("*** implement me ***")
+   }
 
-   def unlock() = ???
+   def unlock() {
+      println("*** implement me ***")
+   }
 
    /**
     * Execute a block of code in isolation, protected by this spin lock.

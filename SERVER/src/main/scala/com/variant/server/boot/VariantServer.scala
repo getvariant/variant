@@ -178,7 +178,7 @@ class VariantServerImpl(builder: VariantServer.Builder)(override implicit val ac
    override lazy val schemata: Schemata = _schemaDeployer.schemata
    override val ssnStore = new SessionStore(this)
    override def isUp = (builder.isHeadless || binding.isDefined) && bootExceptions.size == 0
-   override val eventBufferCache = _eventBufferCache
+   override lazy val eventBufferCache = _eventBufferCache
 
    // If debug, echo all config params.
    logger.whenDebugEnabled {

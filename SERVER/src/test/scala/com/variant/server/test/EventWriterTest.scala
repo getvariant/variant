@@ -31,10 +31,10 @@ class EventWriterTest extends EmbeddedServerSpec with TraceEventsSpec {
       val flushParallelism = server.config.eventWriterFlushParallelism
 
       "have expected confuration" in {
-         bufferCacheSize mustBe 1
-         flushSize mustBe 1
-         maxDelayMillis mustBe 1
-         flushParallelism mustBe 1
+         bufferCacheSize mustBe 200
+         flushSize mustBe 10
+         maxDelayMillis mustBe 2000
+         flushParallelism mustBe 2
       }
 
       "flush an event after EVENT_WRITER_FLUSH_MAX_DELAY_MILLIS" in {
@@ -64,7 +64,7 @@ class EventWriterTest extends EmbeddedServerSpec with TraceEventsSpec {
          val ssn = server.ssnStore.get(sid).get
          ssn.asInstanceOf[SessionImpl].triggerEvent(se);
 
-         // Read events back from the db, but must wait for the asych flusher.
+         // Read events back from the db, but must wait for the async flusher.
          val millisWaited = maxDelayMillis * 2
          Thread.sleep(millisWaited)
          val eventsFromDatabase = eventReader.read(e => e.sessionId == sid)
@@ -75,6 +75,8 @@ class EventWriterTest extends EmbeddedServerSpec with TraceEventsSpec {
          event.sessionId mustBe sid
          event.eventExperiences.size mustBe 4
          event.eventExperiences.map(_.testName) mustBe Set("test2", "test3", "test5", "test6")
+
+         Thread.sleep(5000)
       }
       /*
       "not flush before EVENT_WRITER_MAX_DELAY if fewer than EVENT_WRITER_PERCENT_FULL" in {

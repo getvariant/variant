@@ -47,7 +47,8 @@ class EventBufferCache(implicit server: VariantServer) {
    val buffers = Math.ceil(server.config.eventWriterBufferSize.asInstanceOf[Float] / bufferSize).toInt
 
    // Buffer header table (BHT)
-   private[this] val headerTable = new Array[Header](buffers)
+   private[this] val headerTable = Array.fill(buffers) { new Header(bufferSize) }
+
    // Spin lock guarding th eheader table.
    private[this] val headerTableLatch = new SpinLock
    // The trash can where discarded events go to die

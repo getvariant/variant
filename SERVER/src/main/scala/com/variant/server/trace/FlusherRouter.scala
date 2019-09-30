@@ -63,7 +63,7 @@ private class FlusherRouter(server: VariantServer) extends Actor with LazyLoggin
 
          Future {
 
-            // We can trust bufferIx, so long as it's <= max siize.
+            // We can trust bufferIx, so long as it's <= max size.
             val actualLength = header.bufferIx.get min header.buffer.length
 
             // Consistency check.
@@ -80,7 +80,7 @@ private class FlusherRouter(server: VariantServer) extends Actor with LazyLoggin
             case Success(_) => // AOK nothing todo.
 
             case Failure(t: Throwable) =>
-               logger.error(ServerMessageLocal.FLUSHER_CLIENT_ERROR.asMessage(flusher.toString))
+               logger.error(ServerMessageLocal.FLUSHER_CLIENT_ERROR.asMessage(flusher.toString), t)
          }
 
    }
@@ -100,14 +100,14 @@ private class FlusherRouter(server: VariantServer) extends Actor with LazyLoggin
          logger.info(s"Flushed ${size} event(s) in " + TimeUtils.formatDuration(Duration.between(start, Instant.now())))
       } catch {
          case t: Throwable => {
-            logger.error("Unhandled exception (ignored)", t)
+            logger.error("Ignored following unhandled exception", t)
          }
       } finally {
          header.status = EventBufferCache.HeaderStatus.FREE
          // We null out the array as extra precaution, in case next time
          // this buffer is flushed the client code in TraceEventFlusher.flush()
          // fails to honor the size parameter and attempts to flush all events.
-         for (i <- 0 to header.buffer.length) header.buffer(i) = null
+         for (i <- 0 until header.buffer.length) header.buffer(i) = null
       }
    }
 
