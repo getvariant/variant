@@ -117,8 +117,8 @@ class SessionImpl(val coreSession: CoreSession, val schemaGen: SchemaGen)(implic
     */
    def triggerEvent(event: TraceEvent) {
       val flushableEvent = new FlushableTraceEventImpl(event, this);
-      server.eventBufferCache.write(flushableEvent);
       logger.trace(s"Triggered event ${flushableEvent}")
+      server.eventBufferCache.write(flushableEvent);
    }
 
    /*

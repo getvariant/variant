@@ -58,7 +58,7 @@ class EventWriterTest extends EmbeddedServerSpec with TraceEventsSpec {
          }
 
          // Trigger custom event.
-         val customName = Random.nextString(5)
+         val customName = "custom name"
          val se = TraceEventImpl.mkTraceEvent(customName);
 
          val ssn = server.ssnStore.get(sid).get
@@ -76,10 +76,12 @@ class EventWriterTest extends EmbeddedServerSpec with TraceEventsSpec {
          event.eventExperiences.size mustBe 4
          event.eventExperiences.map(_.testName) mustBe Set("test2", "test3", "test5", "test6")
 
-         Thread.sleep(5000)
+         // Ensure the writer buffer is empty.
+         server.eventBufferCache.size mustBe 0
+
       }
-      /*
-      "not flush before EVENT_WRITER_MAX_DELAY if fewer than EVENT_WRITER_PERCENT_FULL" in {
+
+      "not flush before EVENT_WRITER_MAX_DELAY if fewer than EVENT_WRITER_FLUSH_SIZE" in {
 
          var sid = newSid
 
@@ -95,12 +97,12 @@ class EventWriterTest extends EmbeddedServerSpec with TraceEventsSpec {
          val ssn = server.ssnStore.get(sid).get
 
          // Ensure the writer buffer is empty.
-         eventWriter.flush()
+         server.eventBufferCache.size mustBe 0
 
          val startOfWrite = System.currentTimeMillis()
 
-         for (i <- 1 to eventWriter.fullSize) {
-            val name = Random.nextString(5)
+         for (i <- 1 until flushSize) {
+            val name = "custom name " + i
             val se = TraceEventImpl.mkTraceEvent(name);
             ssn.asInstanceOf[SessionImpl].triggerEvent(se);
          }
@@ -110,15 +112,15 @@ class EventWriterTest extends EmbeddedServerSpec with TraceEventsSpec {
 
          // Wait a bit, but less than max delay - must not have flushed
          // TODO Occasionally, this fails due to a race condition.
-         Thread.sleep(200)
+         Thread.sleep(maxDelayMillis / 10)
          eventReader.read(e => e.sessionId == ssn.getId).size mustBe 0
 
          // Read after delay - must be flushed
-         Thread.sleep(2000)
-         eventReader.read(e => e.sessionId == ssn.getId).size mustBe eventWriter.fullSize
+         Thread.sleep(maxDelayMillis * 2)
+         eventReader.read(e => e.sessionId == ssn.getId).size mustBe (flushSize - 1)
       }
 
-      "flush before EVENT_WRITER_MAX_DELAY if EVENT_WRITER_PERCENT_FULL" in {
+      "flush before EVENT_WRITER_MAX_DELAY if at least EVENT_WRITER_FLUSH_SIZE events" in {
 
          var sid = newSid
 
@@ -129,26 +131,27 @@ class EventWriterTest extends EmbeddedServerSpec with TraceEventsSpec {
             sid = ssnResp.session.getId
          }
 
+         // Ensure the writer buffer is empty.
+         server.eventBufferCache.size mustBe 0
+
          eventReader.read(e => e.sessionId == sid).size mustBe 0
 
          val ssn = server.ssnStore.get(sid).get
 
          val startOfWrite = System.currentTimeMillis()
 
-         for (i <- 1 to eventWriter.fullSize + 1) {
-            val (name, value, timestamp) = (Random.nextString(5), Random.nextString(5), Random.nextLong())
+         for (i <- 1 to flushSize) {
+            val (name, value, timestamp) = ("event " + i, Random.nextString(5), Random.nextLong())
             val se = TraceEventImpl.mkTraceEvent(name);
             ssn.asInstanceOf[SessionImpl].triggerEvent(se);
          }
 
          val writeTook = System.currentTimeMillis() - startOfWrite
-         assert(writeTook < 500, "Write took too long")
+         assert(writeTook < 50, "Write took too long")
 
          // Wait a bit, but less than max delay - must be flushed
-         Thread.sleep(eventWriter.maxDelayMillis - 1000)
-         eventReader.read(e => e.sessionId == ssn.getId).size mustBe (eventWriter.fullSize + 1)
+         Thread.sleep(maxDelayMillis / 2)
+         eventReader.read(e => e.sessionId == ssn.getId).size mustBe (flushSize)
       }
-      *
-      */
    }
 }

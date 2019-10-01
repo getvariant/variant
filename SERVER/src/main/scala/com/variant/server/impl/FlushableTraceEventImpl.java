@@ -3,8 +3,11 @@ package com.variant.server.impl;
 import java.io.Serializable;
 import java.io.StringWriter;
 import java.time.Instant;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
@@ -12,11 +15,9 @@ import java.util.Set;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
-//import com.variant.core.TraceEvent;
 import com.variant.core.schema.Variation.Experience;
 import com.variant.core.util.StringUtils;
 import com.variant.server.api.FlushableTraceEvent;
-import com.variant.server.api.Session;
 import com.variant.server.api.StateRequest;
 import com.variant.server.api.TraceEvent;
 import com.variant.server.schema.ServerFlusherService;
@@ -116,12 +117,17 @@ public class FlushableTraceEventImpl implements FlushableTraceEvent, Serializabl
 	@Override
 	public String toString() {
 
+	   DateTimeFormatter instantFormatter =
+	         DateTimeFormatter.ofLocalizedDateTime( FormatStyle.SHORT )
+	                          .withLocale( Locale.US )
+	                          .withZone( ZoneId.systemDefault() );
+	   
 		final StringWriter result = new StringWriter(1024);
 
 		try {
 			JsonGenerator jsonGen = new JsonFactory().createGenerator(result);
 			jsonGen.writeStartObject();
-			jsonGen.writeStringField("createdOn", DateTimeFormatter.ISO_ZONED_DATE_TIME.format(timestamp));
+			jsonGen.writeStringField("createdOn", instantFormatter.format(timestamp));
 			jsonGen.writeStringField("name", getName());
 			jsonGen.writeObjectFieldStart("attrs");
 			for (Map.Entry<String, String> attr: getAttributes().entrySet()) {

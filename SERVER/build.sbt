@@ -2,8 +2,8 @@
  * Server SBT build.
  */
  
- // Used by the Scalariform formatter
-import scalariform.formatter.preferences._
+// Used by the Scalariform formatter
+//import scalariform.formatter.preferences._
 
 import NativePackagerHelper._
 
@@ -48,8 +48,7 @@ libraryDependencies ++= Seq(
 // Scalariform plugin enforces formatting convention on all dirty files which required recompilation.
 // The following overrides default formatter settings. The plugin always fills indents with spaces.
 // Be sure your local IDE settings are in sync.
-scalariformPreferences := scalariformPreferences.value
-    .setPreference(IndentSpaces, 3)
+// scalariformPreferences := scalariformPreferences.value.setPreference(IndentSpaces, 3)
 
 // ...and prepend it to the startup script's classpath.
 scriptClasspath := Seq("../conf/") ++ scriptClasspath.value

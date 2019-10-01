@@ -40,5 +40,6 @@ private[trace] class TrashBin(reportFrequency: FiniteDuration)(implicit server: 
     */
    def trash(event: FlushableTraceEvent) {
       trashCount.incrementAndGet
+      logger.trace(s"Trashed event ${event}")
    }
 }

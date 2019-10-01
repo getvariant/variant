@@ -12,6 +12,8 @@ import com.variant.server.schema.ServerFlusherService
 import com.variant.server.util.SpinLock
 
 import scala.collection.mutable.ListBuffer
+import com.typesafe.scalalogging.LazyLogging
+import com.variant.server.boot.ServerExceptionInternal
 
 object EventBufferCache {
 
@@ -38,7 +40,7 @@ object EventBufferCache {
  * Trace event buffer cache.
  *
  */
-class EventBufferCache(implicit server: VariantServer) {
+class EventBufferCache(implicit server: VariantServer) extends LazyLogging {
 
    import EventBufferCache._
 
@@ -71,16 +73,22 @@ class EventBufferCache(implicit server: VariantServer) {
     */
    private[this] def findFreeBufferFor(event: FlushableTraceEventImpl): Boolean = {
 
-      headerTableLatch.synchronized {
+      // If we find the buffer, it goes here.
+      var foundHeader: Option[Header] = None
+      var createdHere = false
+
+      val result = headerTableLatch.synchronized {
 
          // Confirm there's still no current buffer for the given flusher service.
-         headerTable.find(head => head.status == HeaderStatus.CURRENT && head.flusherService == event.getFlusherService) match {
-
+         headerTable.find { head =>
+            head.status == HeaderStatus.CURRENT && head.flusherService == event.getFlusherService
+         } match {
             case Some(head: Header) =>
-               // The current buffer has just been created by another thread. Use it
-               // NB: we are ignoring the extremely unlikely case that this new current buffer that was just created.
-               // may already be full.
-               head.buffer(head.bufferIx.incrementAndGet) = event;
+               // The current buffer has just been created by another thread. Use it.
+               val ix = head.bufferIx.incrementAndGet
+               if (ix >= bufferSize) throw ServerExceptionInternal("Buffer overflow")
+               head.buffer(ix) = event
+               foundHeader = Some(head)
                true
 
             case None =>
@@ -88,14 +96,15 @@ class EventBufferCache(implicit server: VariantServer) {
                // and if successful make in the new current buffer.
 
                headerTable.find(_.status == HeaderStatus.FREE) match {
-
-                  // We found a free buffer. Make it current, suitable for the event and store the event at slot 0.
                   case Some(head) =>
+                     // We found a free buffer. Make it current, suitable for the event and store the event at slot 0.
                      head.status = HeaderStatus.CURRENT
                      head.timestamp = System.currentTimeMillis
                      head.buffer(0) = event
                      head.bufferIx.set(0)
                      head.flusherService = event.getFlusherService
+                     foundHeader = Some(head)
+                     createdHere = true
                      true
 
                   case None =>
@@ -103,6 +112,20 @@ class EventBufferCache(implicit server: VariantServer) {
                }
          }
       }
+
+      // Log outside the critical section protected by spin lock.
+      foundHeader match {
+         case Some(head) =>
+            if (createdHere)
+               logger.trace(s"Added event ${event} to free buffer ${head} at index 0")
+            else
+               logger.trace(s"Added event ${event} to just current buffer ${head} at index 0")
+
+         case None =>
+            logger.trace("Failed to find a free buffer")
+      }
+
+      result
    }
 
    /**
@@ -147,8 +170,8 @@ class EventBufferCache(implicit server: VariantServer) {
     */
    def write(event: FlushableTraceEventImpl) {
 
-      headerTable.find {
-         head => head.status == HeaderStatus.CURRENT && head.flusherService == event.getFlusherService
+      headerTable.find { head =>
+         head.status == HeaderStatus.CURRENT && head.flusherService == event.getFlusherService
       } match {
 
          case Some(head: Header) =>
@@ -156,21 +179,21 @@ class EventBufferCache(implicit server: VariantServer) {
             val buffIx = head.bufferIx.incrementAndGet()
             if (buffIx < bufferSize) {
                // Current buffer has room, use it!
+               logger.trace(s"Added event ${event} to current buffer ${head} at index ${buffIx}")
                head.buffer(buffIx) = event
-            } else if (buffIx >= bufferSize) {
-
-               // If we are first to overflow the current buffer, send it off to the flusher router.
-               if (buffIx == bufferSize) {
+               
+               // If we just used the last slot, send buffer off to the flusher router.
+               if (buffIx == bufferSize - 1) {
                   // Current buffer just ran out of room and it's on us to try looking for a new one.
                   head.status = HeaderStatus.FLUSHING
                   FlusherRouter.ref ! FlusherRouter.Flush(head)
+                  logger.trace(s"Scheduled buffer $head for flushing")
                }
-
+               
+            } else {
+               // There was no room in this buffer, even though it was current when we checked.
                // Try to find a new current buffer and if successful stick the event in there.
-               if (!findFreeBufferFor(event)) {
-                  trashBin.trash(event)
-               }
-
+               if (!findFreeBufferFor(event)) trashBin.trash(event)
             }
 
          case None =>
@@ -180,6 +203,14 @@ class EventBufferCache(implicit server: VariantServer) {
                trashBin.trash(event)
             }
       }
+   }
+
+   /**
+    * Number of events in the cache that have not yet been flushed,
+    * i.e. those contained in current and flushing buffers. Tests only.
+    */
+   def size: Integer = {
+      headerTable.filter(_.status != HeaderStatus.FREE).map(_.bufferIx.get + 1).fold(0)(_ + _)
    }
 }
 

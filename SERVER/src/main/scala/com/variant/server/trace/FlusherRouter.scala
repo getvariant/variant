@@ -59,17 +59,20 @@ private class FlusherRouter(server: VariantServer) extends Actor with LazyLoggin
 
       case Flush(header: EventBufferCache.Header) =>
 
+         logger.trace(s"Received buffer $header for flushing")
+
          val flusher = header.flusherService.getFlusher // Just one for now.
 
          Future {
 
-            // We can trust bufferIx, so long as it's <= max size.
-            val actualLength = header.bufferIx.get min header.buffer.length
+            // We can trust bufferIx, so long as it's < max size.
+            // Remember that header.bufferIx is the index of the last insertion, i.e. one less than length.
+            val actualLength = (header.bufferIx.get + 1) min header.buffer.length
 
             // Consistency check.
-            for (i <- 0 to actualLength) {
+            for (i <- 0 until actualLength) {
                if (header.buffer(i) == null) {
-                  throw ServerExceptionInternal("Inconsitent buffer")
+                  throw ServerExceptionInternal(s"Inconsitent buffer: null at index $i")
                }
             }
 
