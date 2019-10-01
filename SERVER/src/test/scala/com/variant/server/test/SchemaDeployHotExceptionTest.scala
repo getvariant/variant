@@ -32,7 +32,6 @@ class SchemaDeployHotExceptionTest extends EmbeddedServerSpec with TempSchemataD
          server.schemata.size mustBe 1
 
          val logLines = ServerLogTailer.last(6)
-         //logLines.foreach { l => println(s"********* [$l]") }
          logLines(0).message mustBe SCHEMA_DEPLOYING.asMessage("/tmp/schemata/monster-error.schema")
          logLines(1).message must startWith(s"[${SyntaxError.JSON_SYNTAX_ERROR.getCode}]")
          logLines(2).message mustBe SCHEMA_FAILED.asMessage("?", "/tmp/schemata/monster-error.schema")

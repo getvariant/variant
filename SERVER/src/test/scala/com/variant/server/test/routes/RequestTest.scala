@@ -39,12 +39,13 @@ class RequestTest extends EmbeddedServerSpec with TraceEventsSpec {
       val flushSize = server.config.eventWriterFlushSize
       val maxDelayMillis = server.config.eventWriterMaxDelay * 1000
       val flushParallelism = server.config.eventWriterFlushParallelism
-
+      val timeToSleep = maxDelayMillis * 2
+         
       "have expected confuration" in {
-         bufferCacheSize mustBe 1
-         flushSize mustBe 1
-         maxDelayMillis mustBe 1
-         flushParallelism mustBe 1
+         bufferCacheSize mustBe 200
+         flushSize mustBe 10
+         maxDelayMillis mustBe 2000
+         flushParallelism mustBe 2
       }
 
       "create new session" in {
@@ -116,7 +117,7 @@ class RequestTest extends EmbeddedServerSpec with TraceEventsSpec {
          }
 
          // Wait for event writer to flush and confirm we wrote 1 state visit event.
-         Thread.sleep(maxDelayMillis)
+         Thread.sleep(timeToSleep)
          reader.read(e => e.sessionId == sid).size mustBe 1
          for (e <- reader.read(e => e.sessionId == sid)) {
             e.sessionId mustBe sid
@@ -192,7 +193,7 @@ class RequestTest extends EmbeddedServerSpec with TraceEventsSpec {
          }
 
          // Wait for event writer to flush and confirm we wrote 1 state visit event.
-         Thread.sleep(maxDelayMillis)
+         Thread.sleep(timeToSleep)
          reader.read(e => e.sessionId == sid).size mustBe 1
          for (e <- reader.read(e => e.sessionId == sid)) {
             e.sessionId mustBe sid
@@ -270,7 +271,7 @@ class RequestTest extends EmbeddedServerSpec with TraceEventsSpec {
          }
 
          // Only commit sve in written
-         Thread.sleep(maxDelayMillis)
+         Thread.sleep(timeToSleep)
          val events = reader.read(e => e.sessionId == sid)
          events.size mustBe 1
          val sve = events.head
@@ -343,7 +344,7 @@ class RequestTest extends EmbeddedServerSpec with TraceEventsSpec {
          }
 
          // Only failure sve in written
-         Thread.sleep(maxDelayMillis)
+         Thread.sleep(timeToSleep)
          val events = reader.read(e => e.sessionId == sid)
          events.size mustBe 1
          val sve = events.head
@@ -420,7 +421,7 @@ class RequestTest extends EmbeddedServerSpec with TraceEventsSpec {
          }
 
          // Only commit sve in written
-         Thread.sleep(maxDelayMillis)
+         Thread.sleep(timeToSleep)
          val events = reader.read(e => e.sessionId == sid)
          events.size mustBe 1
          val sve = events.head

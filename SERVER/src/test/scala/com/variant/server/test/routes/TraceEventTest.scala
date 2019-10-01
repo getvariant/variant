@@ -53,13 +53,13 @@ class TraceEventTest extends EmbeddedServerSpec with TraceEventsSpec {
       val flushSize = server.config.eventWriterFlushSize
       val maxDelayMillis = server.config.eventWriterMaxDelay * 1000
       val flushParallelism = server.config.eventWriterFlushParallelism
-      val millisToSleep = maxDelayMillis + 500
+      val millisToSleep = maxDelayMillis * 2
 
       "have expected confuration" in {
-         bufferCacheSize mustBe 1
-         flushSize mustBe 1
-         maxDelayMillis mustBe 1
-         flushParallelism mustBe 1
+         bufferCacheSize mustBe 200
+         flushSize mustBe 10
+         maxDelayMillis mustBe 2000
+         flushParallelism mustBe 2
       }
 
       // New session

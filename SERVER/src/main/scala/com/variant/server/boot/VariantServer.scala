@@ -65,7 +65,7 @@ trait VariantServer {
 object VariantServer {
 
    // TODO Need to get this from sbt
-   val productVersion = ("Variant AIM Server", "0.10.1")
+   val productVersion = ("Variant AIM Server", "0.10.2")
 
    class Builder {
 
@@ -199,9 +199,9 @@ class VariantServerImpl(builder: VariantServer.Builder)(override implicit val ac
    // Thread 2: Server backend init.
    val serverInitTask = Future {
       _eventBufferCache = EventBufferCache(this)
-      VacuumActor.start(this)
       FlusherRouter.start(this)
       useSchemaDeployer(SchemaDeployer.fromFileSystem(this))
+      VacuumActor.start(this)
    }
    // Block indefinitely for when both futures are completed...
 

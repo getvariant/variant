@@ -6,11 +6,12 @@ import com.variant.core.util.LogTailer.Entry
 import java.io.File
 import java.nio.charset.Charset
 import com.variant.core.util.apache.ReversedLinesFileReader
+import com.typesafe.scalalogging.LazyLogging
 
 /**
  * Repackaging of the core LogTailer class for the server side.
  */
-object ServerLogTailer {
+object ServerLogTailer extends LazyLogging {
 
    object Level {
       val Trace = LogTailer.Level.TRACE
@@ -22,6 +23,10 @@ object ServerLogTailer {
 
    def last(n: Integer, fileName: String = "log/variant.log"): Seq[Entry] = {
 
+      logger.whenDebugEnabled {
+         throw new RuntimeException("ServerLogTailer requires logging level of INFO")
+      }
+      
       LogTailer.last(n, fileName).asScala.toSeq
    }
 }
