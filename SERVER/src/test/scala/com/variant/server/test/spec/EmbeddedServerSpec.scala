@@ -38,20 +38,24 @@ trait EmbeddedServerSpec extends BaseSpec with ScalatestRouteTest {
     * Recreate the underlying server from the given builder.
     * Ensure that it's headless.
     */
-   def reboot(builder: VariantServer.Builder) {
+   def reboot(f: VariantServer.Builder => Unit = {_=>}) {
       _server = null
-      _server = builder.headless.build()
+      _server = {
+         val newBuilder = serverBuilder()
+         f(newBuilder)
+         newBuilder.build()
+      }
    }
 
    /**
     * Recreate the underlying server from the default builder.
     * Ensure that it's headless.
-    */
+    *
    def reboot() {
       _server = null
       _server = serverBuilder().build()
       //_server = VariantServer.builder.headless.build()
-   }
+   }*/
    // Seal the router in order not to have rejections.
    def router = Route.seal(Router(_server).routes)
 
@@ -71,9 +75,11 @@ trait EmbeddedServerSpec extends BaseSpec with ScalatestRouteTest {
    protected class SessionResponse(resp: HttpResponse)(implicit server: VariantServer) {
       handled mustBe true
       if (resp.status == BadRequest) {
-         throw new TestFailedException("Unexpected Error [" + ServerErrorResponse(resp).toString() + "]", 2)
+         throw new TestFailedException("Unexpected User Error [" + ServerErrorResponse(resp).toString() + "]", 2)
       }
-      resp.status mustBe OK
+      if (resp.status != OK) {
+          throw new TestFailedException(s"Unexpected HTTP Status ${resp.status} with body [${resp.entity}]", 2)
+      }
       private[this] val respString = entityAs[String]
       respString mustNot be(null)
       private[this] val respJson = Json.parse(respString)

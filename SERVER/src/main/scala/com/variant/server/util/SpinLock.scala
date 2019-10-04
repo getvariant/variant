@@ -5,7 +5,7 @@ import scala.util.Random
 import com.typesafe.scalalogging.LazyLogging
 
 /**
- * Spin lock with geometric backoff.
+ * Spin lock with exponential backoff.
  */
 object SpinLock {
 
@@ -19,15 +19,17 @@ class SpinLock extends LazyLogging {
 
    import SpinLock._
    
-   val state = new AtomicBoolean(false)
+   private[this] val state = new AtomicBoolean(false)
+   private[this] val backoff = new ExpBackoff(MIN_DELAY_NANOS, MAX_DELAY_MILLIS);
 
    def lock() {
-      val backoff = new Backoff(MIN_DELAY_NANOS, MAX_DELAY_MILLIS);
-      while (true) {
+      val start = System.nanoTime
+      var succeeded = false
+      while (!succeeded) {
          while (state.get()) {};
          if (!state.getAndSet(true)) {
-            return;
-         } else {
+            succeeded = true
+         } else if ((System.nanoTime - start) > MIN_DELAY_NANOS)  {
             backoff.backoff();
          }
       }
@@ -50,9 +52,13 @@ class SpinLock extends LazyLogging {
       }
    }
 
-   class Backoff(minDelayNanos: Long, maxDelayMillis: Long) {
-      var delay: Long = (minDelayNanos * 1000000 * ( 1 + Random.nextFloat )).asInstanceOf[Long]
-      println
+   /**
+    * Computes the next backoff period and sleeps this thread for it.
+    */
+   class ExpBackoff(minDelayNanos: Long, maxDelayMillis: Long) {
+      
+      var delay: Long = (minDelayNanos / 1000000 * ( 1 + Random.nextFloat )).asInstanceOf[Long]
+      
       def backoff() {
          logger.trace(s"Sleeping for $delay millis")
          Thread.sleep(delay)

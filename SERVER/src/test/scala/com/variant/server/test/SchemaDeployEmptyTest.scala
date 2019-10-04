@@ -27,12 +27,12 @@ class SchemaDeployEmptyTest extends EmbeddedServerSpec with BeforeAndAfterAll {
    s"rm -rf ${schemataDir}" !;
    s"mkdir ${schemataDir}" !;
 
-   reboot(
-      VariantServer.builder
-         .withConfiguration(
+   reboot { builder =>
+      builder.withConfiguration(
             Map(
                "variant.schemata.dir" -> schemataDir,
-               "session.timeout" -> 15)))
+               "session.timeout" -> 15))
+   }
 
    /**
     * Cleanup

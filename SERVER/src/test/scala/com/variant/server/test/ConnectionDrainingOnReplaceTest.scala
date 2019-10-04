@@ -60,7 +60,7 @@ class ConnectionDrainingOnReplaceTest extends EmbeddedServerSpec with TempSchema
             }
          }
 
-         joinAll // blocks until all sessions are created by async blocks above
+         joinAll() // blocks until all sessions are created by async blocks above
 
       }
 
@@ -84,7 +84,7 @@ class ConnectionDrainingOnReplaceTest extends EmbeddedServerSpec with TempSchema
             }
          }
 
-         joinAll
+         joinAll()
       }
 
       "all sessions must not be readable over the wrong connection" in {
@@ -103,7 +103,7 @@ class ConnectionDrainingOnReplaceTest extends EmbeddedServerSpec with TempSchema
             }
          }
 
-         joinAll
+         joinAll()
       }
 
       "replace schema monstrosity" in {
@@ -140,7 +140,7 @@ class ConnectionDrainingOnReplaceTest extends EmbeddedServerSpec with TempSchema
             }
          }
 
-         joinAll
+         joinAll()
 
       }
 
@@ -178,7 +178,7 @@ class ConnectionDrainingOnReplaceTest extends EmbeddedServerSpec with TempSchema
             }
          }
 
-         joinAll
+         joinAll()
 
       }
 

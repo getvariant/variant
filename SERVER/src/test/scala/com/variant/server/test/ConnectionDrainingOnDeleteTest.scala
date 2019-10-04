@@ -62,7 +62,7 @@ class ConnectionDrainingOnDeleteTest extends EmbeddedServerSpec with TempSchemat
             }
          }
 
-         joinAll // blocks until all sessions are created by async blocks above
+         joinAll() // blocks until all sessions are created by async blocks above
 
       }
 
@@ -86,7 +86,7 @@ class ConnectionDrainingOnDeleteTest extends EmbeddedServerSpec with TempSchemat
             }
          }
 
-         joinAll
+         joinAll()
       }
 
       "all sessions must not be readable over the wrong connection" in {
@@ -105,7 +105,7 @@ class ConnectionDrainingOnDeleteTest extends EmbeddedServerSpec with TempSchemat
             }
          }
 
-         joinAll
+         joinAll()
       }
 
       "delete schema monstrosity" in {
@@ -159,7 +159,7 @@ class ConnectionDrainingOnDeleteTest extends EmbeddedServerSpec with TempSchemat
             }
          }
 
-         joinAll
+         joinAll()
 
       }
 

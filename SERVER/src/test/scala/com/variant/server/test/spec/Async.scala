@@ -38,23 +38,19 @@ trait Async extends EmbeddedServerSpec {
     * Block for all functions to complete.
     * TODO: replace with java.util.concurrent.CountDownLatch
     */
-   protected def joinAll(timeout: Long) {
+   protected def joinAll(timeout: Long = 20000) {
       var wated = 0
       while (taskCount.get > 0 && wated < timeout) {
          Thread.sleep(200)
          wated += 200
       }
-      if (wated >= timeout) fail("Unexpected timeout waiting for background threads.")
+      if (wated >= timeout) fail(s"Unexpected timeout waiting for background threads for $timeout millis")
 
       unexpectedException.foreach { t =>
          unexpectedException = None
+         // sbt often swallaws the cause stack, so print it before rethrowing.
+         t.printStackTrace(System.err)
          throw new Exception(s"Async block crashed: ${t.getMessage}", t)
       }
    }
-
-   /**
-    * Block for all functions to complete.
-    * TODO: replace with java.util.concurrent.CountDownLatch
-    */
-   protected def joinAll() { joinAll(20000) }
 }

@@ -86,9 +86,9 @@ class EventFlusherTest extends EmbeddedServerSpec with TempSchemataDir {
       "emit EVENT_FLUSHER_CLASS_NAME if none defined in conf." in {
 
          val caughtEx = intercept[ServerExceptionLocal] {
-            reboot(
-               VariantServer.builder
-                  .withoutConfiguration(Seq("variant.event.flusher.class.name")))
+            reboot { builder =>
+                  builder.withoutConfiguration(Seq("variant.event.flusher.class.name"))
+            }
          }
          caughtEx.getMessage mustBe (
             new ServerExceptionLocal(

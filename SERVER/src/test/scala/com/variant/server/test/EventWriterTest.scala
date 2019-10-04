@@ -15,9 +15,20 @@ import java.time.format.DateTimeFormatter
 import java.time.Instant
 import akka.http.scaladsl.model.HttpRequest
 import akka.http.scaladsl.model.HttpMethods
+import akka.http.scaladsl.model.StatusCodes._
+import com.variant.core.error.ServerError
 import com.variant.server.test.spec.TraceEventsSpec
+import com.variant.server.test.spec.Async
+import com.variant.server.api.StateRequest
+import com.variant.server.api.StateRequest.Status.Committed
+import com.variant.server.api.StateRequest.Status.Failed
+import com.variant.server.api.StateRequest.Status.InProgress
+import org.scalatest.exceptions.TestFailedException
+import com.variant.server.impl.ConfigKeys
 
-class EventWriterTest extends EmbeddedServerSpec with TraceEventsSpec {
+class EventWriterTest extends EmbeddedServerSpec with TraceEventsSpec with Async {
+
+   val emptyTargetingTrackerBody = "{\"tt\":[]}"
 
    "Event writer" should {
 
@@ -36,7 +47,7 @@ class EventWriterTest extends EmbeddedServerSpec with TraceEventsSpec {
          maxDelayMillis mustBe 2000
          flushParallelism mustBe 2
       }
-
+/*
       "flush an event after EVENT_WRITER_FLUSH_MAX_DELAY_MILLIS" in {
 
          // Create Session
@@ -153,5 +164,92 @@ class EventWriterTest extends EmbeddedServerSpec with TraceEventsSpec {
          Thread.sleep(maxDelayMillis / 2)
          eventReader.read(e => e.sessionId == ssn.getId).size mustBe (flushSize)
       }
+      */
+      "create and flush a whole bunch of events without losing any" in {
+         
+         
+         val sessions = 50
+         val hops = 50
+         val ssnIds = new Array[String](sessions)
+         
+         // We'll need a more potent event cache
+         reboot { builder =>
+            builder.withConfiguration(Map(ConfigKeys.EVENT_WRITER_BUFFER_SIZE -> 1000))
+               .withConfiguration(Map(ConfigKeys.EVENT_WRITER_FLUSH_SIZE -> 100))
+         }
+
+         // Create the sessions
+         for (i <- 0 until sessions) async {
+
+            HttpRequest(method = HttpMethods.POST, uri = "/session/monstrosity/blah", entity = emptyTargetingTrackerBody) ~> router ~> check {
+               val ssnResp = SessionResponse(response)
+               ssnResp.schema.getMeta.getName mustBe "monstrosity"
+               ssnIds(i) = ssnResp.session.getId
+            }
+         }
+
+         joinAll()
+         
+         val specialKey = "specialKey"
+         val specialVal = "This is how we'll be able to tell the events we're about to insert from the ones that are already there"
+         
+         var count = 0
+         for (i <- 0 until sessions) async {
+            
+            for (j <- 0 until hops) {
+               val nextState = "state" + (j % 5 + 1)
+               if (targetForState(ssnIds(i), nextState)) {
+                  commitStateRequest(ssnIds(i), (specialKey, specialVal))
+                  count += 1
+               }
+               Thread.sleep(200 + Random.nextInt(600))
+            }
+         }
+         
+         joinAll(60000)
+         println("*************** " + count)
+
+         Thread.sleep(maxDelayMillis * 2)
+         eventReader.read(_.attributes(specialKey) == specialVal).size mustBe count
+     
+      }
    }
+
+   /**
+    * Target or state may give 707 (Cannot target for phantom state) in which
+    * case we return false. Any other error cases a test assertion.
+    */
+   private def targetForState(sid: String, name: String):Boolean = {
+      
+      val body = Json.obj("state" -> name).toString
+      
+      HttpRequest(method = HttpMethods.POST, uri = s"/request/monstrosity/${sid}", entity = body) ~> router ~> check {
+         response.status match {
+            case OK => true
+              
+            case BadRequest => 
+               if (ServerErrorResponse(response).code != ServerError.STATE_PHANTOM_IN_EXPERIENCE.getCode) {
+                  throw new TestFailedException("Unexpected User Error [" + ServerErrorResponse(response).toString() + "]", 1)
+               }
+               false
+               
+            case _ =>
+               throw new TestFailedException(s"Unexpected HTTP Status ${response.status} with body [${response.entity}]", 2)
+        }
+      }      
+   }
+   
+   private def commitStateRequest(sid: String, attr: (String,String)) {
+      
+      val body = Json.obj(
+         "status" -> Committed.ordinal,
+         "attrs" -> Map(attr._1 -> attr._2)).toString
+
+      HttpRequest(method = HttpMethods.DELETE, uri = s"/request/monstrosity/${sid}", entity = body) ~> router ~> check {
+         val ssnResp = SessionResponse(response)
+         ssnResp.session.getId mustBe sid
+         ssnResp.schema.getMeta.getName mustBe "monstrosity"
+      }
+   }
+
 }

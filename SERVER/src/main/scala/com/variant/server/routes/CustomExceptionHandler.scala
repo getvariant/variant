@@ -29,9 +29,7 @@ object CustomExceptionHandler extends LazyLogging {
       // We barfed while carrying out a remote request.
       case ex: ServerExceptionInternal =>
 
-         logger.whenDebugEnabled {
-            logger.debug(s"Internal server error: ${ex.getMessage}")
-         }
+         logger.error(s"Internal server error: ${ex.getMessage}", ex)
 
          complete(HttpResponse(StatusCodes.InternalServerError, entity = ex.toRemoteException.toResponseEntity))
 

@@ -141,8 +141,8 @@ public class JdbcService {
 	 * @throws Exception
 	 */
 	public void dropSchema() throws Exception {
-				
-		List<String> statements = parseSQLScript(IoUtils.openResourceAsStream("/db/h2/drop-schema.sql")._1());
+
+	   List<String> statements = parseSQLScript(IoUtils.openResourceAsStream("/db/h2/drop-schema.sql")._1());
 		Statement jdbcStmt = getConnection().createStatement();
 
 		for (String stmt: statements) {
