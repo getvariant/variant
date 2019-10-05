@@ -8,23 +8,18 @@ import com.variant.core.schema.Hook;
  * This will be overridden by server or client side services.
  *
  */
-public class HooksService {
+public interface HooksService {
 
 	/**
-	 * Add an unbound life-cycle hook to this hooker.
+	 * Initialize a hook.
 	 */
-	public void initHook(Hook hook, ParserResponse parserResponse) {}
-	
-	/**
-	 * Post all hooks for a particular LCE type. This triggers post of all event types
-	 * assignable to the passed type, i.e. all of its subtypes.
-	 * 
-	 * @param event
-	 * @return Optional containing the first non-empty post result from the chain, or an empty Optional,
-	 *         if none of the posted hooks returned a non-empty Optional.
-	 * 
-	 *
-	public LifecycleEvent.PostResult post(LifecycleEvent event);
-	*/
+	void initHook(Hook hook, ParserResponse parserResponse);
+
+	public class Null implements HooksService {
+
+      @Override
+      public void initHook(Hook hook, ParserResponse parserResponse) {}
+	   
+	}
 }
 

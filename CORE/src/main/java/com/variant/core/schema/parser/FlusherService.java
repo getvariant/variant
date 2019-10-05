@@ -10,12 +10,16 @@ import com.variant.core.schema.Flusher;
  * This will be overridden by server or client side services.
  *
  */
-public class FlusherService {
+public interface FlusherService {
 
-	/**
-	 * Initialize a given flusher.
-	 * Implementation will use the system wide default, if param is empty.
-	 */
-	public void initFlusher(Optional<Flusher> fluhser) {}
-	
+   /**
+    * Initialize a given flusher.
+    * Implementation will use the system wide default, if param is empty.
+    */
+   void initFlusher(Optional<Flusher> fluhser);
+   
+   public class Null implements FlusherService {
+      @Override
+      public void initFlusher(Optional<Flusher> fluhser) {}
+   }
 }

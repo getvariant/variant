@@ -20,12 +20,12 @@ public class BaseTestCore extends VariantBaseTest {
 		return new SchemaParser() {
 			@Override
 			public HooksService getHooksService() {
-				return new HooksService();
+				return new HooksService.Null();
 			}
 
 			@Override
 			public FlusherService getFlusherService() {
-				return new FlusherService();
+				return new FlusherService.Null();
 			}
 		};
 	}

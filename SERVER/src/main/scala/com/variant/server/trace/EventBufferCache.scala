@@ -25,6 +25,9 @@ object EventBufferCache {
 
       // Target flusher service which will be responsible for flushing this event
       var flusherService: ServerFlusherService = _
+      
+      override def toString() = 
+         s"Header(status=$status, timstamp=$timestamp, buffer=Array($bufferSize), bufferIx=${bufferIx.get})"
    }
 
    object HeaderStatus {
@@ -137,6 +140,8 @@ class EventBufferCache(implicit server: VariantServer) extends LazyLogging {
     */
    private def flushOlderThan(ageMillis: Long) {
 
+      logger.debug(s"Flusning all buffers older than $ageMillis millis")
+      
       val minTimestamp = System.currentTimeMillis() - ageMillis
 
       // To reduce the size of the critical section, protected by the spin lock,
@@ -163,7 +168,7 @@ class EventBufferCache(implicit server: VariantServer) extends LazyLogging {
     * Flush all current buffers.
     * Call this on server shutdown only.
     */
-   def flushAll = flushOlderThan(0)
+   def flushAll() = flushOlderThan(0)
 
    /**
     * Add single event to the queue. Must be thread safe because called by foreground threads.

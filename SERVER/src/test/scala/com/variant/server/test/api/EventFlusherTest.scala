@@ -94,7 +94,6 @@ class EventFlusherTest extends EmbeddedServerSpec with TempSchemataDir {
             new ServerExceptionLocal(
                ServerMessageLocal.CONFIG_PROPERTY_NOT_SET, "variant.event.flusher.class.name").getMessage)
 
-         server mustBe null
       }
    }
 

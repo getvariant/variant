@@ -15,7 +15,7 @@ import com.variant.server.api.TraceEventFlusher;
 import com.variant.server.boot.ServerMessageLocal;
 import com.variant.server.util.ClassUtil;
 
-public class ServerFlusherService extends FlusherService {
+public class ServerFlusherService implements FlusherService {
 
 	private static final Logger logger = LoggerFactory.getLogger(ServerFlusherService.class);
 

@@ -39,7 +39,8 @@ trait EmbeddedServerSpec extends BaseSpec with ScalatestRouteTest {
     * Ensure that it's headless.
     */
    def reboot(f: VariantServer.Builder => Unit = {_=>}) {
-      _server = null
+      _server.shutdown()
+      //_server = null
       _server = {
          val newBuilder = serverBuilder()
          f(newBuilder)
@@ -47,15 +48,6 @@ trait EmbeddedServerSpec extends BaseSpec with ScalatestRouteTest {
       }
    }
 
-   /**
-    * Recreate the underlying server from the default builder.
-    * Ensure that it's headless.
-    *
-   def reboot() {
-      _server = null
-      _server = serverBuilder().build()
-      //_server = VariantServer.builder.headless.build()
-   }*/
    // Seal the router in order not to have rejections.
    def router = Route.seal(Router(_server).routes)
 
@@ -86,7 +78,7 @@ trait EmbeddedServerSpec extends BaseSpec with ScalatestRouteTest {
       private[this] val ssnSrc = (respJson \ "session").asOpt[String].getOrElse { failTest("No 'session' element in reponse") }
       private[this] val schemaSrc = (respJson \ "schema" \ "src").asOpt[String].getOrElse { failTest("No 'schema/src' element in reponse") }
 
-      private[this] val parserResponse = ServerSchemaParser(implicitly).parse(schemaSrc)
+      private[this] val parserResponse = ServerSchemaParser().parse(schemaSrc)
       parserResponse.hasMessages(Severity.ERROR) mustBe false
 
       val schema = parserResponse.getSchema

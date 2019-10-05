@@ -59,7 +59,7 @@ private class FlusherRouter(server: VariantServer) extends Actor with LazyLoggin
 
       case Flush(header: EventBufferCache.Header) =>
 
-         logger.trace(s"Received buffer $header for flushing")
+         logger.debug(s"Received buffer $header for flushing")
 
          val flusher = header.flusherService.getFlusher // Just one for now.
 

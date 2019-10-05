@@ -238,6 +238,8 @@ class VariantServerImpl(builder: VariantServer.Builder)(override implicit val ac
    }
 
    override def shutdown() {
+      logger.debug("Server shutdown started")
+      eventBufferCache.flushAll()
       binding.map(_.unbind)
       binding = None
       schemata.undeployAll()

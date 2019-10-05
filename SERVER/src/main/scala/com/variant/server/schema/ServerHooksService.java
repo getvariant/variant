@@ -33,7 +33,7 @@ import com.variant.server.util.ClassUtil;
  * @author
  *
  */
-public class ServerHooksService extends HooksService {
+public class ServerHooksService implements HooksService {
 
 	private static final Logger LOG = LoggerFactory.getLogger(ServerHooksService.class);
 

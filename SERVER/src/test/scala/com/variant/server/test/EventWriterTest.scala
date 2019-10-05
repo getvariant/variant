@@ -26,7 +26,7 @@ import com.variant.server.api.StateRequest.Status.InProgress
 import org.scalatest.exceptions.TestFailedException
 import com.variant.server.impl.ConfigKeys
 
-class EventWriterTest extends EmbeddedServerSpec with TraceEventsSpec with Async {
+class EventWriterTest extends EmbeddedServerSpec with TraceEventsSpec with Async with ConfigKeys {
 
    val emptyTargetingTrackerBody = "{\"tt\":[]}"
 
@@ -47,7 +47,7 @@ class EventWriterTest extends EmbeddedServerSpec with TraceEventsSpec with Async
          maxDelayMillis mustBe 2000
          flushParallelism mustBe 2
       }
-/*
+
       "flush an event after EVENT_WRITER_FLUSH_MAX_DELAY_MILLIS" in {
 
          // Create Session
@@ -164,18 +164,19 @@ class EventWriterTest extends EmbeddedServerSpec with TraceEventsSpec with Async
          Thread.sleep(maxDelayMillis / 2)
          eventReader.read(e => e.sessionId == ssn.getId).size mustBe (flushSize)
       }
-      */
-      "create and flush a whole bunch of events without losing any" in {
+
+      "create and flush a whole bunch of events without losing any on server shutdown" in {
          
          
-         val sessions = 50
-         val hops = 50
+         val sessions = 20
+         val hops = 100
          val ssnIds = new Array[String](sessions)
          
          // We'll need a more potent event cache
          reboot { builder =>
-            builder.withConfiguration(Map(ConfigKeys.EVENT_WRITER_BUFFER_SIZE -> 1000))
-               .withConfiguration(Map(ConfigKeys.EVENT_WRITER_FLUSH_SIZE -> 100))
+            builder.withConfiguration(Map(EVENT_WRITER_BUFFER_SIZE -> 1000))
+               .withConfiguration(Map(EVENT_WRITER_FLUSH_SIZE -> 100))
+               .withConfiguration(Map(SESSION_TIMEOUT -> 60))
          }
 
          // Create the sessions
@@ -193,24 +194,24 @@ class EventWriterTest extends EmbeddedServerSpec with TraceEventsSpec with Async
          val specialKey = "specialKey"
          val specialVal = "This is how we'll be able to tell the events we're about to insert from the ones that are already there"
          
-         var count = 0
+         var count = new java.util.concurrent.atomic.AtomicInteger(0)
          for (i <- 0 until sessions) async {
             
             for (j <- 0 until hops) {
                val nextState = "state" + (j % 5 + 1)
                if (targetForState(ssnIds(i), nextState)) {
                   commitStateRequest(ssnIds(i), (specialKey, specialVal))
-                  count += 1
+                  count.incrementAndGet()
                }
+               // A bit of a delay so as not to overwhelm the buffer cache.
                Thread.sleep(200 + Random.nextInt(600))
             }
          }
          
-         joinAll(60000)
-         println("*************** " + count)
+         joinAll(timeout = 60000)
 
-         Thread.sleep(maxDelayMillis * 2)
-         eventReader.read(_.attributes(specialKey) == specialVal).size mustBe count
+         server.shutdown()
+         eventReader.read(_.attributes.get(specialKey) == Some(specialVal)).size mustBe count.get
      
       }
    }
