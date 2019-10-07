@@ -40,7 +40,7 @@ object EventBufferCache {
 }
 
 /**
- * Trace event buffer cache.
+ * Trace event buffer cache. Top level class for all tracing related objects.
  *
  */
 class EventBufferCache(implicit server: VariantServer) extends LazyLogging {
@@ -62,13 +62,20 @@ class EventBufferCache(implicit server: VariantServer) extends LazyLogging {
    // Schedule a force flush of those buffers whose age exceeds the
    // configurable max delay value.
    val maxDelayMillis = server.config.eventWriterMaxDelay * 1000
-
-   implicit val ec = server.actorSystem.dispatcher
+   
+   // Schedule flush due to max delay time.
    server.actorSystem.scheduler.schedule(
       initialDelay = FiniteDuration(maxDelayMillis, MILLISECONDS),
-      interval = FiniteDuration(maxDelayMillis, MILLISECONDS)) {
-         flushOlderThan(maxDelayMillis)
-      }
+      interval = FiniteDuration(maxDelayMillis, MILLISECONDS)) 
+      { 
+         flushOlderThan(maxDelayMillis) 
+      } (server.actorSystem.dispatcher);
+
+   // Dedicated pool for long-running blocking flushing tasks.
+   val flusherThreadPool = new FlusherThreadPool(server.config)
+   
+   val flusherRouterActor = server.actorSystem.actorOf(
+         FlusherRouter.props(flusherThreadPool), name = "FlusherRouter")
 
    /**
     * Find new current buffer. Must be thread safe because may be called by foreground threads
@@ -161,14 +168,8 @@ class EventBufferCache(implicit server: VariantServer) extends LazyLogging {
             }
       }
 
-      flushableList.foreach { FlusherRouter.ref ! FlusherRouter.Flush(_) }
+      flushableList.foreach { flusherRouterActor ! FlusherRouter.Flush(_) }
    }
-
-   /**
-    * Flush all current buffers.
-    * Call this on server shutdown only.
-    */
-   def flushAll() = flushOlderThan(0)
 
    /**
     * Add single event to the queue. Must be thread safe because called by foreground threads.
@@ -191,7 +192,7 @@ class EventBufferCache(implicit server: VariantServer) extends LazyLogging {
                if (buffIx == bufferSize - 1) {
                   // Current buffer just ran out of room and it's on us to try looking for a new one.
                   head.status = HeaderStatus.FLUSHING
-                  FlusherRouter.ref ! FlusherRouter.Flush(head)
+                  flusherRouterActor ! FlusherRouter.Flush(head)
                   logger.trace(s"Scheduled buffer $head for flushing")
                }
                
@@ -217,5 +218,28 @@ class EventBufferCache(implicit server: VariantServer) extends LazyLogging {
    def size: Integer = {
       headerTable.filter(_.status != HeaderStatus.FREE).map(_.bufferIx.get + 1).fold(0)(_ + _)
    }
+   
+   /**
+	 * Asynchronously shutdown this cache.
+	 * The actor system is assumed to still be around, but all the schemata undeployed,
+	 * i.e. it's safe to assume no new trace events will be written.
+    */
+   def shutdown() {
+      
+      flushOlderThan(0)
+      
+      try {
+         server.actorSystem.registerOnTermination {
+            flusherThreadPool.shutdown()
+         }
+      }
+      catch {
+         // Ignore the RejectedExceutionException, which may happen
+         // if we're shutting down as a result of unsuccessful startup.
+         case _: java.util.concurrent.RejectedExecutionException =>
+      }
+      
+   }
+
 }
 

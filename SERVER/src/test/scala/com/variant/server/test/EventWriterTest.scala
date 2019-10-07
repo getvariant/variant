@@ -179,6 +179,10 @@ class EventWriterTest extends EmbeddedServerSpec with TraceEventsSpec with Async
                .withConfiguration(Map(SESSION_TIMEOUT -> 60))
          }
 
+         server.config.eventWriterBufferSize mustBe 1000
+         server.config.eventWriterFlushSize mustBe 100
+         server.config.sessionTimeout mustBe 60
+
          // Create the sessions
          for (i <- 0 until sessions) async {
 

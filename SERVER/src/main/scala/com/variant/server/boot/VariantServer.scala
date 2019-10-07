@@ -182,7 +182,9 @@ class VariantServerImpl(builder: VariantServer.Builder)(override implicit val ac
 
    // If debug, echo all config params.
    logger.whenDebugEnabled {
-      config.entrySet.forEach { e => logger.debug(s"${e.getKey} → ${e.getValue}") }
+      config.entrySet.toArray
+         .sortWith (_.getKey < _.getKey )
+         .foreach { e => logger.debug(s"${e.getKey} → ${e.getValue}") }
    }
 
    // To speedup server startup, we split it between two parallel threads.
@@ -199,7 +201,6 @@ class VariantServerImpl(builder: VariantServer.Builder)(override implicit val ac
    // Thread 2: Server backend init.
    val serverInitTask = Future {
       _eventBufferCache = EventBufferCache(this)
-      FlusherRouter.start(this)
       useSchemaDeployer(SchemaDeployer.fromFileSystem(this))
       VacuumActor.start(this)
    }
@@ -226,6 +227,18 @@ class VariantServerImpl(builder: VariantServer.Builder)(override implicit val ac
       actorSystem.terminate()
    }
 
+   /**
+    * Shutdown sequence.
+    */
+   override def shutdown() {
+      logger.debug("Server shutdown started")
+      binding.map(_.unbind)
+      binding = None
+      schemata.undeployAll()
+      _eventBufferCache.shutdown()
+      actorSystem.terminate() // Async.
+   }
+
    actorSystem.whenTerminated.andThen {
       case Success(_) =>
          logger.info(ServerMessageLocal.SERVER_SHUTDOWN.asMessage(
@@ -235,16 +248,6 @@ class VariantServerImpl(builder: VariantServer.Builder)(override implicit val ac
 
       case Failure(e) =>
          logger.error("Unexpected exception thrown:", e)
-   }
-
-   override def shutdown() {
-      logger.debug("Server shutdown started")
-      eventBufferCache.flushAll()
-      binding.map(_.unbind)
-      binding = None
-      schemata.undeployAll()
-      actorSystem.terminate()
-      Await.result(actorSystem.whenTerminated, 2 seconds)
    }
 
    /**

@@ -13,6 +13,7 @@ import com.variant.server.boot.ServerMessageLocal._
 import com.variant.server.boot.ServerExceptionLocal
 import com.variant.server.util.JavaImplicits._
 import com.variant.core.util.ReflectUtils
+import java.util.Map.Entry
 
 /**
  * Effective server configuration.
@@ -130,6 +131,6 @@ class ConfigurationImpl(config: Config) extends Configuration with ConfigKeys {
    /*                                  PUBLIC EXT                                    */
    /*--------------------------------------------------------------------------------*/
 
-   def entrySet = config.entrySet()
+   def entrySet: Set[Entry[String, ConfigValue]] = config.entrySet.asScala.toSet
 }
 

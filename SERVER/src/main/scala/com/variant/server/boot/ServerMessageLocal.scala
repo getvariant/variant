@@ -96,7 +96,7 @@ object ServerMessageLocal {
       new ServerMessageLocal(501, Severity.WARN, "Trashed [%s] trace events in the last [%s]. Consider increasing variant.event.writer.buffer.size");
 
    val FLUSHER_CLIENT_ERROR =
-      new ServerMessageLocal(502, Severity.ERROR, "Flusher [%s] thew unexpected exception");
+      new ServerMessageLocal(502, Severity.ERROR, "Trace event flusher thew an exception");
 
 }
 

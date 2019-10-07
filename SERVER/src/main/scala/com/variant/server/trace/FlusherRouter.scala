@@ -26,17 +26,11 @@ import com.variant.server.boot.ServerMessageLocal
 /**
  * Trace event flusher Actor.
  */
-object FlusherRouter {
-
-   private[this] var _ref: ActorRef = _
+object FlusherRouter extends LazyLogging {
 
    // Start the sole vacuum actor.
-   def start(server: VariantServer) {
-      _ref = server.actorSystem.actorOf(Props(new FlusherRouter(server)), name = "FlusherRouter")
-   }
-
-   def ref = _ref
-
+   def props(pool: FlusherThreadPool) = Props(new FlusherRouter(pool))
+      
    /**
     * Protocol
     */
@@ -44,13 +38,9 @@ object FlusherRouter {
 
 }
 
-private class FlusherRouter(server: VariantServer) extends Actor with LazyLogging {
+private class FlusherRouter(pool: FlusherThreadPool) extends Actor with LazyLogging {
 
    import FlusherRouter._
-
-   val poolSize = Math.ceil(Runtime.getRuntime.availableProcessors * server.config.eventWriterFlushParallelism).toInt
-
-   implicit val ec = ExecutionContext.fromExecutor(Executors.newFixedThreadPool(poolSize))
 
    /**
     * Process the flush msg.
@@ -62,8 +52,8 @@ private class FlusherRouter(server: VariantServer) extends Actor with LazyLoggin
          logger.debug(s"Received buffer $header for flushing")
 
          val flusher = header.flusherService.getFlusher // Just one for now.
-
-         Future {
+         
+         pool.submit {
 
             // We can trust bufferIx, so long as it's < max size.
             // Remember that header.bufferIx is the index of the last insertion, i.e. one less than length.
@@ -78,16 +68,9 @@ private class FlusherRouter(server: VariantServer) extends Actor with LazyLoggin
 
             doFlush(header, actualLength, flusher)
 
-         } onComplete {
-
-            case Success(_) => // AOK nothing todo.
-
-            case Failure(t: Throwable) =>
-               logger.error(ServerMessageLocal.FLUSHER_CLIENT_ERROR.asMessage(flusher.toString), t)
          }
-
    }
-
+   
    /**
     * Flush the buffer pointed to by a given header.
     */
