@@ -27,9 +27,9 @@ public class NativeProcess {
 	 * Factory method starts an asynchronous process and return without waiting for completion.
 	 */
 	public static NativeProcess start(
-			String command,                 // OS (bash) command to execute
 			StringToUnit outConsumer,       // Stdout processor
-			StringToUnit errorConsumer      // Stderr processor
+			StringToUnit errorConsumer,     // Stderr processor
+         String... command                // OS command to execute
 			) throws Exception {
 		
 		return new NativeProcess(command, outConsumer, errorConsumer);
@@ -38,7 +38,7 @@ public class NativeProcess {
 	/**
 	 * Convenience method. Sends std out and std error to the console.
 	 */
-	public static NativeProcess start(String command) throws Exception {
+	public static NativeProcess start(String... command) throws Exception {
 		
 		return new NativeProcess(
 				command, 
@@ -56,7 +56,7 @@ public class NativeProcess {
 	 * 
 	 * @return completion code of the subprocess.
 	 */
-	public static int exec(String command) throws Exception {
+	public static int exec(String... command) throws Exception {
 		
 		NativeProcess p = start(command);
 		while (p.proc.isAlive()) Thread.sleep(250);
@@ -69,12 +69,12 @@ public class NativeProcess {
 	 * 
 	 * @return completion code of the subprocess.
 	 */
-	public static int execSilent(String command) throws Exception {
+	public static int execSilent(String... command) throws Exception {
 		
 		NativeProcess p = start(
-				command,
 				line -> {},
-				line -> {});
+				line -> {},
+				command);
 		
 		while (p.proc.isAlive()) Thread.sleep(250);
 		return p.proc.exitValue();
@@ -87,14 +87,14 @@ public class NativeProcess {
 	 * 
 	 * @return completion code of the subprocess.
 	 */
-	public static int execQuiet(String command) throws Exception {
-		
+	public static int execQuiet(String... command) throws Exception {
+	   
 		NativeProcess p = start(
-				command,
 				line -> {},
 				line -> {
 					System.out.println("<ERR> " + line); 					
-				});
+				},
+	         command);
 		
 		while (p.proc.isAlive()) Thread.sleep(250);
 		return p.proc.exitValue();
@@ -111,11 +111,11 @@ public class NativeProcess {
 	 * @param errorConsumer
 	 * @throws IOException 
 	 */
-	private NativeProcess(String command, StringToUnit outConsumer, StringToUnit errorConsumer) throws IOException {
+	private NativeProcess(String[] command, StringToUnit outConsumer, StringToUnit errorConsumer) throws IOException {
 
 		// Start the process
-		proc = new ProcessBuilder(command.split("\\s+")).start();
-		
+		proc = new ProcessBuilder(command).start();
+
 		// Connect the process's output streams
 		outConsumerThread = new OutConsumerThread(outConsumer, errorConsumer);
 		outConsumerThread.start();
@@ -124,9 +124,15 @@ public class NativeProcess {
 	/**
 	 * Destroy this process.
 	 */
-	public void destroy() {
-		outConsumerThread.interrupt();
-		proc.destroy();
+	public void destroy() throws Exception{
+
+	   String[] killCommand = {
+	         "/bin/bash",
+	         "-c",
+	         "ps -ef | grep boot.Boot | grep -v grep | awk '{print $2}' | xargs kill"};
+
+	   NativeProcess.exec(killCommand);
+
 	}
 
 	/**

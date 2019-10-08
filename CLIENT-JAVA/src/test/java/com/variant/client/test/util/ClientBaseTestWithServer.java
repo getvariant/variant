@@ -25,11 +25,13 @@ abstract public class ClientBaseTestWithServer extends ClientBaseTest {
 	// Schema files location in the local project
 	protected final static String SCHEMATA_DIR_SRC = "src/test/resources/schemata-remote/";
 
-	// Event writer max delay hardcoded here. Must match what's in 
-	// standalone-server/conf/variant.conf
-	protected final static long EVENT_WRITER_MAX_DELAY = 2000;
+	// Event writer max delay. 
+	protected final static int EVENT_WRITER_MAX_DELAY = 2;
 	
-	// Filesystem watcher takes this long to react.
+   // Filesystem watcher takes this long to react.
+   protected final static int eventWriterLatencyMillis = EVENT_WRITER_MAX_DELAY * 1000 + 2000;
+
+   // Filesystem watcher takes this long to react.
 	protected final static int dirWatcherLatencyMillis = 12000;
 	
 	// Trace event reader. Concrete tests should use this one, instead of initializing their own.
@@ -60,11 +62,10 @@ abstract public class ClientBaseTestWithServer extends ClientBaseTest {
 		catch (Exception e) {
 			throw new RuntimeException("Unable to build server", e);
 		}
-
 	}
 
 	/**
-	 * Restart the standalone server. We don't provide a plain start method, just so
+	 * (Re)start the standalone server. We don't provide a plain start method, just so
 	 * the caller always gets the clean slate.
 	 * 
 	 * @param config Additional server-side config parameters may be set to override the default.
@@ -84,8 +85,9 @@ abstract public class ClientBaseTestWithServer extends ClientBaseTest {
 		}
 
 		@SuppressWarnings("serial")
-		Map<String,String> _config = new HashMap<String,String>() {{
+		Map<String,Object> _config = new HashMap<String, Object>() {{
 			put("variant.schemata.dir", SCHEMATA_DIR);
+         put("event.writer.max.delay", EVENT_WRITER_MAX_DELAY);
 		}};
 		if (config != null) _config.putAll(config);
 		try {
@@ -121,7 +123,6 @@ abstract public class ClientBaseTestWithServer extends ClientBaseTest {
 
    @AfterClass
    public static void cleanup() throws Exception {
-   
       traceEventReader.close();
       destroyServer();
       IoUtils.delete(SCHEMATA_DIR);
