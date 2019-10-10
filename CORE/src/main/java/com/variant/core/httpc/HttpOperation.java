@@ -1,5 +1,5 @@
 package com.variant.core.httpc;
-
+/*
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -16,23 +16,21 @@ abstract public class HttpOperation {
 	/**
 	 * 
 	 * @param url
-	 */
+	 *
 	HttpOperation(String url) {
-		HttpURLConnection connResult = null;
 		try {
-			connResult = (HttpURLConnection) new URL(url).openConnection();
+			conn = (HttpURLConnection) new URL(url).openConnection();
 		}
 		catch (Throwable t) {
 			throw new RuntimeException("Unable to connect to [" + url + "]", t);
 		}
-		conn = connResult;
 	}
 	
 	/**
 	 * Exec this operation
 	 * @return
 	 * @throws IOException
-	 */
+	 *
 	public HttpResponse exec() throws IOException {		
 		conn.setConnectTimeout(connTimeout);
 		conn.setReadTimeout(readTimeout);
@@ -83,3 +81,4 @@ abstract public class HttpOperation {
 	}
 
 }
+*/

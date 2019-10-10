@@ -109,7 +109,7 @@ public class CoreSession implements Serializable {
 
 		if (traversedVariations.contains(var)) 
 			throw new CoreException.Internal(
-					String.format("Test [%s] already contained in the traversed list", var.getName()));
+					String.format("Variation [%s] already contained in the traversed list", var.getName()));
 		
 		traversedVariations.add(var);
 	}

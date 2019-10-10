@@ -19,14 +19,21 @@ public class LogTailer {
       TRACE, DEBUG, INFO, WARN, ERROR
    }
    
-	/**
-    * Get last n messages in chronological order.
+   /**
+    * Get last n messages of level INFO or higher, in chronological order.
+    */
+   public static List<Entry> last(int lines, String fileName) throws IOException {
+      return last(lines, Level.INFO, fileName);
+   }
+
+  /**
+    * Get last n messages of given level or higher, in chronological order.
     * For simplicity, we ignore lines that don't parse, because they are
     * multi-line continuations of previous lines and so far we don't need that.
     * @throws IOException 
     * 
     */
-   public static List<Entry> last(int lines, String fileName) throws IOException {
+   public static List<Entry> last(int lines, Level level, String fileName) throws IOException {
       
       
 	   ReversedLinesFileReader reader = new ReversedLinesFileReader(new File(fileName), Charset.defaultCharset());
@@ -36,8 +43,11 @@ public class LogTailer {
       while ((line = reader.readLine()) != null && i < lines) {
          // Prepend, so that result is back in chronological order.
         	 try {
-        	    result.add(0, new Entry(line)); 
-             i++;
+        	    Entry entry = new Entry(line);
+        	    if (entry.level.ordinal() >= level.ordinal()) {
+           	    result.add(0, entry); 
+                i++;
+        	    }
         	 } catch (ParseException pe) {}  // Simply skip lines that don't parse. 
       }
       reader.close();

@@ -6,10 +6,13 @@ import scala.concurrent._
 import scala.concurrent.duration._
 import java.util.concurrent.atomic.AtomicInteger
 import org.scalatest.concurrent.ScalaFutures
+import org.scalatest.BeforeAndAfterAll
 
-trait Async extends EmbeddedServerSpec {
+trait Async extends BaseSpec with BeforeAndAfterAll {
 
-   implicit val ec = server.actorSystem.dispatcher
+   private[this] val poolSize = Runtime.getRuntime.availableProcessors * 10
+   private[this] val threadPool = Executors.newFixedThreadPool(poolSize)
+   private[this] implicit val ec = ExecutionContext.fromExecutor(threadPool)
 
    val taskCount = new AtomicInteger(0)
 
@@ -52,5 +55,9 @@ trait Async extends EmbeddedServerSpec {
          t.printStackTrace(System.err)
          throw new Exception(s"Async block crashed: ${t.getMessage}", t)
       }
+   }
+   
+   override def afterAll() {
+      threadPool.shutdownNow()
    }
 }

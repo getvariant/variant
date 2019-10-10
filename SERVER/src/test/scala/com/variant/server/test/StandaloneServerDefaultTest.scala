@@ -10,8 +10,8 @@ import com.variant.server.boot.ServerMessageLocal._
 import com.variant.server.test.spec.StandaloneServerSpec
 import com.variant.server.test.util.ServerLogTailer
 import com.variant.server.test.util.ServerLogTailer.Level._
-import com.variant.core.httpc.HttpOperation
-import akka.http.scaladsl.model.StatusCodes._
+import com.variant.core.httpc.HttpRequest
+import com.variant.core.httpc.HttpStatusCode._
 
 /**
  * Test the server running in a separate process.
@@ -27,7 +27,7 @@ class StandaloneServerDefaultTest extends StandaloneServerSpec {
          // But the full harness (with `test`) fails without the try block with weird socket
          // exceptions. Mystery.
          try {
-            HttpOperation.get("http://localhost:5377/foo").exec().responseCode mustBe NotFound.intValue
+            HttpRequest.get("http://localhost:5377/foo").responseCode mustBe HTTP_NOT_FOUND
          } catch {
             case t: Throwable => println("************** " + t.getMessage)
          }
@@ -35,8 +35,7 @@ class StandaloneServerDefaultTest extends StandaloneServerSpec {
 
       "deploy exampleSchema and write to the application log" in {
 
-         HttpOperation.get("http://localhost:5377/schema/exampleSchema")
-            .exec().responseCode mustBe OK.intValue
+         HttpRequest.get("http://localhost:5377/schema/exampleSchema").responseCode mustBe HTTP_OK
 
          val lines = ServerLogTailer.last(2, serverDir + "/log/variant.log")
          lines(0).level mustBe Info
@@ -48,8 +47,8 @@ class StandaloneServerDefaultTest extends StandaloneServerSpec {
 
       "send health on a root request" in {
 
-         val resp = HttpOperation.get("http://localhost:5377").exec()
-         resp.responseCode mustBe OK.intValue
+         val resp = HttpRequest.get("http://localhost:5377")
+         resp.responseCode mustBe HTTP_OK
          resp.bodyString.get must startWith("Variant AIM Server")
       }
 
@@ -58,7 +57,7 @@ class StandaloneServerDefaultTest extends StandaloneServerSpec {
          server.stop()
          server.start(Map("variant.http.port" -> "1234"))
 
-         HttpOperation.get("http://localhost:1234/schema/exampleSchema").exec().responseCode mustBe OK.intValue
+         HttpRequest.get("http://localhost:1234/schema/exampleSchema").responseCode mustBe HTTP_OK
 
       }
 
@@ -86,7 +85,7 @@ class StandaloneServerDefaultTest extends StandaloneServerSpec {
 
          // Misconfig causes server staartup to abort, so there's no server.
          intercept[java.net.ConnectException] {
-            HttpOperation.get("http://localhost:5377").exec()
+            HttpRequest.get("http://localhost:5377")
          }
 
       }
@@ -114,8 +113,8 @@ class StandaloneServerDefaultTest extends StandaloneServerSpec {
          lines(3).level mustBe Info
          lines(3).message must include regex s"\\[${SERVER_BOOT_OK.getCode}\\].*started on port"
 
-         val resp = HttpOperation.get("http://localhost:5377/schema/monstrosity").exec()
-         resp.responseCode mustBe BadRequest.intValue
+         val resp = HttpRequest.get("http://localhost:5377/schema/monstrosity")
+         resp.responseCode mustBe HTTP_BAD_REQUEST
          resp.getErrorContent mustBe UNKNOWN_SCHEMA.asMessage("monstrosity")
 
       }
@@ -159,6 +158,6 @@ class StandaloneServerDefaultTest extends StandaloneServerSpec {
          val lines = ServerLogTailer.last(1, serverDir + "/log/variant.log")
          lines(0).level mustBe Error
          lines(0).message mustBe CONFIG_BOTH_FILE_AND_RESOURCE_GIVEN.asMessage()
-      }
+      }      
    }
 }

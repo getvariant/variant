@@ -21,11 +21,10 @@ object ServerLogTailer extends LazyLogging {
       val Error = LogTailer.Level.ERROR
    }
 
+   /**
+    * Last n log lines of level INFO or higher, in chronological order.
+    */
    def last(n: Integer, fileName: String = "log/variant.log"): Seq[Entry] = {
-
-      logger.whenDebugEnabled {
-         throw new RuntimeException("ServerLogTailer requires logging level of INFO")
-      }
       
       LogTailer.last(n, fileName).asScala.toSeq
    }

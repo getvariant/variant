@@ -39,7 +39,7 @@ trait TempSchemataDir extends BaseSpec with BeforeAndAfterAll { self: EmbeddedSe
    protected lazy val schemataDir = schemataDirDefault
 
    /**
-    *  Subclasses may override what files go into the temp schemata directory.
+    *  Subclasses may override what files will be copied into the temp schemata directory.
     */
    protected lazy val schemata = Set[String](
       "schemata/monster.schema",
