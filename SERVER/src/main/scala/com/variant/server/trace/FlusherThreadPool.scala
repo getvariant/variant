@@ -58,7 +58,7 @@ class FlusherThreadPool(config: Configuration) extends LazyLogging {
     */
    def shutdown(timeout: Int = 10000) {
       
-      if (pool.isShutdown()) {
+      if (!pool.isShutdown()) {
        
          var waited = 0
          

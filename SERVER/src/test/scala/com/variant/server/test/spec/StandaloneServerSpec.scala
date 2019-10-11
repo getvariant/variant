@@ -157,9 +157,10 @@ class StandaloneServer(serverDir: String, flusher: String) extends LazyLogging  
    def stop() {
 
       svrProc.foreach { proc =>
+
          (serverDir + "/bin/variant stop").!
 
-         // Block until the server process exits.
+         println(s"Waiting for server process to exit...")         
          val rc = proc.exitValue
          println(s"Server process completed with return code $rc")
 

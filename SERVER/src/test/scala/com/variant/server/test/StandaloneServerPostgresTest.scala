@@ -37,7 +37,7 @@ class StandaloneServerPostgresTest extends StandaloneServerSpec with Async {
    override lazy val flusher = "postgres"
 
    "Server" should {
-/*
+
       "send NOT_FOUND on a bad request" in {
 
          // This is a mystery: None of these 3 lines actually throws any exceptions.
@@ -91,7 +91,7 @@ class StandaloneServerPostgresTest extends StandaloneServerSpec with Async {
          HttpRequest.get("http://localhost:5377/schema/exampleSchema").responseCode mustBe HTTP_OK
 
       }
-*/
+
       "Not lose trace events on shutdown" in {
          
          server.stop()
