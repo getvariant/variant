@@ -1,10 +1,12 @@
 package com.variant.client.test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import com.variant.client.Connection;
 import com.variant.client.Session;
-import com.variant.client.VariantClient;
 import com.variant.client.VariantException;
 import com.variant.client.test.util.ClientBaseTestWithServer;
 import com.variant.core.error.ServerError;
@@ -13,14 +15,7 @@ import com.variant.core.util.IoUtils;
 /**
  */
 public class ConnectionHotUndeployTest extends ClientBaseTestWithServer {
-	
-	// Sole client
-	// Sole client
-	private VariantClient client = new VariantClient.Builder()
-			.withSessionIdTrackerClass(SessionIdTrackerHeadless.class)
-			.withTargetingTrackerClass(TargetingTrackerHeadless.class)
-			.build();
-	
+		
 	/**
 	 * Schema un-deployed. 
 	 */

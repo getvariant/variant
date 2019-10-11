@@ -5,7 +5,10 @@ import java.util.Map;
 
 import org.junit.AfterClass;
 
+import com.variant.client.VariantClient;
+import com.variant.client.test.SessionIdTrackerHeadless;
 import com.variant.client.test.StandaloneServer;
+import com.variant.client.test.TargetingTrackerHeadless;
 import com.variant.client.test.util.event.TraceEventReader;
 import com.variant.core.util.IoUtils;
 import com.variant.core.util.StringUtils;
@@ -16,6 +19,12 @@ import com.variant.core.util.StringUtils;
  */
 abstract public class ClientBaseTestWithServer extends ClientBaseTest {
 				
+   // Sole client
+   protected VariantClient client = VariantClient.build ( builder -> {
+      builder.withSessionIdTrackerClass(SessionIdTrackerHeadless.class)
+         .withTargetingTrackerClass(TargetingTrackerHeadless.class);
+   });
+
 	// Remote server location
 	protected final static String SERVER_DIR = "/tmp/remote-server";
 	

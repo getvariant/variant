@@ -14,6 +14,7 @@ import com.variant.client.StateRequest;
 import com.variant.client.TargetingTracker;
 import com.variant.client.TraceEvent;
 import com.variant.client.UnknownSchemaException;
+import com.variant.client.VariantClient;
 import com.variant.client.VariantException;
 import com.variant.client.net.Payload;
 import com.variant.client.net.http.HttpAdapter;
@@ -92,15 +93,10 @@ public class Server {
 		final Object block() throws Exception {voidBlock(); return null;}
 		abstract void voidBlock() throws Exception;
 	}
-
-	final VariantClientImpl client;
 	
 	/**
-	 * Bootstrapping 
-	 * Package visibility as we only want ConnectionImpl to call this.
 	 */
-	Server(VariantClientImpl client) {
-		this.client = client;
+	public Server(VariantClient client) {
 		this.adapter = new HttpAdapter();
 	}
 	
@@ -112,7 +108,7 @@ public class Server {
 	 * Connect this server to a schema denoted by the given URI.
 	 * @return
 	 */
-	Payload.Connection connect(URI variantUri) {
+	public Payload.Connection connect(URI variantUri) {
 		
 		if (LOG.isTraceEnabled()) LOG.trace("connect()");
 
@@ -130,18 +126,7 @@ public class Server {
 			else throw ce;
 		}
 	}
-	
-	/**
-	 * Close this server connection (client side operation).
-	 *
-	void disconnect(ConnectionImpl conn) {
-		
-		if (LOG.isTraceEnabled()) LOG.trace("disconnect()");
-
-		adapter.delete(serverUrl + "connection", conn);
-	}
-	*/
-		
+			
 	//---------------------------------------------------------------------------------------------//
 	//                                          /SESSION                                           //
 	//---------------------------------------------------------------------------------------------//

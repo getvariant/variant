@@ -1,16 +1,19 @@
 package com.variant.client.test;
 
-import static com.variant.client.StateRequest.Status.*;
-import static org.junit.Assert.*;
+import static com.variant.client.StateRequest.Status.Committed;
+import static com.variant.client.StateRequest.Status.InProgress;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 
-import com.variant.client.VariantError;
 import com.variant.client.Connection;
 import com.variant.client.Session;
 import com.variant.client.StateRequest;
 import com.variant.client.TraceEvent;
-import com.variant.client.VariantClient;
+import com.variant.client.VariantError;
 import com.variant.client.VariantException;
 import com.variant.client.impl.StateVisitedEvent;
 import com.variant.client.impl.TraceEventSupport;
@@ -23,12 +26,6 @@ import com.variant.core.util.Tuples.Pair;
 
 
 public class TraceEventsTest extends ClientBaseTestWithServer {
-
-	// Sole client
-	private VariantClient client = new VariantClient.Builder()
-			.withSessionIdTrackerClass(SessionIdTrackerHeadless.class)
-			.withTargetingTrackerClass(TargetingTrackerHeadless.class)
-			.build();
 
 	/**
 	 * Start the server with long enough session expiration
