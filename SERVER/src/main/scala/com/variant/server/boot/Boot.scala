@@ -25,8 +25,7 @@ object Boot extends App with LazyLogging {
       }
    })
 
-   // We probably don't even need to do this because we only terminate
-   // with a signal, which will trigger JVM shutdown.
+   // Need this?
    Await.result(server.actorSystem.whenTerminated, Duration.Inf)
 }
 

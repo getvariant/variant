@@ -4,6 +4,8 @@ import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicInteger
 
 import scala.concurrent.duration._
+import scala.concurrent.Future
+import scala.collection.mutable.ListBuffer
 
 import com.variant.server.api.FlushableTraceEvent
 import com.variant.server.boot.VariantServer
@@ -11,9 +13,12 @@ import com.variant.server.impl.FlushableTraceEventImpl
 import com.variant.server.schema.ServerFlusherService
 import com.variant.server.util.SpinLock
 
-import scala.collection.mutable.ListBuffer
 import com.typesafe.scalalogging.LazyLogging
 import com.variant.server.boot.ServerExceptionInternal
+import akka.util.Timeout
+import scala.concurrent.Await
+import com.variant.server.boot.ServerMessageLocal
+import com.variant.server.boot.ServerExceptionLocal
 
 object EventBufferCache {
 
@@ -144,6 +149,7 @@ class EventBufferCache(implicit server: VariantServer) extends LazyLogging {
     * 2) The side-effect of above is that no buffer will be permanently clogged
     *    if some schema stopped generating trace.
     * 3) Flushing all the buffers on server shutdown.
+    * 4) Caller may block on the future if it wishes.
     */
    private def flushOlderThan(ageMillis: Long) {
 
@@ -168,7 +174,8 @@ class EventBufferCache(implicit server: VariantServer) extends LazyLogging {
             }
       }
 
-      flushableList.foreach { flusherRouterActor ! FlusherRouter.Flush(_) }
+      flushableList.foreach { head => flusherRouterActor ! FlusherRouter.Flush(head) }
+      
    }
 
    /**
@@ -220,23 +227,27 @@ class EventBufferCache(implicit server: VariantServer) extends LazyLogging {
    }
    
    /**
-	 * Asynchronously shutdown this cache.
+	 * Synchronously shutdown this buffer cache.
 	 * The actor system is assumed to still be around, but all the schemata undeployed,
 	 * i.e. it's safe to assume no new trace events will be written.
+	 * When this call returns, all pending events are flushed and the fluser thread pool is shutdown.
+	 * Not thread safe.
     */
-   def shutdown() {
+   def shutdown(timeout: Duration = Duration(30, SECONDS)) {
       
       flushOlderThan(0)
-      
-      try {
-         server.actorSystem.registerOnTermination {
-            flusherThreadPool.shutdown()
-         }
+      // block for flushing buffers.
+      val start = System.currentTimeMillis
+      var timedOut = false
+      while (!timedOut && headerTable.exists(_.status != HeaderStatus.FREE)) {
+         Thread.sleep(250)
+         timedOut = (System.currentTimeMillis - start) >= timeout.toMillis
       }
-      catch {
-         // Ignore the RejectedExceutionException, which may happen
-         // if we're shutting down as a result of unsuccessful startup.
-         case _: java.util.concurrent.RejectedExecutionException =>
+      
+      flusherThreadPool.shutdown()
+
+      if (timedOut) {
+         throw ServerExceptionLocal(ServerMessageLocal.EVENT_BUFFER_CACHE_SHUTDOWN_TIMEOUT, timeout.toMillis.toString)
       }
       
    }

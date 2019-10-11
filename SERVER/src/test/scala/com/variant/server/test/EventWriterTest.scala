@@ -32,10 +32,6 @@ class EventWriterTest extends EmbeddedServerSpec with TraceEventsSpec with Async
 
    "Event writer" should {
 
-      val schema = server.schemata.get("monstrosity").get.liveGen.get
-      val flusher = schema.flusherService.getFlusher
-      val eventReader = TraceEventReader(flusher)
-
       val bufferCacheSize = server.config.eventWriterBufferSize
       val flushSize = server.config.eventWriterFlushSize
       val maxDelayMillis = server.config.eventWriterMaxDelay * 1000

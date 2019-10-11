@@ -228,26 +228,46 @@ class VariantServerImpl(builder: VariantServer.Builder)(override implicit val ac
    }
 
    /**
-    * Shutdown sequence.
+    * Synchronously shutdown the server.
+    * By the time this call returns, all schemata have been undeployed and all pending
+    * trace event flushed.
     */
    override def shutdown() {
-      logger.debug("Server shutdown started")
+
+      val start = System.currentTimeMillis
+      
+      logger.debug("Server shutdown sequence started")
+
+      // No more client connections
       binding.map(_.unbind)
       binding = None
+      
+      logger.debug("Unbound from network port")
+
+      // Undeploy all schemata. This will not drain sessions.
       schemata.undeployAll()
+      
+      logger.debug("All schemata undeployed")
+
+      // Flush the event buffer cache.
       _eventBufferCache.shutdown()
-      actorSystem.terminate() // Async.
-   }
+      
+      logger.debug("Buffer cache shutdown")
 
-   actorSystem.whenTerminated.andThen {
-      case Success(_) =>
-         logger.info(ServerMessageLocal.SERVER_SHUTDOWN.asMessage(
-            s"${productVersion._1} release ${productVersion._2}",
-            config.httpPort.toString,
-            TimeUtils.formatDuration(uptime)))
+      actorSystem.whenTerminated.andThen {
+         case Success(_) =>
+            logger.debug("Actor system shutdown")
+            logger.info(ServerMessageLocal.SERVER_SHUTDOWN.asMessage(
+               s"${productVersion._1} release ${productVersion._2}",
+               config.httpPort.toString,
+               TimeUtils.formatDuration(java.time.Duration.ofMillis(System.currentTimeMillis - start)),
+               TimeUtils.formatDuration(uptime)))
+   
+         case Failure(e) =>
+            logger.error("Unexpected exception thrown:", e)
+      }
 
-      case Failure(e) =>
-         logger.error("Unexpected exception thrown:", e)
+      actorSystem.terminate()
    }
 
    /**

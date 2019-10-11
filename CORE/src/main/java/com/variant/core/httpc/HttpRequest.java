@@ -103,7 +103,7 @@ public class HttpRequest {
    }
 
    /**
-    * Static shortcut method builds and executes a default POST request with no body.
+    * Static shortcut method builds and executes a default POST requesty.
     */
    public static HttpResponse post(String url, String body) throws IOException {
       return build(builder -> { 
@@ -120,6 +120,17 @@ public class HttpRequest {
       return build(builder -> {
          builder.method(HttpMethod.POST);
          builder.url(url);
+      }).exec();
+   }
+
+   /**
+    * Static shortcut method builds and executes a default DELETE request.
+    */
+   public static HttpResponse delete(String url, String body) throws IOException {
+      return build(builder -> { 
+         builder.method(HttpMethod.DELETE);
+         builder.url(url); 
+         builder.body = Optional.of(body); 
       }).exec();
    }
 

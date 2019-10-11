@@ -28,7 +28,7 @@ object RequestRoute extends VariantRoute with LazyLogging {
     * POST
     * Create state request by targeting a session for a state.
     */
-   def targetRequest(schemaName: String, sid: String)(implicit server: VariantServer, ctx: RequestContext): HttpResponse = action { body =>
+   def targetSession(schemaName: String, sid: String)(implicit server: VariantServer, ctx: RequestContext): HttpResponse = action { body =>
 
       val ssn = getSession(schemaName, sid) getOrElse {
          throw ServerExceptionRemote(ServerError.SESSION_EXPIRED, sid)

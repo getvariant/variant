@@ -30,7 +30,7 @@ object ServerMessageLocal {
       new ServerMessageLocal(205, Severity.FATAL, "Configuration property [%s] must be of type [%s] but was of type [%s]");
 
    //
-   // 401-420 Server bootstrap
+   // 401-420 Server bootstrap / shutdown
    //
    val SCHEMATA_DIR_MISSING =
       new ServerMessageLocal(401, Severity.FATAL, "Schemata deploy directory [%s] does not exist");
@@ -40,6 +40,9 @@ object ServerMessageLocal {
 
    val EVENT_FLUSHER_NO_INTERFACE =
       new ServerMessageLocal(403, Severity.FATAL, "Event flusher class [%s] must implement interface [%s]");
+
+   val EVENT_BUFFER_CACHE_SHUTDOWN_TIMEOUT =
+      new ServerMessageLocal(404, Severity.ERROR, "Timed out after [%s] milliseconds waiting for event buffer cache to flush");
 
    //
    // 421-440 Schema deployment
@@ -87,7 +90,7 @@ object ServerMessageLocal {
       new ServerMessageLocal(434, Severity.INFO, "%s failed to bootstrap due to following error(s)");
 
    val SERVER_SHUTDOWN =
-      new ServerMessageLocal(435, Severity.INFO, "%s shutdown on  port [%s], uptime %s.");
+      new ServerMessageLocal(435, Severity.INFO, "%s shutdown on  port [%s] in [%s], uptime %s.");
 
    //
    // 501-520 Misc Runtime

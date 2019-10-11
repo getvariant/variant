@@ -1,5 +1,5 @@
 package com.variant.core.httpc;
-/*
+
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.net.HttpURLConnection;
@@ -15,7 +15,7 @@ import com.variant.core.util.IoUtils;
 /**
  * Response returned by an HttpOperation
  *
- *
+ */
 public class HttpResponse {
 
 	final public int responseCode;
@@ -42,7 +42,7 @@ public class HttpResponse {
 	 * 
 	 * @return
 	 * @throws IOException
-	 *
+	 */
 	@SuppressWarnings("unchecked")
 	public String getErrorContent() throws IOException {
 		
@@ -61,4 +61,3 @@ public class HttpResponse {
 		return error.asMessage(args.toArray());
 	}
 }
-*/

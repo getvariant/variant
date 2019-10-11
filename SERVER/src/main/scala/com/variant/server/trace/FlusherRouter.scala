@@ -66,7 +66,24 @@ private class FlusherRouter(pool: FlusherThreadPool) extends Actor with LazyLogg
                }
             }
 
-            doFlush(header, actualLength, flusher)
+            val start = Instant.now
+      
+            logger.debug(s"About to flush ${actualLength} trace events")
+            try {
+               flusher.flush(header.buffer, actualLength)
+               logger.info(s"Flushed ${actualLength} event(s) in " + TimeUtils.formatDuration(Duration.between(start, Instant.now())))
+            } catch {
+               case t: Throwable => {
+                  logger.error("Ignored following unhandled exception", t)
+               }
+            } 
+
+            header.status = EventBufferCache.HeaderStatus.FREE
+
+            // We null out the array as extra precaution, in case next time
+            // this buffer is flushed the client code in TraceEventFlusher.flush()
+            // fails to honor the size parameter and attempts to flush all events.
+            for (i <- 0 until header.buffer.length) header.buffer(i) = null
 
          }
    }

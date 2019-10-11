@@ -27,6 +27,7 @@ import com.variant.core.schema.State
 import com.variant.core.schema.Schema
 import scala.util.Random
 import com.variant.core.httpc.HttpResponse
+import com.variant.server.api.StateRequest.Status._
 
 /**
  * Test the server running in a separate process.
@@ -97,28 +98,32 @@ class StandaloneServerPostgresTest extends StandaloneServerSpec with Async {
 
          server.start()
 
-         val sessions = 2
-         val hops = 2
+         val sessions = 1
+         val hops = 5
          
          val specialKey = "specialKey"
          val specialVal = "This is how we'll be able to tell the events we're about to insert from the ones that are already there"
          
-         var count = new java.util.concurrent.atomic.AtomicInteger(0)         
+         var eventCount = new java.util.concurrent.atomic.AtomicInteger(0)
+         
          for (i <- 0 until sessions) async {
+            
             val (schema, sid) = createSession("exampleSchema")
             val state1 = schema.getState("state1").get
-            for (j <- 0 until hops) async {
+            for (j <- 0 until hops) {
                targetSessionForState(sid, state1)
                // A bit of a delay so as not to overwhelm the buffer cache.
                Thread.sleep(200 + Random.nextInt(600))
+               commitStateRequest("exampleSchema", sid, "special key" -> "special value")
             }
          }
          
          joinAll(timeout = 60000)
 
          server.stop()
-         val lines = ServerLogTailer.last(3, serverDir + "/log/variant.log")
-         println(lines)
+         val lines = ServerLogTailer.last(1, serverDir + "/log/variant.log")
+         lines(0).level mustBe Info
+         lines(0).message must startWith (s"[${SERVER_SHUTDOWN.getCode}]")
       }
 
    }
@@ -126,22 +131,22 @@ class StandaloneServerPostgresTest extends StandaloneServerSpec with Async {
    /**
     * Create a new session in a given schema
     */
-   private def createSession(schemaName: String): (Schema, String) = {
+   private def createSession(schema: String): (Schema, String) = {
       
-      val resp = HttpRequest.post(s"http://localhost:5377/session/${schemaName}/foo", SessionTest.emptyTargetingTrackerBody)
+      val resp = HttpRequest.post(s"http://localhost:5377/session/${schema}/foo", SessionTest.emptyTargetingTrackerBody)
 
       if (resp.responseCode != HTTP_OK) {
          fail(s"Unexpeted HTTP response code ${resp.responseCode} [${resp.bodyString}]")          
       }
       val bodyJson = Json.parse(resp.bodyString.get)
-      val schema = new SchemaParserServerless().parse((bodyJson \ "schema" \ "src").as[String]).getSchema
-      schema.getMeta.getName mustBe schemaName
-      val ssn = CoreSession.fromJson((bodyJson \ "session").as[String], schema)
-      (schema, ssn.getId)
+      val _schema = new SchemaParserServerless().parse((bodyJson \ "schema" \ "src").as[String]).getSchema
+      _schema.getMeta.getName mustBe schema
+      val ssn = CoreSession.fromJson((bodyJson \ "session").as[String], _schema)
+      (_schema, ssn.getId)
    }
 
    /**
-    * Create a new session in a given schema
+    * Target a session for a state
     */
    private def targetSessionForState(sid: String, state: State) {
       
@@ -150,6 +155,19 @@ class StandaloneServerPostgresTest extends StandaloneServerSpec with Async {
       if (resp.responseCode != HTTP_OK) {
          fail(s"Unexpeted HTTP response code ${resp.responseCode} [${resp.bodyString}]")          
       }
+   }
+
+   /**
+    * Target a session for a state
+    */
+   private def commitStateRequest(schema: String, sid: String, attrs: (String, String)*) {
+      
+      val body = Json.obj("status" -> Committed.ordinal, "attrs" -> attrs).toString
+      val resp = HttpRequest.delete(s"http://localhost:5377/request/${schema}/${sid}",body);
+      if (resp.responseCode != HTTP_OK) {
+         fail(s"Unexpeted HTTP response code ${resp.responseCode} [${resp.bodyString}]")          
+      }
+
    }
 
    /**
