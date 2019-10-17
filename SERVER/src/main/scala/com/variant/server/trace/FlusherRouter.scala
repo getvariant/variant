@@ -1,27 +1,17 @@
 package com.variant.server.trace
 
-import akka.actor.Actor
-import com.typesafe.scalalogging.LazyLogging
-import java.time.Instant
-import akka.actor.Props
-import akka.actor.actorRef2Scala
-import com.variant.server.boot.VariantServer
-import com.variant.server.api.FlushableTraceEvent
-import scala.concurrent.duration.FiniteDuration
-import scala.concurrent.duration._
-import com.variant.server.schema.ServerFlusherService
-import com.variant.server.api.TraceEventFlusher
-import akka.actor.ActorRef
-import scala.concurrent.Future
-import com.variant.server.boot.ServerExceptionInternal
-import com.variant.core.util.TimeUtils
 import java.time.Duration
-import scala.concurrent.ExecutionContext
-import java.util.concurrent.ExecutorService
-import akka.dispatch.ExecutorServiceFactory
-import java.util.concurrent.Executors
-import scala.util.{ Success, Failure }
-import com.variant.server.boot.ServerMessageLocal
+import java.time.Instant
+
+import scala.concurrent.blocking
+
+import com.typesafe.scalalogging.LazyLogging
+import com.variant.core.util.TimeUtils
+import com.variant.server.api.TraceEventFlusher
+import com.variant.server.boot.ServerExceptionInternal
+
+import akka.actor.Actor
+import akka.actor.Props
 
 /**
  * Trace event flusher Actor.
@@ -70,7 +60,9 @@ private class FlusherRouter(pool: FlusherThreadPool) extends Actor with LazyLogg
       
             logger.debug(s"About to flush ${actualLength} trace events")
             try {
-               flusher.flush(header.buffer, actualLength)
+               blocking {
+                  flusher.flush(header.buffer, actualLength)
+               }
                logger.info(s"Flushed ${actualLength} event(s) in " + TimeUtils.formatDuration(Duration.between(start, Instant.now())))
             } catch {
                case t: Throwable => {

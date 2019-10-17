@@ -20,7 +20,9 @@ object TraceEventSpec {
    var sqlSchemaCreated = false
 }
 
-trait TraceEventsSpec extends LazyLogging with BeforeAndAfterAll { this: EmbeddedServerSpec =>
+trait TraceEventsSpec extends LazyLogging with BeforeAndAfterAll { 
+   
+   this: EmbeddedServerSpec =>
 
    import TraceEventSpec._
 
