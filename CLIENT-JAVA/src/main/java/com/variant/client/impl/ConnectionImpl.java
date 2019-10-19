@@ -40,12 +40,12 @@ public class ConnectionImpl implements Connection {
 	
 	private final long sessionTimeoutMillis;
 	private final String schema;
-	final VariantClient client;
+	final VariantClientImpl client;
 
 	/**
 	 * 
 	 */
-	public ConnectionImpl(VariantClient client, String schema, Payload.Connection payload) {
+	public ConnectionImpl(VariantClientImpl client, String schema, Payload.Connection payload) {
 		
 		this.client = client;
 		this.schema = schema;

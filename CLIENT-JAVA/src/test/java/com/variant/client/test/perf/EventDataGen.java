@@ -24,10 +24,10 @@ public class EventDataGen extends ClientBaseTestWithServer {
 
 ///////      startServer("conf-test/petclinic-with-postgres.conf");  <<<< This has changed!!!
 		// Sole client
-		VariantClient client = VariantClient.build( builder -> {
-				builder.withSessionIdTrackerClass(SessionIdTrackerHeadless.class)
-				   .withTargetingTrackerClass(TargetingTrackerHeadless.class);
-		});
+		VariantClient client = new VariantClient.Builder()
+		      .withSessionIdTrackerClass(SessionIdTrackerHeadless.class)
+				.withTargetingTrackerClass(TargetingTrackerHeadless.class)
+				.build();
 /*
 		// For getCoreApi() to work, we need to be in the right package.
 		new JdbcService(((VariantClientImpl)client).getCoreApi()).recreateSchema();

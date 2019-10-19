@@ -20,10 +20,10 @@ import com.variant.core.util.StringUtils;
 abstract public class ClientBaseTestWithServer extends ClientBaseTest {
 				
    // Sole client
-   protected VariantClient client = VariantClient.build ( builder -> {
-      builder.withSessionIdTrackerClass(SessionIdTrackerHeadless.class)
-         .withTargetingTrackerClass(TargetingTrackerHeadless.class);
-   });
+   protected VariantClient client = new VariantClient.Builder()
+      .withSessionIdTrackerClass(SessionIdTrackerHeadless.class)
+      .withTargetingTrackerClass(TargetingTrackerHeadless.class)
+      .build();
 
 	// Remote server location
 	protected final static String SERVER_DIR = "/tmp/remote-server";

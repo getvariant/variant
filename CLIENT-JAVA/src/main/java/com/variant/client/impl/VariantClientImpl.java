@@ -1,5 +1,5 @@
 package com.variant.client.impl;
-/*
+
 import java.net.URI;
 import java.util.Map;
 
@@ -19,8 +19,8 @@ import com.variant.core.util.immutable.ImmutableMap;
  * 
  * @author Igor Urisman
  * @since 0.6
- *
-public class VariantClientImpl extends VariantClient {
+ */
+public class VariantClientImpl implements VariantClient {
 
 	final private static Logger LOG = LoggerFactory.getLogger(VariantClientImpl.class);
 
@@ -32,7 +32,7 @@ public class VariantClientImpl extends VariantClient {
 	//---------------------------------------------------------------------------------------------//
 
 	/**
-	 *
+	 */
 	public VariantClientImpl(ImmutableMap<String, Object> props) {
 
 		this.props = props;
@@ -62,4 +62,4 @@ public class VariantClientImpl extends VariantClient {
 		});
 	}
 }
-*/
+
