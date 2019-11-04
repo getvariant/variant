@@ -18,7 +18,7 @@ import com.variant.core.util.immutable.ImmutableMap;
  * it is running on a Java VM. Instantiated with the builder pattern:
  * 
  * <pre>
- * protected VariantClient client = new VariantClient.Builder()
+ * protected VariantClient client = VariantClient.builder()
  *    .withSessionIdTrackerClass(MySessionIdTracker.class)
  *    .withTargetingTrackerClass(MyTargetingTracker.class)
  *    .build();
@@ -42,10 +42,10 @@ public interface VariantClient {
 		private HashMap<String, Object> props = new HashMap<String, Object>();
 
 		/**
-		 * Public constructor. 
+		 * Private constructor. 
 		 * @since 0.10
 		 */
-		public Builder() {
+		private Builder() {
 	       props.put(TARGETING_STABILITY_DAYS, 0);
 		}
 		
@@ -131,43 +131,10 @@ public interface VariantClient {
 
 	/**
 	 * The implementation
-	 *
-	public static class VariantClientImpl implements VariantClient {
-
-	   private VariantClientImpl(Builder builder) {
-
-	      this.props = new ImmutableMap<String, Object>(builder.props);
-	      server = new Server(this);
-	            
-	      if (LOG.isDebugEnabled()) {
-	         for (Map.Entry<String, Object> e : props.entrySet()) {
-	            LOG.debug(String.format("  %s => [%s]", e.getKey(), e.getValue()));
-	         }
-	      }
-	   }
-	   
-
-   	final private static Logger LOG = LoggerFactory.getLogger(VariantClient.class);
-   
-   	public final ImmutableMap<String, Object> props;
-   	public final Server server;
-   	
-   	@Override
-      public Connection connectTo(String uriString) {
-         
-         return new MethodTimingWrapper<Connection>().exec( () -> {
-            // Parse the uri param
-            URI uri = URI.create(uriString);
-            if (uri.getHost() == null || uri.getPath() == null || uri.getPort() < 0) {
-               throw new VariantException(VariantError.MALFORMED_VARIANT_URI, uriString);
-            }
-   
-            String schema = uri.getPath().substring(1);  // lose the leading '/'
-   
-            return new ConnectionImpl(this, schema, server.connect(uri));
-         });
-      }
-	} */
+	 */
+	static Builder builder() {
+	   return new Builder();
+	}
 }
 
 

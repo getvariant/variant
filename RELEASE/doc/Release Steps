@@ -9,7 +9,7 @@
 
     2.1. Build the latest server-extapi-demo-<release>.jar
          • EXTAPI project must be on the branch release/<release>
-         • run SERVER/release.sh
+         • run RELEASE/bin/release.sh
            this will make variant-core-<release>.jar and server-extapi-<release>.jar
            and copy them to variant-server-extapi/lib as dependencies for ExtAPI.
          • cd pub/VARIANT-SERVER-EXTAPI

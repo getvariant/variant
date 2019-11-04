@@ -24,7 +24,7 @@ public class EventDataGen extends ClientBaseTestWithServer {
 
 ///////      startServer("conf-test/petclinic-with-postgres.conf");  <<<< This has changed!!!
 		// Sole client
-		VariantClient client = new VariantClient.Builder()
+		VariantClient client = VariantClient.builder()
 		      .withSessionIdTrackerClass(SessionIdTrackerHeadless.class)
 				.withTargetingTrackerClass(TargetingTrackerHeadless.class)
 				.build();

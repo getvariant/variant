@@ -20,7 +20,7 @@ import com.variant.core.util.StringUtils;
 abstract public class ClientBaseTestWithServer extends ClientBaseTest {
 				
    // Sole client
-   protected VariantClient client = new VariantClient.Builder()
+   protected VariantClient client = VariantClient.builder()
       .withSessionIdTrackerClass(SessionIdTrackerHeadless.class)
       .withTargetingTrackerClass(TargetingTrackerHeadless.class)
       .build();
