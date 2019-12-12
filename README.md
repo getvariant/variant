@@ -12,5 +12,32 @@
 * ### Run hundreds of experiments at the same time.
 
 #### Simple Example
+
 Variant offers a unique approach to instrumenting online experiments and feature flags. Architected as client/server middleware, Variant is tightly integrated with the host application's runtime and operational data. Variant is particularly attractive to distributed and cloud-native host applications.
-</p>
+```
+{
+  'meta':{
+    'name':'Example',
+    'coment':'Example Variant schema'
+  },
+  'states':[{'name':'plansPage'}, {'name':'upgradePage'}],
+  'variations':[
+    {
+      'name':'PricingExperiment',
+      'experiences':[
+        {
+          'name':'TwoTier',
+          'weight':499,
+          'isControl':true
+        },
+        {
+          'name':'ThreeTier',
+          'weight':1
+        }
+      ],
+      'onStates':[{'stateRef':'plansPage'}, {'stateRef':'upgradePage'}]
+    }
+  ]
+}
+```
+  
