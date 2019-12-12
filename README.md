@@ -3,7 +3,7 @@
 # Variant Application Iteration Server
 #### Current Release 0.10.2 | [All Releases](https://www.getvariant.com/get/)
 
-### [Documentation](https://www.getvariant.com/resources/docs) | [Javadoc](https://getvariant.github.io/variant-java-servlet-adapter/)
+### [Documentation](https://www.getvariant.com/resources/docs) | [Javadoc](https://getvariant.github.io/variant-java-servlet-adapter/) | [Demo Application](https://github.com/getvariant/variant-java-demo/) | [Binaries Download](https://getvariant.github.io/variant-java-servlet-adapter/)
 
 
 ## Application Iteration Management Middleware
