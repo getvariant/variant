@@ -10,7 +10,7 @@
 	<properties>
     	<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>	
     	<tomcat.version>7.0.59</tomcat.version>
-        <variant.version>0.10.2</variant.version>
+        <variant.version>0.10.3</variant.version>
     </properties>
 
     <groupId>com.variant</groupId>
@@ -21,10 +21,10 @@
     
     <dependencies>
         
-        <!-- Variant Core -->        
+        <!-- Variant Shared -->        
         <dependency>
 			<groupId>com.variant</groupId>
-			<artifactId>variant-core</artifactId>
+			<artifactId>variant-share</artifactId>
 			<version>${variant.version}</version>
 		</dependency>
         
@@ -69,6 +69,7 @@
     <build>
         <plugins>
 
+            <!-- Compilation -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -78,6 +79,8 @@
                    <target>1.8</target>
                 </configuration>            
             </plugin>
+
+            <!-- Testing -->
             <plugin>
                <groupId>org.apache.maven.plugins</groupId>
                <artifactId>maven-surefire-plugin</artifactId>
@@ -91,7 +94,28 @@
                </configuration>
             </plugin>
             
-          </plugins>
+            <!-- Include core jar verbatim -->
+            <plugin>
+             <artifactId>maven-assembly-plugin</artifactId>
+             <executions>
+               <execution>
+                 <phase>package</phase>
+                 <goals>
+                   <goal>single</goal>
+                 </goals>
+               </execution>
+             </executions>
+             <configuration>
+               <descriptorRefs>
+                 <descriptorRef>jar-with-dependencies</descriptorRef>
+               </descriptorRefs>
+               <includes>
+                 <include>what?</include>
+               </includes>
+             </configuration>
+            </plugin>
+         
+         </plugins>
     </build>
 
 </project>

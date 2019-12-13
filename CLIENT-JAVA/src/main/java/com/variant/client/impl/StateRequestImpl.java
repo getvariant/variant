@@ -9,12 +9,12 @@ import com.variant.client.StateRequest;
 import com.variant.client.VariantException;
 import com.variant.client.util.MethodTimingWrapper;
 import com.variant.client.TraceEvent;
-import com.variant.core.error.ServerError;
-import com.variant.core.schema.State;
-import com.variant.core.schema.StateVariant;
-import com.variant.core.schema.Variation;
-import com.variant.core.schema.Variation.Experience;
-import com.variant.core.session.CoreStateRequest;
+import com.variant.share.error.ServerError;
+import com.variant.share.schema.State;
+import com.variant.share.schema.StateVariant;
+import com.variant.share.schema.Variation;
+import com.variant.share.schema.Variation.Experience;
+import com.variant.share.session.CoreStateRequest;
 
 /**
  * Permanent wrapper around transient CoreStateRequest + client only request functionality.

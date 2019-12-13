@@ -19,8 +19,8 @@ import com.variant.client.VariantException;
 import com.variant.client.net.Payload;
 import com.variant.client.net.http.HttpAdapter;
 import com.variant.client.net.http.HttpResponse;
-import com.variant.core.error.ServerError;
-import com.variant.core.session.CoreSession;
+import com.variant.share.error.ServerError;
+import com.variant.share.session.CoreSession;
 
 /**
  * The abstraction of the remote server.  

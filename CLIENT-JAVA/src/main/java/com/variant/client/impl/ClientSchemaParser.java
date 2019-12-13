@@ -1,6 +1,6 @@
 package com.variant.client.impl;
 
-import com.variant.core.schema.parser.SchemaParserServerless;
+import com.variant.share.schema.parser.SchemaParserServerless;
 
 /**
  * Client side schema parser is the same as core, but uses a null hooks service

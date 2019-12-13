@@ -12,12 +12,12 @@
     
 	<properties>
     	<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>	
-		<jackson.version>2.9.8</jackson.version>
-		<variant.version>0.10.2</variant.version>
+		<jackson.version>2.10.1</jackson.version>
+		<variant.version>0.10.3</variant.version>
     </properties>
 
-    <artifactId>variant-core</artifactId>
-    <name>Variant core library</name>
+    <artifactId>variant-share</artifactId>
+    <name>Variant shared library</name>
     <packaging>jar</packaging>
     <groupId>com.variant</groupId>
     <version>${variant.version}</version>
@@ -28,13 +28,13 @@
         <dependency>
 		    <groupId>org.slf4j</groupId>
 		    <artifactId>slf4j-api</artifactId>
-		    <version>1.7.12</version>
+		    <version>1.7.29</version>
         </dependency>
 
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
-            <version>1.2.1</version>
+            <version>1.2.3</version>
         </dependency>
         
       <!-- Jackson JSON parser -->

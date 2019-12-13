@@ -22,12 +22,12 @@ import com.variant.client.TargetingTracker;
 import com.variant.client.TraceEvent;
 import com.variant.client.VariantException;
 import com.variant.client.util.MethodTimingWrapper;
-import com.variant.core.schema.Schema;
-import com.variant.core.schema.State;
-import com.variant.core.schema.Variation;
-import com.variant.core.schema.Variation.Experience;
-import com.variant.core.session.CoreSession;
-import com.variant.core.session.SessionScopedTargetingStabile;
+import com.variant.share.schema.Schema;
+import com.variant.share.schema.State;
+import com.variant.share.schema.Variation;
+import com.variant.share.schema.Variation.Experience;
+import com.variant.share.session.CoreSession;
+import com.variant.share.session.SessionScopedTargetingStabile;
 
 /**
  * Permanent wrapper around transient CoreSession, + client only session functionality. 

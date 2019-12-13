@@ -8,7 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.variant.client.TargetingTracker;
-import com.variant.core.util.Tuples.Tripple;
+import com.variant.share.util.Tuples.Tripple;
 
 /**
  * Targeting tracker trait that knows how to marshal a collection of experience entries

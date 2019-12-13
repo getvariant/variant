@@ -16,10 +16,10 @@ import com.variant.client.impl.ConnectionImpl;
 import com.variant.client.impl.TraceEventSupport;
 import com.variant.client.test.util.ClientBaseTestWithServerAsync;
 import com.variant.client.util.Timers;
-import com.variant.core.schema.State;
-import com.variant.core.schema.Variation;
-import com.variant.core.util.CollectionsUtils;
-import com.variant.core.util.Tuples.Pair;
+import com.variant.share.schema.State;
+import com.variant.share.schema.Variation;
+import com.variant.share.util.CollectionsUtils;
+import com.variant.share.util.Tuples.Pair;
 
 public class TimersTest extends ClientBaseTestWithServerAsync {
 

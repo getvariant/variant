@@ -5,10 +5,10 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
-import com.variant.core.schema.Schema;
-import com.variant.core.schema.State;
-import com.variant.core.schema.Variation;
-import com.variant.core.schema.Variation.Experience;
+import com.variant.share.schema.Schema;
+import com.variant.share.schema.State;
+import com.variant.share.schema.Variation;
+import com.variant.share.schema.Variation.Experience;
 
 /**
  * Variant user session. Provides a way to maintain user state across multiple state requests. 

@@ -1,6 +1,6 @@
 package com.variant.client;
 
-import com.variant.core.error.UserError;
+import com.variant.share.error.UserError;
 
 /**
  * <p>User errors, emitted by Variant client. 

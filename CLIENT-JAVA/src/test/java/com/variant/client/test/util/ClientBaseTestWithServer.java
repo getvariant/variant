@@ -10,8 +10,8 @@ import com.variant.client.test.SessionIdTrackerHeadless;
 import com.variant.client.test.StandaloneServer;
 import com.variant.client.test.TargetingTrackerHeadless;
 import com.variant.client.test.util.event.TraceEventReader;
-import com.variant.core.util.IoUtils;
-import com.variant.core.util.StringUtils;
+import com.variant.share.util.IoUtils;
+import com.variant.share.util.StringUtils;
 
 /**
  * Base class for all Client JUnit tests which require a server. (Most of them.)

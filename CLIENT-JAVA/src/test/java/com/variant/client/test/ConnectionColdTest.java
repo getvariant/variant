@@ -12,7 +12,7 @@ import com.variant.client.VariantError;
 import com.variant.client.VariantException;
 import com.variant.client.impl.ConnectionImpl;
 import com.variant.client.test.util.ClientBaseTestWithServer;
-import com.variant.core.error.ServerError;
+import com.variant.share.error.ServerError;
 
 /**
  * Test connections of a cold-deployed schemata.

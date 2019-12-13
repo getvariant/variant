@@ -3,10 +3,10 @@ package com.variant.client.impl;
 import java.util.List;
 import java.util.Optional;
 
-import com.variant.core.schema.Meta;
-import com.variant.core.schema.Schema;
-import com.variant.core.schema.State;
-import com.variant.core.schema.Variation;
+import com.variant.share.schema.Meta;
+import com.variant.share.schema.Schema;
+import com.variant.share.schema.State;
+import com.variant.share.schema.Variation;
 
 /**
  * Client side schema.

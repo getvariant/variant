@@ -17,7 +17,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.variant.client.SessionExpiredException;
 import com.variant.client.VariantException;
 import com.variant.client.impl.ClientInternalError;
-import com.variant.core.error.ServerError;
+import com.variant.share.error.ServerError;
 
 public class HttpResponse {
 

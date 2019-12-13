@@ -10,8 +10,8 @@ import com.variant.client.SessionAttributes;
 import com.variant.client.VariantException;
 import com.variant.client.net.Payload.Session;
 import com.variant.client.util.MethodTimingWrapper;
-import com.variant.core.util.immutable.ImmutableCollection;
-import com.variant.core.util.immutable.ImmutableSet;
+import com.variant.share.util.immutable.ImmutableCollection;
+import com.variant.share.util.immutable.ImmutableSet;
 
 /**
  * A map-like collection of session attributes, returned by {@link Session#getAttributes()}. 

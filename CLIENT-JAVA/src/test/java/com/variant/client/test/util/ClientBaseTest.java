@@ -4,8 +4,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import com.variant.client.VariantException;
-import com.variant.core.error.UserError;
-import com.variant.core.test.VariantBaseTest;
+import com.variant.share.error.UserError;
+import com.variant.share.test.VariantBaseTest;
 
 /**
  * Base class for all Client JUnit tests.

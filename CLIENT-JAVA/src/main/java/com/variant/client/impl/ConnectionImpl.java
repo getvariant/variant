@@ -16,14 +16,14 @@ import com.variant.client.VariantClient;
 import com.variant.client.VariantException;
 import com.variant.client.net.Payload;
 import com.variant.client.util.MethodTimingWrapper;
-import com.variant.core.error.UserError.Severity;
-import com.variant.core.schema.Schema;
-import com.variant.core.schema.parser.ParserMessage;
-import com.variant.core.schema.parser.ParserResponse;
-import com.variant.core.session.CoreSession;
-import com.variant.core.util.ReflectUtils;
-import com.variant.core.util.StringUtils;
-import com.variant.core.util.Tuples.Pair;
+import com.variant.share.error.UserError.Severity;
+import com.variant.share.schema.Schema;
+import com.variant.share.schema.parser.ParserMessage;
+import com.variant.share.schema.parser.ParserResponse;
+import com.variant.share.session.CoreSession;
+import com.variant.share.util.ReflectUtils;
+import com.variant.share.util.StringUtils;
+import com.variant.share.util.Tuples.Pair;
 
 /**
  * A connection to the server.

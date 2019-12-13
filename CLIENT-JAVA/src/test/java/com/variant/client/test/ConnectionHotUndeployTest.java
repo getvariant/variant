@@ -9,8 +9,8 @@ import com.variant.client.Connection;
 import com.variant.client.Session;
 import com.variant.client.VariantException;
 import com.variant.client.test.util.ClientBaseTestWithServer;
-import com.variant.core.error.ServerError;
-import com.variant.core.util.IoUtils;
+import com.variant.share.error.ServerError;
+import com.variant.share.util.IoUtils;
 
 /**
  */

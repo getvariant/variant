@@ -5,9 +5,9 @@ import static com.variant.client.StateRequest.Status.*;
 import java.io.Serializable;
 import java.util.Map;
 
-import com.variant.core.Constants;
-import com.variant.core.error.CoreException;
-import com.variant.core.schema.State;
+import com.variant.share.Constants;
+import com.variant.share.error.CoreException;
+import com.variant.share.schema.State;
 import com.variant.client.StateRequest;
 
 @SuppressWarnings("serial")

@@ -21,8 +21,8 @@ import org.slf4j.LoggerFactory;
 import com.variant.client.ServerConnectException;
 import com.variant.client.VariantException;
 import com.variant.client.util.Timers;
-import com.variant.core.Constants;
-import com.variant.core.util.TimeUtils;
+import com.variant.share.Constants;
+import com.variant.share.util.TimeUtils;
 
 /**
  * The very bottom of the HTTP Stack.

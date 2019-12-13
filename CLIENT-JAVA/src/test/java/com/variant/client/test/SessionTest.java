@@ -13,9 +13,9 @@ import com.variant.client.SessionExpiredException;
 import com.variant.client.VariantException;
 import com.variant.client.impl.SessionImpl;
 import com.variant.client.test.util.ClientBaseTestWithServer;
-import com.variant.core.error.ServerError;
-import com.variant.core.schema.State;
-import com.variant.core.util.CollectionsUtils;
+import com.variant.share.error.ServerError;
+import com.variant.share.schema.State;
+import com.variant.share.util.CollectionsUtils;
 
 public class SessionTest extends ClientBaseTestWithServer {
 		

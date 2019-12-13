@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.variant.client.TraceEvent;
-import com.variant.core.util.CollectionsUtils;
+import com.variant.share.util.CollectionsUtils;
 
 abstract public class TraceEventSupport implements TraceEvent {
 	

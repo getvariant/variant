@@ -3,8 +3,8 @@ package com.variant.client.test.util;
 import java.io.IOException;
 import java.util.List;
 
-import com.variant.core.util.LogTailer;
-import com.variant.core.util.LogTailer.Entry;
+import com.variant.share.util.LogTailer;
+import com.variant.share.util.LogTailer.Entry;
 
 public class ClientLogTailer {
 

@@ -1,7 +1,7 @@
 package com.variant.client.impl;
 
 import com.variant.client.TargetingTracker;
-import com.variant.core.session.SessionScopedTargetingStabile;
+import com.variant.share.session.SessionScopedTargetingStabile;
 
 public class TargetingTrackerEntryImpl implements TargetingTracker.Entry {
 		

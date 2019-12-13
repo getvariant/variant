@@ -1,6 +1,6 @@
 package com.variant.client.impl;
 
-import com.variant.core.error.UserError;
+import com.variant.share.error.UserError;
 
 /**
  * Internal variant exceptions, emitted by the client code,

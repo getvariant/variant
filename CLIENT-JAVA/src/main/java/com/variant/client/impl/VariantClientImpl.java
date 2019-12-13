@@ -11,7 +11,7 @@ import com.variant.client.Connection;
 import com.variant.client.VariantClient;
 import com.variant.client.VariantException;
 import com.variant.client.util.MethodTimingWrapper;
-import com.variant.core.util.immutable.ImmutableMap;
+import com.variant.share.util.immutable.ImmutableMap;
 
 /**
  * <p>Variant Java Client API. Makes no assumptions about the host application other than 

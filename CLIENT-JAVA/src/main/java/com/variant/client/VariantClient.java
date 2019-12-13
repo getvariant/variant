@@ -8,7 +8,7 @@ import static com.variant.client.impl.ConfigKeys.TARGETING_TRACKER_CLASS;
 import java.util.HashMap;
 
 import com.variant.client.impl.VariantClientImpl;
-import com.variant.core.util.immutable.ImmutableMap;
+import com.variant.share.util.immutable.ImmutableMap;
 
 /**
  * Variant Java client.

@@ -16,10 +16,10 @@ import com.variant.client.TraceEvent;
 import com.variant.client.VariantException;
 import com.variant.client.impl.StateVisitedEvent;
 import com.variant.client.test.util.ClientBaseTestWithServer;
-import com.variant.core.error.ServerError;
-import com.variant.core.schema.Schema;
-import com.variant.core.schema.State;
-import com.variant.core.schema.Variation;
+import com.variant.share.error.ServerError;
+import com.variant.share.schema.Schema;
+import com.variant.share.schema.State;
+import com.variant.share.schema.Variation;
 
 public class StateRequestTest extends ClientBaseTestWithServer {
 		

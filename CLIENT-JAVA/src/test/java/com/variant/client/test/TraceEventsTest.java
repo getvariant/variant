@@ -19,10 +19,10 @@ import com.variant.client.impl.StateVisitedEvent;
 import com.variant.client.impl.TraceEventSupport;
 import com.variant.client.test.util.ClientBaseTestWithServer;
 import com.variant.client.test.util.event.TraceEventFromDatabase;
-import com.variant.core.schema.Schema;
-import com.variant.core.schema.State;
-import com.variant.core.util.CollectionsUtils;
-import com.variant.core.util.Tuples.Pair;
+import com.variant.share.schema.Schema;
+import com.variant.share.schema.State;
+import com.variant.share.util.CollectionsUtils;
+import com.variant.share.util.Tuples.Pair;
 
 
 public class TraceEventsTest extends ClientBaseTestWithServer {

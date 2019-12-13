@@ -15,11 +15,11 @@ import com.variant.client.impl.ConnectionImpl;
 import com.variant.client.impl.SessionImpl;
 import com.variant.client.impl.TraceEventSupport;
 import com.variant.client.test.util.ClientBaseTestWithServerAsync;
-import com.variant.core.error.ServerError;
-import com.variant.core.schema.State;
-import com.variant.core.util.CollectionsUtils;
-import com.variant.core.util.IoUtils;
-import com.variant.core.util.Tuples;
+import com.variant.share.error.ServerError;
+import com.variant.share.schema.State;
+import com.variant.share.util.CollectionsUtils;
+import com.variant.share.util.IoUtils;
+import com.variant.share.util.Tuples;
 
 /**
  * Ridiculously complex test that tries to test everything.
