@@ -1,19 +1,21 @@
 package com.variant.server.test.spec
 
-import scala.sys.process.stringSeqToProcess
-import scala.sys.process._
-import scala.io.Source
-import scala.collection.mutable
-import org.scalatest.BeforeAndAfterAll
-import com.variant.core.util.LogTailer.Entry
-import scala.sys.process.ProcessLogger
-import java.util.concurrent.BlockingQueue
 import java.util.concurrent.LinkedBlockingQueue
 import java.util.concurrent.TimeUnit
-import com.variant.server.boot.VariantServer
+
+import scala.io.Source
+import scala.sys.process._
+import scala.sys.process.ProcessLogger
+import scala.sys.process.stringSeqToProcess
+
+import org.scalatest.BeforeAndAfterAll
+import org.scalatest.MustMatchers
+
 import com.typesafe.scalalogging.LazyLogging
-import com.variant.server.boot.ServerMessageLocal
-import com.variant.core.httpc.HttpOperation
+import com.variant.server.test.util.ServerLogTailer
+import com.variant.server.boot.ServerMessageLocal._
+import com.variant.core.httpc.HttpRequest
+import com.variant.server.test.util.ServerLogTailer.Level._
 
 /**
  * All tests using a standalone server inherint from here.
@@ -38,40 +40,7 @@ class StandaloneServerSpec extends BaseSpec with BeforeAndAfterAll {
 
       server.start()
 
-      HttpOperation.get("http://localhost:5377/schema/exampleSchema")
-         .exec().responseCode mustBe 200
-   }
-
-   /**
-    * Each test case runs in its own JVM. Each test runs in its
-    * own instance of the test case. We want the jdbc schema
-    * created only once per jvm, but the api be instance scoped.
-    *
-    * @throws Exception
-    * Needed by the JUnit EventWriter test which is currently off.
-    *
-    * override def beforeAll() {
-    * synchronized { // once per JVM
-    * if (!sqlSchemaCreated) {
-    * recreateDatabase()
-    * sqlSchemaCreated = true
-    * }
-    * }
-    * }
-    */
-
-   /**
-    * Kill any leftover server on the system.
-    */
-   override def beforeAll() {
-      ("ps -ef" #| "grep java" #| "grep 'com.variant.server.boot.Boot'" #| Seq("awk", "{print $2}") #| "xargs kill").!;
-   }
-
-   /**
-    * Cleanup.
-    */
-   override def afterAll() {
-      server.stop
+      HttpRequest.get("http://localhost:5377/schema/exampleSchema").responseCode mustBe 200
    }
 
 }
@@ -79,7 +48,7 @@ class StandaloneServerSpec extends BaseSpec with BeforeAndAfterAll {
 /**
  * Class represents a standalone server configured on the filesystem in serverDir directory.
  */
-class StandaloneServer(serverDir: String, flusher: String) extends LazyLogging {
+class StandaloneServer(serverDir: String, flusher: String) extends LazyLogging  {
 
    logger.info(s"Building server in ${serverDir}. Takes a few seconds...")
 
@@ -99,7 +68,7 @@ class StandaloneServer(serverDir: String, flusher: String) extends LazyLogging {
 
    println(s"Built server in ${serverDir}")
 
-   private[this] var svrProc: Process = _
+   private[this] var svrProc: Option[Process] = None
 
    // Start server.
    val out = new LinkedBlockingQueue[String]()
@@ -141,7 +110,7 @@ class StandaloneServer(serverDir: String, flusher: String) extends LazyLogging {
          paramString += " -D" + t._1 + "=" + t._2
          if (t._1 == "variant.http.port") port = t._2
       }
-      svrProc = (serverDir + "/bin/variant start " + paramString).run(svrLog)
+      svrProc = Some((serverDir + "/bin/variant start " + paramString).run(svrLog))
 
       // Block until we read the startup message.
       var started = false
@@ -187,17 +156,20 @@ class StandaloneServer(serverDir: String, flusher: String) extends LazyLogging {
     */
    def stop() {
 
-      (serverDir + "/bin/variant stop").!
+      svrProc.foreach { proc =>
 
-      // Wait until the server process exits.
-      val svrExitStatus = svrProc.exitValue
-      println(s"Server process completed with status ${svrExitStatus}")
+         (serverDir + "/bin/variant stop").!
 
-      out.clear()
-      err.clear()
-      svrProc = null;
+         println(s"Waiting for server process to exit...")         
+         val rc = proc.exitValue
+         println(s"Server process completed with return code $rc")
 
+         out.clear()
+         err.clear()
+         svrProc = None
+      }
       // Let the server shutdown clean.
       // Thread.sleep(250)
    }
+   
 }

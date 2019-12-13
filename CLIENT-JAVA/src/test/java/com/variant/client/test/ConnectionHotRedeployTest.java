@@ -5,7 +5,6 @@ import static org.junit.Assert.assertNotNull;
 
 import com.variant.client.Connection;
 import com.variant.client.Session;
-import com.variant.client.VariantClient;
 import com.variant.client.VariantException;
 import com.variant.client.impl.SchemaImpl;
 import com.variant.client.test.util.ClientBaseTestWithServer;
@@ -15,12 +14,6 @@ import com.variant.core.util.IoUtils;
 /**
  */
 public class ConnectionHotRedeployTest extends ClientBaseTestWithServer {
-	
-	// Sole client
-	private VariantClient client = new VariantClient.Builder()
-			.withSessionIdTrackerClass(SessionIdTrackerHeadless.class)
-			.withTargetingTrackerClass(TargetingTrackerHeadless.class)
-			.build();
 	
 	/**
 	 * Schema re-deployed. 

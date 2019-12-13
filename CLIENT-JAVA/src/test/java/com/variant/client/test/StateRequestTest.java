@@ -1,43 +1,32 @@
 package com.variant.client.test;
 
-import static com.variant.client.StateRequest.Status.*;
+import static com.variant.client.StateRequest.Status.Committed;
+import static com.variant.client.StateRequest.Status.InProgress;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-import java.util.List;
-
 import com.variant.client.Connection;
 import com.variant.client.Session;
 import com.variant.client.SessionExpiredException;
 import com.variant.client.StateRequest;
 import com.variant.client.TraceEvent;
-import com.variant.client.VariantClient;
 import com.variant.client.VariantException;
-import com.variant.client.impl.SchemaImpl;
 import com.variant.client.impl.StateVisitedEvent;
 import com.variant.client.test.util.ClientBaseTestWithServer;
-import com.variant.client.test.util.event.TraceEventFromDatabase;
 import com.variant.core.error.ServerError;
 import com.variant.core.schema.Schema;
 import com.variant.core.schema.State;
 import com.variant.core.schema.Variation;
-import com.variant.core.util.CollectionsUtils;
 
 public class StateRequestTest extends ClientBaseTestWithServer {
-
-	// Sole client
-	private VariantClient client = new VariantClient.Builder()
-			.withSessionIdTrackerClass(SessionIdTrackerHeadless.class)
-			.withTargetingTrackerClass(TargetingTrackerHeadless.class)
-			.build();
 		
 	public StateRequestTest() throws Exception {
 		restartServer();
 	}
-	
+
 	/**
 	 */
 	@org.junit.Test
@@ -108,7 +97,7 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 	}
 	
 	/**
-	 */
+	 *
 	@org.junit.Test
 	public void deterministicTest() throws Exception {
 		
@@ -160,7 +149,7 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 	}
 
 	/**
-	 */
+	 *
 	@org.junit.Test
 	public void commitTest() throws Exception {
 		
@@ -226,7 +215,7 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 	/**
 	 * 
 	 * @throws Exception
-	 */
+	 *
 	@org.junit.Test
 	public void failTest() throws Exception {
 		
@@ -269,7 +258,7 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 			}
 		}.assertThrown(VariantException.class);
 
-		Thread.sleep(EVENT_WRITER_MAX_DELAY);
+		Thread.sleep(EVENT_WRITER_MAX_DELAY * 2000);
 		List<TraceEventFromDatabase> events = traceEventReader.read(e -> e.sessionId.equals(ssn1.getId()));
 		assertEquals(1, events.size());
 		TraceEventFromDatabase event = events.get(0);
@@ -310,7 +299,7 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 	
 	/**
 	 * Petclinic schema defines a qualification hook which will fail, if "user" session attribute is not set.
-	 */
+	 *
 	//@org.junit.Test
 	public void targetingHookExceptionTest() throws Exception {
 		
@@ -384,5 +373,5 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 		assertEquals(Committed, req1.getStatus());
 
 	}
-
+*/
 }

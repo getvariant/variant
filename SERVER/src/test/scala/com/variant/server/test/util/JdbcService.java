@@ -18,7 +18,7 @@ import org.slf4j.LoggerFactory;
 
 import com.variant.core.util.IoUtils;
 import com.variant.core.util.StringUtils;
-import com.variant.server.impl.TraceEventWriter;
+import com.variant.server.api.TraceEventFlusher;
 
 
 public class JdbcService {
@@ -87,21 +87,18 @@ public class JdbcService {
 
 	}
 
-	private TraceEventWriter eventWriter;
+	private TraceEventFlusher flusher;
 	
 	//---------------------------------------------------------------------------------------------//
 	//                                          PUBLIC                                             //
 	//---------------------------------------------------------------------------------------------//
 
 	/**
-	 * 
-	 * @author Igor
-	 *
 	 */
 	public static enum Vendor { POSTGRES, H2, MYSQL}
 
-	public JdbcService(TraceEventWriter eventWriter) {
-		this.eventWriter = eventWriter;
+	public JdbcService(TraceEventFlusher flusher) {
+		this.flusher = flusher;
 	}
 
 	/**
@@ -110,10 +107,10 @@ public class JdbcService {
 	 */
 	public Vendor getVendor() {
 		// Figure out the JDBC vendor, if we can.
-		if (eventWriter.flusher().getClass().getSimpleName().equals("TraceEventFlusherPostgres")) {
+		if (flusher.getClass().getSimpleName().equals("TraceEventFlusherPostgres")) {
 			return Vendor.POSTGRES;
 		}
-		else if (eventWriter.flusher().getClass().getSimpleName().equals("TraceEventFlusherH2")) {
+		else if (flusher.getClass().getSimpleName().equals("TraceEventFlusherH2")) {
 			return Vendor.H2;
 		}
 		else return null;
@@ -144,8 +141,8 @@ public class JdbcService {
 	 * @throws Exception
 	 */
 	public void dropSchema() throws Exception {
-				
-		List<String> statements = parseSQLScript(IoUtils.openResourceAsStream("/db/h2/drop-schema.sql")._1());
+
+	   List<String> statements = parseSQLScript(IoUtils.openResourceAsStream("/db/h2/drop-schema.sql")._1());
 		Statement jdbcStmt = getConnection().createStatement();
 
 		for (String stmt: statements) {

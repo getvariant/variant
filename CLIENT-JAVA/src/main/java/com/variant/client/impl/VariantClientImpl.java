@@ -61,5 +61,5 @@ public class VariantClientImpl implements VariantClient {
 			return new ConnectionImpl(this, schema, server.connect(uri));
 		});
 	}
-
 }
+

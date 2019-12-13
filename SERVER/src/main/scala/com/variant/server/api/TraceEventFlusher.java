@@ -45,14 +45,26 @@ import java.util.Collection;
 public interface TraceEventFlusher {
 	
 	/**
-	 * <p>Called by the server, whenever the asynchronous event writer needs to flush events from memory. 
+	 * <p>Called by the server whenever a new collection of trace events become available to be flushed out of memory.
 	 * 
-	 * @param events A collection of decorated trace events {@link FlushableTraceEvent} to be written off.
-	 *               The size of the collection may be up to the size defined by the 
-     *               variant.event.writer.buffer.size configuration property.
+	 * @param events An array of decorated trace event objects of type {@link FlushableTraceEvent} to be flushed to an external
+	 *               data sync. The array length is guaranteed to be as given by the {@code variant.event.writer.flush.size},
+	 *               although only first {@code size} elements are usable.
+	 * @param size   The number of elements in the events array. Most of the time size will be equal to the length of the
+	 *               {@code events} array. But whenever the events production is slow enough for the 
+	 *               {@code variant.event.writer.max.delay} config parameter to become applicable, partial flushes may be
+	 *               trigger by the server. 
 	 * 
-	 * @see TraceEventFlusherH2, TraceEventFlusherPostgres
 	 * @since 0.7
 	 */
-	public void flush(Collection<FlushableTraceEvent> events) throws Exception;
+	void flush(FlushableTraceEvent[] events, int size) throws Exception;
+	
+   /**
+    * <p>Called by the server, whenever this event flusher is being destroyed because the associated schema generation is being undeployed.
+    * Client code can use this callback to do housekeeping tasks such as closing database connections.
+    * 
+    * @since 0.10
+    */
+   default void destroy() throws Exception {}
+
 }

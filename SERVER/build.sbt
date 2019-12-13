@@ -2,8 +2,8 @@
  * Server SBT build.
  */
  
- // Used by the Scalariform formatter
-import scalariform.formatter.preferences._
+// Used by the Scalariform formatter
+//import scalariform.formatter.preferences._
 
 import NativePackagerHelper._
 
@@ -11,11 +11,11 @@ maintainer := "igor@getvariant.com"
 organization    := "com.variant"
 scalaVersion    := "2.12.7"
 name            := "Variant-Server"
-version         := "0.10.1"
+version         := "0.10.2"
 
 val akkaHttpVersion = "10.1.8"
-val akkaVersion     = "2.6.0-M4"
-val coreVersion     = "0.10.1"
+val akkaVersion     = "2.5.25"
+val coreVersion     = "0.10.2"
 
 // Add local Maven repo for com.variant.core artifacts built with Maven.
 resolvers += Resolver.mavenLocal
@@ -48,8 +48,7 @@ libraryDependencies ++= Seq(
 // Scalariform plugin enforces formatting convention on all dirty files which required recompilation.
 // The following overrides default formatter settings. The plugin always fills indents with spaces.
 // Be sure your local IDE settings are in sync.
-scalariformPreferences := scalariformPreferences.value
-    .setPreference(IndentSpaces, 3)
+// scalariformPreferences := scalariformPreferences.value.setPreference(IndentSpaces, 3)
 
 // ...and prepend it to the startup script's classpath.
 scriptClasspath := Seq("../conf/") ++ scriptClasspath.value
@@ -80,5 +79,5 @@ Test / baseDirectory := file("test-base")
 unmanagedClasspath in Test += baseDirectory.value / "src" / "universal" / "ext/*"
 
 // To debug, uncomment and connect with eclipse after the VM is suspended.
-// javaOptions in Test ++= Seq("-Xdebug",  "-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=8000")
+//javaOptions in Test ++= Seq("-Xdebug",  "-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=8000")
 

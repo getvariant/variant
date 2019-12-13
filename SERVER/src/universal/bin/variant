@@ -21,6 +21,14 @@ stop)
    fi
    ;;
    
+kill)
+   # Sending the process the KILL signal.
+   pid=$(running_pid)
+   if [ -n "$pid" ]; then
+      kill -9 $pid
+   fi
+   ;;
+
 status)
    pid=$(running_pid)
    if [ -n "$pid" ] ; then 
@@ -35,6 +43,27 @@ debug)  ## unpublished remote debugging option ##
    ;;
    
 *)
-        echo "Usage: variant.sh {start|stop|status}"
+        echo "Usage: variant.sh {start | status | stop | kill}"
+
+        { echo "start [JVM props]"
+          echo -e "\tStart Variant server, optionally setting JVM properties, e.g variant start -Dvariant.http.port=5377"
+        } | fmt
+
+        { echo "status"
+          echo -e "\tStatus of Variant server. Returns server's process ID, if running."
+        } | fmt
+
+        { echo "drain (Not Yet Implemented)"
+          echo -e "\tStop Variant server, if running. All active sessions will be drained, but no new session will be created. All pending trace events will be logged before the server is shutdown."
+        } | fmt
+
+        { echo "stop"
+          echo -e "\tStop Variant server, if running. All active sessions will be disconnected. All pending trace events will be logged before the server is shutdown."
+        } | fmt
+
+        { echo "kill"
+          echo -e "\tStop Variant server, if running. All pending trace events will be lost and all active sessions will be disconnected."
+        } | fmt
+
         exit 1
 esac

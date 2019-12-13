@@ -13,6 +13,7 @@ import com.variant.server.boot.ServerMessageLocal._
 import com.variant.server.boot.ServerExceptionLocal
 import com.variant.server.util.JavaImplicits._
 import com.variant.core.util.ReflectUtils
+import java.util.Map.Entry
 
 /**
  * Effective server configuration.
@@ -82,6 +83,23 @@ class ConfigurationImpl(config: Config) extends Configuration with ConfigKeys {
       }
    }
 
+   /**
+    * Float getter.
+    * @param key
+    * @return
+    */
+   private[this] def getFloat(key: String): Float = {
+      try {
+         config.getDouble(key).toFloat
+      } catch {
+         case e: ConfigException.Missing =>
+            throw ServerExceptionLocal(CONFIG_PROPERTY_NOT_SET, key)
+
+         case e: ConfigException.WrongType =>
+            throw ServerExceptionLocal(CONFIG_PROPERTY_WRONG_TYPE, key, ConfigValueType.NUMBER.toString, config.getValue(key).valueType.toString)
+      }
+   }
+
    /*--------------------------------------------------------------------------------*/
    /*                               PUBLIC INTERFACE                                 */
    /*--------------------------------------------------------------------------------*/
@@ -105,10 +123,14 @@ class ConfigurationImpl(config: Config) extends Configuration with ConfigKeys {
 
    override def eventWriterMaxDelay: Int = getInt(EVENT_WRITER_MAX_DELAY)
 
+   override def eventWriterFlushSize: Int = getInt(EVENT_WRITER_FLUSH_SIZE)
+
+   override def eventWriterFlushParallelism: Float = getFloat(EVENT_WRITER_FLUSH_PARALLELISM)
+
    /*--------------------------------------------------------------------------------*/
    /*                                  PUBLIC EXT                                    */
    /*--------------------------------------------------------------------------------*/
 
-   def entrySet = config.entrySet()
+   def entrySet: Set[Entry[String, ConfigValue]] = config.entrySet.asScala.toSet
 }
 

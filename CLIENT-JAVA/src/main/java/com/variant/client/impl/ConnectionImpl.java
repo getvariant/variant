@@ -45,7 +45,7 @@ public class ConnectionImpl implements Connection {
 	/**
 	 * 
 	 */
-	ConnectionImpl(VariantClientImpl client, String schema, Payload.Connection payload) {
+	public ConnectionImpl(VariantClientImpl client, String schema, Payload.Connection payload) {
 		
 		this.client = client;
 		this.schema = schema;

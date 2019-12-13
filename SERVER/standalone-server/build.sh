@@ -31,7 +31,7 @@ if [ -e target ]; then
 fi
    
 # Build the server
-mbin/release.sh
+./release.sh
 
 # Unzip server to a temp directory
 rm -rf ${server_dir}

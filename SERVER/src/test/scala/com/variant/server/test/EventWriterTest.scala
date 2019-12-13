@@ -15,21 +15,33 @@ import java.time.format.DateTimeFormatter
 import java.time.Instant
 import akka.http.scaladsl.model.HttpRequest
 import akka.http.scaladsl.model.HttpMethods
+import akka.http.scaladsl.model.StatusCodes._
+import com.variant.core.error.ServerError
 import com.variant.server.test.spec.TraceEventsSpec
+import com.variant.server.test.spec.Async
+import com.variant.server.api.StateRequest
+import com.variant.server.api.StateRequest.Status.Committed
+import com.variant.server.api.StateRequest.Status.Failed
+import com.variant.server.api.StateRequest.Status.InProgress
+import org.scalatest.exceptions.TestFailedException
+import com.variant.server.impl.ConfigKeys
 
-class EventWriterTest extends EmbeddedServerSpec with TraceEventsSpec {
+class EventWriterTest extends EmbeddedServerSpec with TraceEventsSpec with Async with ConfigKeys {
+
+   val emptyTargetingTrackerBody = "{\"tt\":[]}"
 
    "Event writer" should {
 
-      val schema = server.schemata.get("monstrosity").get.liveGen.get
-      val eventWriter = schema.eventWriter
-      val eventReader = TraceEventReader(eventWriter)
+      val bufferCacheSize = server.config.eventWriterBufferSize
+      val flushSize = server.config.eventWriterFlushSize
+      val maxDelayMillis = server.config.eventWriterMaxDelay * 1000
+      val flushParallelism = server.config.eventWriterFlushParallelism
 
       "have expected confuration" in {
-         eventWriter.maxBufferSize mustEqual 200
-         eventWriter.fullSize mustEqual 100
-         eventWriter.maxDelayMillis mustEqual 2000
-
+         bufferCacheSize mustBe 200
+         flushSize mustBe 10
+         maxDelayMillis mustBe 2000
+         flushParallelism mustBe 2
       }
 
       "flush an event after EVENT_WRITER_FLUSH_MAX_DELAY_MILLIS" in {
@@ -53,14 +65,14 @@ class EventWriterTest extends EmbeddedServerSpec with TraceEventsSpec {
          }
 
          // Trigger custom event.
-         val customName = Random.nextString(5)
+         val customName = "custom name"
          val se = TraceEventImpl.mkTraceEvent(customName);
 
          val ssn = server.ssnStore.get(sid).get
          ssn.asInstanceOf[SessionImpl].triggerEvent(se);
 
-         // Read events back from the db, but must wait for the asych flusher.
-         val millisWaited = eventWriter.maxDelayMillis * 2
+         // Read events back from the db, but must wait for the async flusher.
+         val millisWaited = maxDelayMillis * 2
          Thread.sleep(millisWaited)
          val eventsFromDatabase = eventReader.read(e => e.sessionId == sid)
          eventsFromDatabase.size mustBe 1
@@ -70,9 +82,13 @@ class EventWriterTest extends EmbeddedServerSpec with TraceEventsSpec {
          event.sessionId mustBe sid
          event.eventExperiences.size mustBe 4
          event.eventExperiences.map(_.testName) mustBe Set("test2", "test3", "test5", "test6")
+
+         // Ensure the writer buffer is empty.
+         server.eventBufferCache.size mustBe 0
+
       }
 
-      "not flush before EVENT_WRITER_MAX_DELAY if fewer than EVENT_WRITER_PERCENT_FULL" in {
+      "not flush before EVENT_WRITER_MAX_DELAY if fewer than EVENT_WRITER_FLUSH_SIZE" in {
 
          var sid = newSid
 
@@ -88,12 +104,12 @@ class EventWriterTest extends EmbeddedServerSpec with TraceEventsSpec {
          val ssn = server.ssnStore.get(sid).get
 
          // Ensure the writer buffer is empty.
-         eventWriter.flush()
+         server.eventBufferCache.size mustBe 0
 
          val startOfWrite = System.currentTimeMillis()
 
-         for (i <- 1 to eventWriter.fullSize) {
-            val name = Random.nextString(5)
+         for (i <- 1 until flushSize) {
+            val name = "custom name " + i
             val se = TraceEventImpl.mkTraceEvent(name);
             ssn.asInstanceOf[SessionImpl].triggerEvent(se);
          }
@@ -103,15 +119,15 @@ class EventWriterTest extends EmbeddedServerSpec with TraceEventsSpec {
 
          // Wait a bit, but less than max delay - must not have flushed
          // TODO Occasionally, this fails due to a race condition.
-         Thread.sleep(200)
+         Thread.sleep(maxDelayMillis / 10)
          eventReader.read(e => e.sessionId == ssn.getId).size mustBe 0
 
          // Read after delay - must be flushed
-         Thread.sleep(2000)
-         eventReader.read(e => e.sessionId == ssn.getId).size mustBe eventWriter.fullSize
+         Thread.sleep(maxDelayMillis * 2)
+         eventReader.read(e => e.sessionId == ssn.getId).size mustBe (flushSize - 1)
       }
 
-      "flush before EVENT_WRITER_MAX_DELAY if EVENT_WRITER_PERCENT_FULL" in {
+      "flush before EVENT_WRITER_MAX_DELAY if at least EVENT_WRITER_FLUSH_SIZE events" in {
 
          var sid = newSid
 
@@ -122,24 +138,119 @@ class EventWriterTest extends EmbeddedServerSpec with TraceEventsSpec {
             sid = ssnResp.session.getId
          }
 
+         // Ensure the writer buffer is empty.
+         server.eventBufferCache.size mustBe 0
+
          eventReader.read(e => e.sessionId == sid).size mustBe 0
 
          val ssn = server.ssnStore.get(sid).get
 
          val startOfWrite = System.currentTimeMillis()
 
-         for (i <- 1 to eventWriter.fullSize + 1) {
-            val (name, value, timestamp) = (Random.nextString(5), Random.nextString(5), Random.nextLong())
+         for (i <- 1 to flushSize) {
+            val (name, value, timestamp) = ("event " + i, Random.nextString(5), Random.nextLong())
             val se = TraceEventImpl.mkTraceEvent(name);
             ssn.asInstanceOf[SessionImpl].triggerEvent(se);
          }
 
          val writeTook = System.currentTimeMillis() - startOfWrite
-         assert(writeTook < 500, "Write took too long")
+         assert(writeTook < 50, "Write took too long")
 
          // Wait a bit, but less than max delay - must be flushed
-         Thread.sleep(eventWriter.maxDelayMillis - 1000)
-         eventReader.read(e => e.sessionId == ssn.getId).size mustBe (eventWriter.fullSize + 1)
+         Thread.sleep(maxDelayMillis / 2)
+         eventReader.read(e => e.sessionId == ssn.getId).size mustBe (flushSize)
+      }
+
+      "create and flush a whole bunch of events without losing any on server shutdown" in {
+         
+         
+         val sessions = 20
+         val hops = 100
+         val ssnIds = new Array[String](sessions)
+         
+         // We'll need a more potent event cache
+         reboot { builder =>
+            builder.withConfiguration(Map(EVENT_WRITER_BUFFER_SIZE -> 1000))
+               .withConfiguration(Map(EVENT_WRITER_FLUSH_SIZE -> 100))
+               .withConfiguration(Map(SESSION_TIMEOUT -> 60))
+         }
+
+         server.config.eventWriterBufferSize mustBe 1000
+         server.config.eventWriterFlushSize mustBe 100
+         server.config.sessionTimeout mustBe 60
+
+         // Create the sessions
+         for (i <- 0 until sessions) async {
+
+            HttpRequest(method = HttpMethods.POST, uri = "/session/monstrosity/blah", entity = emptyTargetingTrackerBody) ~> router ~> check {
+               val ssnResp = SessionResponse(response)
+               ssnResp.schema.getMeta.getName mustBe "monstrosity"
+               ssnIds(i) = ssnResp.session.getId
+            }
+         }
+
+         joinAll()
+         
+         val specialKey = "specialKey"
+         val specialVal = "This is how we'll be able to tell the events we're about to insert from the ones that are already there"
+         
+         var count = new java.util.concurrent.atomic.AtomicInteger(0)
+         for (i <- 0 until sessions) async {
+            
+            for (j <- 0 until hops) {
+               val nextState = "state" + (j % 5 + 1)
+               if (targetForState(ssnIds(i), nextState)) {
+                  commitStateRequest(ssnIds(i), (specialKey, specialVal))
+                  count.incrementAndGet()
+               }
+               // A bit of a delay so as not to overwhelm the buffer cache.
+               Thread.sleep(200 + Random.nextInt(600))
+            }
+         }
+         
+         joinAll(timeout = 60000)
+
+         server.shutdown()
+         eventReader.read(_.attributes.get(specialKey) == Some(specialVal)).size mustBe count.get
+     
       }
    }
+
+   /**
+    * Target or state may give 707 (Cannot target for phantom state) in which
+    * case we return false. Any other error cases a test assertion.
+    */
+   private def targetForState(sid: String, name: String):Boolean = {
+      
+      val body = Json.obj("state" -> name).toString
+      
+      HttpRequest(method = HttpMethods.POST, uri = s"/request/monstrosity/${sid}", entity = body) ~> router ~> check {
+         response.status match {
+            case OK => true
+              
+            case BadRequest => 
+               if (ServerErrorResponse(response).code != ServerError.STATE_PHANTOM_IN_EXPERIENCE.getCode) {
+                  throw new TestFailedException("Unexpected User Error [" + ServerErrorResponse(response).toString() + "]", 1)
+               }
+               false
+               
+            case _ =>
+               throw new TestFailedException(s"Unexpected HTTP Status ${response.status} with body [${response.entity}]", 2)
+        }
+      }      
+   }
+   
+   private def commitStateRequest(sid: String, attr: (String,String)) {
+      
+      val body = Json.obj(
+         "status" -> Committed.ordinal,
+         "attrs" -> Map(attr._1 -> attr._2)).toString
+
+      HttpRequest(method = HttpMethods.DELETE, uri = s"/request/monstrosity/${sid}", entity = body) ~> router ~> check {
+         val ssnResp = SessionResponse(response)
+         ssnResp.session.getId mustBe sid
+         ssnResp.schema.getMeta.getName mustBe "monstrosity"
+      }
+   }
+
 }

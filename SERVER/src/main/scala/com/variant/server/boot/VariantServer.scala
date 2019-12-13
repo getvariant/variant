@@ -10,7 +10,6 @@ import scala.concurrent.duration.Duration
 import scala.util.Failure
 import scala.util.Success
 import scala.util.Try
-
 import com.typesafe.scalalogging.LazyLogging
 import com.variant.core.util.TimeUtils
 import com.variant.server.api.Configuration
@@ -19,7 +18,6 @@ import com.variant.server.impl.ConfigurationImpl
 import com.variant.server.routes.Router
 import com.variant.server.schema.SchemaDeployer
 import com.variant.server.schema.Schemata
-
 import akka.actor.ActorSystem
 import akka.http.scaladsl.Http
 import akka.stream.ActorMaterializer
@@ -29,6 +27,9 @@ import akka.http.scaladsl.model.headers.ProductVersion
 import akka.http.scaladsl.settings.ServerSettings
 import play.api.libs.json._
 import play.api.libs.json.Json.JsValueWrapper
+import akka.actor.Actor
+import com.variant.server.trace.FlusherRouter
+import com.variant.server.trace.EventBufferCache
 
 /**
  * The Main class.
@@ -43,6 +44,8 @@ trait VariantServer {
    val ssnStore: SessionStore
 
    val actorSystem: ActorSystem
+
+   val eventBufferCache: EventBufferCache
 
    val bootExceptions = mutable.ArrayBuffer[ServerException]()
 
@@ -62,7 +65,7 @@ trait VariantServer {
 object VariantServer {
 
    // TODO Need to get this from sbt
-   val productVersion = ("Variant AIM Server", "0.10.1")
+   val productVersion = ("Variant AIM Server", "0.10.2")
 
    class Builder {
 
@@ -133,9 +136,7 @@ object VariantServer {
  * Concrete implementation of VariantServer with a private constructor.
  * The headless option is used by the tests, which are not interested in binding to the port.
  */
-class VariantServerImpl(builder: VariantServer.Builder)(override implicit val actorSystem: ActorSystem)
-
-   extends VariantServer with LazyLogging {
+class VariantServerImpl(builder: VariantServer.Builder)(override implicit val actorSystem: ActorSystem) extends VariantServer with LazyLogging {
 
    import VariantServer._
 
@@ -145,6 +146,7 @@ class VariantServerImpl(builder: VariantServer.Builder)(override implicit val ac
 
    private[this] var _schemaDeployer: SchemaDeployer = _
    private[this] var binding: Option[Http.ServerBinding] = None
+   private[this] var _eventBufferCache: EventBufferCache = _
 
    //
    // Attempt to load the external configuration first. Let it fail if a problem,
@@ -176,10 +178,13 @@ class VariantServerImpl(builder: VariantServer.Builder)(override implicit val ac
    override lazy val schemata: Schemata = _schemaDeployer.schemata
    override val ssnStore = new SessionStore(this)
    override def isUp = (builder.isHeadless || binding.isDefined) && bootExceptions.size == 0
+   override lazy val eventBufferCache = _eventBufferCache
 
    // If debug, echo all config params.
    logger.whenDebugEnabled {
-      config.entrySet.forEach { e => logger.debug(s"${e.getKey} → ${e.getValue}") }
+      config.entrySet.toArray
+         .sortWith (_.getKey < _.getKey )
+         .foreach { e => logger.debug(s"${e.getKey} → ${e.getValue}") }
    }
 
    // To speedup server startup, we split it between two parallel threads.
@@ -195,8 +200,9 @@ class VariantServerImpl(builder: VariantServer.Builder)(override implicit val ac
 
    // Thread 2: Server backend init.
    val serverInitTask = Future {
-      actorSystem.actorOf(VacuumActor.props, name = "vacuumActor")
+      _eventBufferCache = EventBufferCache(this)
       useSchemaDeployer(SchemaDeployer.fromFileSystem(this))
+      VacuumActor.start(this)
    }
    // Block indefinitely for when both futures are completed...
 
@@ -221,23 +227,47 @@ class VariantServerImpl(builder: VariantServer.Builder)(override implicit val ac
       actorSystem.terminate()
    }
 
-   actorSystem.whenTerminated.andThen {
-      case Success(_) =>
-         logger.info(ServerMessageLocal.SERVER_SHUTDOWN.asMessage(
-            s"${productVersion._1} release ${productVersion._2}",
-            config.httpPort.toString,
-            TimeUtils.formatDuration(uptime)))
-
-      case Failure(e) =>
-         logger.error("Unexpected exception thrown:", e)
-   }
-
+   /**
+    * Synchronously shutdown the server.
+    * By the time this call returns, all schemata have been undeployed and all pending
+    * trace event flushed.
+    */
    override def shutdown() {
+
+      val start = System.currentTimeMillis
+      
+      logger.debug("Server shutdown sequence started")
+
+      // No more client connections
       binding.map(_.unbind)
       binding = None
+      
+      logger.debug("Unbound from network port")
+
+      // Undeploy all schemata. This will not drain sessions.
       schemata.undeployAll()
+      
+      logger.debug("All schemata undeployed")
+
+      // Flush the event buffer cache.
+      _eventBufferCache.shutdown()
+      
+      logger.debug("Buffer cache shutdown")
+
+      actorSystem.whenTerminated.andThen {
+         case Success(_) =>
+            logger.debug("Actor system shutdown")
+            logger.info(ServerMessageLocal.SERVER_SHUTDOWN.asMessage(
+               s"${productVersion._1} release ${productVersion._2}",
+               config.httpPort.toString,
+               TimeUtils.formatDuration(java.time.Duration.ofMillis(System.currentTimeMillis - start)),
+               TimeUtils.formatDuration(uptime)))
+   
+         case Failure(e) =>
+            logger.error("Unexpected exception thrown:", e)
+      }
+
       actorSystem.terminate()
-      Await.result(actorSystem.whenTerminated, 2 seconds)
    }
 
    /**

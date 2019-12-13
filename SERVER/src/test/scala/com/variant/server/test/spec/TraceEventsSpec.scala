@@ -4,6 +4,7 @@ import org.scalatest.BeforeAndAfterAll
 
 import com.typesafe.scalalogging.LazyLogging
 import com.variant.server.test.util.JdbcService
+import com.variant.server.test.util.TraceEventReader
 
 /**
  * Mixes in an embedded SQL database for the events.
@@ -19,21 +20,28 @@ object TraceEventSpec {
    var sqlSchemaCreated = false
 }
 
-trait TraceEventsSpec extends LazyLogging with BeforeAndAfterAll { this: EmbeddedServerSpec =>
+trait TraceEventsSpec extends LazyLogging with BeforeAndAfterAll { 
+   
+   this: EmbeddedServerSpec =>
 
    import TraceEventSpec._
 
+   // Tests may override this if monstrosity is unavailable.
+   protected lazy val schemaName = "monstrosity" 
+   
+   private[this] var _eventReader: TraceEventReader = null
+   
+   protected lazy val eventReader: TraceEventReader = _eventReader
+
    /**
-    * @throws Exception
-    *
     */
    def recreateDatabase() {
       // Assuming the there's always the monstrosity schema and that it has the right event writer.
-      server.schemata.getLiveGen("monstrosity") match {
+      server.schemata.getLiveGen(schemaName) match {
 
          case Some(schema) =>
 
-            val jdbc = new JdbcService(schema.eventWriter)
+            val jdbc = new JdbcService(schema.flusherService.getFlusher)
 
             try {
                jdbc.getVendor match {
@@ -50,6 +58,8 @@ trait TraceEventsSpec extends LazyLogging with BeforeAndAfterAll { this: Embedde
                      logger.info("Recreated MySQL schema")
 
                }
+               
+               _eventReader = TraceEventReader(schema.flusherService.getFlusher)
 
             } catch {
                case _: ClassCastException =>
@@ -60,15 +70,6 @@ trait TraceEventsSpec extends LazyLogging with BeforeAndAfterAll { this: Embedde
       }
    }
 
-   /* Print deployment errors, if any
-    **** this doesn't seem to belong here ****
-   server.schemaDeployer.parserResponses.foreach { resp =>
-      if (resp.hasMessages(Severity.ERROR)) {
-         println(s"***** PARSE ERRORS IN SCHEMA [${resp.getSchemaName}] *****")
-         resp.getMessages.asScala.foreach { println(_) }
-      }
-   }
-*/
    /**
     * Each test case runs in its own JVM. Each test runs in its
     * own instance of the test case. We want the jdbc schema

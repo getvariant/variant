@@ -6,6 +6,8 @@ import com.variant.server.boot.VariantServer
 
 trait SchemaDeployer {
 
+   implicit val server: VariantServer
+
    /**
     * Once constructed, a schema deployer returns all available schemata at startup time.
     */

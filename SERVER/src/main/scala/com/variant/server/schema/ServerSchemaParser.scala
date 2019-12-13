@@ -10,17 +10,33 @@ import com.variant.server.boot.VariantServer
  */
 object ServerSchemaParser {
 
-   def apply(implicit server: VariantServer) = new ServerSchemaParser()
+   /**
+    * Regular invocation
+    */
+   def apply(implicit server: VariantServer) = new ServerSchemaParser(Some(server))
+
+   /**
+    * Tests parse with null services, without initializing hooks and flushers.
+    */
+   def apply() = new ServerSchemaParser(None)
 
 }
 
 /**
  * Server side implementation of schema parser, complete with server side services.
  */
-class ServerSchemaParser(implicit server: VariantServer) extends SchemaParser {
+class ServerSchemaParser private (server: Option[VariantServer]) extends SchemaParser {
 
-   override val getHooksService: HooksService = new ServerHooksService()
-   override val getFlusherService: FlusherService = new ServerFlusherService(server.config, this)
+   override val getHooksService: HooksService = server match {
+      case Some(_) => new ServerHooksService()
+      case None => new HooksService.Null()
+   }
+   
+   override val getFlusherService: FlusherService = server match {
+      case Some(svr) => new ServerFlusherService(svr.config, this)
+      case None =>  new FlusherService.Null()
+      
+   }
 
 }
 

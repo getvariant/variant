@@ -1,16 +1,19 @@
 package com.variant.client.test;
 
-import static com.variant.client.StateRequest.Status.*;
-import static org.junit.Assert.*;
+import static com.variant.client.StateRequest.Status.Committed;
+import static com.variant.client.StateRequest.Status.InProgress;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 
-import com.variant.client.VariantError;
 import com.variant.client.Connection;
 import com.variant.client.Session;
 import com.variant.client.StateRequest;
 import com.variant.client.TraceEvent;
-import com.variant.client.VariantClient;
+import com.variant.client.VariantError;
 import com.variant.client.VariantException;
 import com.variant.client.impl.StateVisitedEvent;
 import com.variant.client.impl.TraceEventSupport;
@@ -24,18 +27,12 @@ import com.variant.core.util.Tuples.Pair;
 
 public class TraceEventsTest extends ClientBaseTestWithServer {
 
-	// Sole client
-	private VariantClient client = new VariantClient.Builder()
-			.withSessionIdTrackerClass(SessionIdTrackerHeadless.class)
-			.withTargetingTrackerClass(TargetingTrackerHeadless.class)
-			.build();
-
 	/**
 	 * Start the server with long enough session expiration
 	 */
 	public TraceEventsTest() throws Exception {
 		// We need sessions to survive the wait for events.
-		long ssnTimeoutSec = EVENT_WRITER_MAX_DELAY / 1000 + 3;
+		long ssnTimeoutSec = eventWriterLatencyMillis / 1000 + 3;
 		restartServer(CollectionsUtils.pairsToMap(new Pair<String,String>("variant.session.timeout", String.valueOf(ssnTimeoutSec))));
 	}
 	
@@ -85,7 +82,7 @@ public class TraceEventsTest extends ClientBaseTestWithServer {
 		event2.getAttributes().put("sve2 atr key", "sve2 attr value");
 		req2.commit();
 		
-		Thread.sleep(EVENT_WRITER_MAX_DELAY);
+		Thread.sleep(eventWriterLatencyMillis);
 		List<TraceEventFromDatabase> events = traceEventReader.read(e -> e.sessionId.equals(ssn1.getId()));
 		assertEquals(1, events.size());
 		TraceEventFromDatabase event = events.get(0);
@@ -107,7 +104,7 @@ public class TraceEventsTest extends ClientBaseTestWithServer {
 		assertEquals(InProgress, req1.getStatus());
 		req1.commit();
 		assertEquals(Committed, req1.getStatus());
-		Thread.sleep(EVENT_WRITER_MAX_DELAY);
+		Thread.sleep(eventWriterLatencyMillis);
 		assertEquals(1, traceEventReader.read(e -> e.sessionId.equals(ssn1.getId())).size());
 
 	}
@@ -133,7 +130,7 @@ public class TraceEventsTest extends ClientBaseTestWithServer {
 		event1.getAttributes().put("foo", "bar");		
 		req1.commit();
 		
-		Thread.sleep(EVENT_WRITER_MAX_DELAY);
+		Thread.sleep(eventWriterLatencyMillis);
 		List<TraceEventFromDatabase> events = traceEventReader.read(e -> e.sessionId.equals(ssn.getId()));
 		assertEquals(1, events.size());
 		TraceEventFromDatabase event = events.get(0);
@@ -166,7 +163,7 @@ public class TraceEventsTest extends ClientBaseTestWithServer {
 		assertEquals("state5", event2.getAttributes().get("$STATE"));
 		req2.commit();
 		
-		Thread.sleep(EVENT_WRITER_MAX_DELAY);
+		Thread.sleep(eventWriterLatencyMillis);
 		events = traceEventReader.read(e -> e.sessionId.equals(ssn.getId()));
 		assertEquals(2, events.size());
 		event = events.get(1);
@@ -236,7 +233,7 @@ public class TraceEventsTest extends ClientBaseTestWithServer {
 	   	req.getStateVisitedEvent().getAttributes().put("yin", "yang");
 	   	req.commit();
 	   	
-		Thread.sleep(EVENT_WRITER_MAX_DELAY);
+		Thread.sleep(eventWriterLatencyMillis);
 		List<TraceEventFromDatabase> events = traceEventReader.read(e -> e.sessionId.equals(ssn.getId()));
 		assertEquals(3, events.size());
 		//events.forEach(e -> System.out.println("***\n" + e));

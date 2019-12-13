@@ -33,9 +33,9 @@ class SchemaDeployColdTest extends EmbeddedServerSpec with BeforeAndAfterAll {
 
    "Schema should deploy from config property variant.schemata.dir" in {
 
-      reboot(
-         VariantServer.builder
-            .withConfiguration(Map("variant.schemata.dir" -> "schemata-empty")))
+      reboot { builder =>
+         builder.withConfiguration(Map("variant.schemata.dir" -> "schemata-empty"))
+      }
 
       server.bootExceptions.size mustEqual 0
       server.schemata.size mustBe 0

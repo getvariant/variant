@@ -7,11 +7,12 @@ import com.typesafe.scalalogging.LazyLogging
 
 import com.variant.server.boot.ServerMessageLocal
 import com.variant.server.boot.ServerExceptionInternal
+import com.variant.server.boot.VariantServer
 
 /**
  *
  */
-class Schemata extends LazyLogging {
+class Schemata(implicit server: VariantServer) extends LazyLogging {
 
    // Map of Schema objects keyed by schema name.
    private[this] val _schemaMap = new TrieMap[String, ServerSchema]()

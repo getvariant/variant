@@ -19,10 +19,12 @@
          'experiences':[                              
             {                                                
                'name':'control',
-               'isControl':true                              
+               'isControl':true,
+               'weight': 3                  
             },                                               
             {                                                
-               'name':'treatment'
+               'name':'treatment',
+               'weight': 1
             }                                              
          ],                                                  
          'onStates':[

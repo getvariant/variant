@@ -1,12 +1,15 @@
 package com.variant.client.test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import com.variant.client.Connection;
 import com.variant.client.Session;
 import com.variant.client.SessionAttributes;
 import com.variant.client.SessionExpiredException;
-import com.variant.client.VariantClient;
 import com.variant.client.VariantException;
 import com.variant.client.impl.SessionImpl;
 import com.variant.client.test.util.ClientBaseTestWithServer;
@@ -15,12 +18,6 @@ import com.variant.core.schema.State;
 import com.variant.core.util.CollectionsUtils;
 
 public class SessionTest extends ClientBaseTestWithServer {
-
-	// Sole client
-	private VariantClient client = new VariantClient.Builder()
-			.withSessionIdTrackerClass(SessionIdTrackerHeadless.class)
-			.withTargetingTrackerClass(TargetingTrackerHeadless.class)
-			.build();
 		
 	/**
 	 */

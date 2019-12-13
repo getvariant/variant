@@ -29,9 +29,9 @@ class ServerBootExceptionTest extends EmbeddedServerSpec with ConfigKeys {
       "emit CONFIG_PROPERTY_NOT_SET if no schema.dir config" in {
 
          intercept[ServerExceptionLocal] {
-            reboot(
-               VariantServer.builder
-                  .withoutConfiguration(Seq("variant.schemata.dir")))
+            reboot { builder =>
+               builder.withoutConfiguration(Seq("variant.schemata.dir"))
+            }
          }.getMessage mustBe CONFIG_PROPERTY_NOT_SET.asMessage("variant.schemata.dir")
 
       }
@@ -39,9 +39,9 @@ class ServerBootExceptionTest extends EmbeddedServerSpec with ConfigKeys {
 
    "emit SCHEMATA_DIR_MISSING if schemata dir does not exist" in {
 
-      reboot(
-         VariantServer.builder
-            .withConfiguration(Map("variant.schemata.dir" -> "non-existent")))
+      reboot { builder =>
+         builder.withConfiguration(Map("variant.schemata.dir" -> "non-existent"))
+      }
 
       server.isUp mustBe false
       server.schemata.size mustBe 0
@@ -85,9 +85,9 @@ class ServerBootExceptionTest extends EmbeddedServerSpec with ConfigKeys {
 
       "cause server to throw SCHEMATA_DIR_NOT_DIR" in {
 
-         reboot(
-            VariantServer.builder
-               .withConfiguration(Map("variant.schemata.dir" -> "schemata-file")))
+         reboot { builder =>
+            builder.withConfiguration(Map("variant.schemata.dir" -> "schemata-file"))
+         }
 
          server.isUp mustBe false
          server.schemata.size mustBe 0
@@ -105,9 +105,9 @@ class ServerBootExceptionTest extends EmbeddedServerSpec with ConfigKeys {
          s"cp schemata/monster.schema ${schemataDir}/monster1.schema" !;
          s"cp schemata/monster.schema ${schemataDir}/monster2.schema" !;
 
-         reboot(
-            VariantServer.builder
-               .withConfiguration(Map("variant.schemata.dir" -> schemataDir)))
+         reboot { builder =>
+            builder.withConfiguration(Map("variant.schemata.dir" -> schemataDir))
+         }
 
          val logTail = ServerLogTailer.last(3)
          server.schemata.size mustBe 1

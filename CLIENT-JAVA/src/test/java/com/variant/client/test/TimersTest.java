@@ -6,13 +6,12 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.Map;
-import java.util.Set;
 import java.util.Optional;
+import java.util.Set;
 
 import com.variant.client.Session;
 import com.variant.client.SessionAttributes;
 import com.variant.client.StateRequest;
-import com.variant.client.VariantClient;
 import com.variant.client.impl.ConnectionImpl;
 import com.variant.client.impl.TraceEventSupport;
 import com.variant.client.test.util.ClientBaseTestWithServerAsync;
@@ -26,12 +25,6 @@ public class TimersTest extends ClientBaseTestWithServerAsync {
 
 	private int SESSIONS = 1;
 	
-	// Sole client
-	private VariantClient client = new VariantClient.Builder()
-			.withSessionIdTrackerClass(SessionIdTrackerHeadless.class)
-			.withTargetingTrackerClass(TargetingTrackerHeadless.class)
-			.build();
-
 	@org.junit.Test
 	public void timersTestNullString() throws Exception {
 		

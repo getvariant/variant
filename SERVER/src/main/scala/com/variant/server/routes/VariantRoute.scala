@@ -21,8 +21,9 @@ import akka.http.scaladsl.server.StandardRoute
 import scala.concurrent.Await
 import scala.concurrent.duration._
 import com.variant.server.boot.ServerExceptionInternal
+import com.typesafe.scalalogging.LazyLogging
 
-trait VariantRoute {
+trait VariantRoute extends LazyLogging {
 
    /**
     * Nullary action.
@@ -47,7 +48,8 @@ trait VariantRoute {
          // We're ignoring exceptions here, which should be okay, as they will be caught in the exception handler
          // and there's no reason to intercept them here.
          val body = Await.result(Unmarshal(ctx.request).to[String], 1.second)
-
+         logger.trace(s"Executing route ${ctx.request.method} ${ctx.request.uri} with body:\n${body}")
+         
          block(parse(body))
       } else {
          HttpResponse(StatusCodes.ServiceUnavailable)
@@ -56,7 +58,7 @@ trait VariantRoute {
 
    /**
     * Extract body from request context
-    */
+    *
    def body(implicit system: ActorSystem, reqCtx: RequestContext): JsValue = {
 
       if (reqCtx.request.entity.getContentType != ContentTypes.`application/json`) {
@@ -65,7 +67,7 @@ trait VariantRoute {
 
       implicit val materializer = ActorMaterializer
       Json.parse("blah")
-   }
+   } */
 
    /**
     * Extract the session from the session store, making sure that

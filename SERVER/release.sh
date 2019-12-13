@@ -4,7 +4,7 @@
 
 #!/bin/bash
 
-export version=0.10.1
+export version=0.10.2
 export version2=""
 
 function usage() {
@@ -25,5 +25,5 @@ sbt clean dist
 # extAPI jar is just our main jar, disguised under a different name. 
 # Extract it from the ZIP archive.
 cd target/universal
-unzip -j variant-server-${version}.zip variant-server-0.10.1/lib/com.variant.variant-server-${version}.jar
+unzip -j variant-server-${version}.zip variant-server-${version}/lib/com.variant.variant-server-${version}.jar
 mv com.variant.variant-server-${version}.jar variant-server-extapi-${version}.jar

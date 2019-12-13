@@ -21,13 +21,12 @@ object Boot extends App with LazyLogging {
    // to complete. See #253.
    Signal.handle(new Signal("INT"), new SignalHandler() {
       def handle(sig: Signal) {
+         logger.debug("INT Signal caught. Shutdding down.")         
          server.shutdown()
       }
    })
 
-   // We probably don't even need to do this because we only terminate
-   // with a signal, which will trigger JVM shutdown.
-   Await.result(server.actorSystem.whenTerminated, Duration.Inf)
-
+   // Need this?
+   // Await.result(server.actorSystem.whenTerminated, Duration.Inf)
 }
 

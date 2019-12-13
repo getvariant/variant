@@ -1,8 +1,7 @@
  package com.variant.core.test;
 
-import com.variant.core.schema.parser.FlusherService;
-import com.variant.core.schema.parser.HooksService;
 import com.variant.core.schema.parser.SchemaParser;
+import com.variant.core.schema.parser.SchemaParserServerless;
 
 
 /**
@@ -17,16 +16,6 @@ public class BaseTestCore extends VariantBaseTest {
 	 * @return
 	 */
 	protected SchemaParser getSchemaParser() {
-		return new SchemaParser() {
-			@Override
-			public HooksService getHooksService() {
-				return new HooksService();
-			}
-
-			@Override
-			public FlusherService getFlusherService() {
-				return new FlusherService();
-			}
-		};
+		return new SchemaParserServerless();
 	}
 }

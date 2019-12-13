@@ -49,9 +49,18 @@ class TraceEventTest extends EmbeddedServerSpec with TraceEventsSpec {
    "Event Route" should {
 
       val schema = server.schemata.get("monstrosity").get.liveGen.get
-      val eventWriter = schema.eventWriter
-      eventWriter.maxDelayMillis mustEqual 2000
-      val millisToSleep = eventWriter.maxDelayMillis + 500
+      val bufferCacheSize = server.config.eventWriterBufferSize
+      val flushSize = server.config.eventWriterFlushSize
+      val maxDelayMillis = server.config.eventWriterMaxDelay * 1000
+      val flushParallelism = server.config.eventWriterFlushParallelism
+      val millisToSleep = maxDelayMillis * 2
+
+      "have expected confuration" in {
+         bufferCacheSize mustBe 200
+         flushSize mustBe 10
+         maxDelayMillis mustBe 2000
+         flushParallelism mustBe 2
+      }
 
       // New session
       var sid = newSid
@@ -140,7 +149,8 @@ class TraceEventTest extends EmbeddedServerSpec with TraceEventsSpec {
 
          // Read the event back from the db.
          Thread.sleep(millisToSleep)
-         val eventsFromDatabase = TraceEventReader(eventWriter).read(_.sessionId == sid)
+         val flusher = server.schemata.getLiveGen("monstrosity").get.flusherService.getFlusher
+         val eventsFromDatabase = TraceEventReader(flusher).read(_.sessionId == sid)
          eventsFromDatabase.size mustBe 1
 
          val event = eventsFromDatabase.head
@@ -206,7 +216,8 @@ class TraceEventTest extends EmbeddedServerSpec with TraceEventsSpec {
 
          // Read the event back from the db.
          Thread.sleep(millisToSleep)
-         val eventsFromDatabase = TraceEventReader(eventWriter).read(_.sessionId == sid)
+         val flusher = server.schemata.getLiveGen("monstrosity").get.flusherService.getFlusher
+         val eventsFromDatabase = TraceEventReader(flusher).read(_.sessionId == sid)
          eventsFromDatabase.size mustBe 1
 
          val event = eventsFromDatabase.head
@@ -247,7 +258,8 @@ class TraceEventTest extends EmbeddedServerSpec with TraceEventsSpec {
 
          // Read the event back from the db.
          Thread.sleep(millisToSleep)
-         val eventsFromDatabase = TraceEventReader(eventWriter).read(_.sessionId == sid)
+         val flusher = server.schemata.getLiveGen("monstrosity").get.flusherService.getFlusher
+         val eventsFromDatabase = TraceEventReader(flusher).read(_.sessionId == sid)
          eventsFromDatabase.size mustBe 1
          val event = eventsFromDatabase.head
 
@@ -301,7 +313,8 @@ class TraceEventTest extends EmbeddedServerSpec with TraceEventsSpec {
 
          // Read events back from the db, but must wait for the asych flusher.
          Thread.sleep(millisToSleep)
-         val eventsFromDatabase = TraceEventReader(eventWriter).read(_.sessionId == sid)
+         val flusher = server.schemata.getLiveGen("monstrosity").get.flusherService.getFlusher
+         val eventsFromDatabase = TraceEventReader(flusher).read(_.sessionId == sid)
          eventsFromDatabase.size mustBe 1
          val event = eventsFromDatabase.head
 
@@ -378,7 +391,8 @@ class TraceEventTest extends EmbeddedServerSpec with TraceEventsSpec {
 
          // Read events back from the db, after waiting for the asych flusher.
          Thread.sleep(millisToSleep)
-         val eventsFromDatabase = TraceEventReader(eventWriter).read(_.sessionId == sid)
+         val flusher = server.schemata.getLiveGen("monstrosity").get.flusherService.getFlusher
+         val eventsFromDatabase = TraceEventReader(flusher).read(_.sessionId == sid)
          eventsFromDatabase.size mustBe 2
 
          val sve = eventsFromDatabase(0)

@@ -7,9 +7,10 @@ import com.variant.core.schema.{ Schema => CoreSchema }
 import com.variant.core.schema.parser.ParserResponse
 import com.variant.core.util.StringUtils
 import com.variant.server.boot.Runtime
-import com.variant.server.impl.TraceEventWriter
 import com.variant.server.util.JavaImplicits._
 import com.variant.server.boot.VariantServer
+import com.variant.server.boot.ServerExceptionInternal
+import akka.actor.PoisonPill
 
 /**
  *
@@ -34,13 +35,13 @@ object SchemaGen {
  */
 class SchemaGen(val response: ParserResponse, val origin: String)(implicit server: VariantServer) extends CoreSchema {
 
-   //private val logger = Logger(this.getClass)
-   private val coreSchema = response.getSchema
+   import SchemaGen._
+
+   private[this] val coreSchema = response.getSchema
+
+   private[this] var _state = State.New
 
    val id = StringUtils.random64BitString(SchemaGen.rand)
-
-   // Public access for tests only!
-   var state = SchemaGen.State.New
 
    /**
     * Number of sessions connected to this schema generation.
@@ -71,18 +72,29 @@ class SchemaGen(val response: ParserResponse, val origin: String)(implicit serve
 
    /*------------------------------------ Public Extensions ------------------------------------*/
 
-   val runtime = new Runtime(this)
-   val source = response.getSchemaSrc
-   val hooksService = response.getParser.getHooksService.asInstanceOf[ServerHooksService]
-   val flusherService = response.getParser.getFlusherService.asInstanceOf[ServerFlusherService]
-   val eventWriter = new TraceEventWriter(flusherService)
+   def state = _state
 
-   /*
-   def toNiceString: String = {
-      "Schema: " + getMeta.getName +
-         (if (getMeta.getComment.isDefined) " (" + getMeta.getComment.get + ")" else "")
+   val runtime = new Runtime(this)
+
+   val source = response.getSchemaSrc
+
+   val hooksService = response.getParser.getHooksService.asInstanceOf[ServerHooksService]
+
+   val flusherService = response.getParser.getFlusherService.asInstanceOf[ServerFlusherService]
+
+   //val eventWriter = new TraceEventWriter(flusherService)
+
+   def goLive() {
+      if (state != State.New) throw ServerExceptionInternal(s"Inconsistent state ${state} when New expected")
+      _state = State.Live
+
    }
-   */
+
+   def goDead() {
+      if (state != State.Live) throw ServerExceptionInternal(s"Inconsistent state ${state} when Live expected")
+      _state = State.Dead
+   }
+
    /**
     *
     */

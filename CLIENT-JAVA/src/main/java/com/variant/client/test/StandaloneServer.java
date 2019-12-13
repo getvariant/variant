@@ -7,8 +7,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.variant.core.util.IoUtils;
-
 /**
  * Start server process in a subprocess.
  * This is main so that adapters can take advantate of it.
@@ -44,7 +42,7 @@ public class StandaloneServer {
 		// Run the command
 		String command = script + " build " + serverDir;
 		LOG.info(String.format("Building standalone server [%s]", command));
-		int rc = NativeProcess.execQuiet(script + " " + serverDir + " " + flusher);
+		int rc = NativeProcess.execQuiet(script, serverDir, flusher);
 
 		if (rc != 0) {
 			throw new RuntimeException("Failed to build standalone server");
@@ -59,7 +57,7 @@ public class StandaloneServer {
 	 * @throws Exception
 	 */
 	public void start() throws Exception {
-		start(new HashMap<String,String>());
+		start(new HashMap<String,Object>());
 	}
 	
 	/**
@@ -67,11 +65,11 @@ public class StandaloneServer {
 	 * 
 	 * @param config
 	 */
-	public void start(Map<String,String> config) throws Exception {
-		
+	public void start(Map<String, Object> config) throws Exception {
+			   
 		// Build the command
 		String command = serverDir + "/bin/variant start";
-		for (Map.Entry<String,String> entry: config.entrySet()) {
+		for (Map.Entry<String,Object> entry: config.entrySet()) {
 			command += " -D" + entry.getKey() + "=" + entry.getValue();
 		}
 		
@@ -81,14 +79,14 @@ public class StandaloneServer {
 		final AtomicBoolean instantiated = new AtomicBoolean(false);
 
 		server  = NativeProcess.start(
-				command,
 				line -> {
 					System.out.println("<OUT> " + line);
 					if (line.matches(".*Variant AIM Server .* started on .*")) instantiated.set(true);
 				}, 
 				line -> {
 					System.out.println("<ERR> " + line); 					
-				});
+				},
+	         command.split("\\s+"));
 
 		
 		// Wait for the server to come up. There's a race condition between this thread and the thread
@@ -102,7 +100,7 @@ public class StandaloneServer {
 				server.isAlive() && 
 				!(listens && instantiated.get())) {
 			
-			if (NativeProcess.execSilent("curl http://localhost:5377") == 0) listens = true;
+			if (NativeProcess.execSilent("curl", "http://localhost:5377") == 0) listens = true;
 			//System.out.println("*** " + listens + ", " + instantiated.get());			
 			Thread.sleep(200);
 		}
@@ -118,8 +116,7 @@ public class StandaloneServer {
 	 * Stop the server.
 	 */
 	public void stop() throws Exception {
-		String command = serverDir + "/bin/variant stop";
-		LOG.info("Stopping standalone server [" + command + "]");
+		String[] command = {serverDir + "/bin/variant", "stop"};
 		if (NativeProcess.exec(command) != 0) 
 			throw new RuntimeException("Unable to stop server");
 	}
@@ -135,7 +132,5 @@ public class StandaloneServer {
 	   // Destroy native server process.
 	   server.destroy();
 	   
-	   // Delete server directory
-	   // IoUtils.delete(serverDir);  Errors out, but not critical to remove the dir.
 	}
 }

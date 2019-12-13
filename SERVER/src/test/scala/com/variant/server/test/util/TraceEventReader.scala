@@ -7,9 +7,9 @@ import java.util.HashMap
 import java.util.Map
 import scala.collection.JavaConverters._
 import org.junit.runners.model.Statement
-import com.variant.server.impl.TraceEventWriter
 import com.variant.core.util.JdbcAdapter
 import java.time.Instant
+import com.variant.server.api.TraceEventFlusher
 
 /**
  * Read events written by a JDBC event flusher.
@@ -19,15 +19,15 @@ import java.time.Instant
  *
  */
 object TraceEventReader {
-   def apply(eventWriter: TraceEventWriter) = new TraceEventReader(eventWriter)
+   def apply(flusher: TraceEventFlusher) = new TraceEventReader(flusher)
 }
 
 /**
  *
  */
-class TraceEventReader(eventWriter: TraceEventWriter) {
+class TraceEventReader(flusher: TraceEventFlusher) {
 
-   val jdbcConnection = new JdbcService(eventWriter).getConnection
+   val jdbcConnection = new JdbcService(flusher).getConnection
 
    /**
     * Read events as a sequences sorted in ascendint order of timestamp.

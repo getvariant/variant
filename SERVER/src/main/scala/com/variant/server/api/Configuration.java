@@ -66,7 +66,25 @@ public interface Configuration {
 	 */
 	int eventWriterMaxDelay();
 	
-	/**
+   /**
+    * Trace event flush size. This limits the number of FlushableTraceEvent objects in the collections passed to
+    * {@link TraceEventFlusher#flush(FlushableTraceEvent[], int)} method.
+    * 
+    * @since 0.10
+    */
+   int eventWriterFlushSize();
+
+   /**
+    * Trace event writer's maximum degree of flushing parallelism. Variant server will execute up to N
+    * concurrent calls to {@link TraceEventFlusher#flush(FlushableTraceEvent[], int)}, where N is computed
+    * as the product of this value and the number of hyper-threads in the underlying hardware, as reported 
+    * by {@code Runtime.getRuntime.availableProcessors}, rounded up to the nearest integer.    
+    * 
+    * @since 0.10
+    */
+   float eventWriterFlushParallelism();
+
+   /**
 	 * HTTP port. Provided by the <code>http.port</code> configuration property.
 	 * 
 	 * @since 0.10
