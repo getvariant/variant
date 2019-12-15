@@ -1,19 +1,20 @@
-package com.variant.server.test
 /*
+ * package com.variant.server.test
+
 import java.io.PrintWriter
 
 import scala.sys.process._
 import akka.http.scaladsl.model.StatusCodes._
 
-import com.variant.core.util.StringUtils
-import com.variant.core.error.ServerError._
+import com.variant.share.util.StringUtils
+import com.variant.share.error.ServerError._
 
 import com.variant.server.boot.VariantServer
 import com.variant.server.boot.ServerMessageLocal._
 import com.variant.server.test.spec.StandaloneServerSpec
 import com.variant.server.test.util.ServerLogTailer
 import com.variant.server.test.util.ServerLogTailer.Level._
-import com.variant.core.httpc.HttpOperation
+import com.variant.share.httpc.HttpOperation
 import com.variant.server.boot.ServerMessageLocal
 
 /**

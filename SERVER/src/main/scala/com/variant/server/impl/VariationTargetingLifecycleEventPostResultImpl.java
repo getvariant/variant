@@ -1,10 +1,10 @@
 package com.variant.server.impl;
 
-import static com.variant.core.error.ServerError.*;
+import static com.variant.share.error.ServerError.*;
 
-import com.variant.core.schema.State;
-import com.variant.core.schema.Variation;
-import com.variant.core.schema.Variation.Experience;
+import com.variant.share.schema.State;
+import com.variant.share.schema.Variation;
+import com.variant.share.schema.Variation.Experience;
 import com.variant.server.api.lifecycle.VariationTargetingLifecycleEvent;
 import com.variant.server.boot.ServerExceptionRemote$;
 

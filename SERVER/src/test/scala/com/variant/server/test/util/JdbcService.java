@@ -16,8 +16,8 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.variant.core.util.IoUtils;
-import com.variant.core.util.StringUtils;
+import com.variant.share.util.IoUtils;
+import com.variant.share.util.StringUtils;
 import com.variant.server.api.TraceEventFlusher;
 
 
@@ -151,7 +151,7 @@ public class JdbcService {
 			
 			try {
 				jdbcStmt.execute(stmt);
-				LOG.debug(tokens[0] + " " + tokens[1] + " " + tokens[2] + "... OK.");
+				LOG.info(tokens[0] + " " + tokens[1] + " " + tokens[2] + "... OK.");
 			}
 			catch (SQLException e) {
 				parseSQLException(e, stmt);
@@ -173,7 +173,7 @@ public class JdbcService {
 			try {
 				jdbcStmt.execute(stmt);
 				String[] tokens = stmt.split(" ");
-				LOG.debug(tokens[0] + " " + tokens[1] + " " + tokens[2] + "... OK.");
+				LOG.info(tokens[0] + " " + tokens[1] + " " + tokens[2] + "... OK.");
 			}
 			catch (SQLException e) {
 				parseSQLException(e, stmt);

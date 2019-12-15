@@ -2,18 +2,18 @@ package com.variant.server.impl
 
 import scala.collection.JavaConverters._
 import java.util.Optional
-import com.variant.core.schema.State
-import com.variant.core.schema.impl.StateImpl
-import com.variant.core.schema.impl.StateVariantImpl
-import com.variant.core.schema.impl.VariationImpl
-import com.variant.core.session.CoreSession
-import com.variant.core.session.CoreStateRequest
-import com.variant.core.session.SessionScopedTargetingStabile
+import com.variant.share.schema.State
+import com.variant.share.schema.impl.StateImpl
+import com.variant.share.schema.impl.StateVariantImpl
+import com.variant.share.schema.impl.VariationImpl
+import com.variant.share.session.CoreSession
+import com.variant.share.session.CoreStateRequest
+import com.variant.share.session.SessionScopedTargetingStabile
 import com.variant.server.api.Session
 import com.variant.server.api.StateRequest
 import com.variant.server.schema.SchemaGen
 import com.variant.server.util.JavaImplicits
-import com.variant.core.schema.StateVariant
+import com.variant.share.schema.StateVariant
 import com.variant.server.api.TraceEvent
 import com.variant.server.boot.VariantServer
 import com.typesafe.scalalogging.LazyLogging

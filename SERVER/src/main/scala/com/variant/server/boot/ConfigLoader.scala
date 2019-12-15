@@ -9,8 +9,8 @@ import com.typesafe.config.Config
 import com.typesafe.config.ConfigFactory
 import com.typesafe.scalalogging.LazyLogging
 
-import com.variant.core.util.IoUtils
-import com.variant.core.util.Tuples.Pair
+import com.variant.share.util.IoUtils
+import com.variant.share.util.Tuples.Pair
 
 /**
  * Variant Configuration. A Typesafe Config based implementation.

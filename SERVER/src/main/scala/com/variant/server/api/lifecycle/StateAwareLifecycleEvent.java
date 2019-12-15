@@ -1,6 +1,6 @@
 package com.variant.server.api.lifecycle;
 
-import com.variant.core.schema.State;
+import com.variant.share.schema.State;
 
 /**
  * Super-type of all lifecycle event types, whose runtime context includes a particular state.

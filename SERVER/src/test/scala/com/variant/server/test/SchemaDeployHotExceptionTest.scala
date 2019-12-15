@@ -4,8 +4,8 @@ import java.io.File
 
 import scala.sys.process._
 
-import com.variant.core.schema.parser.error.SemanticError
-import com.variant.core.schema.parser.error.SyntaxError
+import com.variant.share.schema.parser.error.SemanticError
+import com.variant.share.schema.parser.error.SyntaxError
 import com.variant.server.boot.ServerMessageLocal._
 import com.variant.server.test.spec.EmbeddedServerSpec
 import com.variant.server.test.spec.TempSchemataDir

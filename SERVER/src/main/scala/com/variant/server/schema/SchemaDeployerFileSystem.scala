@@ -7,7 +7,7 @@ import scala.io.Source
 
 import com.typesafe.scalalogging.LazyLogging
 
-import com.variant.core.error.UserError.Severity
+import com.variant.share.error.UserError.Severity
 import com.variant.server.boot.ServerMessageLocal
 import com.variant.server.boot.ServerExceptionLocal
 import com.variant.server.boot.VariantServer

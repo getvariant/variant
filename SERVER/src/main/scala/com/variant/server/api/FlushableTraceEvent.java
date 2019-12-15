@@ -4,7 +4,7 @@ import java.time.Instant;
 import java.util.Map;
 import java.util.Set;
 
-import com.variant.core.schema.Variation.Experience;
+import com.variant.share.schema.Variation.Experience;
 
 /**
  * An enriched Variant trace event that is passed to a trace event flusher. 

@@ -3,9 +3,9 @@ package com.variant.server.schema
 import scala.collection.JavaConverters.asScalaBufferConverter
 import scala.collection.mutable
 
-import com.variant.core.error.UserError.Severity
-import com.variant.core.schema.parser.ParserMessage
-import com.variant.core.schema.parser.ParserResponse
+import com.variant.share.error.UserError.Severity
+import com.variant.share.schema.parser.ParserMessage
+import com.variant.share.schema.parser.ParserResponse
 import com.typesafe.scalalogging.LazyLogging
 import com.variant.server.boot.VariantServer
 

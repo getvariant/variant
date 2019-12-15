@@ -1,6 +1,6 @@
 package com.variant.server.api.lifecycle;
 
-import com.variant.core.schema.Variation.Experience;
+import com.variant.share.schema.Variation.Experience;
 
 /**
  * <p>Lifecycle event raised when Variant is about to target a user session for a variation, after the 

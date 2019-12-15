@@ -2,8 +2,8 @@ package com.variant.server.test
 
 import scala.sys.process._
 
-import com.variant.core.error.UserError.Severity
-import com.variant.core.schema.parser.error.SyntaxError
+import com.variant.share.error.UserError.Severity
+import com.variant.share.schema.parser.error.SyntaxError
 import com.variant.server.boot.ServerMessageLocal
 import com.variant.server.boot.VariantServer
 import com.variant.server.test.util.ServerLogTailer

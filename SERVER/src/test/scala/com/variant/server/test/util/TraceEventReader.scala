@@ -7,7 +7,7 @@ import java.util.HashMap
 import java.util.Map
 import scala.collection.JavaConverters._
 import org.junit.runners.model.Statement
-import com.variant.core.util.JdbcAdapter
+import com.variant.share.util.JdbcAdapter
 import java.time.Instant
 import com.variant.server.api.TraceEventFlusher
 

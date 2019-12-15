@@ -1,8 +1,9 @@
 package com.variant.server.routes
 
 import scala.collection.JavaConverters._
-import com.variant.core.error.ServerError
-import com.variant.core.session.SessionScopedTargetingStabile
+import com.variant.share.error.ServerError
+import com.variant.share.session.SessionScopedTargetingStabile
+import com.variant.share.util.StringUtils
 import com.variant.server.boot.VariantServer
 import scala.io.Source
 import com.typesafe.scalalogging.LazyLogging
@@ -17,7 +18,6 @@ import akka.http.scaladsl.model.HttpResponse
 import akka.http.scaladsl.model.StatusCodes
 import akka.http.scaladsl.model.ContentTypes
 import com.variant.server.impl.SessionImpl
-import com.variant.core.util.StringUtils
 import java.util.Random
 import scala.util.Try
 

@@ -1,6 +1,6 @@
 package com.variant.server.test.api
 
-import com.variant.core.error.UserError.Severity._
+import com.variant.share.error.UserError.Severity._
 import com.variant.server.boot.ServerMessageLocal._
 import com.variant.server.schema.SchemaDeployer
 import com.variant.server.test.spec.EmbeddedServerSpec

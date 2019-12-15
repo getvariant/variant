@@ -15,8 +15,8 @@ import java.util.Set;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
-import com.variant.core.schema.Variation.Experience;
-import com.variant.core.util.StringUtils;
+import com.variant.share.schema.Variation.Experience;
+import com.variant.share.util.StringUtils;
 import com.variant.server.api.FlushableTraceEvent;
 import com.variant.server.api.StateRequest;
 import com.variant.server.api.TraceEvent;

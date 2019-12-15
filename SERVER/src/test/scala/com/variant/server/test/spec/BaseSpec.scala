@@ -6,10 +6,10 @@ import org.scalatest.MustMatchers
 import org.scalatest.WordSpec
 import org.scalatest.concurrent.ScalaFutures
 
-import com.variant.core.util.StringUtils
-import com.variant.core.session.SessionScopedTargetingStabile
+import com.variant.share.util.StringUtils
+import com.variant.share.session.SessionScopedTargetingStabile
 import com.variant.server.impl.SessionImpl
-import com.variant.core.schema.Schema
+import com.variant.share.schema.Schema
 import com.variant.server.api.Session
 
 /**

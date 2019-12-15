@@ -14,7 +14,7 @@ import org.scalatest.MustMatchers
 import com.typesafe.scalalogging.LazyLogging
 import com.variant.server.test.util.ServerLogTailer
 import com.variant.server.boot.ServerMessageLocal._
-import com.variant.core.httpc.HttpRequest
+import com.variant.share.httpc.HttpRequest
 import com.variant.server.test.util.ServerLogTailer.Level._
 
 /**
@@ -66,7 +66,7 @@ class StandaloneServer(serverDir: String, flusher: String) extends LazyLogging  
    if (cc != 0)
       throw new RuntimeException(s"standaloneServer.sh crashed with cc [${cc}]")
 
-   println(s"Built server in ${serverDir}")
+   logger.info(s"Built server in ${serverDir}")
 
    private[this] var svrProc: Option[Process] = None
 
@@ -110,7 +110,16 @@ class StandaloneServer(serverDir: String, flusher: String) extends LazyLogging  
          paramString += " -D" + t._1 + "=" + t._2
          if (t._1 == "variant.http.port") port = t._2
       }
-      svrProc = Some((serverDir + "/bin/variant start " + paramString).run(svrLog))
+      
+      // Kill server in case one's left behind attached to the port. 
+      val killCommand = serverDir + "/bin/variant kill" + paramString
+      logger.info(s"Killing server: '$killCommand'")
+      killCommand.!
+      
+      val startCommand = serverDir + "/bin/variant start" + paramString
+      logger.info(s"Starting server: '$startCommand'")
+      
+      svrProc = Some(startCommand.run(svrLog))
 
       // Block until we read the startup message.
       var started = false

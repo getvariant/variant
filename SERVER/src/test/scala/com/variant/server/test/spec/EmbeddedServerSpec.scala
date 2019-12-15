@@ -2,7 +2,7 @@ package com.variant.server.test.spec
 
 import scala.collection.mutable
 import akka.http.scaladsl.testkit.ScalatestRouteTest
-import com.variant.core.error.UserError.Severity
+import com.variant.share.error.UserError.Severity
 import com.variant.server.routes.Router
 import com.variant.server.boot.VariantServerImpl
 import com.variant.server.boot.VariantServer
@@ -11,18 +11,20 @@ import com.variant.server.impl.ConfigurationImpl
 import akka.http.scaladsl.server.Route
 import akka.http.scaladsl.model.HttpMethods
 import akka.http.scaladsl.model.HttpMethod
-import com.variant.core.session.CoreSession
+import com.variant.share.session.CoreSession
 import akka.http.scaladsl.model.HttpResponse
-import com.variant.core.error.ServerError
+import com.variant.share.error.ServerError
 import akka.http.scaladsl.model.StatusCodes._
 import play.api.libs.json._
 import com.variant.server.schema.ServerSchemaParser
 import org.scalatest.exceptions.TestFailedException
+import org.scalatest.BeforeAndAfterAll
+import com.typesafe.scalalogging.LazyLogging
 
 /**
  * Embedded Server
  */
-trait EmbeddedServerSpec extends BaseSpec with ScalatestRouteTest {
+trait EmbeddedServerSpec extends BaseSpec with ScalatestRouteTest with LazyLogging {
 
    // Individual tests can mutate serverBuilder to build a custom server.
    protected lazy val serverBuilder: Unit => VariantServer.Builder = { _ =>
@@ -46,6 +48,12 @@ trait EmbeddedServerSpec extends BaseSpec with ScalatestRouteTest {
          f(newBuilder)
          newBuilder.build()
       }
+   }
+   
+   override def afterAll() = {
+      _server.shutdown()
+      logger.info("Shutdown embedded server")
+      super.afterAll()
    }
 
    // Seal the router in order not to have rejections.

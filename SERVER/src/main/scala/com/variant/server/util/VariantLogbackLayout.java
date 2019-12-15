@@ -3,7 +3,7 @@ package com.variant.server.util;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import com.variant.core.Constants;
+import com.variant.share.Constants;
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.spi.ILoggingEvent;

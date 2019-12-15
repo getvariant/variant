@@ -1,17 +1,17 @@
 package com.variant.server.test.routes
 
 import scala.util.Random
-import com.variant.core.Constants._
+import com.variant.share.Constants._
 import com.variant.server.test.util.ParameterizedString
 import com.variant.server.test.spec.EmbeddedServerSpec
-import com.variant.core.schema.parser.SchemaParser
+import com.variant.share.schema.parser.SchemaParser
 import com.variant.server.schema.ServerSchemaParser
 import akka.http.scaladsl.model.HttpRequest
 import akka.http.scaladsl.model.StatusCodes._
 import akka.http.scaladsl.model.ContentTypes
 import akka.http.scaladsl.model.HttpMethods._
 import play.api.libs.json._
-import com.variant.core.error.ServerError
+import com.variant.share.error.ServerError
 import akka.http.scaladsl.model.HttpMethods
 
 /*

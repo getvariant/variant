@@ -4,7 +4,7 @@ import java.time.Duration
 
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.model.StatusCodes
-import com.variant.core.util.TimeUtils
+import com.variant.share.util.TimeUtils
 import com.variant.server.boot.VariantServer
 import akka.http.scaladsl.model.HttpEntity
 import akka.http.scaladsl.model.HttpResponse

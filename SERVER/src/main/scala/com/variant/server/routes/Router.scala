@@ -12,7 +12,7 @@ import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.model.headers.Server
 import com.variant.server.boot.ServerExceptionRemote
 import akka.http.scaladsl.model.HttpResponse
-import com.variant.core.error.ServerError
+import com.variant.share.error.ServerError
 import akka.http.scaladsl.server.ExceptionHandler
 import akka.http.scaladsl.server.MethodRejection
 import akka.http.scaladsl.model.headers.ProductVersion

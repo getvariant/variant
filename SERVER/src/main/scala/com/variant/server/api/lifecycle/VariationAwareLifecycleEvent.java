@@ -1,6 +1,6 @@
 package com.variant.server.api.lifecycle;
 
-import com.variant.core.schema.Variation;
+import com.variant.share.schema.Variation;
 
 /**
  * Super-type of all lifecycle event types, whose runtime context includes a particular variation.

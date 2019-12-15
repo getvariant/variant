@@ -4,9 +4,9 @@ import java.util.Optional
 
 import scala.collection.JavaConverters.asScalaSetConverter
 
-import com.variant.core.Constants
-import com.variant.core.error.ServerError
-import com.variant.core.session.CoreStateRequest
+import com.variant.share.Constants
+import com.variant.share.error.ServerError
+import com.variant.share.session.CoreStateRequest
 import com.variant.server.api.StateRequest.Status.Committed
 import com.variant.server.api.StateRequest.Status.Failed
 import com.variant.server.api.StateRequest.Status.InProgress

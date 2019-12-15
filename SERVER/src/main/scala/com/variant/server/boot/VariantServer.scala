@@ -11,7 +11,7 @@ import scala.util.Failure
 import scala.util.Success
 import scala.util.Try
 import com.typesafe.scalalogging.LazyLogging
-import com.variant.core.util.TimeUtils
+import com.variant.share.util.TimeUtils
 import com.variant.server.api.Configuration
 import com.variant.server.api.ServerException
 import com.variant.server.impl.ConfigurationImpl
@@ -65,7 +65,7 @@ trait VariantServer {
 object VariantServer {
 
    // TODO Need to get this from sbt
-   val productVersion = ("Variant AIM Server", "0.10.2")
+   val productVersion = ("Variant AIM Server", "0.10.3")
 
    class Builder {
 
@@ -219,7 +219,7 @@ class VariantServerImpl(builder: VariantServer.Builder)(override implicit val ac
    if (isUp) {
       logger.info(ServerMessageLocal.SERVER_BOOT_OK.asMessage(
          s"${productVersion._1} release ${productVersion._2}",
-         config.httpPort.toString,
+         if (builder.isHeadless) "headless" else config.httpPort.toString,
          TimeUtils.formatDuration(uptime)))
    } else {
       logger.error(ServerMessageLocal.SERVER_BOOT_FAILED.asMessage(s"${productVersion._1} release ${productVersion._2}"))
@@ -259,7 +259,7 @@ class VariantServerImpl(builder: VariantServer.Builder)(override implicit val ac
             logger.debug("Actor system shutdown")
             logger.info(ServerMessageLocal.SERVER_SHUTDOWN.asMessage(
                s"${productVersion._1} release ${productVersion._2}",
-               config.httpPort.toString,
+               if (builder.isHeadless) "headless" else config.httpPort.toString,
                TimeUtils.formatDuration(java.time.Duration.ofMillis(System.currentTimeMillis - start)),
                TimeUtils.formatDuration(uptime)))
    

@@ -1,6 +1,6 @@
 package com.variant.server.test
 
-import com.variant.core.error.ServerError
+import com.variant.share.error.ServerError
 import com.variant.server.boot.ServerExceptionRemote
 import com.variant.server.impl.SessionImpl
 import com.variant.server.schema.SchemaDeployer

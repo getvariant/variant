@@ -2,7 +2,7 @@ package com.variant.server.test.api
 
 import org.scalatest.TestData
 
-import com.variant.core.error.UserError.Severity.ERROR
+import com.variant.share.error.UserError.Severity.ERROR
 import com.variant.extapi.std.flush.TraceEventFlusherNull
 import com.variant.server.boot.ServerMessageLocal
 import com.variant.server.boot.VariantServer

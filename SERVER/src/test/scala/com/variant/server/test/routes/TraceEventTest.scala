@@ -1,6 +1,6 @@
 package com.variant.server.test.routes
 
-import com.variant.core.error.ServerError
+import com.variant.share.error.ServerError
 import com.variant.server.api.StateRequest.Status._
 import com.variant.server.test.spec.EmbeddedServerSpec
 import com.variant.server.test.util.ParameterizedString
@@ -12,7 +12,7 @@ import akka.http.scaladsl.model.StatusCodes.MethodNotAllowed
 import java.util.Optional
 import play.api.libs.json.Json
 import com.variant.server.test.util.TraceEventReader
-import com.variant.core.Constants
+import com.variant.share.Constants
 import com.variant.server.test.spec.TraceEventsSpec
 
 object TraceEventTest {
@@ -82,7 +82,7 @@ class TraceEventTest extends EmbeddedServerSpec with TraceEventsSpec {
       "return  400 and error on POST with invalid JSON" in {
 
          HttpRequest(method = HttpMethods.POST, uri = s"/event/monstrosity/${sid}", entity = "bad json") ~> router ~> check {
-            ServerErrorResponse(response).mustBe(ServerError.JsonParseError, "Unrecognized token 'bad': was expecting ('true', 'false' or 'null')\n at [Source: (String)\"bad json\"; line: 1, column: 4]")
+            ServerErrorResponse(response).mustBe(ServerError.JsonParseError, "Unrecognized token 'bad': was expecting (JSON String, Number, Array, Object or token 'null', 'true' or 'false')\n at [Source: (String)\"bad json\"; line: 1, column: 4]")
          }
 
       }

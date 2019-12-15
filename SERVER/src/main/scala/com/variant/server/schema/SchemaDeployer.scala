@@ -1,7 +1,7 @@
 package com.variant.server.schema
 
 import scala.collection.mutable
-import com.variant.core.schema.parser.ParserResponse
+import com.variant.share.schema.parser.ParserResponse
 import com.variant.server.boot.VariantServer
 
 trait SchemaDeployer {

@@ -3,7 +3,7 @@ package com.variant.server.routes
 import scala.collection.JavaConverters.mapAsJavaMapConverter
 
 import com.typesafe.scalalogging.LazyLogging
-import com.variant.core.error.ServerError
+import com.variant.share.error.ServerError
 import com.variant.server.boot.ServerExceptionRemote
 import com.variant.server.boot.VariantServer
 import com.variant.server.impl.SessionImpl

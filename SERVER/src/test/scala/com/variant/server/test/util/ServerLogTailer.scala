@@ -1,11 +1,11 @@
 package com.variant.server.test.util
 
 import scala.collection.JavaConverters._
-import com.variant.core.util.LogTailer
-import com.variant.core.util.LogTailer.Entry
+import com.variant.share.util.LogTailer
+import com.variant.share.util.LogTailer.Entry
 import java.io.File
 import java.nio.charset.Charset
-import com.variant.core.util.apache.ReversedLinesFileReader
+import com.variant.share.util.apache.ReversedLinesFileReader
 import com.typesafe.scalalogging.LazyLogging
 
 /**

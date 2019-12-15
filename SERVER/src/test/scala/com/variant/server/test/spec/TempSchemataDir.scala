@@ -8,6 +8,7 @@ import scala.sys.process._
 import org.scalatest.BeforeAndAfterAll
 import akka.http.scaladsl.testkit.ScalatestRouteTest
 import com.variant.server.boot.VariantServer
+import com.typesafe.scalalogging.LazyLogging
 
 /**
  * Tests which wish to operate on a temporary schemata directory
@@ -25,7 +26,7 @@ object TempSchemataDir {
    private val schemataDirDefault = "/tmp/schemata"
 }
 
-trait TempSchemataDir extends BaseSpec with BeforeAndAfterAll { self: EmbeddedServerSpec =>
+trait TempSchemataDir extends BeforeAndAfterAll with LazyLogging { self: EmbeddedServerSpec =>
 
    import TempSchemataDir._
 
@@ -70,6 +71,7 @@ trait TempSchemataDir extends BaseSpec with BeforeAndAfterAll { self: EmbeddedSe
     */
    override def afterAll() {
       s"rm -rf ${schemataDir}".!!
+      logger.info(s"Removed temp schemata directory $schemataDir")
       super.afterAll();
    }
 }

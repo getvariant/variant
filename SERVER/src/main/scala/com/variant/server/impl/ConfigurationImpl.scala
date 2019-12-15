@@ -7,12 +7,11 @@ import com.typesafe.config.ConfigFactory
 import com.typesafe.config.ConfigRenderOptions
 import com.typesafe.config.ConfigValue
 import com.typesafe.config.ConfigValueType
-import com.variant.core.util.immutable.ImmutableMap
 import com.variant.server.api.Configuration
 import com.variant.server.boot.ServerMessageLocal._
 import com.variant.server.boot.ServerExceptionLocal
 import com.variant.server.util.JavaImplicits._
-import com.variant.core.util.ReflectUtils
+import com.variant.share.util.ReflectUtils
 import java.util.Map.Entry
 
 /**

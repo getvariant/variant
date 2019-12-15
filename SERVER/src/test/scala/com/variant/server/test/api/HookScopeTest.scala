@@ -1,16 +1,16 @@
 package com.variant.server.test.api;
 
-import com.variant.core.schema.State
 import scala.collection.mutable.ListBuffer
 import scala.collection.JavaConversions._
-import com.variant.core.error.UserError.Severity._
-import com.variant.core.error.ServerError._
-import com.variant.core.schema.Variation
+import com.variant.share.schema.State
+import com.variant.share.error.UserError.Severity._
+import com.variant.share.error.ServerError._
+import com.variant.share.schema.Variation
+import com.variant.share.schema.parser.ParserMessageImpl
 import com.variant.server.api.StateRequest.Status._
 import org.scalatest.Assertions._
 import com.variant.server.boot.ServerMessageLocal._
 import com.variant.server.api.ServerException
-import com.variant.core.schema.parser.ParserMessageImpl
 import com.variant.server.impl.SessionImpl
 import com.variant.server.test.hooks.TestTargetingHookSimple
 import com.variant.server.test.hooks.TestQualificationHookSimple

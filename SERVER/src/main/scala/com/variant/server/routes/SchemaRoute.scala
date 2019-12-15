@@ -1,6 +1,6 @@
 package com.variant.server.routes
 
-import com.variant.core.error.ServerError
+import com.variant.share.error.ServerError
 import com.variant.server.boot.VariantServer
 import scala.io.Source
 import com.typesafe.scalalogging.LazyLogging

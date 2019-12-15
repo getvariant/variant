@@ -6,7 +6,7 @@ import java.time.Instant
 import scala.concurrent.blocking
 
 import com.typesafe.scalalogging.LazyLogging
-import com.variant.core.util.TimeUtils
+import com.variant.share.util.TimeUtils
 import com.variant.server.api.TraceEventFlusher
 import com.variant.server.boot.ServerExceptionInternal
 

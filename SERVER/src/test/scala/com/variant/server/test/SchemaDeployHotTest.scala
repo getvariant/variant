@@ -6,8 +6,8 @@ import java.time.Instant
 
 import scala.sys.process._
 
-import com.variant.core.schema.parser.error.SemanticError
-import com.variant.core.schema.parser.error.SyntaxError
+import com.variant.share.schema.parser.error.SemanticError
+import com.variant.share.schema.parser.error.SyntaxError
 import com.variant.server.api.StateRequest.Status._
 import com.variant.server.boot.ServerMessageLocal._
 import com.variant.server.schema.SchemaGen.State._
@@ -18,7 +18,7 @@ import com.variant.server.test.routes.SessionTest
 import akka.http.scaladsl.model.HttpRequest
 import akka.http.scaladsl.model.HttpMethods
 import play.api.libs.json.Json
-import com.variant.core.error.ServerError
+import com.variant.share.error.ServerError
 
 /**
  * Test various schema deployment scenarios

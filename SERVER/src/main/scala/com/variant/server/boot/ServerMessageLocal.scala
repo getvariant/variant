@@ -1,7 +1,7 @@
 package com.variant.server.boot;
 
-import com.variant.core.error.UserError;
-import com.variant.core.error.UserError.Severity;
+import com.variant.share.error.UserError;
+import com.variant.share.error.UserError.Severity;
 
 /**
  * Local Server messages, i.e. the ones emitted to the server log and not sent back to client.

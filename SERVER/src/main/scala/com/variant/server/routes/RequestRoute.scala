@@ -2,9 +2,10 @@ package com.variant.server.routes
 
 import scala.collection.JavaConverters.mapAsJavaMapConverter
 
-import com.variant.core.Constants._
-import com.variant.core.error.ServerError._
-import com.variant.core.session.SessionScopedTargetingStabile
+import com.variant.share.Constants._
+import com.variant.share.error.ServerError._
+import com.variant.share.session.SessionScopedTargetingStabile
+import com.variant.share.error.ServerError
 import com.variant.server.boot.ServerExceptionInternal
 import com.variant.server.boot.ServerExceptionRemote
 import com.variant.server.boot.VariantServer
@@ -20,7 +21,6 @@ import com.variant.server.impl.TraceEventImpl
 import com.typesafe.scalalogging.LazyLogging
 import akka.http.scaladsl.model.HttpResponse
 import akka.http.scaladsl.server.RequestContext
-import com.variant.core.error.ServerError
 
 object RequestRoute extends VariantRoute with LazyLogging {
 

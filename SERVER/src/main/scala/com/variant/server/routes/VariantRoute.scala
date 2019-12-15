@@ -4,7 +4,7 @@ import akka.http.scaladsl.server.RequestContext
 import play.api.libs.json._
 import akka.http.scaladsl.model.ContentTypes
 import com.variant.server.boot.ServerExceptionRemote
-import com.variant.core.error.ServerError
+import com.variant.share.error.ServerError
 import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
 import akka.http.scaladsl.unmarshalling.Unmarshal

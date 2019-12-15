@@ -5,9 +5,9 @@ import java.util.Optional;
 import java.util.Random;
 
 import com.typesafe.config.Config;
-import com.variant.core.schema.State;
-import com.variant.core.schema.Variation;
-import com.variant.core.schema.Variation.Experience;
+import com.variant.share.schema.State;
+import com.variant.share.schema.Variation;
+import com.variant.share.schema.Variation.Experience;
 import com.variant.server.api.Session;
 import com.variant.server.api.lifecycle.LifecycleEvent;
 import com.variant.server.api.lifecycle.LifecycleHook;

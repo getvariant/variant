@@ -7,7 +7,7 @@ import org.slf4j.LoggerFactory;
 
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
-import com.variant.core.util.ReflectUtils;
+import com.variant.share.util.ReflectUtils;
 
 /**
  * Custom class loader to look in the ext/ directory in addition to the managed dependencies in lib/

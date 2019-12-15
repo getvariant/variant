@@ -4,10 +4,10 @@ import java.util.ArrayList
 
 import scala.collection.JavaConverters._
 
-import com.variant.core.schema.State
-import com.variant.core.schema.StateVariant
-import com.variant.core.schema.Variation
-import com.variant.core.schema.Variation.Experience
+import com.variant.share.schema.State
+import com.variant.share.schema.StateVariant
+import com.variant.share.schema.Variation
+import com.variant.share.schema.Variation.Experience
 import com.variant.server.schema.SchemaGen
 import scala.collection.mutable.ArrayBuffer
 

@@ -50,11 +50,11 @@ trait TraceEventsSpec extends LazyLogging with BeforeAndAfterAll {
                      logger.info("Recreated PostgreSQL schema")
 
                   case JdbcService.Vendor.H2 =>
-                     jdbc.createSchema()
+                     jdbc.recreateSchema()
                      logger.info("Recreated H2 schema")
 
                   case JdbcService.Vendor.MYSQL =>
-                     jdbc.createSchema()
+                     jdbc.recreateSchema()
                      logger.info("Recreated MySQL schema")
 
                }
@@ -80,10 +80,10 @@ trait TraceEventsSpec extends LazyLogging with BeforeAndAfterAll {
     */
    override def beforeAll() {
       synchronized { // once per JVM
-         if (!sqlSchemaCreated) {
+         //if (!sqlSchemaCreated) {
             recreateDatabase()
             sqlSchemaCreated = true
-         }
+         //}
       }
    }
 

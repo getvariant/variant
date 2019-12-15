@@ -11,11 +11,10 @@ maintainer := "igor@getvariant.com"
 organization    := "com.variant"
 scalaVersion    := "2.12.7"
 name            := "Variant-Server"
-version         := "0.10.2"
+version         := "0.10.3"
 
 val akkaHttpVersion = "10.1.8"
 val akkaVersion     = "2.5.25"
-val coreVersion     = "0.10.2"
 
 // Add local Maven repo for com.variant.core artifacts built with Maven.
 resolvers += Resolver.mavenLocal
@@ -40,8 +39,8 @@ libraryDependencies ++= Seq(
    // H2 In mem DB in test 
   "com.h2database"     % "h2"                   % "1.4.191"       % Test,
   
-  // Variant Core
-  "com.variant"            % "variant-core"        % coreVersion
+  // Variant Shared Lib
+  "com.variant"            % "variant-share"        % "0.10.3"
   
 )
      

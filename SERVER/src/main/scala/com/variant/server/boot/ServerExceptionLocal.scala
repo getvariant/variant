@@ -1,7 +1,7 @@
 package com.variant.server.boot;
 
-import com.variant.core.error.UserError;
-import com.variant.core.error.UserError.Severity;
+import com.variant.share.error.UserError;
+import com.variant.share.error.UserError.Severity;
 import com.variant.server.api.ServerException;
 
 /**

@@ -6,7 +6,7 @@ import SessionTest.emptyTargetingTrackerBody
 import akka.http.scaladsl.model.HttpMethods
 import akka.http.scaladsl.model.HttpRequest
 import play.api.libs.json.Json
-import com.variant.core.error.ServerError
+import com.variant.share.error.ServerError
 import com.variant.server.api.StateRequest.Status._
 
 class RequestExceptionTest extends EmbeddedServerSpec {

@@ -3,7 +3,7 @@ package com.variant.server.test.routes
 import java.time.Instant
 import java.time.format.DateTimeFormatter
 
-import com.variant.core.error.ServerError
+import com.variant.share.error.ServerError
 import com.variant.server.test.spec.EmbeddedServerSpec
 import com.variant.server.test.util.ParameterizedString
 

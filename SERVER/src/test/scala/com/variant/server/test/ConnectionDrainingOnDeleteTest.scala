@@ -3,7 +3,7 @@ package com.variant.server.test
 import scala.util.Random
 import scala.sys.process._
 
-import com.variant.core.error.ServerError
+import com.variant.share.error.ServerError
 import com.variant.server.schema.SchemaGen.State.Dead
 import com.variant.server.schema.SchemaGen.State.Live
 import com.variant.server.test.spec.Async

@@ -3,7 +3,7 @@ package com.variant.server.boot
 import scala.collection.concurrent.TrieMap
 import com.variant.server.impl.SessionImpl
 import com.variant.server.api.ServerException
-import com.variant.core.error.ServerError
+import com.variant.share.error.ServerError
 import com.typesafe.scalalogging.LazyLogging
 
 /**

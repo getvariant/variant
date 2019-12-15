@@ -3,7 +3,7 @@ package com.variant.server.test
 import java.nio.file.Files
 import java.nio.file.Paths
 
-import com.variant.core.error.ServerError
+import com.variant.share.error.ServerError
 import com.variant.server.boot.ServerExceptionRemote
 import com.variant.server.impl.SessionImpl
 import com.variant.server.test.hooks.TestTargetingHook

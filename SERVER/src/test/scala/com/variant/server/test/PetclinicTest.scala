@@ -1,5 +1,6 @@
-package com.variant.server.test.controller
 /*
+ * package com.variant.server.test.controller
+
 import java.util.Optional
 
 import scala.collection.JavaConverters._
@@ -9,9 +10,9 @@ import play.api.test._
 import play.api.test.Helpers._
 
 import com.variant.server.api.StateRequest.Status._
-import com.variant.core.error.ServerError._
-import com.variant.core.session.CoreSession
-import com.variant.core.session.CoreStateRequest
+import com.variant.share.error.ServerError._
+import com.variant.share.session.CoreSession
+import com.variant.share.session.CoreStateRequest
 import com.variant.server.impl.SessionImpl
 import com.variant.server.test.spec.EmbeddedServerSpec
 import com.variant.server.test.util.EventExperienceFromDatabase
@@ -23,7 +24,7 @@ import play.api.test.Helpers.GET
 import play.api.test.Helpers.POST
 import play.api.test.Helpers.PUT
 import play.api.test.Helpers.route
-import com.variant.core.Constants
+import com.variant.share.Constants
 import com.variant.server.api.TraceEvent
 import com.variant.server.impl.TraceEventImpl
 */

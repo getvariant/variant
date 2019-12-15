@@ -9,7 +9,7 @@ import com.variant.server.test.hooks.TestQualificationHookSimple
 import com.variant.server.schema.SchemaDeployer
 import com.variant.server.test.spec.EmbeddedServerSpec
 import com.variant.server.impl.StateRequestImpl
-import com.variant.core.schema.impl.VariationScopedHookImpl
+import com.variant.share.schema.impl.VariationScopedHookImpl
 import java.util.Optional
 import java.util.Collections
 import com.variant.server.test.spec.TempSchemataDir

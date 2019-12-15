@@ -4,10 +4,10 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
-import com.variant.core.schema.State;
-import com.variant.core.schema.StateVariant;
-import com.variant.core.schema.Variation;
-import com.variant.core.schema.Variation.Experience;
+import com.variant.share.schema.State;
+import com.variant.share.schema.StateVariant;
+import com.variant.share.schema.Variation;
+import com.variant.share.schema.Variation.Experience;
 
 /**
  * State request, as returned by {@link Session#getStateRequest()}. Cannot be directly manipulated by the client code, 

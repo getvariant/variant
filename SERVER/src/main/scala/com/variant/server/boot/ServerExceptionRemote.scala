@@ -2,8 +2,8 @@ package com.variant.server.boot;
 
 import play.api.libs.json._
 
-import com.variant.core.error.UserError.Severity
-import com.variant.core.error.ServerError
+import com.variant.share.error.UserError.Severity
+import com.variant.share.error.ServerError
 import com.variant.server.api.ServerException
 import akka.http.scaladsl.model.ResponseEntity
 import akka.http.scaladsl.model.HttpEntity

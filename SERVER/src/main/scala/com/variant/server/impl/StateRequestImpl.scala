@@ -1,10 +1,10 @@
 package com.variant.server.impl
 
-import com.variant.core.schema.State
-import com.variant.core.schema.StateVariant
-import com.variant.core.schema.Variation
-import com.variant.core.schema.Variation.Experience
-import com.variant.core.session.CoreStateRequest
+import com.variant.share.schema.State
+import com.variant.share.schema.StateVariant
+import com.variant.share.schema.Variation
+import com.variant.share.schema.Variation.Experience
+import com.variant.share.session.CoreStateRequest
 import com.variant.server.api.Session
 import com.variant.server.api.StateRequest
 

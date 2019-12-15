@@ -6,10 +6,10 @@ import akka.http.scaladsl.model.HttpResponse
 import akka.http.scaladsl.model.StatusCodes
 import akka.http.scaladsl.server.Directives._
 import com.typesafe.scalalogging.LazyLogging
-import com.variant.core.error.ServerError
+import com.variant.share.error.ServerError
 import com.variant.server.boot.ServerExceptionInternal
 import akka.http.scaladsl.model.ContentTypes
-import com.variant.core.error.UserError.Severity
+import com.variant.share.error.UserError.Severity
 
 object CustomExceptionHandler extends LazyLogging {
 

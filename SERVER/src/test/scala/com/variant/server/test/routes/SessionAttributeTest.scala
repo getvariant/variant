@@ -4,18 +4,18 @@ import scala.collection.JavaConverters._
 import com.variant.server.test.util.ParameterizedString
 import com.variant.server.test.routes.SessionTest._
 import com.variant.server.test.spec.EmbeddedServerSpec
-import com.variant.core.error.ServerError._
-import com.variant.core.util.StringUtils
+import com.variant.share.error.ServerError._
+import com.variant.share.util.StringUtils
 import play.api.libs.json._
 import com.variant.server.impl.SessionImpl
-import com.variant.core.Constants._
+import com.variant.share.Constants._
 import java.time.format.DateTimeFormatter
 import java.time.Instant
 import akka.http.scaladsl.model.HttpRequest
 import akka.http.scaladsl.model.HttpMethods
 import akka.http.scaladsl.model.StatusCodes._
 import akka.http.scaladsl.model.ContentTypes
-import com.variant.core.error.ServerError
+import com.variant.share.error.ServerError
 
 /**
  * Session Attribute Tests
@@ -59,7 +59,7 @@ class SessionAttributeTest extends EmbeddedServerSpec {
             //println(entityAs[String])
             ServerErrorResponse(response) mustBe (
                ServerError.JsonParseError,
-               "Unrecognized token 'bad': was expecting ('true', 'false' or 'null')\n at [Source: (String)\"bad json\"; line: 1, column: 4]")
+               "Unrecognized token 'bad': was expecting (JSON String, Number, Array, Object or token 'null', 'true' or 'false')\n at [Source: (String)\"bad json\"; line: 1, column: 4]")
          }
       }
 

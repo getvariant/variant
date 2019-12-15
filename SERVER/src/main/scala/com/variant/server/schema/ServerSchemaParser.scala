@@ -1,8 +1,8 @@
 package com.variant.server.schema
 
-import com.variant.core.schema.parser.SchemaParser
-import com.variant.core.schema.parser.HooksService
-import com.variant.core.schema.parser.FlusherService
+import com.variant.share.schema.parser.SchemaParser
+import com.variant.share.schema.parser.HooksService
+import com.variant.share.schema.parser.FlusherService
 import com.variant.server.boot.VariantServer
 
 /**

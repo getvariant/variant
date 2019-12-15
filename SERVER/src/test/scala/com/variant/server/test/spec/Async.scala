@@ -7,8 +7,9 @@ import scala.concurrent.duration._
 import java.util.concurrent.atomic.AtomicInteger
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.BeforeAndAfterAll
+import com.typesafe.scalalogging.LazyLogging
 
-trait Async extends BaseSpec with BeforeAndAfterAll {
+trait Async extends BaseSpec with BeforeAndAfterAll with LazyLogging {
 
    private[this] val poolSize = Runtime.getRuntime.availableProcessors * 10
    private[this] val threadPool = Executors.newFixedThreadPool(poolSize)
@@ -59,5 +60,7 @@ trait Async extends BaseSpec with BeforeAndAfterAll {
    
    override def afterAll() {
       threadPool.shutdownNow()
+      logger.info("Shutdown dedicated Async thread pool")
+      super.afterAll()
    }
 }

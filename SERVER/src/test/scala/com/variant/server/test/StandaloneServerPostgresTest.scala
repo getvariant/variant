@@ -4,29 +4,29 @@ import java.io.PrintWriter
 
 import scala.sys.process._
 
-import com.variant.core.util.StringUtils
-import com.variant.core.error.ServerError._
+import com.variant.share.util.StringUtils
+import com.variant.share.error.ServerError._
 
 import com.variant.server.boot.VariantServer
 import com.variant.server.boot.ServerMessageLocal._
 import com.variant.server.test.spec.StandaloneServerSpec
 import com.variant.server.test.util.ServerLogTailer
 import com.variant.server.test.util.ServerLogTailer.Level._
-import com.variant.core.httpc.HttpRequest
-import com.variant.core.httpc.HttpStatusCode._
+import com.variant.share.httpc.HttpRequest
+import com.variant.share.httpc.HttpStatusCode._
 import com.variant.server.boot.ServerMessageLocal
-import com.variant.core.httpc.HttpMethod
+import com.variant.share.httpc.HttpMethod
 import com.variant.server.test.routes.SessionTest
 import play.api.libs.json.Json
-import com.variant.core.session.CoreSession
-import com.variant.core.schema.parser.SchemaParser
+import com.variant.share.session.CoreSession
+import com.variant.share.schema.parser.SchemaParser
 import com.variant.server.schema.ServerSchemaParser
-import com.variant.core.schema.parser.SchemaParserServerless
+import com.variant.share.schema.parser.SchemaParserServerless
 import com.variant.server.test.spec.Async
-import com.variant.core.schema.State
-import com.variant.core.schema.Schema
+import com.variant.share.schema.State
+import com.variant.share.schema.Schema
 import scala.util.Random
-import com.variant.core.httpc.HttpResponse
+import com.variant.share.httpc.HttpResponse
 import com.variant.server.api.StateRequest.Status._
 
 /**

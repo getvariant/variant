@@ -1,6 +1,6 @@
 package com.variant.server.api;
 
-import com.variant.core.error.VariantException;
+import com.variant.share.error.VariantException;
 /**
  * The super-type for of Variant server exception. 
  * 

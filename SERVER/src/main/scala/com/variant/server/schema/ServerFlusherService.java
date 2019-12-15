@@ -5,11 +5,11 @@ import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.variant.core.schema.Flusher;
-import com.variant.core.schema.Schema;
-import com.variant.core.schema.parser.FlusherService;
-import com.variant.core.schema.parser.ParserResponse;
-import com.variant.core.schema.parser.SchemaParser;
+import com.variant.share.schema.Flusher;
+import com.variant.share.schema.Schema;
+import com.variant.share.schema.parser.FlusherService;
+import com.variant.share.schema.parser.ParserResponse;
+import com.variant.share.schema.parser.SchemaParser;
 import com.variant.server.api.Configuration;
 import com.variant.server.api.TraceEventFlusher;
 import com.variant.server.boot.ServerMessageLocal;

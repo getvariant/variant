@@ -3,10 +3,10 @@ package com.variant.server.impl;
 import java.util.Optional;
 import java.util.Random;
 
-import com.variant.core.error.ServerError;
-import com.variant.core.schema.State;
-import com.variant.core.schema.Variation;
-import com.variant.core.schema.Variation.Experience;
+import com.variant.share.error.ServerError;
+import com.variant.share.schema.State;
+import com.variant.share.schema.Variation;
+import com.variant.share.schema.Variation.Experience;
 import com.variant.server.api.lifecycle.LifecycleHook;
 import com.variant.server.api.lifecycle.VariationTargetingLifecycleEvent;
 import com.variant.server.boot.ServerExceptionInternal;

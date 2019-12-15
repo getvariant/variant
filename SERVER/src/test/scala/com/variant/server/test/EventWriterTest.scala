@@ -16,7 +16,7 @@ import java.time.Instant
 import akka.http.scaladsl.model.HttpRequest
 import akka.http.scaladsl.model.HttpMethods
 import akka.http.scaladsl.model.StatusCodes._
-import com.variant.core.error.ServerError
+import com.variant.share.error.ServerError
 import com.variant.server.test.spec.TraceEventsSpec
 import com.variant.server.test.spec.Async
 import com.variant.server.api.StateRequest

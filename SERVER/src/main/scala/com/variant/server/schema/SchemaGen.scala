@@ -3,9 +3,9 @@ package com.variant.server.schema
 import java.util.concurrent.atomic.AtomicInteger
 
 import scala.collection.JavaConverters._
-import com.variant.core.schema.{ Schema => CoreSchema }
-import com.variant.core.schema.parser.ParserResponse
-import com.variant.core.util.StringUtils
+import com.variant.share.schema.{ Schema => CoreSchema }
+import com.variant.share.schema.parser.ParserResponse
+import com.variant.share.util.StringUtils
 import com.variant.server.boot.Runtime
 import com.variant.server.util.JavaImplicits._
 import com.variant.server.boot.VariantServer

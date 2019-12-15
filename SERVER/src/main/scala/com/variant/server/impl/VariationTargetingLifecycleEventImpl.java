@@ -1,7 +1,7 @@
 package com.variant.server.impl;
 
-import com.variant.core.schema.State;
-import com.variant.core.schema.Variation;
+import com.variant.share.schema.State;
+import com.variant.share.schema.Variation;
 import com.variant.server.api.Session;
 import com.variant.server.api.lifecycle.LifecycleHook;
 import com.variant.server.api.lifecycle.VariationTargetingLifecycleEvent;
