@@ -282,7 +282,7 @@ class TargetingTest extends EmbeddedServerSpec with TempSchemataDir with Async {
             val state = schema.getState("state1").get
             val test = schema.getVariation("test1").get
 
-            val counts = Array(0, 0, 0)
+            val counts = Array(0, 0, 0)  // Race condition???? these are not atomic
             for (i <- 1 to trials) {
                val ssn = SessionImpl.empty("sid" + i, schema)
                ssn.getAttributes.get(TestTargetingHookSimple.ATTR_NAME) mustBe null
@@ -339,7 +339,7 @@ class TargetingTest extends EmbeddedServerSpec with TempSchemataDir with Async {
             ssn.targetForState(state1)
          }
          caughtEx.getMessage mustBe
-            ServerError.HOOK_TARGETING_BAD_EXPERIENCE.asMessage(classOf[TestTargetingHook].getName, "test1", "test2.A")
+            ServerError.HOOK_TARGETING_BAD_EXPERIENCE.asMessage(classOf[TestTargetingHook].getName, "test2.A", "state1")
 
       }
    }

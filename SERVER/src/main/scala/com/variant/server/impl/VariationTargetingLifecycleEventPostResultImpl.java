@@ -33,7 +33,7 @@ public class VariationTargetingLifecycleEventPostResultImpl implements Variation
 					StackTraceElement caller = Thread.currentThread().getStackTrace()[2];
 					throw ServerExceptionRemote$.MODULE$.apply(
 							HOOK_TARGETING_BAD_EXPERIENCE, 
-							caller.getClassName(), var.getName(), experience.toString(), var.getName());
+							caller.getClassName(), experience.toString(), state.getName());
 				}
 				this.experience = experience;
 				return;
@@ -44,7 +44,7 @@ public class VariationTargetingLifecycleEventPostResultImpl implements Variation
 		StackTraceElement caller = Thread.currentThread().getStackTrace()[2];
 		throw ServerExceptionRemote$.MODULE$.apply(
 				HOOK_TARGETING_BAD_EXPERIENCE, 
-				caller.getClassName(), var.getName(), experience.toString());
+				caller.getClassName(), experience.toString(), state.getName());
 	}
 
 	public Experience getTargetedExperience() {
