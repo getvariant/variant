@@ -126,7 +126,7 @@ class RequestTest extends EmbeddedServerSpec with TraceEventsSpec {
             e.attributes("$STATE") mustBe "state2"
             e.attributes("$STATUS") mustBe "Committed"
             e.eventExperiences.toSet[EventExperienceFromDatabase].map { x =>
-               schema.getVariation(x.testName).get.getExperience(x.experienceName).get
+               schema.getVariation(x.variationName).get.getExperience(x.experienceName).get
             } mustBe stateReq.getLiveExperiences.asScala.toSet
          }
 
@@ -201,7 +201,7 @@ class RequestTest extends EmbeddedServerSpec with TraceEventsSpec {
             e.attributes.size mustBe 4
             e.attributes mustBe Map("$STATE" -> "state3", "$STATUS" -> "Committed", "key1" -> "val1", "key2" -> "val2")
             e.eventExperiences.toSet[EventExperienceFromDatabase].map { x =>
-               schema.getVariation(x.testName).get.getExperience(x.experienceName).get
+               schema.getVariation(x.variationName).get.getExperience(x.experienceName).get
             } mustBe stateReq.getLiveExperiences.asScala.toSet
          }
 

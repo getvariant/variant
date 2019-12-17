@@ -20,7 +20,7 @@ object FlusherRouter extends LazyLogging {
 
    // Start the sole vacuum actor.
    def props(pool: FlusherThreadPool) = Props(new FlusherRouter(pool))
-      
+
    /**
     * Protocol
     */
@@ -42,7 +42,7 @@ private class FlusherRouter(pool: FlusherThreadPool) extends Actor with LazyLogg
          logger.debug(s"Received buffer $header for flushing")
 
          val flusher = header.flusherService.getFlusher // Just one for now.
-         
+
          pool.submit {
 
             // We can trust bufferIx, so long as it's < max size.
@@ -57,7 +57,7 @@ private class FlusherRouter(pool: FlusherThreadPool) extends Actor with LazyLogg
             }
 
             val start = Instant.now
-      
+
             logger.debug(s"About to flush ${actualLength} trace events")
             try {
                blocking {
@@ -68,7 +68,7 @@ private class FlusherRouter(pool: FlusherThreadPool) extends Actor with LazyLogg
                case t: Throwable => {
                   logger.error("Ignored following unhandled exception", t)
                }
-            } 
+            }
 
             header.status = EventBufferCache.HeaderStatus.FREE
 
@@ -79,7 +79,7 @@ private class FlusherRouter(pool: FlusherThreadPool) extends Actor with LazyLogg
 
          }
    }
-   
+
    /**
     * Flush the buffer pointed to by a given header.
     */

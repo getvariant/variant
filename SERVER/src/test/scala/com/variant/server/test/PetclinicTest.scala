@@ -1,145 +1,250 @@
-/*
- * package com.variant.server.test.controller
-
-import java.util.Optional
+package com.variant.server.test
 
 import scala.collection.JavaConverters._
 
-import org.scalatestplus.play._
-import play.api.test._
-import play.api.test.Helpers._
-
-import com.variant.server.api.StateRequest.Status._
-import com.variant.share.error.ServerError._
-import com.variant.share.session.CoreSession
-import com.variant.share.session.CoreStateRequest
-import com.variant.server.impl.SessionImpl
+import com.variant.share.Constants._
 import com.variant.server.test.spec.EmbeddedServerSpec
-import com.variant.server.test.util.EventExperienceFromDatabase
-import com.variant.server.test.util.TraceEventReader
+import com.variant.server.test.spec.TraceEventsSpec
+import com.variant.server.api.StateRequest.Status._
 
-import play.api.libs.json.JsValue
-import play.api.libs.json.Json
-import play.api.test.Helpers.GET
-import play.api.test.Helpers.POST
-import play.api.test.Helpers.PUT
-import play.api.test.Helpers.route
-import com.variant.share.Constants
-import com.variant.server.api.TraceEvent
+import akka.http.scaladsl.model.HttpMethods
+import akka.http.scaladsl.model.HttpRequest
+import play.api.libs.json._
+import com.variant.server.impl.SessionImpl
 import com.variant.server.impl.TraceEventImpl
-*/
+import com.variant.server.test.routes.TraceEventTest
+import com.variant.share.Constants
+
 /**
  * Petclinic demo app test.
- * TODO: FIX THIS. The problem is that petclinic now uses a non jdbc writer.  See #244
- *
- * class PetclinicTest extends EmbeddedServerSpec {
- *
- *
- * "Schema petclinic" should {
- *
- * val schema = server.schemata.get("petclinic").get.liveGen.get
- * val schemaId = schema.id
- * val writer = schema.eventWriter
- * val reader = TraceEventReader(writer)
- * var sid = newSid
- *
- * "create new session" in {
- *
- * // ssn.setAttribute("user-agent", "Safari")
- *
- * assertResp(route(app, httpReq(POST, "/session/petclinic/" + sid).withBody(emptyTargetingTrackerBody)))
- * .isOk
- * .withBodySession { ssn =>
- * ssn.getId mustNot be (sid)
- * sid = ssn.getId
- * ssn.getSchema.getMeta.getName mustBe "petclinic"
- * }
- * }
- *
- * "set an session attribute" in {
- *
- * val body: JsValue = Json.obj(
- * "sid" -> sid,
- * "map" -> Map(
- * "disqual" -> "true",  // this will cause disqualification
- * "foo" -> "bar"
- * )
- * )
- * assertResp(route(app, httpReq(PUT, "/session/attr").withBody(body.toString())))
- * .isOk
- * }
- *
- * "disqualify session from test" in {
- *
- * assertResp(route(app, httpReq(POST, "/session/petclinic/" + sid).withBody(emptyTargetingTrackerBody)))
- * .isOk
- * .withBodyJson { json =>
- * val coreSsn = CoreSession.fromJson((json \ "session").as[String], schema)
- * coreSsn.getStateRequest mustBe Optional.empty
- * }
- *
- * // State request object.
- * val reqBody1 = Json.obj(
- * "sid" -> sid,
- * "state" -> "newVisit"
- * ).toString
- *
- * // Target and get the request.
- * assertResp(route(app, httpReq(POST, "/request").withTextBody(reqBody1)))
- * .isOk
- * .withBodyJson { json =>
- * val coreSsn = CoreSession.fromJson((json \ "session").as[String], schema)
- * val stateReq = coreSsn.getStateRequest.get
- * stateReq mustNot be (null)
- * stateReq.getStatus mustBe InProgress
- * stateReq.getLiveExperiences.size mustBe 0
- * coreSsn.getDisqualifiedVariations.size mustBe 1
- * stateReq.getResolvedParameters.size mustBe 1
- * // Resolved parameter must always be from the state def because we're disqualified
- * stateReq.getResolvedParameters.get("path") mustBe schema.getState("newVisit").get.getParameters.get("path")
- * stateReq.getSession.getId mustBe sid
- * stateReq.getState mustBe schema.getState("newVisit").get
- * }
- *
- * val serverSsn = server.ssnStore.get(sid).get.asInstanceOf[SessionImpl]
- * serverSsn.triggerEvent(TraceEventImpl.mkTraceEvent("Custom Event", Map("foo"->"bar").asJava))
- *
- * // Commit the request.
- * val reqBody2 = Json.obj(
- * "sid" -> sid,
- * "status" -> Committed.ordinal
- * ).toString
- *
- * assertResp(route(app, httpReq(PUT, "/request").withTextBody(reqBody2)))
- * .isOk
- * .withBodyJson { json =>
- * val coreSsn = CoreSession.fromJson((json \ "session").as[String], schema)
- * val stateReq = coreSsn.getStateRequest.get
- * stateReq mustNot be (null)
- * stateReq.getStatus mustBe Committed
- * stateReq.getLiveExperiences.size mustBe 0
- * coreSsn.getDisqualifiedVariations.size mustBe 1
- * // Resolved parameter must always be from the state def because we're disqualified
- * stateReq.getResolvedParameters.size mustBe 1
- * stateReq.getResolvedParameters.get("path") mustBe schema.getState("newVisit").get.getParameters.get("path")
- * stateReq.getSession.getId mustBe sid
- * stateReq.getState mustBe schema.getState("newVisit").get
- * }
- *
- * // Send custom event.
- * val eventBody = TraceEventTest.body.expand("sid" -> sid, "name" -> "eventName")
- * //status(resp)(akka.util.Timeout(5 minutes)) mustBe OK
- * assertResp(route(app, httpReq(POST, "/event").withTextBody(eventBody)))
- * .isOk
- * .withNoBody
- *
- * // Confirm that the SVE and the custom events are both orphans.
- * Thread.sleep(2000)
- * val flushedEvents = reader.read(e => e.sessionId == sid)
- * flushedEvents.size mustBe 2
- * flushedEvents.exists { _.eventExperiences.size > 0 } mustBe false
- * }
- * }
- * }
- *
  */
+class PetclinicTest extends EmbeddedServerSpec with TraceEventsSpec with  Constants {
+ 
+    val emptyTargetingTrackerBody = "{\"tt\":[]}"
+
+   "Disqualified user session" should {
+ 
+      val schema = server.schemata.get("petclinic").get.liveGen.get
+      val schemaId = schema.id
+      var sid = newSid
+ 
+      val maxDelayMillis = server.config.eventWriterMaxDelay * 1000
+         
+      "have expected confuration" in {
+         maxDelayMillis mustBe 2000
+      }
+
+      "create new session" in {
+  
+         HttpRequest(method = HttpMethods.POST, uri = s"/session/petclinic/${sid}", entity = emptyTargetingTrackerBody) ~> router ~> check {
+            val ssnResp = SessionResponse(response)
+            ssnResp.session.getId mustNot be(sid)
+            ssnResp.schema.getMeta.getName mustBe "petclinic"
+            sid = ssnResp.session.getId
+         }
+
+      }
+
+      "set a session attribute" in {
+ 
+         val body: JsValue = Json.obj(
+            "attrs" -> Map(
+               "user" -> "Nikita Krushchev",  // this will cause disqualification
+	            "foo" -> "bar"
+             )
+         )
+         
+         HttpRequest(method = HttpMethods.PUT, uri = s"/session-attr/petclinic/${sid}", entity = body.toString()) ~> router ~> check {
+            val ssnResp = SessionResponse(response)
+            ssnResp.session.getId mustBe sid
+            ssnResp.schema.getMeta.getName mustBe "petclinic"
+            ssnResp.session.getAttributes.asScala mustBe Map("foo" -> "bar", "user" -> "Nikita Krushchev")
+            ssnResp.session.getDisqualifiedVariations.size mustBe 0
+         }
+      }
+
+      "disqualify session from test" in {
+ 
+         // State request object.
+         val reqBody1 = Json.obj(
+            "state" -> "vets"
+         ).toString
+ 
+         // Target and get the request.
+         HttpRequest(method = HttpMethods.POST, uri = s"/request/petclinic/${sid}", entity = reqBody1) ~> router ~> check {
+            val ssnResp = SessionResponse(response)
+            ssnResp.session.getId mustBe sid
+            ssnResp.session.getDisqualifiedVariations.size mustBe 1
+            ssnResp.session.getAttributes.asScala mustBe Map("foo" -> "bar", "user" -> "Nikita Krushchev")
+            ssnResp.schema.getMeta.getName mustBe "petclinic"
+            val stateReq = ssnResp.session.getStateRequest.get
+            stateReq mustNot be(null)
+            stateReq.getStatus.ordinal mustBe InProgress.ordinal
+            stateReq.getLiveExperiences.size mustBe 1
+            stateReq.getResolvedParameters.size mustBe 0
+            stateReq.getSession.getId mustBe sid
+            stateReq.getState mustBe schema.getState("vets").get
+         }
+      }
+      
+      "commit the state request" in {
+
+         // Commit the request.
+         val reqBody = Json.obj(
+               "status" -> Committed.ordinal
+               ).toString
+ 
+         HttpRequest(method = HttpMethods.DELETE, uri = s"/request/petclinic/${sid}", entity = reqBody) ~> router ~> check {
+            val ssnResp = SessionResponse(response)
+            ssnResp.session.getId mustBe sid
+            ssnResp.session.getDisqualifiedVariations.size mustBe 1
+            ssnResp.session.getAttributes.asScala mustBe Map("foo" -> "bar", "user" -> "Nikita Krushchev")
+            ssnResp.schema.getMeta.getName mustBe "petclinic"
+            val stateReq = ssnResp.session.getStateRequest.get
+            stateReq mustNot be(null)
+            stateReq.getStatus.ordinal mustBe Committed.ordinal
+            stateReq.getLiveExperiences.size mustBe 1
+            stateReq.getResolvedParameters.size mustBe 0
+            stateReq.getSession.getId mustBe sid
+            stateReq.getState mustBe schema.getState("vets").get
+         }
+      }
+
+
+      "trigger custom trace event" in {
+
+         val eventBody = TraceEventTest.body.expand("name" -> "petclinic custom event")
+         HttpRequest(method = HttpMethods.POST, uri = s"/event/petclinic/${sid}", entity = eventBody) ~> router ~> check {
+            val ssnResp = SessionResponse(response)
+            ssnResp.session.getId mustBe (sid)
+            ssnResp.schema.getMeta.getName mustBe "petclinic"
+         }
+      }
+
+      "confirm that 2 events been written" in {
+         Thread.sleep(maxDelayMillis + 2000)
+         val flushedEvents = eventReader.read(e => e.sessionId == sid)
+         flushedEvents.size mustBe 2
+
+         flushedEvents(0).name mustBe SVE_NAME
+         flushedEvents(0).attributes.mkString(", ") mustBe "$STATE -> vets, $STATUS -> Committed"
+         flushedEvents(0).eventExperiences.size mustBe 1
+         flushedEvents(0).eventExperiences.toSeq(0).variationName mustBe "VetsHourlyRateFeature"
+         
+         flushedEvents(1).name mustBe "petclinic custom event"
+         flushedEvents(1).attributes.mkString(", ") mustBe "Name One -> Value One, Name Two -> Value Two"
+         flushedEvents(1).eventExperiences.size mustBe 1
+         flushedEvents(1).eventExperiences.toSeq(0).variationName mustBe "VetsHourlyRateFeature"
+      }
+   }
+
+   "Qualified user session" should {
+ 
+      val schema = server.schemata.get("petclinic").get.liveGen.get
+      val schemaId = schema.id
+      var sid = newSid
+ 
+      val maxDelayMillis = server.config.eventWriterMaxDelay * 1000
+         
+      "have expected confuration" in {
+         maxDelayMillis mustBe 2000
+      }
+
+      "create new session" in {
+  
+         HttpRequest(method = HttpMethods.POST, uri = s"/session/petclinic/${sid}", entity = emptyTargetingTrackerBody) ~> router ~> check {
+            val ssnResp = SessionResponse(response)
+            ssnResp.session.getId mustNot be(sid)
+            ssnResp.schema.getMeta.getName mustBe "petclinic"
+            sid = ssnResp.session.getId
+         }
+
+      }
+      
+       "set a session attribute" in {
+ 
+         val body: JsValue = Json.obj(
+            "attrs" -> Map(
+               "user" -> "Igor Urisman"  // this will not cause disqualification
+             )
+         )
+         
+         HttpRequest(method = HttpMethods.PUT, uri = s"/session-attr/petclinic/${sid}", entity = body.toString()) ~> router ~> check {
+            val ssnResp = SessionResponse(response)
+            ssnResp.session.getId mustBe sid
+            ssnResp.schema.getMeta.getName mustBe "petclinic"
+            ssnResp.session.getAttributes.asScala mustBe Map("user" -> "Igor Urisman")
+            ssnResp.session.getDisqualifiedVariations.size mustBe 0
+         }
+      }
+
+      "target session for test" in {
+ 
+         // State request object.
+         val reqBody1 = Json.obj(
+            "state" -> "vets"
+         ).toString
+ 
+         // Target and get the request.
+         HttpRequest(method = HttpMethods.POST, uri = s"/request/petclinic/${sid}", entity = reqBody1) ~> router ~> check {
+            val ssnResp = SessionResponse(response)
+            ssnResp.session.getId mustBe sid
+            ssnResp.session.getDisqualifiedVariations.size mustBe 0
+            ssnResp.session.getAttributes.asScala mustBe Map("user" -> "Igor Urisman")
+            ssnResp.schema.getMeta.getName mustBe "petclinic"
+            val stateReq = ssnResp.session.getStateRequest.get
+            stateReq mustNot be(null)
+            stateReq.getStatus.ordinal mustBe InProgress.ordinal
+            stateReq.getLiveExperiences.size mustBe 2
+            stateReq.getResolvedParameters.size mustBe 0
+            stateReq.getSession.getId mustBe sid
+            stateReq.getState mustBe schema.getState("vets").get
+         }
+      }
+      
+      "commit the state request" in {
+
+         // Commit the request.
+         val reqBody = Json.obj(
+               "status" -> Committed.ordinal
+               ).toString
+ 
+         HttpRequest(method = HttpMethods.DELETE, uri = s"/request/petclinic/${sid}", entity = reqBody) ~> router ~> check {
+            val ssnResp = SessionResponse(response)
+            ssnResp.session.getId mustBe sid
+            ssnResp.session.getDisqualifiedVariations.size mustBe 0
+            ssnResp.session.getAttributes.asScala mustBe Map("user" -> "Igor Urisman")
+            ssnResp.schema.getMeta.getName mustBe "petclinic"
+            val stateReq = ssnResp.session.getStateRequest.get
+            stateReq mustNot be(null)
+            stateReq.getStatus.ordinal mustBe Committed.ordinal
+            stateReq.getLiveExperiences.size mustBe 2
+            stateReq.getResolvedParameters.size mustBe 0
+            stateReq.getSession.getId mustBe sid
+            stateReq.getState mustBe schema.getState("vets").get
+         }
+      }
+
+
+      "trigger custom trace event" in {
+
+         val eventBody = TraceEventTest.body.expand("name" -> "petclinic custom event")
+         HttpRequest(method = HttpMethods.POST, uri = s"/event/petclinic/${sid}", entity = eventBody) ~> router ~> check {
+            val ssnResp = SessionResponse(response)
+            ssnResp.session.getId mustBe (sid)
+            ssnResp.schema.getMeta.getName mustBe "petclinic"
+         }
+      }
+
+      "confirm that no events been written" in {
+         Thread.sleep(maxDelayMillis + 2000)
+         val flushedEvents = eventReader.read(e => e.sessionId == sid)
+         flushedEvents.size mustBe 2
+         flushedEvents(0).name mustBe SVE_NAME
+         flushedEvents(0).attributes.mkString(", ") mustBe "$STATE -> vets, $STATUS -> Committed"
+         flushedEvents(0).eventExperiences.size mustBe 2
+         flushedEvents(0).eventExperiences.map(_.variationName) mustBe Set("VetsHourlyRateFeature", "ScheduleVisitTest")
+
+      }
+   }
+}

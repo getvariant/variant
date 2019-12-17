@@ -15,7 +15,7 @@ import com.variant.share.schema.MetaScopedHook;
 import com.variant.share.schema.StateScopedHook;
 import com.variant.share.schema.VariationScopedHook;
 import com.variant.share.schema.impl.MetaImpl;
-import com.variant.share.schema.impl.SchemaHookImpl;
+import com.variant.share.schema.impl.MetaHookImpl;
 import com.variant.share.schema.impl.StateImpl;
 import com.variant.share.schema.impl.StateScopedHookImpl;
 import com.variant.share.schema.impl.VariationImpl;
@@ -126,7 +126,7 @@ public class HooksParser implements Keywords {
 			return null;
 		}
 		else {
-			return new SchemaHookImpl(className, init, hookLocation);
+			return new MetaHookImpl(className, init, hookLocation);
 		}
 	}
 	

@@ -12,7 +12,8 @@ import com.variant.share.schema.Hook;
 import com.variant.share.schema.MetaScopedHook;
 import com.variant.share.schema.StateScopedHook;
 import com.variant.share.schema.VariationScopedHook;
-import com.variant.share.schema.impl.SchemaHookImpl;
+import com.variant.share.schema.impl.BaseHookImpl;
+import com.variant.share.schema.impl.MetaHookImpl;
 import com.variant.share.schema.impl.StateScopedHookImpl;
 import com.variant.share.schema.impl.VariationScopedHookImpl;
 import com.variant.share.schema.parser.HooksService;
@@ -114,7 +115,7 @@ public class ServerHooksService implements HooksService {
 				schemaHooks.add(hle);
 				if (LOG.isDebugEnabled()) 
 					LOG.debug(String.format("Registered schema-scoped hook class [%s] at [%s]", 
-							hookDef.getClass(), ((SchemaHookImpl)hookDef).location.getPath()));
+							hookDef.getClass(), ((MetaHookImpl)hookDef).location.getPath()));
 			}
 			else if (hookDef instanceof StateScopedHook) {
 				stateHooks.add(hle);
@@ -186,7 +187,7 @@ public class ServerHooksService implements HooksService {
 		   boolean first = true;
 		   for (HookListEntry hle: chain) {
 			   if (first) first = false; else buff.append(", ");
-			   buff.append(((SchemaHookImpl) hle.hookDef).location.getPath());
+			   buff.append(((BaseHookImpl) hle.hookDef).location.getPath());
 		   }
 		   LOG.trace(buff.toString());
 	   }
@@ -205,7 +206,7 @@ public class ServerHooksService implements HooksService {
 			   Optional<? extends LifecycleEvent.PostResult> result = hook.post(event);
 			   
 			   if (LOG.isTraceEnabled())
-				   LOG.trace("Posted user hook [" + ((SchemaHookImpl) hle.hookDef).location.getPath() + "] with [" + event + "]. Result: [" + result + "]");
+				   LOG.trace("Posted user hook [" + ((BaseHookImpl) hle.hookDef).location.getPath() + "] with [" + event + "]. Result: [" + result + "]");
 						
 			   // If user hook returned a result, clip the chain.
 			   if (result.isPresent()) return result.get();

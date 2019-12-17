@@ -18,7 +18,7 @@ object SpinLock {
 class SpinLock extends LazyLogging {
 
    import SpinLock._
-   
+
    private[this] val state = new AtomicBoolean(false)
    private[this] val backoff = new ExpBackoff(MIN_DELAY_NANOS, MAX_DELAY_MILLIS);
 
@@ -29,7 +29,7 @@ class SpinLock extends LazyLogging {
          while (state.get()) {};
          if (!state.getAndSet(true)) {
             succeeded = true
-         } else if ((System.nanoTime - start) > MIN_DELAY_NANOS)  {
+         } else if ((System.nanoTime - start) > MIN_DELAY_NANOS) {
             backoff.backoff();
          }
       }
@@ -56,9 +56,9 @@ class SpinLock extends LazyLogging {
     * Computes the next backoff period and sleeps this thread for it.
     */
    class ExpBackoff(minDelayNanos: Long, maxDelayMillis: Long) {
-      
-      var delay: Long = (minDelayNanos / 1000000 * ( 1 + Random.nextFloat )).asInstanceOf[Long]
-      
+
+      var delay: Long = (minDelayNanos / 1000000 * (1 + Random.nextFloat)).asInstanceOf[Long]
+
       def backoff() {
          logger.trace(s"Sleeping for $delay millis")
          Thread.sleep(delay)

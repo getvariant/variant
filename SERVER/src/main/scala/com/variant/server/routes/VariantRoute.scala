@@ -49,7 +49,7 @@ trait VariantRoute extends LazyLogging {
          // and there's no reason to intercept them here.
          val body = Await.result(Unmarshal(ctx.request).to[String], 1.second)
          logger.trace(s"Executing route ${ctx.request.method} ${ctx.request.uri} with body:\n${body}")
-         
+
          block(parse(body))
       } else {
          HttpResponse(StatusCodes.ServiceUnavailable)
@@ -59,15 +59,16 @@ trait VariantRoute extends LazyLogging {
    /**
     * Extract body from request context
     *
-   def body(implicit system: ActorSystem, reqCtx: RequestContext): JsValue = {
-
-      if (reqCtx.request.entity.getContentType != ContentTypes.`application/json`) {
-         throw ServerExceptionRemote(ServerError.BadContentType)
-      }
-
-      implicit val materializer = ActorMaterializer
-      Json.parse("blah")
-   } */
+    * def body(implicit system: ActorSystem, reqCtx: RequestContext): JsValue = {
+    *
+    * if (reqCtx.request.entity.getContentType != ContentTypes.`application/json`) {
+    * throw ServerExceptionRemote(ServerError.BadContentType)
+    * }
+    *
+    * implicit val materializer = ActorMaterializer
+    * Json.parse("blah")
+    * }
+    */
 
    /**
     * Extract the session from the session store, making sure that

@@ -10,7 +10,7 @@ import com.variant.share.schema.parser.error.SemanticError.Location;
  * @author Igor
  *
  */
-abstract class BaseHookImpl implements Hook {
+public abstract class BaseHookImpl implements Hook {
 
 	public final Location location;
 

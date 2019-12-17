@@ -162,7 +162,7 @@ class TraceEventTest extends EmbeddedServerSpec with TraceEventsSpec {
          event.createdOn.toEpochMilli mustBe (System.currentTimeMillis() - millisToSleep) +- 100
          event.eventExperiences.size mustBe 4
          // Test4 is not instrumented.
-         event.eventExperiences.exists { _.testName == "test6" } mustBe false
+         event.eventExperiences.exists { _.variationName == "test6" } mustBe false
 
       }
 
@@ -232,7 +232,7 @@ class TraceEventTest extends EmbeddedServerSpec with TraceEventsSpec {
          event.createdOn.toEpochMilli mustBe (System.currentTimeMillis() - millisToSleep) +- 100
          event.eventExperiences.size mustBe 5
          // Test4 is not instrumented.
-         event.eventExperiences.exists { _.testName == "test4" } mustBe false
+         event.eventExperiences.exists { _.variationName == "test4" } mustBe false
 
       }
 
@@ -323,12 +323,12 @@ class TraceEventTest extends EmbeddedServerSpec with TraceEventsSpec {
          event.name mustBe eventName
          event.eventExperiences.size mustBe 4
          event.attributes mustBe empty
-         event.eventExperiences.exists(_.testName == "test1") mustBe true
-         event.eventExperiences.exists(_.testName == "test2") mustBe false
-         event.eventExperiences.exists(_.testName == "test3") mustBe false
-         event.eventExperiences.exists(_.testName == "test4") mustBe true
-         event.eventExperiences.exists(_.testName == "test5") mustBe true
-         event.eventExperiences.exists(_.testName == "test6") mustBe true
+         event.eventExperiences.exists(_.variationName == "test1") mustBe true
+         event.eventExperiences.exists(_.variationName == "test2") mustBe false
+         event.eventExperiences.exists(_.variationName == "test3") mustBe false
+         event.eventExperiences.exists(_.variationName == "test4") mustBe true
+         event.eventExperiences.exists(_.variationName == "test5") mustBe true
+         event.eventExperiences.exists(_.variationName == "test6") mustBe true
          event.eventExperiences.foreach(_.eventId mustBe event.id)
 
       }
@@ -401,12 +401,12 @@ class TraceEventTest extends EmbeddedServerSpec with TraceEventsSpec {
          sve.name mustBe "$STATE_VISIT"
          sve.eventExperiences.size mustBe 4
          sve.attributes.size mustBe 2
-         sve.eventExperiences.exists(_.testName == "test1") mustBe true
-         sve.eventExperiences.exists(_.testName == "test2") mustBe true
-         sve.eventExperiences.exists(_.testName == "test3") mustBe false
-         sve.eventExperiences.exists(_.testName == "test4") mustBe true
-         sve.eventExperiences.exists(_.testName == "test5") mustBe true
-         sve.eventExperiences.exists(_.testName == "test6") mustBe false
+         sve.eventExperiences.exists(_.variationName == "test1") mustBe true
+         sve.eventExperiences.exists(_.variationName == "test2") mustBe true
+         sve.eventExperiences.exists(_.variationName == "test3") mustBe false
+         sve.eventExperiences.exists(_.variationName == "test4") mustBe true
+         sve.eventExperiences.exists(_.variationName == "test5") mustBe true
+         sve.eventExperiences.exists(_.variationName == "test6") mustBe false
          sve.eventExperiences.foreach(_.eventId mustBe sve.id)
 
          val customEvent = eventsFromDatabase(1)
@@ -415,12 +415,12 @@ class TraceEventTest extends EmbeddedServerSpec with TraceEventsSpec {
          customEvent.name mustBe eventName
          customEvent.eventExperiences.size mustBe 4
          customEvent.attributes.size mustBe 2
-         customEvent.eventExperiences.exists(_.testName == "test1") mustBe true
-         customEvent.eventExperiences.exists(_.testName == "test2") mustBe true
-         customEvent.eventExperiences.exists(_.testName == "test3") mustBe false
-         customEvent.eventExperiences.exists(_.testName == "test4") mustBe true
-         customEvent.eventExperiences.exists(_.testName == "test5") mustBe true
-         customEvent.eventExperiences.exists(_.testName == "test6") mustBe false
+         customEvent.eventExperiences.exists(_.variationName == "test1") mustBe true
+         customEvent.eventExperiences.exists(_.variationName == "test2") mustBe true
+         customEvent.eventExperiences.exists(_.variationName == "test3") mustBe false
+         customEvent.eventExperiences.exists(_.variationName == "test4") mustBe true
+         customEvent.eventExperiences.exists(_.variationName == "test5") mustBe true
+         customEvent.eventExperiences.exists(_.variationName == "test6") mustBe false
          customEvent.eventExperiences.foreach(_.eventId mustBe customEvent.id)
 
       }

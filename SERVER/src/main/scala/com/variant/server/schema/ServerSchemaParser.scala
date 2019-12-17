@@ -31,11 +31,11 @@ class ServerSchemaParser private (server: Option[VariantServer]) extends SchemaP
       case Some(_) => new ServerHooksService()
       case None => new HooksService.Null()
    }
-   
+
    override val getFlusherService: FlusherService = server match {
       case Some(svr) => new ServerFlusherService(svr.config, this)
-      case None =>  new FlusherService.Null()
-      
+      case None => new FlusherService.Null()
+
    }
 
 }

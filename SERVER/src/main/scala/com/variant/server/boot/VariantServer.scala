@@ -183,7 +183,7 @@ class VariantServerImpl(builder: VariantServer.Builder)(override implicit val ac
    // If debug, echo all config params.
    logger.whenDebugEnabled {
       config.entrySet.toArray
-         .sortWith (_.getKey < _.getKey )
+         .sortWith(_.getKey < _.getKey)
          .foreach { e => logger.debug(s"${e.getKey} → ${e.getValue}") }
    }
 
@@ -235,23 +235,23 @@ class VariantServerImpl(builder: VariantServer.Builder)(override implicit val ac
    override def shutdown() {
 
       val start = System.currentTimeMillis
-      
+
       logger.debug("Server shutdown sequence started")
 
       // No more client connections
       binding.map(_.unbind)
       binding = None
-      
+
       logger.debug("Unbound from network port")
 
       // Undeploy all schemata. This will not drain sessions.
       schemata.undeployAll()
-      
+
       logger.debug("All schemata undeployed")
 
       // Flush the event buffer cache.
       _eventBufferCache.shutdown()
-      
+
       logger.debug("Buffer cache shutdown")
 
       actorSystem.whenTerminated.andThen {
@@ -262,7 +262,7 @@ class VariantServerImpl(builder: VariantServer.Builder)(override implicit val ac
                if (builder.isHeadless) "headless" else config.httpPort.toString,
                TimeUtils.formatDuration(java.time.Duration.ofMillis(System.currentTimeMillis - start)),
                TimeUtils.formatDuration(uptime)))
-   
+
          case Failure(e) =>
             logger.error("Unexpected exception thrown:", e)
       }

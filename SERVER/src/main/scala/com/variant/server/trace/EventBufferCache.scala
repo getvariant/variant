@@ -30,8 +30,8 @@ object EventBufferCache {
 
       // Target flusher service which will be responsible for flushing this event
       var flusherService: ServerFlusherService = _
-      
-      override def toString() = 
+
+      override def toString() =
          s"Header(status=$status, timstamp=$timestamp, buffer=Array($bufferSize), bufferIx=${bufferIx.get})"
    }
 
@@ -67,20 +67,19 @@ class EventBufferCache(implicit server: VariantServer) extends LazyLogging {
    // Schedule a force flush of those buffers whose age exceeds the
    // configurable max delay value.
    val maxDelayMillis = server.config.eventWriterMaxDelay * 1000
-   
+
    // Schedule flush due to max delay time.
    server.actorSystem.scheduler.schedule(
       initialDelay = FiniteDuration(maxDelayMillis, MILLISECONDS),
-      interval = FiniteDuration(maxDelayMillis, MILLISECONDS)) 
-      { 
-         flushOlderThan(maxDelayMillis) 
-      } (server.actorSystem.dispatcher);
+      interval = FiniteDuration(maxDelayMillis, MILLISECONDS)) {
+         flushOlderThan(maxDelayMillis)
+      }(server.actorSystem.dispatcher);
 
    // Dedicated pool for long-running blocking flushing tasks.
    val flusherThreadPool = new FlusherThreadPool(server.config)
-   
+
    val flusherRouterActor = server.actorSystem.actorOf(
-         FlusherRouter.props(flusherThreadPool), name = "FlusherRouter")
+      FlusherRouter.props(flusherThreadPool), name = "FlusherRouter")
 
    /**
     * Find new current buffer. Must be thread safe because may be called by foreground threads
@@ -154,7 +153,7 @@ class EventBufferCache(implicit server: VariantServer) extends LazyLogging {
    private def flushOlderThan(ageMillis: Long) {
 
       logger.debug(s"Flusning all buffers older than $ageMillis millis")
-      
+
       val minTimestamp = System.currentTimeMillis() - ageMillis
 
       // To reduce the size of the critical section, protected by the spin lock,
@@ -175,7 +174,7 @@ class EventBufferCache(implicit server: VariantServer) extends LazyLogging {
       }
 
       flushableList.foreach { head => flusherRouterActor ! FlusherRouter.Flush(head) }
-      
+
    }
 
    /**
@@ -194,7 +193,7 @@ class EventBufferCache(implicit server: VariantServer) extends LazyLogging {
                // Current buffer has room, use it!
                logger.trace(s"Added event ${event} to current buffer ${head} at index ${buffIx}")
                head.buffer(buffIx) = event
-               
+
                // If we just used the last slot, send buffer off to the flusher router.
                if (buffIx == bufferSize - 1) {
                   // Current buffer just ran out of room and it's on us to try looking for a new one.
@@ -202,7 +201,7 @@ class EventBufferCache(implicit server: VariantServer) extends LazyLogging {
                   flusherRouterActor ! FlusherRouter.Flush(head)
                   logger.trace(s"Scheduled buffer $head for flushing")
                }
-               
+
             } else {
                // There was no room in this buffer, even though it was current when we checked.
                // Try to find a new current buffer and if successful stick the event in there.
@@ -225,16 +224,16 @@ class EventBufferCache(implicit server: VariantServer) extends LazyLogging {
    def size: Integer = {
       headerTable.filter(_.status != HeaderStatus.FREE).map(_.bufferIx.get + 1).fold(0)(_ + _)
    }
-   
+
    /**
-	 * Synchronously shutdown this buffer cache.
-	 * The actor system is assumed to still be around, but all the schemata undeployed,
-	 * i.e. it's safe to assume no new trace events will be written.
-	 * When this call returns, all pending events are flushed and the fluser thread pool is shutdown.
-	 * Not thread safe.
+    * Synchronously shutdown this buffer cache.
+    * The actor system is assumed to still be around, but all the schemata undeployed,
+    * i.e. it's safe to assume no new trace events will be written.
+    * When this call returns, all pending events are flushed and the fluser thread pool is shutdown.
+    * Not thread safe.
     */
    def shutdown(timeout: Duration = Duration(30, SECONDS)) {
-      
+
       flushOlderThan(0)
       // block for flushing buffers.
       val start = System.currentTimeMillis
@@ -243,13 +242,13 @@ class EventBufferCache(implicit server: VariantServer) extends LazyLogging {
          Thread.sleep(250)
          timedOut = (System.currentTimeMillis - start) >= timeout.toMillis
       }
-      
+
       flusherThreadPool.shutdown()
 
       if (timedOut) {
          throw ServerExceptionLocal(ServerMessageLocal.EVENT_BUFFER_CACHE_SHUTDOWN_TIMEOUT, timeout.toMillis.toString)
       }
-      
+
    }
 
 }

@@ -81,7 +81,7 @@ class EventWriterTest extends EmbeddedServerSpec with TraceEventsSpec with Async
          event.name mustBe customName
          event.sessionId mustBe sid
          event.eventExperiences.size mustBe 4
-         event.eventExperiences.map(_.testName) mustBe Set("test2", "test3", "test5", "test6")
+         event.eventExperiences.map(_.variationName) mustBe Set("test2", "test3", "test5", "test6")
 
          // Ensure the writer buffer is empty.
          server.eventBufferCache.size mustBe 0
