@@ -37,16 +37,16 @@ public class ParserSerialStatesErrorTest extends BaseTestCore {
 	public void statesClauseNotList_Test() throws Exception {
 		
 		String config = 
-				"{                                                             \n" +
+				"{                                                              \n" +
 			    "  'meta':{                                                    \n" +		    	    
-			    "      'name':'schema_name',                                    \n" +
-			    "      'comment':'schema comment'                               \n" +
-			    "  },                                                           \n" +
+			    "      'name':'schema_name',                                   \n" +
+			    "      'comment':'schema comment'                              \n" +
+			    "  },                                                          \n" +
 			    "  'states':'state1, state2',                                  \n" +
-				"  'variations':[                                              \n" +
+				"  'variations':[                                               \n" +
 			    "     {                                                        \n" +
 			    "        'name':'Test1',                                       \n" +
-			    "        'isOn': false,                                       \n" +
+			    "        'isOn': false,                                        \n" +
 			    "        'experiences':[                                       \n" +
 			    "           {                                                  \n" +
 			    "              'name':'A',                                     \n" +
@@ -60,22 +60,7 @@ public class ParserSerialStatesErrorTest extends BaseTestCore {
 			    "        ],                                                    \n" +
 			    "        'onStates':[                                          \n" +
 			    "           {                                                  \n" +
-			    "              'stateRef':'state1',                            \n" +
-			    "              'variants':[                                    \n" +
-			    "                 {                                            \n" +
-			    "                    'experienceRef':'A',                      \n" +
-	    	    "                    'parameters': [                           \n" +
-			    "                       {                                      \n" +
-			    "                          'name':'foo',                       \n" +
-			    "                          'value':'bar'                       \n" +
-			    "                       },                                     \n" +
-			    "                       {                                      \n" +
-			    "                          'name':'bar',                       \n" +
-			    "                          'value':'foo'                       \n" +
-			    "                       }                                      \n" +
-			    "                    ]                                         \n" +
-			    "                 }                                            \n" +
-			    "              ]                                               \n" +
+			    "              'stateRef':'state1'                             \n" +
 			    "           }                                                  \n" +
 			    "        ]                                                     \n" +
 			    "     }                                                        \n" +
@@ -429,12 +414,7 @@ public class ParserSerialStatesErrorTest extends BaseTestCore {
 			    "        ],                                                    \n" +
 			    "        'onStates':[                                           \n" +
 			    "           {                                                  \n" +
-			    "              'stateRef':'state1',                              \n" +
-			    "              'variants':[                                    \n" +
-			    "                 {                                            \n" +
-			    "                    'experienceRef':'A'                       \n" +
-			    "                 }                                            \n" +
-			    "              ]                                               \n" +
+			    "              'stateRef':'state1'                              \n" +
 			    "           }                                                  \n" +
 			    "        ]                                                     \n" +
 			    "     }                                                        \n" +
@@ -503,12 +483,7 @@ public class ParserSerialStatesErrorTest extends BaseTestCore {
 			    "        ],                                                    \n" +
 			    "        'onStates':[                                          \n" +
 			    "           {                                                  \n" +
-			    "              'stateRef':'state1',                            \n" +
-			    "              'variants':[                                    \n" +
-			    "                 {                                            \n" +
-			    "                    'experienceRef': 'A'                      \n" +
-			    "                 }                                            \n" +
-			    "              ]                                               \n" +
+			    "              'stateRef':'state1'                             \n" +
 			    "           }                                                  \n" +
 			    "        ]                                                     \n" +
 			    "     }                                                        \n" +
@@ -533,77 +508,7 @@ public class ParserSerialStatesErrorTest extends BaseTestCore {
 		}
 	}
 
-	/**
-	 * PARAMS_NOT_LIST, PARAM_NOT_OBJECT
-	 * 
-	 * @throws Exception
-	 */
-	@Test
-	public void paramsNotList_Test() throws Exception {
-		
-		String config = 
-				"{                                                             \n" +
-			    "  'meta':{                                                    \n" +		    	    
-			    "      'name':'schema_name',                                    \n" +
-			    "      'comment':'schema comment'                               \n" +
-			    "  },                                                           \n" +
-			    "  'states':[                                                  \n" +
-			    "     {                                                        \n" +
-			    "        'name':'state1',                                      \n" +
-	    	    "        'parameters':                                         \n" +
-			    "           {                                                  \n" +
-			    "              'name':'foo',                                   \n" +
-			    "              'value':'bar'                                   \n" +
-			    "           }                                                  \n" +
-			    "     }                                                        \n" +
-			    "  ],                                                          \n" +
-				"  'variations':[                                              \n" +
-			    "     {                                                        \n" +
-			    "        'name':'Test1',                                       \n" +
-			    "        'isOn': false,                                       \n" +
-			    "        'experiences':[                                       \n" +
-			    "           {                                                  \n" +
-			    "              'name':'A',                                     \n" +
-			    "              'weight':50                                     \n" +
-			    "           },                                                 \n" +
-			    "           {                                                  \n" +
-			    "              'name':'B',                                     \n" +
-			    "              'weight':50,                                    \n" +
-			    "              'isControl':true                                \n" +
-			    "           }                                                  \n" +
-			    "        ],                                                    \n" +
-			    "        'onStates':[                                          \n" +
-			    "           {                                                  \n" +
-			    "              'stateRef':'state1',                            \n" +
-			    "              'variants':[                                    \n" +
-			    "                 {                                            \n" +
-			    "                    'experienceRef':'A',                      \n" +
-	    	    "                    'parameters': [                           \n" +
-			    "                       {                                      \n" +
-			    "                          'name':'bar',                        \n" +
-			    "                          'value':'foo'                       \n" +
-			    "                       }                                      \n" +
-			    "                    ]                                         \n" +
-			    "                 }                                            \n" +
-			    "              ]                                               \n" +
-			    "           }                                                  \n" +
-			    "        ]                                                     \n" +
-			    "     }                                                        \n" +
-			    //----------------------------------------------------------------//	
-			    "  ]                                                           \n" +
-			    "}                                                             \n";
-		
-		SchemaParser parser = getSchemaParser();
-		ParserResponse response = parser.parse(config);
 
-		assertTrue(response.hasMessages());
-		assertEquals(1, response.getMessages().size());
-
-		ParserMessage actual = response.getMessages().get(0);
-		ParserMessage expected = new ParserMessageImpl(new Location("/states[0]/parameters/"), PROPERTY_NOT_LIST, "parameters");
-		assertMessageEqual(expected, actual);
-
-	}
 
 	/**
 	 * STATES_CLAUSE_NOT_LIST, STATEREF_UNDEFINED
@@ -627,7 +532,7 @@ public class ParserSerialStatesErrorTest extends BaseTestCore {
 				"  'variations':[                                              \n" +
 			    "     {                                                        \n" +
 			    "        'name':'Test1',                                       \n" +
-			    "        'isOn': false,                                       \n" +
+			    "        'isOn': false,                                        \n" +
 			    "        'experiences':[                                       \n" +
 			    "           {                                                  \n" +
 			    "              'name':'A',                                     \n" +
@@ -641,22 +546,7 @@ public class ParserSerialStatesErrorTest extends BaseTestCore {
 			    "        ],                                                    \n" +
 			    "        'onStates':[                                          \n" +
 			    "           {                                                  \n" +
-			    "              'stateRef':'state1',                            \n" +
-			    "              'variants':[                                    \n" +
-			    "                 {                                            \n" +
-			    "                    'experienceRef':'A',                      \n" +
-	    	    "                    'parameters': [                           \n" +
-			    "                       {                                      \n" +
-			    "                          'name':'foo',                       \n" +
-			    "                          'value':'bar'                       \n" +
-			    "                       },                                     \n" +
-			    "                       {                                      \n" +
-			    "                          'name':'bar',                       \n" +
-			    "                          'value':'foo'                       \n" +
-			    "                       }                                      \n" +
-			    "                    ]                                         \n" +
-			    "                 }                                            \n" +
-			    "              ]                                               \n" +
+			    "              'stateRef':'state1'                             \n" +
 			    "           }                                                  \n" +
 			    "        ]                                                     \n" +
 			    "     }                                                        \n" +

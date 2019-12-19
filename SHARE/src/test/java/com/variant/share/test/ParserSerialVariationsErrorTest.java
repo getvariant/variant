@@ -36,16 +36,10 @@ public class ParserSerialVariationsErrorTest extends BaseTestCore {
 			    "  },                                                           \n" +
 			    "   'states':[                                                 \n" +
 			    "     {  'name':'state1',                                      \n" +
-	    	    "         'parameters': [                                      \n" +
-			    "            {                                                 \n" +
-			    "               'name':'foo',                                  \n" +
-			    "               'value':'bar'                                  \n" +
-			    "            },                                                \n" +
-			    "            {                                                 \n" +
-			    "               'name':'bar',                                  \n" +
-			    "               'value':'foo'                                  \n" +
-			    "            }                                                 \n" +
-			    "        ]                                                     \n" +
+	    	    "         'parameters': {                                      \n" +
+			    "               'foo':'foo',                                   \n" +
+			    "               'bar':  'bar'                                  \n" +
+			    "        }                                                     \n" +
 			    "      }                                                       \n" +
 			    "   ]                                                          \n" +
 			    "}                                                             \n";
@@ -128,17 +122,7 @@ public class ParserSerialVariationsErrorTest extends BaseTestCore {
 			    "              'stateRef':'state1',                            \n" +
 			    "              'variants':[                                    \n" +
 			    "                 {                                            \n" +
-			    "                    'experienceRef':'A',                      \n" +
-	    	    "                    'parameters': [                           \n" +
-			    "                       {                                      \n" +
-			    "                          'name':'foo',                       \n" +
-			    "                          'value':'bar'                       \n" +
-			    "                       },                                     \n" +
-			    "                       {                                      \n" +
-			    "                          'name':'bar',                       \n" +
-			    "                          'value':'foo'                       \n" +
-			    "                       }                                      \n" +
-			    "                    ]                                         \n" +
+			    "                    'experienceRef':'A'                       \n" +
 			    "                 }                                            \n" +
 			    "              ]                                               \n" +
 			    "           }                                                  \n" +
@@ -191,18 +175,7 @@ public class ParserSerialVariationsErrorTest extends BaseTestCore {
 			    "        ],                                                    \n" +
 			    "        'onStates':[                                           \n" +
 			    "           {                                                  \n" +
-			    "              'stateRef':'state1',                              \n" +
-			    "              'variants':[                                    \n" +
-			    "                 {                                            \n" +
-			    "                    'experienceRef':'A',                      \n" +
-	    	    "                    'parameters': [                           \n" +
-			    "                       {                                      \n" +
-			    "                          'name':'bar',                        \n" +
-			    "                          'value':'foo'                       \n" +
-			    "                       }                                      \n" +
-			    "                    ]                                         \n" +
-			    "                 }                                            \n" +
-			    "              ]                                               \n" +
+			    "              'stateRef':'state1'                              \n" +
 			    "           }                                                  \n" +
 			    "        ]                                                     \n" +
 			    "     }                                                        \n" +
@@ -257,18 +230,7 @@ public class ParserSerialVariationsErrorTest extends BaseTestCore {
 			    "        ],                                                    \n" +
 			    "        'onStates':[                                           \n" +
 			    "           {                                                  \n" +
-			    "              'stateRef':'state1',                              \n" +
-			    "              'variants':[                                    \n" +
-			    "                 {                                            \n" +
-			    "                    'experienceRef':'A',                      \n" +
-	    	    "                    'parameters': [                           \n" +
-			    "                       {                                      \n" +
-			    "                          'name':'bar',                        \n" +
-			    "                          'value':'foo'                       \n" +
-			    "                       }                                      \n" +
-			    "                    ]                                         \n" +
-			    "                 }                                            \n" +
-			    "              ]                                               \n" +
+			    "              'stateRef':'state1'                              \n" +
 			    "           }                                                  \n" +
 			    "        ]                                                     \n" +
 			    "     }                                                        \n" +
@@ -291,7 +253,7 @@ public class ParserSerialVariationsErrorTest extends BaseTestCore {
 	}
 	
 	/**
-	 * TEST_NAME_DUPE
+	 * VARIATION_NAME_DUPE
 	 * @throws Exception
 	 */
 	@Test
@@ -323,18 +285,7 @@ public class ParserSerialVariationsErrorTest extends BaseTestCore {
 			    "        ],                                                    \n" +
 			    "        'onStates':[                                          \n" +
 			    "           {                                                  \n" +
-			    "              'stateRef':'state1',                            \n" +
-			    "              'variants':[                                    \n" +
-			    "                 {                                            \n" +
-			    "                    'experienceRef':'A',                      \n" +
-	    	    "                    'parameters': [                           \n" +
-			    "                       {                                      \n" +
-			    "                          'name':'path',                      \n" +
-			    "                          'value':'/path/to/state1/test1.A'   \n" +
-			    "                       }                                      \n" +
-			    "                    ]                                         \n" +
-			    "                 }                                            \n" +
-			    "              ]                                               \n" +
+			    "              'stateRef':'state1'                             \n" +
 			    "           }                                                  \n" +
 			    "        ]                                                     \n" +
 			    "     },                                                       \n" +
@@ -354,18 +305,7 @@ public class ParserSerialVariationsErrorTest extends BaseTestCore {
 			    "        ],                                                    \n" +
 			    "        'onStates':[                                          \n" +
 			    "           {                                                  \n" +
-			    "              'stateRef':'state1',                            \n" +
-			    "              'variants':[                                    \n" +
-			    "                 {                                            \n" +
-			    "                    'experienceRef':'A',                      \n" +
-	    	    "                    'parameters': [                           \n" +
-			    "                       {                                      \n" +
-			    "                          'name':'path',                      \n" +
-			    "                          'value':'/path/to/state1/test1.A'   \n" +
-			    "                       }                                      \n" +
-			    "                    ]                                         \n" +
-			    "                 }                                            \n" +
-			    "              ]                                               \n" +
+			    "              'stateRef':'state1'                             \n" +
 			    "           }                                                  \n" +
 			    "        ]                                                     \n" +
 			    "     }                                                        \n" +
@@ -421,12 +361,7 @@ public class ParserSerialVariationsErrorTest extends BaseTestCore {
 			    "        ],                                                    \n" +
 			    "        'onStates':[                                           \n" +
 			    "           {                                                  \n" +
-			    "              'stateRef':'state1',                              \n" +
-			    "              'variants':[                                    \n" +
-			    "                 {                                            \n" +
-			    "                    'experienceRef':'A'                       \n" +
-			    "                 }                                            \n" +
-			    "              ]                                               \n" +
+			    "              'stateRef':'state1'                              \n" +
 			    "           }                                                  \n" +
 			    "        ]                                                     \n" +
 			    "     }                                                        \n" +
@@ -471,18 +406,7 @@ public class ParserSerialVariationsErrorTest extends BaseTestCore {
 			    "        'experiences':{'foo':'bar'},                          \n" +
 			    "        'onStates':[                                           \n" +
 			    "           {                                                  \n" +
-			    "              'stateRef':'state1',                              \n" +
-			    "              'variants':[                                    \n" +
-			    "                 {                                            \n" +
-			    "                    'experienceRef':'A',                      \n" +
-	    	    "                    'parameters': [                           \n" +
-			    "                       {                                      \n" +
-			    "                          'name':'bar',                        \n" +
-			    "                          'value':'foo'                       \n" +
-			    "                       }                                      \n" +
-			    "                    ]                                         \n" +
-			    "                 }                                            \n" +
-			    "              ]                                               \n" +
+			    "              'stateRef':'state1'                              \n" +
 			    "           }                                                  \n" +
 			    "        ]                                                     \n" +
 			    "     }                                                        \n" +
@@ -530,12 +454,7 @@ public class ParserSerialVariationsErrorTest extends BaseTestCore {
 			    "        ],                                                    \n" +
 			    "        'onStates':[                                          \n" +
 			    "           {                                                  \n" +
-			    "              'stateRef':'state1',                            \n" +
-			    "              'variants':[                                    \n" +
-			    "                 {                                            \n" +
-			    "                    'experienceRef':'A'                       \n" +
-			    "                 }                                            \n" +
-			    "              ]                                               \n" +
+			    "              'stateRef':'state1'                             \n" +
 			    "           }                                                  \n" +
 			    "        ]                                                     \n" +
 			    "     }                                                        \n" +
@@ -592,12 +511,7 @@ public class ParserSerialVariationsErrorTest extends BaseTestCore {
 			    "        ],                                                    \n" +
 			    "        'onStates':[                                           \n" +
 			    "           {                                                  \n" +
-			    "              'stateRef':'state1',                              \n" +
-			    "              'variants':[                                    \n" +
-			    "                 {                                            \n" +
-			    "                    'experienceRef':'B'                       \n" +
-			    "                 }                                            \n" +
-			    "              ]                                               \n" +
+			    "              'stateRef':'state1'                              \n" +
 			    "           }                                                  \n" +
 			    "        ]                                                     \n" +
 			    "     }                                                        \n" +
@@ -676,10 +590,7 @@ public class ParserSerialVariationsErrorTest extends BaseTestCore {
 			    "        ],                                                    \n" +
 			    "        'onStates':[                                           \n" +
 			    "           {                                                  \n" +
-			    "              'stateRef':'state1',                              \n" +
-			    "              'variants':[                                    \n" +
-			    "                 {'experienceRef':'B'}                        \n" +
-			    "              ]                                               \n" +
+			    "              'stateRef':'state1'                              \n" +
 			    "           }                                                  \n" +
 			    "        ]                                                     \n" +
 			    "     }                                                        \n" +
@@ -738,18 +649,7 @@ public class ParserSerialVariationsErrorTest extends BaseTestCore {
 			    "        ],                                                    \n" +
 			    "        'onStates':[                                           \n" +
 			    "           {                                                  \n" +
-			    "              'stateRef':'state1',                              \n" +
-			    "              'variants':[                                    \n" +
-			    "                 {                                            \n" +
-			    "                    'experienceRef':'A',                      \n" +
-	    	    "                    'parameters': [                           \n" +
-			    "                       {                                      \n" +
-			    "                          'name':'bar',                        \n" +
-			    "                          'value':'foo'                       \n" +
-			    "                       }                                      \n" +
-			    "                    ]                                         \n" +
-			    "                 }                                            \n" +
-			    "              ]                                               \n" +
+			    "              'stateRef':'state1'                              \n" +
 			    "           }                                                  \n" +
 			    "        ]                                                     \n" +
 			    "     }                                                        \n" +
@@ -804,12 +704,7 @@ public class ParserSerialVariationsErrorTest extends BaseTestCore {
 			    "        ],                                                    \n" +
 			    "        'onStates':[                                           \n" +
 			    "           {                                                  \n" +
-			    "              'stateRef':'state1',                              \n" +
-			    "              'variants':[                                    \n" +
-			    "                 {                                            \n" +
-			    "                    'experienceRef':'A'                       \n" +
-			    "                 }                                            \n" +
-			    "              ]                                               \n" +
+			    "              'stateRef':'state1'                              \n" +
 			    "           }                                                  \n" +
 			    "        ]                                                     \n" +
 			    "     }                                                        \n" +
@@ -865,18 +760,7 @@ public class ParserSerialVariationsErrorTest extends BaseTestCore {
 			    "        ],                                                    \n" +
 			    "        'onStates':[                                           \n" +
 			    "           {                                                  \n" +
-			    "              'stateRef':'state1',                              \n" +
-			    "              'variants':[                                    \n" +
-			    "                 {                                            \n" +
-			    "                    'experienceRef':'A',                      \n" +
-	    	    "                    'parameters': [                           \n" +
-			    "                       {                                      \n" +
-			    "                          'name':'bar',                        \n" +
-			    "                          'value':'foo'                       \n" +
-			    "                       }                                      \n" +
-			    "                    ]                                         \n" +
-			    "                 }                                            \n" +
-			    "              ]                                               \n" +
+			    "              'stateRef':'state1'                              \n" +
 			    "           }                                                  \n" +
 			    "        ]                                                     \n" +
 			    "     }                                                        \n" +
@@ -932,12 +816,7 @@ public class ParserSerialVariationsErrorTest extends BaseTestCore {
 			    "        ],                                                    \n" +
 			    "        'onStates':                                           \n" +
 			    "           {                                                  \n" +
-			    "              'stateRef':'state1',                            \n" +
-			    "              'variants':[                                    \n" +
-			    "                 {                                            \n" +
-			    "                    'experienceRef':'A'                       \n" +
-			    "                 }                                            \n" +
-			    "              ]                                               \n" +
+			    "              'stateRef':'state1'                            \n" +
 			    "           }                                                  \n" +
 			    "                                                              \n" +
 			    "     }                                                        \n" +
@@ -1099,16 +978,10 @@ public class ParserSerialVariationsErrorTest extends BaseTestCore {
 			    "              'variants':[                                    \n" +
 			    "                 {                                            \n" +
 			    "                    'experienceRef':'A',                      \n" +
-	    	    "                    'parameters': [                           \n" +
-			    "                       {                                      \n" +
-			    "                          'name':'foo',                       \n" +
-			    "                          'value':'bar'                       \n" +
-			    "                       },                                     \n" +
-			    "                       {                                      \n" +
-			    "                          'name':'bar',                       \n" +
-			    "                          'value':'foo'                       \n" +
-			    "                       }                                      \n" +
-			    "                    ]                                         \n" +
+	    	    "                    'parameters': {                           \n" +
+			    "                          'foo':'foo',                       \n" +
+			    "                          'bar':'bar'                       \n" +
+			    "                    }                                         \n" +
 			    "                 }                                            \n" +
 			    "              ]                                               \n" +
 			    "           }                                                  \n" +
@@ -1168,12 +1041,10 @@ public class ParserSerialVariationsErrorTest extends BaseTestCore {
 			    "              'variants':[                                    \n" +
 			    "                 {                                            \n" +
 			    "                    'experienceRef':'A',                      \n" +
-	    	    "                    'parameters': [                           \n" +
-			    "                       {                                      \n" +
-			    "                          'name':'bar',                        \n" +
-			    "                          'value':'foo'                       \n" +
-			    "                       }                                      \n" +
-			    "                    ]                                         \n" +
+	    	    "                    'parameters': {                           \n" +
+			    "                          'bar':'bar',                        \n" +
+			    "                          'foo':'foo'                         \n" +
+			    "                    }                                         \n" +
 			    "                 }                                            \n" +
 			    "              ]                                               \n" +
 			    "           }                                                  \n" +
@@ -1298,18 +1169,7 @@ public class ParserSerialVariationsErrorTest extends BaseTestCore {
 			    "        ],                                                    \n" +
 			    "        'onStates':[                                           \n" +
 			    "           {                                                  \n" +
-			    "              'stateRef':'State1',                              \n" +
-			    "              'variants':[                                    \n" +
-			    "                 {                                            \n" +
-			    "                    'experienceRef':'A',                      \n" +
-	    	    "                    'parameters': [                           \n" +
-			    "                       {                                      \n" +
-			    "                          'name':'bar',                        \n" +
-			    "                          'value':'foo'                       \n" +
-			    "                       }                                      \n" +
-			    "                    ]                                         \n" +
-			    "                 }                                            \n" +
-			    "              ]                                               \n" +
+			    "              'stateRef':'State1'                              \n" +
 			    "           }                                                  \n" +
 			    "        ]                                                     \n" +
 			    "     }                                                        \n" +
@@ -1489,17 +1349,7 @@ public class ParserSerialVariationsErrorTest extends BaseTestCore {
 			    "              'VARIANTS':[                                    \n" +
 			    "                 {                                            \n" +
 			    "                    'experienceRef':'A',                      \n" +
-	    	    "                    'parameters': [                           \n" +
-			    "                       {                                      \n" +
-			    "                          'name':'foo',                       \n" +
-			    "                          'value':'bar'                       \n" +
-			    "                       },                                     \n" +
-			    "                       {                                      \n" +
-			    "                          'name':'bar',                       \n" +
-			    "                          'value':'foo'                       \n" +
-			    "                       }                                      \n" +
-			    "                    ],                                        \n" +
-                "                    'unsupported': 'unsupported property'     \n" +
+                "                 'unsupported': 'unsupported property'     \n" +
 			    "                 }                                            \n" +
 			    "              ]                                               \n" +
 			    "           }                                                  \n" +
@@ -1619,12 +1469,10 @@ public class ParserSerialVariationsErrorTest extends BaseTestCore {
 			    "              'variants':[                                    \n" +
 			    "                 {                                            \n" +
 //			    "                    'experienceRef':'A',                      \n" +
-                "                    'parameters': [                           \n" +
-                "                       {                                      \n" +
-                "                          'name':'bar',                        \n" +
-                "                          'value':'foo'                       \n" +
-                "                       }                                      \n" +
-                "                    ]                                         \n" +
+                "                 'parameters': {                           \n" +
+                "                       'bar':'bar',                        \n" +
+                "                       'foo':'foo'                         \n" +
+                "                  }                                         \n" +
 			    "                 }                                            \n" +
 			    "              ]                                               \n" +
 			    "           }                                                  \n" +
@@ -1686,18 +1534,12 @@ public class ParserSerialVariationsErrorTest extends BaseTestCore {
 			    "              'variants':[                                    \n" +
 			    "                 {                                            \n" +
 			    "                    'experienceRef': true,                    \n" +
-                "                    'parameters': {                           \n" +
+                "                 'parameters': {                           \n" +
 			    "                       'path':'/path/to/state1/test1.A'           \n" +
 			    "                    }                                         \n" +
 			    "                 },                                           \n" +
 			    "                 {                                            \n" +
-			    "                    'experienceRef': 'A',                     \n" +
-	    	    "                    'parameters': [                           \n" +
-			    "                       {                                      \n" +
-			    "                          'name':'bar',                        \n" +
-			    "                          'value':'foo'                       \n" +
-			    "                       }                                      \n" +
-			    "                    ]                                         \n" +
+			    "                    'experienceRef': 'A'                      \n" +
 			    "                 }                                            \n" +
 			    "              ]                                               \n" +
 			    "           }                                                  \n" +
@@ -1759,12 +1601,10 @@ public class ParserSerialVariationsErrorTest extends BaseTestCore {
 			    "              'variants':[                                    \n" +
 			    "                 {                                            \n" +
 			    "                    'experienceRef': 'foo',                   \n" +
-	    	    "                    'parameters': [                           \n" +
-			    "                       {                                      \n" +
-			    "                          'name':'bar',                        \n" +
-			    "                          'value':'foo'                       \n" +
-			    "                       }                                      \n" +
-			    "                    ]                                         \n" +
+             "                    'parameters': {                           \n" +
+             "                       'bar':'bar',                        \n" +
+             "                       'foo':'foo'                         \n" +
+             "                    }                                         \n" +
 			    "                 }                                            \n" +
 			    "              ]                                               \n" +
 			    "           }                                                  \n" +
@@ -1918,21 +1758,16 @@ public class ParserSerialVariationsErrorTest extends BaseTestCore {
 		assertTrue(response.hasMessages(Severity.ERROR));
 		assertTrue(response.hasMessages(Severity.WARN));
 		assertTrue(response.hasMessages(Severity.INFO));
-		assertEquals(3, response.getMessages().size());
+		assertEquals(2, response.getMessages().size());
 		ParserMessage actual = response.getMessages().get(0);
 		ParserMessage expected = new ParserMessageImpl(
-				new Location("/variations[0]/onStates[0]/variants[0]/parameters[0]/"), 
-				ELEMENT_NOT_OBJECT, "parameters");
+				new Location("/variations[0]/onStates[0]/variants[0]/"), 
+				PROPERTY_NOT_OBJECT, "parameters");
 		assertMessageEqual(expected, actual);
 		actual = response.getMessages().get(1);
 		expected = new ParserMessageImpl(
-				new Location("/variations[0]/onStates[0]/variants[0]/parameters[1]/"), 
-				ELEMENT_NOT_OBJECT, "parameters");
-		assertMessageEqual(expected, actual);
-		actual = response.getMessages().get(2);
-		expected = new ParserMessageImpl(
-				new Location("/variations[0]/onStates[1]/variants[0]/parameters/"), 
-				PROPERTY_NOT_LIST, "parameters");
+				new Location("/variations[0]/onStates[0]/variants[1]/"), 
+				PROPERTY_NOT_OBJECT, "parameters");
 		assertMessageEqual(expected, actual);
 	}
 
@@ -1973,22 +1808,7 @@ public class ParserSerialVariationsErrorTest extends BaseTestCore {
 			    "        ],                                                    \n" +
 			    "        'onStates':[                                           \n" +
 			    "           {                                                  \n" +
-			    "              'stateRef':'state1',                              \n" +
-			    "              'variants':[                                    \n" +
-			    "                 {                                            \n" +
-			    "                    'experienceRef': 'A',                     \n" +
-	    	    "                    'parameters': [                           \n" +
-			    "                       {                                      \n" +
-			    "                          'name':'foo',                       \n" +
-			    "                          'value':'bar'                       \n" +
-			    "                       },                                     \n" +
-			    "                       {                                      \n" +
-			    "                          'name':'bar',                       \n" +
-			    "                          'value':'foo'                       \n" +
-			    "                       }                                      \n" +
-			    "                    ]                                         \n" +
-			    "                 }                                            \n" +
-			    "              ]                                               \n" +
+			    "              'stateRef':'state1'                              \n" +
 			    "           }                                                  \n" +
 			    "        ]                                                     \n" +
 			    "     }                                                        \n" +
@@ -2047,15 +1867,7 @@ public class ParserSerialVariationsErrorTest extends BaseTestCore {
 			    "        ],                                                    \n" +
 			    "        'onStates':[                                           \n" +
 			    "           {                                                  \n" +
-			    "              'stateRef':'state1',                              \n" +
-			    "              'variants':[                                    \n" +
-			    "                 {                                            \n" +
-			    "                    'experienceRef': 'A',                     \n" +
-                "                    'parameters': {                           \n" +
-			    "                       'path':'/path/to/state1/test1.A'           \n" +
-			    "                    }                                         \n" +
-			    "                 }                                            \n" +
-			    "              ]                                               \n" +
+			    "              'stateRef':'state1'                              \n" +
 			    "           }                                                  \n" +
 			    "        ]                                                     \n" +
 			    "     }                                                        \n" +
@@ -2183,21 +1995,17 @@ public class ParserSerialVariationsErrorTest extends BaseTestCore {
 			    "              'variants':[                                    \n" +
 			    "                 {                                            \n" +
 			    "                    'experienceRef': 'A',                     \n" +
-	    	    "                    'parameters': [                           \n" +
-			    "                       {                                      \n" +
-			    "                          'name':'bar',                        \n" +
-			    "                          'value':'foo'                       \n" +
-			    "                       }                                      \n" +
-			    "                    ]                                         \n" +
+             "                    'parameters': {                           \n" +
+             "                       'bar':'bar',                        \n" +
+             "                       'foo':'foo'                         \n" +
+             "                    }                                         \n" +
 			    "                 },                                           \n" +
 			    "                 {                                            \n" +
 			    "                    'experienceRef': 'A',                     \n" +
-	    	    "                    'parameters': [                           \n" +
-			    "                       {                                      \n" +
-			    "                          'name':'bar',                        \n" +
-			    "                          'value':'foo'                       \n" +
-			    "                       }                                      \n" +
-			    "                    ]                                         \n" +
+             "                    'parameters': {                           \n" +
+             "                       'bar':'bar',                        \n" +
+             "                       'foo':'foo'                         \n" +
+             "                    }                                         \n" +
 			    "                 }                                            \n" +
 			    "              ]                                               \n" +
 			    "           }                                                  \n" +
@@ -2256,17 +2064,6 @@ public class ParserSerialVariationsErrorTest extends BaseTestCore {
 			    "        'onStates':[                                          \n" +
 			    "           {                                                  \n" +
 			    "              'stateRef':'state1',                            \n" +
-			    "              'variants':[                                    \n" +
-			    "                 {                                            \n" +
-			    "                    'experienceRef':'A',                      \n" +
-	    	    "                    'parameters': [                           \n" +
-			    "                       {                                      \n" +
-			    "                          'name':'foo',                       \n" +
-			    "                          'value':'bar'                       \n" +
-			    "                       }                                      \n" +
-			    "                    ]                                         \n" +
-			    "                 }                                            \n" +
-			    "              ],                                              \n" +
 			    "              /*  no longer supported */                     \n" +
 			    "              'isNonvariant':false                            \n" +
 			    "           }                                                  \n" +
@@ -2319,15 +2116,7 @@ public class ParserSerialVariationsErrorTest extends BaseTestCore {
 			    "        ],                                                    \n" +
 			    "        'onStates':[                                          \n" +
 			    "           {                                                  \n" +
-			    "              'stateRef':'state1',                            \n" +
-			    "              'variants':[                                    \n" +
-			    "                 {                                            \n" +
-			    "                    'experienceRef': 'A',                     \n" +
-                "                    'parameters': {                           \n" +
-			    "                       'path':'/path/to/state1/test1.A'       \n" +
-			    "                    }                                         \n" +
-			    "                 }                                            \n" +
-			    "              ]                                               \n" +
+			    "              'stateRef':'state1'                             \n" +
 			    "           }                                                  \n" +
 			    "        ]                                                     \n" +
 			    "     },                                                       \n" +
@@ -2346,15 +2135,7 @@ public class ParserSerialVariationsErrorTest extends BaseTestCore {
 			    "        ],                                                    \n" +
 			    "        'onStates':[                                          \n" +
 			    "           {                                                  \n" +
-			    "              'stateRef':'state1',                            \n" +
-			    "              'variants':[                                    \n" +
-			    "                 {                                            \n" +
-			    "                    'experienceRef': 'A',                     \n" +
-                "                    'parameters': {                           \n" +
-			    "                       'path':'/path/to/state1/test1.A'       \n" +
-			    "                    }                                         \n" +
-			    "                 }                                            \n" +
-			    "              ]                                               \n" +
+			    "              'stateRef':'state1'                             \n" +
 			    "           }                                                  \n" +
 			    "        ]                                                     \n" +
 			    "     },                                                       \n" +
@@ -2373,15 +2154,7 @@ public class ParserSerialVariationsErrorTest extends BaseTestCore {
 			    "        ],                                                    \n" +
 			    "        'onStates':[                                          \n" +
 			    "           {                                                  \n" +
-			    "              'stateRef':'state1',                            \n" +
-			    "              'variants':[                                    \n" +
-			    "                 {                                            \n" +
-			    "                    'experienceRef': 'A',                     \n" +
-                "                    'parameters': {                           \n" +
-			    "                       'path':'/path/to/state1/test1.A'       \n" +
-			    "                    }                                         \n" +
-			    "                 }                                            \n" +
-			    "              ]                                               \n" +
+			    "              'stateRef':'state1'                             \n" +
 			    "           }                                                  \n" +
 			    "        ]                                                     \n" +
 			    "     },                                                       \n" +
@@ -2400,15 +2173,7 @@ public class ParserSerialVariationsErrorTest extends BaseTestCore {
 			    "        ],                                                    \n" +
 			    "        'onStates':[                                          \n" +
 			    "           {                                                  \n" +
-			    "              'stateRef':'state1',                            \n" +
-			    "              'variants':[                                    \n" +
-			    "                 {                                            \n" +
-			    "                    'experienceRef': 'A',                     \n" +
-                "                    'parameters': {                           \n" +
-			    "                       'path':'/path/to/state1/test1.A'       \n" +
-			    "                    }                                         \n" +
-			    "                 }                                            \n" +
-			    "              ]                                               \n" +
+			    "              'stateRef':'state1'                             \n" +
 			    "           }                                                  \n" +
 			    "        ]                                                     \n" +
 			    "     },                                                       \n" +
@@ -2427,12 +2192,7 @@ public class ParserSerialVariationsErrorTest extends BaseTestCore {
 			    "        ],                                                    \n" +
 			    "        'onStates':[                                          \n" +
 			    "           {                                                  \n" +
-			    "              'stateRef':'state1',                            \n" +
-			    "              'variants':[                                    \n" +
-			    "                 {                                            \n" +
-			    "                    'experienceRef': 'A'                      \n" +
-			    "                 }                                            \n" +
-			    "              ]                                               \n" +
+			    "              'stateRef':'state1'                             \n" +
 			    "           }                                                  \n" +
 			    "        ]                                                     \n" +
 			    "     }                                                        \n" +

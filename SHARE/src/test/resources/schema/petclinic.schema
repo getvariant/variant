@@ -16,22 +16,16 @@
       { 
          // The vets page
          'name':'vets',
-         'parameters': [
-            {
-               'name':'path',
-               'value':'/petclinic/vets.html'
-            }
-         ]
+         'parameters': {
+             'path':'/petclinic/vets.html'
+         }
       },
       {
          // The new visit page
          'name':'newVisit',
-         'parameters': [
-            {
-               'name':'path',
-               'value':'/petclinic/owners/~\\d+/pets/~\\d+/visits/new'
-            }
-         ]
+         'parameters': {
+             'path':'/petclinic/owners/~\\d+/pets/~\\d+/visits/new'
+         }
       } 
    ],                                                        
 

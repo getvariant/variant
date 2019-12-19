@@ -59,18 +59,7 @@ public class ParserStateHooksErrorTest extends BaseTestCore {
 			    "        ],                                                    \n" +
 			    "        'onStates':[                                          \n" +
 			    "           {                                                  \n" +
-			    "              'stateRef':'state1',                            \n" +
-			    "              'variants':[                                    \n" +
-			    "                 {                                            \n" +
-			    "                    'experienceRef': 'B',                     \n" +
-	    	    "                    'parameters': [                           \n" +
-			    "                       {                                      \n" +
-			    "                          'name':'path',                      \n" +
-			    "                          'value':'/path/to/state1/test1.B'   \n" +
-			    "                       }                                      \n" +
-			    "                    ]                                         \n" +
-			    "                 }                                            \n" +
-			    "              ]                                               \n" +
+			    "              'stateRef':'state1'                             \n" +
 			    "           }                                                  \n" +
 			    "        ]                                                     \n" +
 			    "     }                                                        \n" +
@@ -123,18 +112,7 @@ public class ParserStateHooksErrorTest extends BaseTestCore {
 			    "        ],                                                    \n" +
 			    "        'onStates':[                                          \n" +
 			    "           {                                                  \n" +
-			    "              'stateRef':'state1',                            \n" +
-			    "              'variants':[                                    \n" +
-			    "                 {                                            \n" +
-			    "                    'experienceRef': 'B',                     \n" +
-	    	    "                    'parameters': [                           \n" +
-			    "                       {                                      \n" +
-			    "                          'name':'path',                      \n" +
-			    "                          'value':'/path/to/state1/test1.B'   \n" +
-			    "                       }                                      \n" +
-			    "                    ]                                         \n" +
-			    "                 }                                            \n" +
-			    "              ]                                               \n" +
+			    "              'stateRef':'state1'                             \n" +
 			    "           }                                                  \n" +
 			    "        ]                                                     \n" +
 			    "     }                                                        \n" +
@@ -190,18 +168,7 @@ public class ParserStateHooksErrorTest extends BaseTestCore {
 			    "        ],                                                    \n" +
 			    "        'onStates':[                                          \n" +
 			    "           {                                                  \n" +
-			    "              'stateRef':'state1',                            \n" +
-			    "              'variants':[                                    \n" +
-			    "                 {                                            \n" +
-			    "                    'experienceRef': 'B',                     \n" +
-	    	    "                    'parameters': [                           \n" +
-			    "                       {                                      \n" +
-			    "                          'name':'path',                      \n" +
-			    "                          'value':'/path/to/state1/test1.B'   \n" +
-			    "                       }                                      \n" +
-			    "                    ]                                         \n" +
-			    "                 }                                            \n" +
-			    "              ]                                               \n" +
+			    "              'stateRef':'state1'                             \n" +
 			    "           }                                                  \n" +
 			    "        ]                                                     \n" +
 			    "     }                                                        \n" +
@@ -257,18 +224,7 @@ public class ParserStateHooksErrorTest extends BaseTestCore {
 			    "        ],                                                    \n" +
 			    "        'onStates':[                                          \n" +
 			    "           {                                                  \n" +
-			    "              'stateRef':'state1',                            \n" +
-			    "              'variants':[                                    \n" +
-			    "                 {                                            \n" +
-			    "                    'experienceRef': 'B',                     \n" +
-	    	    "                    'parameters': [                           \n" +
-			    "                       {                                      \n" +
-			    "                          'name':'path',                      \n" +
-			    "                          'value':'/path/to/state1/test1.B'   \n" +
-			    "                       }                                      \n" +
-			    "                    ]                                         \n" +
-			    "                 }                                            \n" +
-			    "              ]                                               \n" +
+			    "              'stateRef':'state1'                             \n" +
 			    "           }                                                  \n" +
 			    "        ]                                                     \n" +
 			    "     }                                                        \n" +

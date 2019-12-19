@@ -1,10 +1,11 @@
 package com.variant.share.test;
 
-import static com.variant.share.schema.parser.error.SemanticError.NAME_MISSING;
-import static com.variant.share.schema.parser.error.SemanticError.PROPERTY_NOT_LIST;
+import static com.variant.share.schema.parser.error.SemanticError.PARAM_NAME_DUPE;
+import static com.variant.share.schema.parser.error.SemanticError.PARAM_NAME_INVALID;
+import static com.variant.share.schema.parser.error.SemanticError.PARAM_VALUE_INVALID;
+import static com.variant.share.schema.parser.error.SemanticError.PROPERTY_NOT_OBJECT;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
@@ -72,8 +73,8 @@ public class ParserStateParamsTest extends BaseTestCore {
 		SchemaParser parser = getSchemaParser();
 		ParserResponse response = parser.parse(config);
 		
+      if (response.hasMessages()) printMessages(response);
 		assertFalse(response.hasMessages());
-		assertEquals(0, response.getMessages().size());
 		
 		Schema schema = response.getSchema();
 		assertFalse(schema.getState("state1").get().getParameters().isPresent());
@@ -83,7 +84,7 @@ public class ParserStateParamsTest extends BaseTestCore {
 	/**
 	 */
 	@Test
-	public void notListTest() throws Exception {
+	public void notOblectTest() throws Exception {
 		
 		String config = 
 				"{                                                             \n" +
@@ -94,11 +95,11 @@ public class ParserStateParamsTest extends BaseTestCore {
 			    "  'states':[                                                  \n" +
 			    "     {                                                        \n" +
 			    "        'name':'state1',                                      \n" +
-	    	    "        'parameters':                                         \n" +
+	    	    "        'parameters':  [                                      \n" +
 			    "           {                                                  \n" +
-			    "              'name':'foo',                                   \n" +
-			    "              'value':'bar'                                   \n" +
+			    "              'name':'value'                                  \n" +
 			    "           }                                                  \n" +
+             "         ]                                                    \n" +
 			    "     }                                                        \n" +
 			    "  ],                                                          \n" +
 				"  'variations':[                                              \n" +
@@ -137,14 +138,14 @@ public class ParserStateParamsTest extends BaseTestCore {
 		assertEquals(1, response.getMessages().size());
 
 		ParserMessage actual = response.getMessages().get(0);
-		ParserMessage expected = new ParserMessageImpl(new Location("/states[0]/parameters/"), PROPERTY_NOT_LIST, "parameters");
+		ParserMessage expected = new ParserMessageImpl(new Location("/states[0]/parameters/"), PROPERTY_NOT_OBJECT, "parameters");
 		assertMessageEqual(expected, actual);
 	}
 
 	/**
 	 */
 	@Test
-	public void emptyListTest() throws Exception {
+	public void emptyObjectTest() throws Exception {
 		
 		String config = 
 				"{                                                             \n" +
@@ -155,7 +156,7 @@ public class ParserStateParamsTest extends BaseTestCore {
 			    "  'states':[                                                  \n" +
 			    "     {                                                        \n" +
 			    "        'name':'state1',                                      \n" +
-	    	    "        'parameters': []                                      \n" +
+	    	    "        'parameters':{}                                       \n" +
 			    "     }                                                        \n" +
 			    "  ],                                                          \n" +
 				"  'variations':[                                              \n" +
@@ -190,8 +191,8 @@ public class ParserStateParamsTest extends BaseTestCore {
 		SchemaParser parser = getSchemaParser();
 		ParserResponse response = parser.parse(config);
 
+      if (response.hasMessages()) printMessages(response);
 		assertFalse(response.hasMessages());
-		assertEquals(0, response.getMessages().size());
 
 		Schema schema = response.getSchema();
 		State s1 = schema.getState("state1").get();
@@ -203,7 +204,7 @@ public class ParserStateParamsTest extends BaseTestCore {
 	/**
 	 */
 	@Test
-	public void noNameTest() throws Exception {
+	public void validTest() throws Exception {
 		
 		String config = 
 				"{                                                             \n" +
@@ -214,19 +215,13 @@ public class ParserStateParamsTest extends BaseTestCore {
 			    "  'states':[                                                  \n" +
 			    "     {                                                        \n" +
 			    "        'name':'state1',                                      \n" +
-	    	    "        'parameters': [                                       \n" +
-			    "           {                                                  \n" +
-			    "              'name':'foo',                                   \n" +
-			    "              'value':'bar'                                   \n" +
-			    "           },                                                 \n" +
-			    "           {                                                  \n" +
-//			    "              'name':'foo',                                   \n" +
-			    "              'value':'bar'                                   \n" +
-			    "           }                                                  \n" +
-			    "        ]                                                     \n" +
+	    	    "        'parameters': {                                       \n" +
+			    "           'foo':'bar',                                       \n" +
+             "           'foo2':'bar'                                       \n" +
+			    "        }                                                     \n" +
 			    "     }                                                        \n" +
 			    "  ],                                                          \n" +
-				"  'variations':[                                              \n" +
+				"  'variations':[                                               \n" +
 			    "     {                                                        \n" +
 			    "        'name':'test1',                                       \n" +
 			    "        'experiences':[                                       \n" +
@@ -258,86 +253,85 @@ public class ParserStateParamsTest extends BaseTestCore {
 		SchemaParser parser = getSchemaParser();
 		ParserResponse response = parser.parse(config);
 
-		assertTrue(response.hasMessages());
-		assertEquals(1, response.getMessages().size());
-
-		ParserMessage actual = response.getMessages().get(0);
-		ParserMessage expected = new ParserMessageImpl(new Location("/states[0]/parameters[1]/"), NAME_MISSING);
-		assertMessageEqual(expected, actual);
-	}
-
-	/**
-	 */
-	@Test
-	public void noValueTest() throws Exception {
-		
-		String config = 
-				"{                                                             \n" +
-			    "  'meta':{                                                    \n" +		    	    
-			    "      'name':'schema_name',                                   \n" +
-			    "      'comment':'schema comment'                              \n" +
-			    "  },                                                          \n" +
-			    "  'states':[                                                  \n" +
-			    "     {                                                        \n" +
-			    "        'name':'state1',                                      \n" +
-	    	    "        'parameters': [                                       \n" +
-			    "           {                                                  \n" +
-			    "              'name':'foo1'                                    \n" +
-//			    "              'value':'bar'                                   \n" + // default is null
-			    "           },                                                 \n" +
-			    "           {                                                  \n" +
-			    "              'name':'foo2',                                   \n" +
-			    "              'value': null                                   \n" + // explicit null
-			    "           }                                                  \n" +
-			    "        ]                                                     \n" +
-			    "     }                                                        \n" +
-			    "  ],                                                          \n" +
-				"  'variations':[                                              \n" +
-			    "     {                                                        \n" +
-			    "        'name':'test1',                                       \n" +
-			    "        'experiences':[                                       \n" +
-			    "           {                                                  \n" +
-			    "              'name':'A',                                     \n" +
-			    "              'weight':50                                     \n" +
-			    "           },                                                 \n" +
-			    "           {                                                  \n" +
-			    "              'name':'B',                                     \n" +
-			    "              'weight':50,                                    \n" +
-			    "              'isControl':true                                \n" +
-			    "           }                                                  \n" +
-			    "        ],                                                    \n" +
-			    "        'onStates':[                                          \n" +
-			    "           {                                                  \n" +
-			    "              'stateRef':'state1',                            \n" +
-			    "              'variants':[                                    \n" +
-			    "                 {                                            \n" +
-			    "                    'experienceRef':'A'                       \n" +
-			    "                 }                                            \n" +
-			    "              ]                                               \n" +
-			    "           }                                                  \n" +
-			    "        ]                                                     \n" +
-			    "     }                                                        \n" +
-			    //----------------------------------------------------------------//	
-			    "  ]                                                           \n" +
-			    "}                                                             \n";
-		
-		SchemaParser parser = getSchemaParser();
-		ParserResponse response = parser.parse(config);
+		if (response.hasMessages()) printMessages(response);
 		assertFalse(response.hasMessages());
-		assertEquals(0, response.getMessages().size());
-		
-		Schema schema = response.getSchema();
-		State s1 = schema.getState("state1").get();
-		assertTrue(s1.getParameters().get().containsKey("foo1"));
-		assertNull(s1.getParameters().get().get("foo1"));
-		assertTrue(s1.getParameters().get().containsKey("foo2"));
-		assertNull(s1.getParameters().get().get("foo2"));
+
+      Schema schema = response.getSchema();
+      State s1 = schema.getState("state1").get();
+      assertTrue(s1.getParameters().isPresent());
+      assertEquals("bar", s1.getParameters().get().get("foo"));
+      assertEquals("bar", s1.getParameters().get().get("fOo"));
+      assertEquals("bar", s1.getParameters().get().get("foo2"));
+      assertEquals("bar", s1.getParameters().get().get("Foo2"));
 	}
+
+   /**
+    */
+   @Test
+   public void dupeNameTest() throws Exception {
+      
+      String config = 
+            "{                                                             \n" +
+             "  'meta':{                                                    \n" +                
+             "      'name':'schema_name',                                   \n" +
+             "      'comment':'schema comment'                              \n" +
+             "  },                                                          \n" +
+             "  'states':[                                                  \n" +
+             "     {                                                        \n" +
+             "        'name':'state1',                                      \n" +
+             "        'parameters': {                                       \n" +
+             "           'Name':'name',                                     \n" +
+             "           'foo':'foo',                                       \n" +
+             "           'nAmE':'foo2',                                     \n" +
+             "           'bar':'bar'                                        \n" +
+             "        }                                                     \n" +
+             "     }                                                        \n" +
+             "  ],                                                          \n" +
+            "  'variations':[                                               \n" +
+             "     {                                                        \n" +
+             "        'name':'test1',                                       \n" +
+             "        'experiences':[                                       \n" +
+             "           {                                                  \n" +
+             "              'name':'A',                                     \n" +
+             "              'weight':50                                     \n" +
+             "           },                                                 \n" +
+             "           {                                                  \n" +
+             "              'name':'B',                                     \n" +
+             "              'weight':50,                                    \n" +
+             "              'isControl':true                                \n" +
+             "           }                                                  \n" +
+             "        ],                                                    \n" +
+             "        'onStates':[                                          \n" +
+             "           {                                                  \n" +
+             "              'stateRef':'state1',                            \n" +
+             "              'variants':[                                    \n" +
+             "                 {                                            \n" +
+             "                    'experienceRef':'A'                       \n" +
+             "                 }                                            \n" +
+             "              ]                                               \n" +
+             "           }                                                  \n" +
+             "        ]                                                     \n" +
+             "     }                                                        \n" +
+             //----------------------------------------------------------------//   
+             "  ]                                                           \n" +
+             "}                                                             \n";
+      
+      SchemaParser parser = getSchemaParser();
+      ParserResponse response = parser.parse(config);
+
+      assertTrue(response.hasMessages());
+      assertEquals(1, response.getMessages().size());
+
+      ParserMessage actual = response.getMessages().get(0);
+      ParserMessage expected = new ParserMessageImpl(new Location("/states[0]/parameters/"), PARAM_NAME_DUPE, "nAmE");
+      assertMessageEqual(expected, actual);
+
+   }
 	
 	/**
 	 */
 	@Test
-	public void nameCaseTest() throws Exception {
+	public void badNameTest() throws Exception {
 		
 		String config = 
 				"{                                                             \n" +
@@ -348,16 +342,12 @@ public class ParserStateParamsTest extends BaseTestCore {
 			    "  'states':[                                                  \n" +
 			    "     {                                                        \n" +
 			    "        'name':'state1',                                      \n" +
-	    	    "        'parameters': [                                       \n" +
-			    "           {                                                  \n" +
-			    "              'name':'foo1',                                   \n" +
-			    "              'value':'bar1'                                   \n" +
-			    "           },                                                 \n" +
-			    "           {                                                  \n" +
-			    "              'nAmE':'foo2',                                   \n" +
-			    "              'value': 'bar2'                                 \n" +
-			    "           }                                                  \n" +
-			    "        ]                                                     \n" +
+             "        'parameters': {                                       \n" +
+             "           'Name':'name',                                     \n" +
+             "           'foo':'foo',                                       \n" +
+             "           '$nAmE':'foo2',                                    \n" +
+             "           'bar':'bar'                                        \n" +
+             "        }                                                     \n" +
 			    "     }                                                        \n" +
 			    "  ],                                                          \n" +
 				"  'variations':[                                              \n" +
@@ -392,83 +382,188 @@ public class ParserStateParamsTest extends BaseTestCore {
 		SchemaParser parser = getSchemaParser();
 		ParserResponse response = parser.parse(config);
 
-		assertFalse(response.hasMessages());
-		assertEquals(0, response.getMessages().size());
-		
-		Schema schema = response.getSchema();
-		State s1 = schema.getState("state1").get();
-		assertEquals("bar1", s1.getParameters().get().get("foo1"));
-		assertEquals("bar2", s1.getParameters().get().get("foo2"));
-		assertNull(s1.getParameters().get().get("Foo1"));
+      assertTrue(response.hasMessages());
+      assertEquals(1, response.getMessages().size());
 
+      ParserMessage actual = response.getMessages().get(0);
+      ParserMessage expected = new ParserMessageImpl(new Location("/states[0]/parameters/$nAmE"), PARAM_NAME_INVALID, "$nAmE");
+      assertMessageEqual(expected, actual);
 	}
-
+	
 	/**
-	 */
-	@Test
-	public void valueCaseTest() throws Exception {
-		
-		String config = 
-				"{                                                             \n" +
-			    "  'meta':{                                                    \n" +		    	    
-			    "      'name':'schema_name',                                   \n" +
-			    "      'comment':'schema comment'                              \n" +
-			    "  },                                                          \n" +
-			    "  'states':[                                                  \n" +
-			    "     {                                                        \n" +
-			    "        'name':'state1',                                      \n" +
-	    	    "        'parameters': [                                       \n" +
-			    "           {                                                  \n" +
-			    "              'name':'foo1',                                   \n" +
-			    "              'value':'bar1'                                   \n" +
-			    "           },                                                 \n" +
-			    "           {                                                  \n" +
-			    "              'name':'foo2',                                   \n" +
-			    "              'vAlUe': 'bar2'                                 \n" +
-			    "           }                                                  \n" +
-			    "        ]                                                     \n" +
-			    "     }                                                        \n" +
-			    "  ],                                                          \n" +
-				"  'variations':[                                              \n" +
-			    "     {                                                        \n" +
-			    "        'name':'test1',                                       \n" +
-			    "        'experiences':[                                       \n" +
-			    "           {                                                  \n" +
-			    "              'name':'A',                                     \n" +
-			    "              'weight':50                                     \n" +
-			    "           },                                                 \n" +
-			    "           {                                                  \n" +
-			    "              'name':'B',                                     \n" +
-			    "              'weight':50,                                    \n" +
-			    "              'isControl':true                                \n" +
-			    "           }                                                  \n" +
-			    "        ],                                                    \n" +
-			    "        'onStates':[                                          \n" +
-			    "           {                                                  \n" +
-			    "              'stateRef':'state1',                            \n" +
-			    "              'variants':[                                    \n" +
-			    "                 {                                            \n" +
-			    "                    'experienceRef':'A'                       \n" +
-			    "                 }                                            \n" +
-			    "              ]                                               \n" +
-			    "           }                                                  \n" +
-			    "        ]                                                     \n" +
-			    "     }                                                        \n" +
-			    //----------------------------------------------------------------//	
-			    "  ]                                                           \n" +
-			    "}                                                             \n";
-		
-		SchemaParser parser = getSchemaParser();
-		ParserResponse response = parser.parse(config);
+    */
+   @Test
+   public void valueNotStringTest() throws Exception {
+      
+      String config = 
+            "{                                                             \n" +
+             "  'meta':{                                                    \n" +                
+             "      'name':'schema_name',                                   \n" +
+             "      'comment':'schema comment'                              \n" +
+             "  },                                                          \n" +
+             "  'states':[                                                  \n" +
+             "     {                                                        \n" +
+             "        'name':'state1',                                      \n" +
+             "        'parameters': {                                       \n" +
+             "           'bar':45                                           \n" +
+             "        }                                                     \n" +
+             "     }                                                        \n" +
+             "  ],                                                          \n" +
+            "  'variations':[                                              \n" +
+             "     {                                                        \n" +
+             "        'name':'test1',                                       \n" +
+             "        'experiences':[                                       \n" +
+             "           {                                                  \n" +
+             "              'name':'A',                                     \n" +
+             "              'weight':50                                     \n" +
+             "           },                                                 \n" +
+             "           {                                                  \n" +
+             "              'name':'B',                                     \n" +
+             "              'weight':50,                                    \n" +
+             "              'isControl':true                                \n" +
+             "           }                                                  \n" +
+             "        ],                                                    \n" +
+             "        'onStates':[                                          \n" +
+             "           {                                                  \n" +
+             "              'stateRef':'state1',                            \n" +
+             "              'variants':[                                    \n" +
+             "                 {                                            \n" +
+             "                    'experienceRef':'A'                       \n" +
+             "                 }                                            \n" +
+             "              ]                                               \n" +
+             "           }                                                  \n" +
+             "        ]                                                     \n" +
+             "     }                                                        \n" +
+             //----------------------------------------------------------------//   
+             "  ]                                                           \n" +
+             "}                                                             \n";
+      
+      SchemaParser parser = getSchemaParser();
+      ParserResponse response = parser.parse(config);
 
-		assertFalse(response.hasMessages());
-		assertEquals(0, response.getMessages().size());
-		
-		Schema schema = response.getSchema();
-		State s1 = schema.getState("state1").get();
-		assertEquals("bar1", s1.getParameters().get().get("foo1"));
-		assertEquals("bar2", s1.getParameters().get().get("foo2"));
-		assertNull(s1.getParameters().get().get("Foo1"));
+      assertTrue(response.hasMessages());
+      assertEquals(1, response.getMessages().size());
 
-	}
+      ParserMessage actual = response.getMessages().get(0);
+      ParserMessage expected = new ParserMessageImpl(new Location("/states[0]/parameters/bar"), PARAM_VALUE_INVALID, "bar");
+      assertMessageEqual(expected, actual);
+   }
+   
+   /**
+    */
+   @Test
+   public void valueNotStringTest2() throws Exception {
+      
+      String config = 
+            "{                                                             \n" +
+             "  'meta':{                                                    \n" +                
+             "      'name':'schema_name',                                   \n" +
+             "      'comment':'schema comment'                              \n" +
+             "  },                                                          \n" +
+             "  'states':[                                                  \n" +
+             "     {                                                        \n" +
+             "        'name':'state1'                                       \n" +
+             "     }                                                        \n" +
+             "  ],                                                          \n" +
+            "  'variations':[                                              \n" +
+             "     {                                                        \n" +
+             "        'name':'test1',                                       \n" +
+             "        'experiences':[                                       \n" +
+             "           {                                                  \n" +
+             "              'name':'A',                                     \n" +
+             "              'weight':50                                     \n" +
+             "           },                                                 \n" +
+             "           {                                                  \n" +
+             "              'name':'B',                                     \n" +
+             "              'weight':50,                                    \n" +
+             "              'isControl':true                                \n" +
+             "           }                                                  \n" +
+             "        ],                                                    \n" +
+             "        'onStates':[                                          \n" +
+             "           {                                                  \n" +
+             "              'stateRef':'state1',                            \n" +
+             "              'variants':[                                    \n" +
+             "                 {                                            \n" +
+             "                    'experienceRef':'A',                       \n" +
+             "                    'parameters': {                           \n" +
+             "                      'name': ['not', 'a', 'string']          \n" +
+             "                     }                                        \n" +
+             "                 }                                            \n" +
+             "              ]                                               \n" +
+             "           }                                                  \n" +
+             "        ]                                                     \n" +
+             "     }                                                        \n" +
+             //----------------------------------------------------------------//   
+             "  ]                                                           \n" +
+             "}                                                             \n";
+      
+      SchemaParser parser = getSchemaParser();
+      ParserResponse response = parser.parse(config);
+
+      assertTrue(response.hasMessages());
+      assertEquals(1, response.getMessages().size());
+
+      ParserMessage actual = response.getMessages().get(0);
+      ParserMessage expected = new ParserMessageImpl(new Location("/states[0]/parameters/name"), PARAM_VALUE_INVALID, "name");
+      assertMessageEqual(expected, actual);
+   }
+   
+   /**
+    */
+   @Test
+   public void valueNullTest() throws Exception {
+      
+      String config = 
+            "{                                                             \n" +
+             "  'meta':{                                                    \n" +                
+             "      'name':'schema_name',                                   \n" +
+             "      'comment':'schema comment'                              \n" +
+             "  },                                                          \n" +
+             "  'states':[                                                  \n" +
+             "     {                                                        \n" +
+             "        'name':'state1',                                      \n" +
+             "        'parameters': {                                       \n" +
+             "           'bar':null                                         \n" +
+             "        }                                                     \n" +
+             "     }                                                        \n" +
+             "  ],                                                          \n" +
+            "  'variations':[                                              \n" +
+             "     {                                                        \n" +
+             "        'name':'test1',                                       \n" +
+             "        'experiences':[                                       \n" +
+             "           {                                                  \n" +
+             "              'name':'A',                                     \n" +
+             "              'weight':50                                     \n" +
+             "           },                                                 \n" +
+             "           {                                                  \n" +
+             "              'name':'B',                                     \n" +
+             "              'weight':50,                                    \n" +
+             "              'isControl':true                                \n" +
+             "           }                                                  \n" +
+             "        ],                                                    \n" +
+             "        'onStates':[                                          \n" +
+             "           {                                                  \n" +
+             "              'stateRef':'state1',                            \n" +
+             "              'variants':[                                    \n" +
+             "                 {                                            \n" +
+             "                    'experienceRef':'A'                       \n" +
+             "                 }                                            \n" +
+             "              ]                                               \n" +
+             "           }                                                  \n" +
+             "        ]                                                     \n" +
+             "     }                                                        \n" +
+             //----------------------------------------------------------------//   
+             "  ]                                                           \n" +
+             "}                                                             \n";
+      
+      SchemaParser parser = getSchemaParser();
+      ParserResponse response = parser.parse(config);
+
+      assertTrue(response.hasMessages());
+      assertEquals(1, response.getMessages().size());
+
+      ParserMessage actual = response.getMessages().get(0);
+      ParserMessage expected = new ParserMessageImpl(new Location("/states[0]/parameters/bar"), PARAM_VALUE_INVALID, "bar");
+      assertMessageEqual(expected, actual);
+   }
 }

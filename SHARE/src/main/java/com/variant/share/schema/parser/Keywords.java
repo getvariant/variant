@@ -24,7 +24,7 @@ interface Keywords {
 	static String KEYWORD_STATE_REF                 = "stateRef"; 
 	static String KEYWORD_STATES                    = "states";
 	static String KEYWORD_VARIATION_REF             = "variationRef";
-	static String KEYWORD_VALUE                     = "value";
+//	static String KEYWORD_VALUE                     = "value";
 	static String KEYWORD_VARIANTS                  = "variants";
 	static String KEYWORD_VARIATIONS                = "variations";
 	static String KEYWORD_WEIGHT                    = "weight";

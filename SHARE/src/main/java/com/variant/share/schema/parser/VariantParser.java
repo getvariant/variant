@@ -16,7 +16,7 @@ import com.variant.share.schema.impl.VariationExperienceImpl;
 import com.variant.share.schema.impl.VariationImpl;
 import com.variant.share.schema.impl.VariationOnStateImpl;
 import com.variant.share.schema.parser.error.SemanticError.Location;
-import com.variant.share.util.CaseInsensitiveMap;
+import com.variant.share.util.CaseInsensitiveLinkedMap;
 import com.variant.share.util.CollectionsUtils;
 import com.variant.share.util.StringUtils;
 
@@ -136,7 +136,7 @@ public class VariantParser implements Keywords {
 					
 					Map<String,?> conjointExpRefMap;
 					try {
-						conjointExpRefMap = new CaseInsensitiveMap((Map<String,?>) conjointExpRefObj);
+						conjointExpRefMap = new CaseInsensitiveLinkedMap((Map<String,?>) conjointExpRefObj);
 					}
 					catch (Exception e) {
 						response.addMessage(

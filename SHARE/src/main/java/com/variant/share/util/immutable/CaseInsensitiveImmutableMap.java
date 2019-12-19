@@ -2,9 +2,9 @@ package com.variant.share.util.immutable;
 
 import java.util.Map;
 
-import com.variant.share.util.CaseInsensitiveMap;
+import com.variant.share.util.CaseInsensitiveLinkedMap;
 
-public class CaseInsensitiveImmutableMap<V> extends CaseInsensitiveMap<V> {
+public class CaseInsensitiveImmutableMap<V> extends CaseInsensitiveLinkedMap<V> {
 
 	public CaseInsensitiveImmutableMap(Map<String, V> map) {
 		for (Map.Entry<String, V> e: map.entrySet()) {

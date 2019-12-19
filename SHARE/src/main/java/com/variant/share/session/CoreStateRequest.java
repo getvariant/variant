@@ -20,7 +20,7 @@ import com.variant.share.schema.StateVariant;
 import com.variant.share.schema.Variation;
 import com.variant.share.schema.Variation.Experience;
 import com.variant.share.schema.impl.StateImpl;
-import com.variant.share.util.CaseInsensitiveMap;
+import com.variant.share.util.CaseInsensitiveLinkedMap;
 import com.variant.share.util.CollectionsUtils;
 import com.variant.share.util.immutable.CaseInsensitiveImmutableMap;
 
@@ -126,7 +126,7 @@ public class CoreStateRequest implements Serializable {
 	 */
 	public  Map<String,String> getResolvedParameters() {
 		
-		Map<String,String> result = new CaseInsensitiveMap<String>();
+		Map<String,String> result = new CaseInsensitiveLinkedMap<String>();
 		
 		if (resolvedVariant.isPresent() && resolvedVariant.get().getParameters().isPresent()) {
 			if (state.getParameters().isPresent()) {

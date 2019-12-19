@@ -22,44 +22,29 @@
    },
    'states':[                                                             
      {  'name':'state1',
-        'parameters': [
-           {
-               'name':'path',
-               'value':'/path/to/state1'
-           }
-        ]
+        'parameters': {
+            'path':'/path/to/state1'
+        }
      },                                                                  
      {  'NAME':'state2',                                                  
-        'parameters': [
-           {
-               'name':'path',
-               'value':'/path/to/state2'
-           }
-        ]
+        'parameters': {
+            'path':'/path/to/state2'
+        }
      },                                                                  
      {  'nAmE':'state3',                                                  
-        'parameters': [
-           {
-               'name':'path',
-               'value':'/path/to/state3'
-           }
-        ]
+        'parameters': {
+            'path':'/path/to/state3'
+        }
      },                                                                  
      {  'name':'state4',                                                  
-        'parameters': [
-           {
-               'name':'path',
-               'value':'/path/to/state4'
-           }
-        ]
+        'parameters': {
+            'path':'/path/to/state4'
+        }
      },                                                                  
      {  'name':'state5',                                                  
-        'parameters': [
-           {
-               'name':'path',
-               'value':'/path/to/state5'
-           }
-        ]
+        'parameters': {
+            'path':'/path/to/state5'
+        }
      }                                                                   
   ],                                                                     
   'variations':[  
@@ -89,21 +74,15 @@
               'variants':[                                               
                  {                                                       
                     'experienceRef':'B',                                 
-                    'parameters': [
-                        {
-                            'name':'path',
-                            'value':'/path/to/state3/test1.B'
-                        }
-                    ]
+                    'parameters': {
+                            'path':'/path/to/state3/test1.B'
+                    }
                  },                                                      
                  {                                                       
                     'experienceRef':'C',                                 
-                    'parameters': [
-                        {
-                            'name':'path',
-                            'value':'/path/to/state3/test1.C'
-                        }
-                    ]
+                    'parameters': {
+                            'path':'/path/to/state3/test1.C'
+                    }
                  }                                                       
               ]                                                          
            }, 
@@ -141,21 +120,15 @@
               'variants':[                                               
                  {                                                       
                     'experienceRef':'B',                                 
-                    'parameters': [
-                        {
-                            'name':'path',
-                            'value':'/path/to/state2/test2.B'
-                        }
-                    ]
+                    'parameters': {
+                            'path':'/path/to/state2/test2.B'
+                    }
                  },                                                      
                  {                                                       
                     'experienceRef':'C',                                 
-                    'parameters': [
-                        {
-                            'name':'path',
-                            'value':'/path/to/state2/test2.C'
-                        }
-                    ]
+                    'parameters': {
+                            'path':'/path/to/state2/test2.C'
+                    }
                  }                                                       
               ]                                                          
            },                                                            
@@ -164,21 +137,15 @@
               'variants':[                                               
                  {                                                       
                     'experienceRef':'B',                                 
-                    'parameters': [
-                        {
-                            'name':'path',
-                            'value':'/path/to/state3/test2.B'
-                        }
-                    ]
+                    'parameters': {
+                            'path':'/path/to/state3/test2.B'
+                    }
                  },                                                      
                  {                                                       
                     'experienceRef':'C',                                 
-                    'parameters': [
-                        {
-                            'name':'path',
-                            'value':'/path/to/state3/test2.C'
-                        }
-                    ]
+                    'parameters': {
+                            'path':'/path/to/state3/test2.C'
+                    }
                  }                                                       
               ]                                                          
            },                                                            
@@ -187,21 +154,15 @@
               'variants':[                                               
                  {                                                       
                     'experienceRef':'B',                                 
-                    'parameters': [
-                        {
-                            'name':'path',
-                            'value':'/path/to/state4/test2.B'
-                        }
-                    ]
+                    'parameters': {
+                            'path':'/path/to/state4/test2.B'
+                    }
                  },                                                      
                  {                                                       
                     'experienceRef':'C',                                 
-                    'parameters': [
-                        {
-                            'name':'path',
-                            'value':'/path/to/state4/test2.C'
-                        }
-                    ]
+                    'parameters': {
+                            'path':'/path/to/state4/test2.C'
+                    }
                  }                                                       
               ]                                                          
            }                                                             
@@ -235,21 +196,15 @@
               'variants':[                                               
                  {                                                       
                     'experienceRef':'B',                                 
-                    'parameters': [
-                        {
-                            'name':'path',
-                            'value':'/path/to/state3/test3.B'
-                        }
-                    ]
+                    'parameters': {
+                            'path':'/path/to/state3/test3.B'
+                    }
                  },                                                      
                  {                                                       
                     'experienceRef':'C',                                 
-                    'parameters': [
-                        {
-                            'name':'path',
-                            'value':'/path/to/state3/test3.C'
-                        }
-                    ]
+                    'parameters': {
+                            'path':'/path/to/state3/test3.C'
+                    }
                  },                                                      
                  {                                                       
                     'experienceRef':'B',                                 
@@ -259,12 +214,9 @@
                           'experienceRef': 'B'                           
                        }                                                 
                      ],                                                  
-                    'parameters': [
-                        {
-                            'name':'path',
-                            'value':'/path/to/state3/test2.B+test3.B'
-                        }
-                    ]
+                    'parameters': {
+                            'path':'/path/to/state3/test2.B+test3.B'
+                    }
                  },                                                      
                  {                                                       
                     'experienceRef':'B',                                 
@@ -274,12 +226,9 @@
                           'experienceRef': 'C'                           
                        }                                                 
                      ],                                                  
-                    'parameters': [
-                        {
-                            'name':'path',
-                            'value':'/path/to/state3/test2.C+test3.B'
-                        }
-                    ]
+                    'parameters': {
+                            'path':'/path/to/state3/test2.C+test3.B'
+                    }
                  },                                                      
                  {                                                       
                     'experienceRef':'C',                                 
@@ -289,12 +238,9 @@
                           'experienceRef': 'B'                           
                        }                                                 
                      ],                                                  
-                    'parameters': [
-                        {
-                            'name':'path',
-                            'value':'/path/to/state3/test2.B+test3.C'
-                        }
-                    ]
+                    'parameters': {
+                            'path':'/path/to/state3/test2.B+test3.C'
+                    }
                  },                                                      
                  {                                                       
                     'experienceRef':'C',                                 
@@ -304,12 +250,9 @@
                           'experienceRef': 'C'                           
                        }                                                 
                      ],                                                  
-                    'parameters': [
-                        {
-                            'name':'path',
-                            'value':'/path/to/state3/test2.C+test3.C'
-                        }
-                    ]
+                    'parameters': {
+                            'path':'/path/to/state3/test2.C+test3.C'
+                    }
                  }                                                      
               ]                                                          
            }                                                            
@@ -339,21 +282,15 @@
               'variants':[                                               
                  {                                                       
                     'experienceRef':'B',                                 
-                    'parameters': [
-                        {
-                            'name':'path',
-                            'value':'/path/to/state2/test4.B'
-                        }
-                    ]
+                    'parameters': {
+                            'path':'/path/to/state2/test4.B'
+                    }
                  },                                                      
                  {                                                       
                     'experienceRef':'C',                                 
-                    'parameters': [
-                        {
-                            'name':'path',
-                            'value':'/path/to/state2/test4.C'
-                        }
-                    ]
+                    'parameters': {
+                            'path':'/path/to/state2/test4.C'
+                    }
                  },                                                      
                  {                                                       
                     'experienceRef':'B',                                 
@@ -363,12 +300,9 @@
                           'experienceRef': 'B'                           
                        }                                                 
                      ],                                                  
-                    'parameters': [
-                        {
-                            'name':'path',
-                            'value':'/path/to/state2/test1.B+test4.B'
-                        }
-                    ]
+                    'parameters': {
+                            'path':'/path/to/state2/test1.B+test4.B'
+                    }
                  },                                                      
                  {                                                       
                     'experienceRef':'B',                                 
@@ -378,12 +312,9 @@
                           'experienceRef': 'C'                           
                        }                                                 
                      ],                                                  
-                    'parameters': [
-                        {
-                            'name':'path',
-                            'value':'/path/to/state2/test1.C+test4.B'
-                        }
-                    ]
+                    'parameters': {
+                            'path':'/path/to/state2/test1.C+test4.B'
+                    }
                  },     /*  Let this one be inferred                                                  
                  {                                                       
                     'experienceRef':'C',                                 
@@ -393,12 +324,9 @@
                           'experienceRef': 'B'                           
                        }                                                 
                      ],                                           
-                    'parameters': [
-                        {
-                            'name':'path',
-                            'value':'/path/to/state2/test1.B+test4.C'
-                        }
-                    ]
+                    'parameters': {
+                            'path':'/path/to/state2/test1.B+test4.C'
+                    }
                  },       *****/                                           
                  {                                                       
                     'experienceRef':'C',                                 
@@ -408,12 +336,9 @@
                           'experienceRef': 'C'                           
                        }                                                 
                      ],                                                  
-                    'parameters': [
-                        {
-                            'name':'path',
-                            'value':'/path/to/state2/test1.C+test4.C'
-                        }
-                    ]
+                    'parameters': {
+                            'path':'/path/to/state2/test1.C+test4.C'
+                    }
                  }                                                       
               ]                                                          
            },
@@ -450,21 +375,15 @@
                  /* ------- proper ------ */                                       
                  {                                                       
                     'experienceRef':'B',                                 
-                    'parameters': [
-                        {
-                            'name':'path',
-                            'value':'/path/to/state1/test5.B'
-                        }
-                    ]
+                    'parameters': {
+                            'path':'/path/to/state1/test5.B'
+                    }
                  },                                                      
                  {                                                       
                     'experienceRef':'C',                                 
-                    'parameters': [
-                        {
-                            'name':'path',
-                            'value':'/path/to/state1/test5.C'
-                        }
-                    ]
+                    'parameters': {
+                            'path':'/path/to/state1/test5.C'
+                    }
                  },    
                  /* ------- with test2 ------ */                                       
                  {                                                       
@@ -475,12 +394,9 @@
                           'experienceRef': 'B'                           
                        }                                                 
                      ],                                                  
-                    'parameters': [
-                        {
-                            'name':'path',
-                            'value':'/path/to/state1/test2.B+test5.B'
-                        }
-                    ]
+                    'parameters': {
+                            'path':'/path/to/state1/test2.B+test5.B'
+                    }
                  },                                                      
                  {                                                       
                     'experienceRef':'B',                                 
@@ -490,12 +406,9 @@
                           'experienceRef': 'C'                           
                        }                                                 
                      ],                                                  
-                    'parameters': [
-                        {
-                            'name':'path',
-                            'value':'/path/to/state1/test2.C+test5.B'
-                        }
-                    ]
+                    'parameters': {
+                            'path':'/path/to/state1/test2.C+test5.B'
+                    }
                  },                                                      
                  {                                                       
                     'experienceRef':'C',                                 
@@ -505,12 +418,9 @@
                           'experienceRef': 'B'                           
                        }                                                 
                      ],                                                  
-                    'parameters': [
-                        {
-                            'name':'path',
-                            'value':'/path/to/state1/test2.B+test5.B'
-                        }
-                    ]
+                    'parameters': {
+                            'path':'/path/to/state1/test2.B+test5.B'
+                    }
                  },                                                      
                  {                                                       
                     'experienceRef':'C',                                 
@@ -520,12 +430,9 @@
                           'experienceRef': 'C'                           
                        }                                                 
                      ],                                                  
-                    'parameters': [
-                        {
-                            'name':'path',
-                            'value':'/path/to/state1/test2.C+test5.C'
-                        }
-                    ]
+                    'parameters': {
+                            'path':'/path/to/state1/test2.C+test5.C'
+                    }
                  }                                                       
               ]                                                          
            },
@@ -535,21 +442,15 @@
                  /* ------- proper ------ */                                       
                  {                                                       
                     'experienceRef':'B',                                 
-                    'parameters': [
-                        {
-                            'name':'path',
-                            'value':'/path/to/state2/test5.B'
-                        }
-                    ]
+                    'parameters': {
+                            'path':'/path/to/state2/test5.B'
+                    }
                  },                                                      
                  {                                                       
                     'experienceRef':'C',                                 
-                    'parameters': [
-                        {
-                            'name':'path',
-                            'value':'/path/to/state2/test5.C'
-                        }
-                    ]
+                    'parameters': {
+                            'path':'/path/to/state2/test5.C'
+                    }
                  },                                                      
                  /* ------- test2 ------ */                                       
                  {                                                       
@@ -560,12 +461,9 @@
                           'experienceRef': 'B'                           
                        }                                                 
                      ],                                                  
-                    'parameters': [
-                        {
-                            'name':'path',
-                            'value':'/path/to/state2/test2.B+test5.B'
-                        }
-                    ]
+                    'parameters': {
+                            'path':'/path/to/state2/test2.B+test5.B'
+                    }
                  },                                                      
                  {                                                       
                     'experienceRef':'B',                                 
@@ -575,12 +473,9 @@
                           'experienceRef': 'C'                           
                        }                                                 
                      ],                                                  
-                    'parameters': [
-                        {
-                            'name':'path',
-                            'value':'/path/to/state2/test2.C+test5.B'
-                        }
-                    ]
+                    'parameters': {
+                            'path':'/path/to/state2/test2.C+test5.B'
+                    }
                  },                                                      
                  {                                                       
                     'experienceRef':'C',                                 
@@ -590,12 +485,9 @@
                           'experienceRef': 'B'                           
                        }                                                 
                      ],                                                  
-                    'parameters': [
-                        {
-                            'name':'path',
-                            'value':'/path/to/state2/test2.B+test5.C'
-                        }
-                    ]
+                    'parameters': {
+                            'path':'/path/to/state2/test2.B+test5.C'
+                    }
                  },                                                      
                  {                                                       
                     'experienceRef':'C',                                 
@@ -605,12 +497,9 @@
                           'experienceRef': 'C'                           
                        }                                                 
                      ],                                                  
-                    'parameters': [
-                        {
-                            'name':'path',
-                            'value':'/path/to/state2/test2.C+test5.C'
-                        }
-                    ]
+                    'parameters': {
+                            'path':'/path/to/state2/test2.C+test5.C'
+                    }
                  },                                                      
                  /* ------- test4 ------ */                                       
                  {                                                       
@@ -621,12 +510,9 @@
                           'experienceRef': 'B'                           
                        }                                                 
                      ],                                                  
-                    'parameters': [
-                        {
-                            'name':'path',
-                            'value':'/path/to/state2/test4.B+test5.B'
-                        }
-                    ]
+                    'parameters': {
+                            'path':'/path/to/state2/test4.B+test5.B'
+                    }
                  },                                                      
                  {                                                       
                     'experienceRef':'B',                                 
@@ -636,12 +522,9 @@
                           'experienceRef': 'C'                           
                        }                                                 
                      ],                                                  
-                    'parameters': [
-                        {
-                            'name':'path',
-                            'value':'/path/to/state2/test4.C+test5.B'
-                        }
-                    ]
+                    'parameters': {
+                            'path':'/path/to/state2/test4.C+test5.B'
+                    }
                  },                                                      
                  {                                                       
                     'experienceRef':'C',                                 
@@ -651,12 +534,9 @@
                           'experienceRef': 'B'                           
                        }                                                 
                      ],                                                  
-                    'parameters': [
-                        {
-                            'name':'path',
-                            'value':'/path/to/state2/test4.B+test5.C'
-                        }
-                    ]
+                    'parameters': {
+                            'path':'/path/to/state2/test4.B+test5.C'
+                    }
                  },                                                      
                  {                                                       
                     'experienceRef':'C',                                 
@@ -666,12 +546,9 @@
                           'experienceRef': 'C'                           
                        }                                                 
                      ],                                                  
-                    'parameters': [
-                        {
-                            'name':'path',
-                            'value':'/path/to/state2/test4.C+test5.C'
-                        }
-                    ]
+                    'parameters': {
+                            'path':'/path/to/state2/test4.C+test5.C'
+                    }
                  }                                                      
               ]                                                          
            },                                                            
@@ -684,21 +561,15 @@
                  /* ------- proper ------ */                                       
                  {                                                       
                     'experienceRef':'B',                                 
-                    'parameters': [
-                        {
-                            'name':'path',
-                            'value':'/path/to/state4/test5.B'
-                        }
-                    ]
+                    'parameters': {
+                            'path':'/path/to/state4/test5.B'
+                    }
                  },                                                      
                  {                                                       
                     'experienceRef':'C',                                 
-                    'parameters': [
-                        {
-                            'name':'path',
-                            'value':'/path/to/state4/test5.C'
-                        }
-                    ]
+                    'parameters': {
+                            'path':'/path/to/state4/test5.C'
+                    }
                  },                                                      
                  /* ------- test2 ------ */                                       
                  {                                                       
@@ -709,12 +580,9 @@
                           'experienceRef': 'B'                           
                        }                                                 
                      ],                                                  
-                    'parameters': [
-                        {
-                            'name':'path',
-                            'value':'/path/to/state4/test2.B+test5.B'
-                        }
-                    ]
+                    'parameters': {
+                            'path':'/path/to/state4/test2.B+test5.B'
+                    }
                  },                                                      
                  {                                                       
                     'experienceRef':'B',                                 
@@ -724,12 +592,9 @@
                           'experienceRef': 'C'                           
                        }                                                 
                      ],                                                  
-                    'parameters': [
-                        {
-                            'name':'path',
-                            'value':'/path/to/state4/test2.C+test5.B'
-                        }
-                    ]
+                    'parameters': {
+                            'path':'/path/to/state4/test2.C+test5.B'
+                    }
                  },                                                      
                  {                                                       
                     'experienceRef':'C',                                 
@@ -739,12 +604,9 @@
                           'experienceRef': 'B'                           
                        }                                                 
                      ],                                                  
-                    'parameters': [
-                        {
-                            'name':'path',
-                            'value':'/path/to/state4/test2.B+test5.C'
-                        }
-                    ]
+                    'parameters': {
+                            'path':'/path/to/state4/test2.B+test5.C'
+                    }
                  },                                                      
                  {                                                       
                     'experienceRef':'C',                                 
@@ -754,12 +616,9 @@
                           'experienceRef': 'C'                           
                        }                                                 
                      ],                                                  
-                    'parameters': [
-                        {
-                            'name':'path',
-                            'value':'/path/to/state4/test2.C+test5.C'
-                        }
-                    ]
+                    'parameters': {
+                            'path':'/path/to/state4/test2.C+test5.C'
+                    }
                  }                              
                  /* ------- omitting test4 ------ */                                       
               ]                                                          
@@ -805,12 +664,9 @@
                             'experienceRef': 'B'                           
                          }                                                 
                        ],                                                  
-                      'parameters': [
-                          {
-                              'name':'path',
-                              'value':'/path/to/state2/test1.B+test6.B'
-                          }
-                      ]
+                    'parameters': {
+                              'path':'/path/to/state2/test1.B+test6.B'
+                    }
                   },              
                   {                                                       
                       'experienceRef':'C',                                 
@@ -824,12 +680,9 @@
                              'experienceRef': 'B'                           
                           }                                                 
                        ],                                                  
-                      'parameters': [
-                          {
-                              'name':'path',
-                              'value':'/path/to/state2/test1.C+test4.B+test6.C'
-                          }
-                      ]
+                    'parameters': {
+                              'path':'/path/to/state2/test1.C+test4.B+test6.C'
+                    }
                    }              
               ]            
               
@@ -843,18 +696,15 @@
                     'parameters': [
                         {
                             'name':'path',
-                            'value':'/path/to/state3/test6.B'
+                            'path':'/path/to/state3/test6.B'
                         }
                     ]
                  },                                                      
                  {                                                       
                     'experienceRef':'C',                                 
-                    'parameters': [
-                        {
-                            'name':'path',
-                            'value':'/path/to/state3/test6.C'
-                        }
-                    ]
+                    'parameters': {
+                            'path':'/path/to/state3/test6.C'
+                    }
                  },
                  ------------------------------------------------ */
                                                                     
@@ -867,12 +717,9 @@
                           'experienceRef': 'B'                           
                        }                                                 
                      ],                                                  
-                    'parameters': [
-                        {
-                            'name':'path',
-                            'value':'/path/to/state3/test1.B+test6.B'
-                        }
-                    ]
+                    'parameters': {
+                            'path':'/path/to/state3/test1.B+test6.B'
+                    }
                  },                                                      
                  {                                                       
                     'experienceRef':'B',                                 
@@ -882,12 +729,9 @@
                           'experienceRef': 'C'                           
                        }                                                 
                      ],                                                  
-                    'parameters': [
-                        {
-                            'name':'path',
-                            'value':'/path/to/state3/test1.C+test6.B'
-                        }
-                    ]
+                    'parameters': {
+                            'path':'/path/to/state3/test1.C+test6.B'
+                    }
                  },                                                      
                  {                                                       
                     'experienceRef':'C',                                 
@@ -897,12 +741,9 @@
                           'experienceRef': 'B'                           
                        }                                                 
                      ],                                                  
-                    'parameters': [
-                        {
-                            'name':'path',
-                            'value':'/path/to/state3/test1.B+test6.C'
-                        }
-                    ]
+                    'parameters': {
+                            'path':'/path/to/state3/test1.B+test6.C'
+                    }
                  },                                                      
                  {                                                       
                     'experienceRef':'C',                                 
@@ -912,12 +753,9 @@
                           'experienceRef': 'C'                           
                        }                                                 
                      ],                                                  
-                    'parameters': [
-                        {
-                            'name':'path',
-                            'value':'/path/to/state3/test1.C+test6.C'
-                        }
-                    ]
+                    'parameters': {
+                            'path':'/path/to/state3/test1.C+test6.C'
+                    }
                  },                                                      
                  /* ------- test2 ------ */                                       
                  {                                                       
@@ -928,12 +766,9 @@
                           'experienceRef': 'B'                           
                        }                                                 
                      ],                                                  
-                    'parameters': [
-                        {
-                            'name':'path',
-                            'value':'/path/to/state3/test2.B+test6.B'
-                        }
-                    ]
+                    'parameters': {
+                            'path':'/path/to/state3/test2.B+test6.B'
+                    }
                  },                                                     
                  {                                                       
                     'experienceRef':'B',                                 
@@ -943,12 +778,9 @@
                           'experienceRef': 'C'                           
                        }                                                 
                      ],                                                  
-                    'parameters': [
-                        {
-                            'name':'path',
-                            'value':'/path/to/state3/test2.C+test6.B'
-                        }
-                    ]
+                    'parameters': {
+                            'path':'/path/to/state3/test2.C+test6.B'
+                    }
                  },                                                      
                  {                                                       
                     'experienceRef':'C',                                 
@@ -958,12 +790,9 @@
                           'experienceRef': 'B'                           
                        }                                                 
                      ],                                                  
-                    'parameters': [
-                        {
-                            'name':'path',
-                            'value':'/path/to/state3/test2.B+test6.C'
-                        }
-                    ]
+                    'parameters': {
+                            'path':'/path/to/state3/test2.B+test6.C'
+                    }
                  },                                                      
                  {                                                       
                     'experienceRef':'C',                                 
@@ -973,12 +802,9 @@
                           'experienceRef': 'C'                           
                        }                                                 
                      ],                                                  
-                    'parameters': [
-                        {
-                            'name':'path',
-                            'value':'/path/to/state3/test2.C+test6.C'
-                        }
-                    ]
+                    'parameters': {
+                            'path':'/path/to/state3/test2.C+test6.C'
+                    }
                  }
               ]                                                          
            },                                                            
@@ -988,22 +814,16 @@
                  /* ------- proper ------ */                                       
                  {                                                       
                     'experienceRef':'B',                                 
-                    'parameters': [
-                        {
-                            'name':'path',
-                            'value':'/path/to/state5/test6.B'
-                        }
-                    ]
+                    'parameters': {
+                            'path':'/path/to/state5/test6.B'
+                    }
                  },
                  /* ----- omitted 1 proper experience -----
                  {                                                       
                     'experienceRef':'C',                                 
-                    'parameters': [
-                        {
-                            'name':'path',
-                            'value':'/path/to/state5/test6.C'
-                        }
-                    ]
+                    'parameters': {
+                            'path':'/path/to/state5/test6.C'
+                    }
                  },                                                    
                  ------------------------------------------- */
                  
@@ -1016,12 +836,9 @@
                           'experienceRef': 'B'                           
                        }                                                 
                      ],                                                  
-                    'parameters': [
-                        {
-                            'name':'path',
-                            'value':'/path/to/state5/test1.B+test6.B'
-                        }
-                    ]
+                    'parameters': {
+                            'path':'/path/to/state5/test1.B+test6.B'
+                    }
                  },                                                      
                  {                                                       
                     'experienceRef':'B',                                 
@@ -1031,12 +848,9 @@
                           'experienceRef': 'C'                           
                        }                                                 
                      ],                                                  
-                    'parameters': [
-                        {
-                            'name':'path',
-                            'value':'/path/to/state5/test1.C+test6.B'
-                        }
-                    ]
+                    'parameters': {
+                            'path':'/path/to/state5/test1.C+test6.B'
+                    }
                  },                                                      
                  {                                                       
                     'experienceRef':'C',                                 
@@ -1046,12 +860,9 @@
                           'experienceRef': 'B'                           
                        }                                                 
                      ],                                                  
-                    'parameters': [
-                        {
-                            'name':'path',
-                            'value':'/path/to/state5/test1.B+test6.C'
-                        }
-                    ]
+                    'parameters': {
+                            'path':'/path/to/state5/test1.B+test6.C'
+                    }
                  },                                                      
                  {                                                       
                     'experienceRef':'C',                                 
@@ -1061,12 +872,9 @@
                           'experienceRef': 'C'                           
                        }                                                 
                      ],                                                  
-                    'parameters': [
-                        {
-                            'name':'path',
-                            'value':'/path/to/state5/test1.C+test6.C'
-                        }
-                    ]
+                    'parameters': {
+                            'path':'/path/to/state5/test1.C+test6.C'
+                    }
                  },
                  
                  /* ------- test4 ------ */                                       
@@ -1078,12 +886,9 @@
                           'experienceRef': 'B'                           
                        }                                                 
                      ],                                                  
-                    'parameters': [
-                        {
-                            'name':'path',
-                            'value':'/path/to/state5/test4.B+test6.B'
-                        }
-                    ]
+                    'parameters': {
+                            'path':'/path/to/state5/test4.B+test6.B'
+                    }
                  },                                                      
                  {                                                       
                     'experienceRef':'B',                                 
@@ -1093,12 +898,9 @@
                           'experienceRef': 'C'                           
                        }                                                 
                      ],                                                  
-                    'parameters': [
-                        {
-                            'name':'path',
-                            'value':'/path/to/state5/test4.C+test6.B'
-                        }
-                    ]
+                    'parameters': {
+                            'path':'/path/to/state5/test4.C+test6.B'
+                    }
                  },                                                      
                  {                                                       
                     'experienceRef':'C',                                 
@@ -1108,12 +910,9 @@
                           'experienceRef': 'B'                           
                        }                                                 
                      ],                                                  
-                    'parameters': [
-                        {
-                            'name':'path',
-                            'value':'/path/to/state5/test4.B+test6.C'
-                        }
-                    ]
+                    'parameters': {
+                            'path':'/path/to/state5/test4.B+test6.C'
+                    }
                  },                                                      
                  {                                                       
                     'experienceRef':'C',                                 
@@ -1123,12 +922,9 @@
                           'experienceRef': 'C'                           
                        }                                                 
                      ],                                                  
-                    'parameters': [
-                        {
-                            'name':'path',
-                            'value':'/path/to/state5/test4.C+test6.C'
-                        }
-                    ]
+                    'parameters': {
+                            'path':'/path/to/state5/test4.C+test6.C'
+                    }
                  },   
                                                                     
                  /* ------- test5 ------ */                                       
@@ -1140,12 +936,9 @@
                           'experienceRef': 'B'                           
                        }                                                 
                      ],                                                  
-                    'parameters': [
-                        {
-                            'name':'path',
-                            'value':'/path/to/state5/test5.B+test6.B'
-                        }
-                    ]
+                    'parameters': {
+                            'path':'/path/to/state5/test5.B+test6.B'
+                    }
                  },                                                      
                  {                                                       
                     'experienceRef':'B',                                 
@@ -1155,12 +948,9 @@
                           'experienceRef': 'C'                           
                        }                                                 
                      ],                                                  
-                    'parameters': [
-                        {
-                            'name':'path',
-                            'value':'/path/to/state5/test5.C+test6.B'
-                        }
-                    ]
+                    'parameters': {
+                            'path':'/path/to/state5/test5.C+test6.B'
+                    }
                  },                                                      
                  {                                                       
                     'experienceRef':'C',                                 
@@ -1170,12 +960,9 @@
                           'experienceRef': 'B'                           
                        }                                                 
                      ],                                                  
-                    'parameters': [
-                        {
-                            'name':'path',
-                            'value':'/path/to/state5/test5.B+test6.C'
-                        }
-                    ]
+                    'parameters': {
+                            'path':'/path/to/state5/test5.B+test6.C'
+                    }
                  },                                                      
                  {                                                       
                     'experienceRef':'C',                                 
@@ -1185,12 +972,9 @@
                           'experienceRef': 'C'                           
                        }                                                 
                      ],                                                  
-                    'parameters': [
-                        {
-                            'name':'path',
-                            'value':'/path/to/state5/test5.C+test6.C'
-                        }
-                    ]
+                    'parameters': {
+                            'path':'/path/to/state5/test5.C+test6.C'
+                    }
                  },                                                    
 
                  /* ------- test1 + test4 omitted ------ */                                       
@@ -1208,12 +992,9 @@
                           'experienceRef': 'B'                           
                        }                                                 
                      ],                                                  
-                    'parameters': [
-                        {
-                            'name':'path',
-                            'value':'/path/to/state5/test4.B+test5.B+test6.B'
-                        }
-                    ]
+                    'parameters': {
+                            'path':'/path/to/state5/test4.B+test5.B+test6.B'
+                    }
                  },                                                      
                  {                                                       
                     'experienceRef':'B',                                 
@@ -1227,12 +1008,9 @@
                           'experienceRef': 'C'                           
                        }                                                 
                      ],                                                  
-                    'parameters': [
-                        {
-                            'name':'path',
-                            'value':'/path/to/state5/test4.B+test5.C+test6.B'
-                        }
-                    ]
+                    'parameters': {
+                            'path':'/path/to/state5/test4.B+test5.C+test6.B'
+                    }
                  },                                                      
                  {                                                       
                     'experienceRef':'B',                                 
@@ -1246,12 +1024,9 @@
                           'experienceRef': 'B'                           
                        }                                                 
                      ],                                                  
-                    'parameters': [
-                        {
-                            'name':'path',
-                            'value':'/path/to/state5/test4.C+test5.B+test6.B'
-                        }
-                    ]
+                    'parameters': {
+                            'path':'/path/to/state5/test4.C+test5.B+test6.B'
+                    }
                  },                                                      
                  {                                                       
                     'experienceRef':'B',                                 
@@ -1265,12 +1040,9 @@
                           'experienceRef': 'C'                           
                        }                                                 
                      ],                                                  
-                    'parameters': [
-                        {
-                            'name':'path',
-                            'value':'/path/to/state5/test4.C+test5.C+test6.B'
-                        }
-                    ]
+                    'parameters': {
+                            'path':'/path/to/state5/test4.C+test5.C+test6.B'
+                    }
                  },                                                      
                  {                                                       
                     'experienceRef':'C',                                 
@@ -1284,12 +1056,9 @@
                           'experienceRef': 'B'                           
                        }                                                 
                      ],                                                  
-                    'parameters': [
-                        {
-                            'name':'path',
-                            'value':'/path/to/state5/test4.B+test5.B+test6.C'
-                        }
-                    ]
+                    'parameters': {
+                            'path':'/path/to/state5/test4.B+test5.B+test6.C'
+                    }
                  },                                                      
                  {                                                       
                     'experienceRef':'C',                                 
@@ -1303,12 +1072,9 @@
                           'experienceRef': 'C'                           
                        }                                                 
                      ],                                                  
-                    'parameters': [
-                        {
-                            'name':'path',
-                            'value':'/path/to/state5/test4.B+test5.C+test6.C'
-                        }
-                    ]
+                    'parameters': {
+                            'path':'/path/to/state5/test4.B+test5.C+test6.C'
+                    }
                  },                                                      
                  {                                                       
                     'experienceRef':'C',                                 
@@ -1322,12 +1088,9 @@
                           'experienceRef': 'B'                           
                        }                                                 
                      ],                                                  
-                    'parameters': [
-                        {
-                            'name':'path',
-                            'value':'/path/to/state5/test4.C+test5.B+test6.C'
-                        }
-                    ]
+                    'parameters': {
+                            'path':'/path/to/state5/test4.C+test5.B+test6.C'
+                    }
                  },                                                      
                  {                                                       
                     'experienceRef':'C',                                 
@@ -1341,12 +1104,9 @@
                           'experienceRef': 'C'                           
                        }                                                 
                      ],                                                  
-                    'parameters': [
-                        {
-                            'name':'path',
-                            'value':'/path/to/state5/test4.C+test5.C+test6.C'
-                        }
-                    ]
+                    'parameters': {
+                            'path':'/path/to/state5/test4.C+test5.C+test6.C'
+                    }
                  }                                                       
               ]                                                          
            }                                                            

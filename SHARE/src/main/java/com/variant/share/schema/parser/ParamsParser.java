@@ -1,119 +1,63 @@
 package com.variant.share.schema.parser;
 
-import static com.variant.share.schema.parser.error.SemanticError.ELEMENT_NOT_OBJECT;
-import static com.variant.share.schema.parser.error.SemanticError.NAME_INVALID;
-import static com.variant.share.schema.parser.error.SemanticError.NAME_MISSING;
-import static com.variant.share.schema.parser.error.SemanticError.PROPERTY_NOT_LIST;
-import static com.variant.share.schema.parser.error.SemanticError.PROPERTY_NOT_STRING;
-import static com.variant.share.schema.parser.error.SemanticError.UNSUPPORTED_PROPERTY;
+import static com.variant.share.schema.parser.error.SemanticError.PARAM_NAME_DUPE;
+import static com.variant.share.schema.parser.error.SemanticError.PARAM_NAME_INVALID;
+import static com.variant.share.schema.parser.error.SemanticError.PARAM_VALUE_INVALID;
+import static com.variant.share.schema.parser.error.SemanticError.PROPERTY_NOT_OBJECT;
 
-import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 
 import com.variant.share.error.CoreException;
 import com.variant.share.schema.parser.error.SemanticError.Location;
-import com.variant.share.util.Tuples.Pair;
+import com.variant.share.util.CaseInsensitiveLinkedMap;
 
 /**
- * Hooks parser
+ * State Parameters parser
  * @author Igor
  */
 
 public class ParamsParser implements Keywords {
 	
 	/**
-	 * Parse hooks list with the state scope. 
-	 * @param hooksObject
-	 * @param response
+	 * Parse parameter list. 
 	 */
 	static Map<String, String> parse(Object paramsObject, Location paramsLocation, ParserResponse response) {		
 		
-		LinkedHashMap<String, String> result = new LinkedHashMap<String, String>();
+		CaseInsensitiveLinkedMap<String> result = new CaseInsensitiveLinkedMap<String>();
 		
 		try {
-			List<?> rawParams = (List<?>) paramsObject;
+			@SuppressWarnings("unchecked")
+         Map<String, ?> rawParams = (Map<String, ?>) paramsObject;
 									
-			int index = 0;
-			for (Object rawParam: rawParams) {
+			for (Map.Entry<String, ?> entry: rawParams.entrySet()) {
 				
-				Pair<String,String> param = parseParam(rawParam, paramsLocation.plusIx(index++), response);
-				
-				if (param != null) result.put(param._1(), param._2());
+			   String name = entry.getKey();
+			   
+	         if (!SemanticChecks.isName(name)) {
+	            response.addMessage(paramsLocation, PARAM_NAME_INVALID, name);
+	         }
+	         else {
+	            Object valueObject = entry.getValue();
+	            if (valueObject == null || ! (valueObject instanceof String)) {
+	               response.addMessage(paramsLocation.plusProp(name), PARAM_VALUE_INVALID, name);
+	            }
+	            else {
+                  String value = (String) valueObject;
+                  if (result.put(name, value) != null) {
+                     response.addMessage(paramsLocation.plusProp(name), PARAM_NAME_DUPE, name);
+                  }
+	            }
+	         }
 
 			}
 		}
 		catch (ClassCastException e) {
-			response.addMessage(paramsLocation, PROPERTY_NOT_LIST, KEYWORD_PARAMETERS);
+			response.addMessage(paramsLocation, PROPERTY_NOT_OBJECT, KEYWORD_PARAMETERS);
 		}
 		catch (Exception e) {
 			throw new CoreException.Internal(e);
 		}
 		
 		return result;
-	}
-
-	/**
-	 * Parse an individual life-cycle hook definition
-	 * @param rawHook
-	 * @param response
-	 * @return
-	 */
-	@SuppressWarnings("unchecked")
-	private static Pair<String,String> parseParam(Object rawParam, Location paramLocation, ParserResponse response) {
-		
-		String name = null;
-		String value = null;
-		
-		// Pass 1: figure out the name.
-		boolean nameFound = false;
-		
-		Map<String, ?> rawMap;
-		try {
-			rawMap = (Map<String,?>) rawParam;
-		}
-		catch (ClassCastException e) {
-			response.addMessage(paramLocation, ELEMENT_NOT_OBJECT, KEYWORD_PARAMETERS);
-			return null;
-		}
-		
-		for (Map.Entry<String, ?> entry: rawMap.entrySet()) {
-
-			if (entry.getKey().equalsIgnoreCase(KEYWORD_NAME)) {
-				nameFound = true;
-				Object nameObject = entry.getValue();
-				if (! (nameObject instanceof String)) {
-					response.addMessage(paramLocation.plusProp(KEYWORD_NAME), NAME_INVALID);
-				}
-				else {
-					name = (String) nameObject;
-					if (!SemanticChecks.isName(name)) {
-						response.addMessage(paramLocation.plusProp(KEYWORD_NAME), NAME_INVALID);
-					}
-				}
-			}
-			else if (entry.getKey().equalsIgnoreCase(KEYWORD_VALUE)) {
-				Object valueObject = entry.getValue();
-				if (valueObject != null && ! (valueObject instanceof String)) {
-					response.addMessage(paramLocation.plusProp(KEYWORD_VALUE), PROPERTY_NOT_STRING, KEYWORD_VALUE);
-				}
-				else {
-					value = (String) valueObject;
-				}
-			}
-			else {
-				response.addMessage(paramLocation.plusProp(entry.getKey()), UNSUPPORTED_PROPERTY, entry.getKey());
-			}
-
-		}
-
-		if (name == null) {
-			if (!nameFound) {
-				response.addMessage(paramLocation, NAME_MISSING);
-			}
-			return null;
-		}
-	
-		return new Pair<String,String>(name, value);
 	}
 }

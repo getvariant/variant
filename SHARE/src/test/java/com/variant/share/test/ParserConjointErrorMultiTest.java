@@ -37,9 +37,7 @@ public class ParserConjointErrorMultiTest extends BaseTestCore {
 			    "  },                                                           \n" +
 				"   'states':[                                                  \n" +
 				"     {  'name':'state1',                                       \n" +
-				"        'parameters': [                                        \n" +
-				"          {'name':'foo', 'value':'bar'}                        \n" +
-				"        ]                                                      \n" +
+				"        'parameters': {'foo':'bar'}                            \n" +
 				"     },                                                        \n" +
 				"     {                                                         \n" +
 				"        'name':'state2'                                        \n" +
@@ -303,19 +301,13 @@ public class ParserConjointErrorMultiTest extends BaseTestCore {
 			    "      'comment':'schema comment'                               \n" +
 			    "  },                                                           \n" +
 				"   'states':[                                                  \n" +
-				"     {  'name':'state1'                                       \n" +
+				"     {  'name':'state1'                                        \n" +
 				"     },                                                        \n" +
 				"     {                                                         \n" +
-				"        'parameters': [                                        \n" +
-				"           {                                                   \n" +
-				"             'name': 'path',                                   \n" +
-				"             'value': '/path/to/state2'                        \n" +
-				"           },                                                  \n" +
-				"           {                                                   \n" +
-				"             'name': 'bar',                                    \n" +
-				"             'value': 'foo'                                    \n" +
-				"           }                                                   \n" +
-				"        ],                                                     \n" +
+				"        'parameters': {                                        \n" +
+				"          'path':'/path/to/state2',                            \n" +
+				"          'bar':'foo'                                          \n" +
+				"        },                                                     \n" +
 				"        'name':'state2'                                        \n" +
 				"     },                                                       \n" +
 				"     {  'name':'state3'                                       \n" +

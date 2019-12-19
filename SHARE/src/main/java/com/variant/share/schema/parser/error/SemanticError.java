@@ -225,34 +225,43 @@ public class SemanticError extends ParserError {
 	public static final SemanticError NAME_MISSING =
 			new SemanticError(174, Severity.ERROR, "Property 'name' is missing"); 
 
-	public static final SemanticError DUPE_OBJECT =
-			new SemanticError(175, Severity.ERROR, "Object [%s] already defined"); 
+	public static final SemanticError PARAM_NAME_INVALID =
+			new SemanticError(175, Severity.ERROR, "Parameter name [%s] must be a string, containing letters, digits and _, and cannot start with a digit"); 
 
-	public static final SemanticError PROPERTY_NOT_LIST = 
-			new SemanticError(176, Severity.ERROR, "Property '%s' must be a list"); 
+   public static final SemanticError PARAM_NAME_DUPE =
+         new SemanticError(176, Severity.ERROR, "Duplicate parameter name [%s]"); 
+
+   public static final SemanticError PARAM_VALUE_INVALID =
+         new SemanticError(177, Severity.ERROR, "Value of state parameter [%s] must be a string"); 
+
+   public static final SemanticError DUPE_OBJECT =
+         new SemanticError(178, Severity.ERROR, "Object [%s] already defined"); 
+
+   public static final SemanticError PROPERTY_NOT_LIST = 
+			new SemanticError(179, Severity.ERROR, "Property '%s' must be a list"); 
 
 	public static final SemanticError PROPERTY_NOT_OBJECT =
-			new SemanticError(177, Severity.ERROR, "Property '%s' must be an object"); 
+			new SemanticError(180, Severity.ERROR, "Property '%s' must be an object"); 
 
 	public static final SemanticError ELEMENT_NOT_OBJECT =
-			new SemanticError(178, Severity.ERROR, "Element of list property '%s' must be an object"); 
+			new SemanticError(181, Severity.ERROR, "Element of list property '%s' must be an object"); 
 
 	public static final SemanticError PROPERTY_NOT_BOOLEAN =
-			new SemanticError(179, Severity.ERROR, "Property '%s' must be a boolean"); 
+			new SemanticError(182, Severity.ERROR, "Property '%s' must be a boolean"); 
 
 	public static final SemanticError PROPERTY_NOT_STRING =
-			new SemanticError(180, Severity.ERROR, "Property '%s' must be a string"); 
+			new SemanticError(183, Severity.ERROR, "Property '%s' must be a string"); 
 
 	public static final SemanticError ELEMENT_NOT_STRING =
-			new SemanticError(181, Severity.ERROR, "Element of list property '%s' must be a string");
+			new SemanticError(184, Severity.ERROR, "Element of list property '%s' must be a string");
 	
 	public static final SemanticError PROPERTY_NOT_NUMBER =
-			new SemanticError(182, Severity.ERROR, "Property '%s' must be a number"); 
+			new SemanticError(185, Severity.ERROR, "Property '%s' must be a number"); 
 
 	public static final SemanticError PROPERTY_EMPTY_LIST =
-			new SemanticError(183, Severity.ERROR, "Property '%s' cannot be an empty list"); 
+			new SemanticError(186, Severity.ERROR, "Property '%s' cannot be an empty list"); 
 	
 	public static final SemanticError PROPERTY_MISSING =
-			new SemanticError(184, Severity.ERROR, "Property '%s' is missing"); 
+			new SemanticError(187, Severity.ERROR, "Property '%s' is missing"); 
 	
 }

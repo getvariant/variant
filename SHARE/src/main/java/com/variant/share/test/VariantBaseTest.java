@@ -3,14 +3,7 @@ package com.variant.share.test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
 import java.util.Random;
 import java.util.regex.Pattern;
 
@@ -22,7 +15,6 @@ import com.variant.share.schema.parser.ParserMessage;
 import com.variant.share.schema.parser.ParserResponse;
 import com.variant.share.session.CoreSession;
 import com.variant.share.session.SessionScopedTargetingStabile;
-import com.variant.share.util.CollectionsUtils;
 import com.variant.share.util.StringUtils;
 
 
@@ -81,14 +73,6 @@ abstract public class VariantBaseTest {
 	//---------------------------------------------------------------------------------------------//
 	//                                        ASSERTION                                            //
 	//---------------------------------------------------------------------------------------------//
-	/**
-	 * Why Junit doesn't provide this is anyone's guess.
-	 * @param o1
-	 * @param o2
-	 */
-	protected static void assertNotEquals(Object o1, Object o2) {
-		assertTrue(!o1.equals(o2));
-	}
 	
 	/**
 	 * 
@@ -135,10 +119,7 @@ abstract public class VariantBaseTest {
 	 */
 	protected static void assertMessageEqual(ParserMessage expected, ParserMessage actual) {
 		
-		org.junit.Assert.assertEquals(expected.getCode(), actual.getCode());
-		org.junit.Assert.assertEquals(expected.getText(), actual.getText());
-		org.junit.Assert.assertEquals(expected.getSeverity(), actual.getSeverity());
-		org.junit.Assert.assertEquals(expected.getLocation(), actual.getLocation());
+		assertEquals(expected.getText(), actual.getText());
 	}
 		
 	/**
