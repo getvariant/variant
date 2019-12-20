@@ -1,86 +1,77 @@
-//
-// Variant Java client + Servlet adapter demo application.
-// Demonstrates instrumentation of a basic Variant experiment.
-// See https://github.com/getvariant/variant-java-demo for details.
-//
-// Copyright © 2015-2018 Variant, Inc. All Rights Reserved.
+/*
+ * Variant Java client + servlet adapter demo application.
+ * Demonstrates instrumentation of an experiment and a concurrent feature toggle.
+ * See https://github.com/getvariant/variant-java-demo for details.
+ *
+ * Copyright © Variant, Inc. All Rights Reserved.
+ */
 
 {
    'meta':{
       'name':'petclinic',
-      'comment':'The Petclinic applicaiton with intentional error online 44'
+      'comment':'The petclinic schema with intentional error at line 57'
    },
-   'states':[                                                
-     { 
-       // The New Owner page used to add owner at /petclinic/owners/new 
-       'name':'newOwner',
-       'parameters': [
-            {
-               'name':'path',
-               'value':'/petclinic/owners/new'
-            }
-        ]
-     },                                                    
-     {  
-       // The Owner Detail page. Note that owner ID is in the path,
-        // so we have to use regular expression to match.
-       'name':'ownerDetail',
-       'parameters': [
-            {
-               'name':'path',
-               'value':'/petclinic/owners/~\\d+/'
-            }
-        ]
-     }                                                     
+
+   'states':[
+      {'name':'vets'},
+      {'name':'newVisit'} 
    ],                                                        
-   'variations':[                                                 
-      {                                                      
-         'name':'NewOwnerTest',
-         'isOn': true,                                     
+
+   'variations':[
+
+      /*
+       * Vet's hourly rate feature toggle on the vets page only.
+       * Demonstrates lazy instrumentation.
+       */ 
+
+     {                                                      
+         'name':'VetsHourlyRateFeature',
          'experiences':[                                     
             {                                                
-               'name':'outOfTheBox',                                   
-               'weight':1                                  
-               //'isControl':true   <- No control experience ERROR                              
+               'name':'existing',                                   
+               'weight':1,                                  
+               'isControl':true                              
             },                                               
             {                                                
-               'name':'tosCheckbox',                                   
-               'weight':1                                   
-            },                                               
-            {                                                
-               'name':'tosAndMailCheckbox',                                   
-               'weight':1                                   
-            }                                               
+               'name':'rateColumn',
+               'weight':3                                   
+            }              
          ],                                                  
-         'onStates':[                                         
-            {                                  
-               'stateRef':'newOwner',                    
-               'variants':[                                  
-                  {                                          
-                     'experienceRef': 'tosCheckbox',
-                     'parameters': [
-                        {
-                           'name':'path',
-                           'value':'/owners/new/variant/newOwnerTest.tosCheckbox'
-                        }
-                     ]
-                  },                                         
-                  {                                          
-                     'experienceRef': 'tosAndMailCheckbox',                   
-                     'parameters': [
-                        {
-                           'name':'path',
-                           'value':'/owners/new/variant/newOwnerTest.tosAndMailCheckbox'
-                        }
-                     ]
-                  }                                          
-               ]                                             
-            },
-            {                                                
-               'stateRef':'ownerDetail'
-            }                                                
+         'onStates':[
+            {'stateRef':'vets'}
          ]
-      }                                                     
-   ]                                                         
-}                         
+      },
+
+      /*
+       * The Schedule-a-Visit Experiment on 2 pages.
+       * Demonstrate eager instrumentation and conjoint variation concurrency.
+       */
       
+      {                                                      
+         'name':'ScheduleVisitTest',
+         'conjointVariationRefs':['VetsHourlyRateFeature'], 
+         'experiences':[                              
+            {                                                
+               'name':'noLink',                                   
+               'weight':1                                  
+               // 'isControl':true    No control experience error                              
+            },                                               
+            {                                                
+               'name':'withLink',
+               'weight':1                                   
+            }                                              
+         ],                                                  
+         'onStates':[
+            {'stateRef':'vets'},
+            {'stateRef':'newVisit'}
+         ],
+         'hooks': [
+        	{
+        		// Disqualify blacklisted users.
+        		'class':'com.variant.extapi.std.demo.UserQualifyingHook',
+        		'init': {'blackList':['Nikita Krushchev']}
+        	} 
+         ]
+      }
+   ]
+}

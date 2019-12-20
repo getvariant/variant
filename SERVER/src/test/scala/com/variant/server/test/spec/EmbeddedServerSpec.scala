@@ -46,9 +46,11 @@ trait EmbeddedServerSpec extends BaseSpec with ScalatestRouteTest with LazyLoggi
       _server = {
          val newBuilder = serverBuilder()
          f(newBuilder)
-         newBuilder.build()
+         val result = newBuilder.build()
+         result
       }
    }
+   
    
    override def afterAll() = {
       _server.shutdown()

@@ -30,6 +30,7 @@ import play.api.libs.json.Json.JsValueWrapper
 import akka.actor.Actor
 import com.variant.server.trace.FlusherRouter
 import com.variant.server.trace.EventBufferCache
+import java.util.concurrent.TimeoutException
 
 /**
  * The Main class.
@@ -235,7 +236,6 @@ class VariantServerImpl(builder: VariantServer.Builder)(override implicit val ac
    override def shutdown() {
 
       val start = System.currentTimeMillis
-
       logger.debug("Server shutdown sequence started")
 
       // No more client connections
@@ -254,9 +254,9 @@ class VariantServerImpl(builder: VariantServer.Builder)(override implicit val ac
 
       logger.debug("Buffer cache shutdown")
 
-      actorSystem.whenTerminated.andThen {
+      val actorSystemTerminationFuture = actorSystem.whenTerminated.andThen {
          case Success(_) =>
-            logger.debug("Actor system shutdown")
+
             logger.info(ServerMessageLocal.SERVER_SHUTDOWN.asMessage(
                s"${productVersion._1} release ${productVersion._2}",
                if (builder.isHeadless) "headless" else config.httpPort.toString,
@@ -267,7 +267,17 @@ class VariantServerImpl(builder: VariantServer.Builder)(override implicit val ac
             logger.error("Unexpected exception thrown:", e)
       }
 
+      // Shutdown actor system and block until it's shutdown.
       actorSystem.terminate()
+      try {
+         Await.ready(actorSystemTerminationFuture, 10 seconds)
+      }
+      catch {
+         case _: TimeoutException => 
+            logger.error("Timed out waiting for the shutdown to complete")
+         case e: Exception => 
+            logger.error("Exception during server shutdown:", e)
+      }
    }
 
    /**

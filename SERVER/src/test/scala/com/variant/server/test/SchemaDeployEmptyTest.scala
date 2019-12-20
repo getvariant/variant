@@ -42,6 +42,7 @@ class SchemaDeployEmptyTest extends EmbeddedServerSpec with BeforeAndAfterAll {
       super.afterAll()
    }
 
+   
    /**
     *
     */
@@ -88,7 +89,5 @@ class SchemaDeployEmptyTest extends EmbeddedServerSpec with BeforeAndAfterAll {
          Thread.sleep(dirWatcherLatencyMsecs);
          server.schemata.size mustBe 1
       }
-
    }
-
 }
