@@ -8,8 +8,10 @@ maintainer := "igor@getvariant.com"
 organization    := "com.variant"
 scalaVersion    := "2.12.7"
 name            := "Variant-Server"
+moduleName      := "Variant AIM Server"
 version         := "0.10.3"
 
+val product = "Variant AIM Server"
 val akkaHttpVersion = "10.1.8"
 val akkaVersion     = "2.5.25"
 
@@ -42,7 +44,7 @@ libraryDependencies ++= Seq(
 )
 
 // sbt-buildinfo plugin configuration
-buildInfoKeys := Seq[BuildInfoKey](name, version, scalaVersion, sbtVersion)
+buildInfoKeys := Seq[BuildInfoKey](moduleName, version, scalaVersion, sbtVersion)
 buildInfoOptions := Seq(BuildInfoOption.BuildTime)
 buildInfoPackage := "com.variant.server.build"
  

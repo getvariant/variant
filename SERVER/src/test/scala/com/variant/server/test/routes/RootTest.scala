@@ -23,7 +23,7 @@ class RootTest extends EmbeddedServerSpec {
             println(entityAs[String])
             contentType mustBe ContentTypes.`text/plain(UTF-8)`
             val lines = entityAs[String].split("\n").toSeq
-            lines(0) mustBe s"${VariantServer.productVersion._1} release ${VariantServer.productVersion._2}."
+            lines(0) mustBe s"${VariantServer.name} release ${VariantServer.version}."
             lines(1) must startWith("Uptime")
             lines(2) mustBe "Schemata:"
             lines.size mustBe 15

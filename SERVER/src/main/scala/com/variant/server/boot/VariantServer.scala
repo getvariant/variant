@@ -31,6 +31,7 @@ import akka.actor.Actor
 import com.variant.server.trace.FlusherRouter
 import com.variant.server.trace.EventBufferCache
 import java.util.concurrent.TimeoutException
+import com.variant.server.build.BuildInfo
 
 /**
  * The Main class.
@@ -57,7 +58,7 @@ trait VariantServer {
     */
    def shutdown(): Unit
 
-   def uptime: java.time.Duration = java.time.Duration.ofMillis(java.lang.management.ManagementFactory.getRuntimeMXBean().getUptime())
+   def uptime: Duration = Duration(java.lang.management.ManagementFactory.getRuntimeMXBean().getUptime(), "millisecond")
 }
 
 /**
@@ -65,9 +66,9 @@ trait VariantServer {
  */
 object VariantServer {
 
-   // TODO Need to get this from sbt
-   val productVersion = ("Variant AIM Server", "0.10.3")
-
+   val name = BuildInfo.moduleName
+   val version = BuildInfo.version
+   
    class Builder {
 
       // TODO: these should only be accessible from VariantServerImpl,
@@ -219,11 +220,11 @@ class VariantServerImpl(builder: VariantServer.Builder)(override implicit val ac
 
    if (isUp) {
       logger.info(ServerMessageLocal.SERVER_BOOT_OK.asMessage(
-         s"${productVersion._1} release ${productVersion._2}",
+         s"${name} release ${version}",
          if (builder.isHeadless) "headless" else config.httpPort.toString,
-         TimeUtils.formatDuration(uptime)))
+         TimeUtils.formatDuration(java.time.Duration.ofMillis(uptime.toMillis))))
    } else {
-      logger.error(ServerMessageLocal.SERVER_BOOT_FAILED.asMessage(s"${productVersion._1} release ${productVersion._2}"))
+      logger.error(ServerMessageLocal.SERVER_BOOT_FAILED.asMessage(s"${name} release ${version}"))
       bootExceptions.foreach(e => logger.error(e.getMessage, e))
       actorSystem.terminate()
    }
@@ -258,10 +259,10 @@ class VariantServerImpl(builder: VariantServer.Builder)(override implicit val ac
          case Success(_) =>
 
             logger.info(ServerMessageLocal.SERVER_SHUTDOWN.asMessage(
-               s"${productVersion._1} release ${productVersion._2}",
+               s"${name} release ${version}",
                if (builder.isHeadless) "headless" else config.httpPort.toString,
                TimeUtils.formatDuration(java.time.Duration.ofMillis(System.currentTimeMillis - start)),
-               TimeUtils.formatDuration(uptime)))
+               TimeUtils.formatDuration(java.time.Duration.ofMillis(uptime.toMillis))))
 
          case Failure(e) =>
             logger.error("Unexpected exception thrown:", e)
