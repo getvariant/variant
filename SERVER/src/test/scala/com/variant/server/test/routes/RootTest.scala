@@ -20,6 +20,7 @@ class RootTest extends EmbeddedServerSpec {
          HttpRequest(uri = "/") ~> router ~> check {
 
             status mustBe OK
+            println(entityAs[String])
             contentType mustBe ContentTypes.`text/plain(UTF-8)`
             val lines = entityAs[String].split("\n").toSeq
             lines(0) mustBe s"${VariantServer.productVersion._1} release ${VariantServer.productVersion._2}."

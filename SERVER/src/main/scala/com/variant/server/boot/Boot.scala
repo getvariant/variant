@@ -26,7 +26,5 @@ object Boot extends App with LazyLogging {
       }
    })
 
-   // Need this?
-   // Await.result(server.actorSystem.whenTerminated, Duration.Inf)
 }
 

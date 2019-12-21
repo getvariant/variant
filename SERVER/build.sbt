@@ -16,7 +16,7 @@ val akkaVersion     = "2.5.25"
 // Add local Maven repo for com.variant.core artifacts built with Maven.
 resolvers += Resolver.mavenLocal
 
-enablePlugins(JavaServerAppPackaging)
+enablePlugins(JavaServerAppPackaging, BuildInfoPlugin)
 
 libraryDependencies ++= Seq(
   "com.typesafe.akka" %% "akka-http"            % akkaHttpVersion,
@@ -40,7 +40,13 @@ libraryDependencies ++= Seq(
   "com.variant"            % "variant-share"        % "0.10.3"
   
 )
-     
+
+// sbt-buildinfo plugin configuration
+buildInfoKeys := Seq[BuildInfoKey](name, version, scalaVersion, sbtVersion)
+buildInfoOptions := Seq(BuildInfoOption.BuildTime)
+buildInfoPackage := "com.variant.server.build"
+ 
+  
 // ...and prepend it to the startup script's classpath.
 scriptClasspath := Seq("../conf/") ++ scriptClasspath.value
 
@@ -60,6 +66,7 @@ executableScriptName := "variant-ctl"
 // For this to work, fork must be set to true, i.e. each run is in a separate JVM
 fork := true
 Test / baseDirectory := file("test-base")
+//baseDirectory in run := file("test-base")
 
 // Do not truncate stack traces. (Use when needed for debugging)
 // testOptions in Test += Tests.Argument("-oF")

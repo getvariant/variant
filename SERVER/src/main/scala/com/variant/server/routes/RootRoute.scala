@@ -1,15 +1,13 @@
 package com.variant.server.routes
 
-import java.time.Duration
-
-import akka.http.scaladsl.server.Directives._
-import akka.http.scaladsl.model.StatusCodes
-import com.variant.share.util.TimeUtils
 import com.variant.server.boot.VariantServer
+import com.variant.share.util.TimeUtils
+import com.variant.server.build.BuildInfo
+
+import akka.http.scaladsl.model.ContentTypes
 import akka.http.scaladsl.model.HttpEntity
 import akka.http.scaladsl.model.HttpResponse
-import akka.http.scaladsl.model.ContentTypes
-import akka.http.scaladsl.model.headers.Server
+import akka.http.scaladsl.model.StatusCodes
 
 /**
  * "/" route
@@ -38,7 +36,8 @@ object RootRoute extends VariantRoute {
                "\n   Name: " + liveGen.getMeta.getName ++=
                "\n      Comment: " + liveGen.getMeta.getComment ++=
                "\n      States: " + liveGen.getStates.size ++=
-               "\n      Variations: " + liveGen.getVariations.size)
+               "\n      Variations: " + liveGen.getVariations.size ++=
+               "\n      Scala: " + BuildInfo.scalaVersion)
       }
 
       msg ++= "\n"
