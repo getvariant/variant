@@ -55,7 +55,8 @@ class StandaloneServerPostgresTest extends StandaloneServerSpec with Async {
       "send health on a root request" in {
          val resp = HttpRequest.get("http://localhost:5377")
          resp.responseCode mustBe HTTP_OK
-         resp.bodyString.get must startWith(VariantServer.name)
+         resp.contentType.get mustBe "application/json"
+         resp.bodyString.get must include (VariantServer.name)
       }
 
       "fail to deploy without the right JDBC driver in ext/" in {

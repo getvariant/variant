@@ -49,7 +49,8 @@ class StandaloneServerDefaultTest extends StandaloneServerSpec {
 
          val resp = HttpRequest.get("http://localhost:5377")
          resp.responseCode mustBe HTTP_OK
-         resp.bodyString.get must startWith("Variant AIM Server")
+         resp.contentType.get mustBe "application/json"
+         resp.bodyString.get must include (VariantServer.name)
       }
 
       "start on a non-default port 1234" in {

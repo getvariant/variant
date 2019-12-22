@@ -66,7 +66,7 @@ trait VariantServer {
  */
 object VariantServer {
 
-   val name = BuildInfo.moduleName
+   val name = BuildInfo.product
    val version = BuildInfo.version
    
    class Builder {

@@ -8,7 +8,6 @@ maintainer := "igor@getvariant.com"
 organization    := "com.variant"
 scalaVersion    := "2.12.7"
 name            := "Variant-Server"
-moduleName      := "Variant AIM Server"
 version         := "0.10.3"
 
 val product = "Variant AIM Server"
@@ -47,8 +46,10 @@ libraryDependencies ++= Seq(
 buildInfoKeys := Seq[BuildInfoKey](moduleName, version, scalaVersion, sbtVersion)
 buildInfoOptions := Seq(BuildInfoOption.BuildTime)
 buildInfoPackage := "com.variant.server.build"
- 
-  
+buildInfoKeys += BuildInfoKey.action("javaVersion")(sys.props("java.version"))
+buildInfoKeys += BuildInfoKey.action("javaVm")(sys.props("java.vm.name"))
+buildInfoKeys += BuildInfoKey.action("product")(product)
+
 // ...and prepend it to the startup script's classpath.
 scriptClasspath := Seq("../conf/") ++ scriptClasspath.value
 

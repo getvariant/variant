@@ -29,40 +29,22 @@ object RootRoute extends VariantRoute {
          "uptimeSeconds" -> JsNumber(server.uptime.toSeconds),
          "build" -> JsObject(Seq(
                "timestamp" -> JsString(BuildInfo.builtAtString),
-               "scalaVersion" -> JsString(BuildInfo.scalaVersion))),
+               "scalaVersion" -> JsString(BuildInfo.scalaVersion),
+               "javacVersion" -> JsString(BuildInfo.javaVersion),
+               "javaVm" -> JsString(BuildInfo.javaVm))),
          "schemata" -> JsArray(
-               server.schemata.getLiveGens.map { schema =>
-                  val jsonList = mutable.ListBuffer("name" -> JsString(schema.getMeta.getName))
-                  schema.getMeta.getComment.ifPresent { comment =>
-                     jsonList +=  ("comment" -> JsString(comment))
-                  }
-                  JsObject(jsonList)
-               })
+               server.schemata.getLiveGens
+                  .sortBy(_.getMeta.getName)
+                  .map { schema =>
+                     val jsonList = mutable.ListBuffer("name" -> JsString(schema.getMeta.getName))
+                     schema.getMeta.getComment.ifPresent { comment =>
+                        jsonList +=  ("comment" -> JsString(comment))
+                     }
+                     JsObject(jsonList)
+               }
+          )
       ))
              
-      /*
-      val msg: StringBuilder =
-         new StringBuilder(s"${VariantServer.productVersion._1} release ${VariantServer.productVersion._2}") ++=
-            ".\n" ++=
-            "Uptime: %s.\n".format(TimeUtils.formatDuration(server.uptime))
-
-      val liveGens = server.schemata.getLiveGens
-
-      if (liveGens.size == 0) {
-         msg ++= "No schemata deployed."
-      } else {
-         msg ++= "Schemata:"
-         liveGens.foreach(liveGen =>
-            msg ++=
-               "\n   Name: " + liveGen.getMeta.getName ++=
-               "\n      Comment: " + liveGen.getMeta.getComment ++=
-               "\n      States: " + liveGen.getStates.size ++=
-               "\n      Variations: " + liveGen.getVariations.size ++=
-               "\n      Scala: " + BuildInfo.scalaVersion)
-      }
-
-      msg ++= "\n"
-		*/
       HttpResponse(StatusCodes.OK, entity = HttpEntity(ContentTypes.`application/json`, Json.prettyPrint(response)))
    }
 }

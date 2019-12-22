@@ -1,12 +1,14 @@
 package com.variant.server.test.routes
 
 import com.variant.server.test.spec.EmbeddedServerSpec
+import com.variant.server.boot.VariantServer
+
+import play.api.libs.json._
 
 import akka.http.scaladsl.model.ContentTypes
 import akka.http.scaladsl.model.HttpRequest
 import akka.http.scaladsl.model.StatusCodes._
 import akka.http.scaladsl.model.HttpMethods
-import com.variant.server.boot.VariantServer
 
 /**
  * Root Controller (health message)
@@ -20,13 +22,17 @@ class RootTest extends EmbeddedServerSpec {
          HttpRequest(uri = "/") ~> router ~> check {
 
             status mustBe OK
-            println(entityAs[String])
-            contentType mustBe ContentTypes.`text/plain(UTF-8)`
-            val lines = entityAs[String].split("\n").toSeq
-            lines(0) mustBe s"${VariantServer.name} release ${VariantServer.version}."
-            lines(1) must startWith("Uptime")
-            lines(2) mustBe "Schemata:"
-            lines.size mustBe 15
+            //println(entityAs[String])
+            contentType mustBe ContentTypes.`application/json`
+            val respJson = Json.parse(entityAs[String])
+            (respJson \ "name").as[String] mustBe VariantServer.name
+            (respJson \ "version").as[String] mustBe VariantServer.version
+            (respJson \ "uptimeSeconds").as[Long] must be <= (server.uptime.toSeconds)
+            (respJson \ "build" \ "timestamp").asOpt[String].isDefined mustBe true
+            (respJson \ "build" \ "scalaVersion").asOpt[String].isDefined mustBe true
+            (respJson \ "build" \ "javacVersion").asOpt[String].isDefined mustBe true
+            (respJson \ "build" \ "javaVm").asOpt[String].isDefined mustBe true
+            (respJson \ "schemata").as[Seq[JsValue]].size mustBe 3
          }
       }
 

@@ -144,7 +144,7 @@ class StandaloneServer(serverDir: String, flusher: String) extends LazyLogging  
          while (!confirmed && waited < timeoutMillis) {
             try {
                val health = Source.fromURL("http://localhost:" + port).mkString
-               if (!health.startsWith("Variant AIM Server"))
+               if (!health.startsWith("{"))
                   throw new RuntimeException(s"Unexpected halth response from server [${health}]")
                confirmed = true;
             } catch {

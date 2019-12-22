@@ -20,7 +20,8 @@ public class HttpResponse {
 
 	final public int responseCode;
 	final public Optional<String> bodyString;
-
+   final public Optional<String> contentType;
+   
 	final private HttpURLConnection conn;
 	
 	HttpResponse(HttpURLConnection conn) throws IOException {
@@ -36,6 +37,7 @@ public class HttpResponse {
 		bodyString = bodyStream == null ? Optional.empty() : Optional.of(IoUtils.toString(bodyStream));
 		
 		responseCode = conn.getResponseCode();
+		contentType = Optional.ofNullable(conn.getContentType());
 	}
 		
 	/**
