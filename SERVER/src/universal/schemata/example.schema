@@ -6,7 +6,8 @@
 
 {
    'meta':{
-      'name':'exampleSchema'
+      'name':'exampleSchema',
+      'comment':'Basic sample variation schema. See User Guide for details.'
    },
    'states':[
    	{

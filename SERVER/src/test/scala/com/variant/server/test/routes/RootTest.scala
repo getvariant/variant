@@ -30,8 +30,9 @@ class RootTest extends EmbeddedServerSpec {
             (respJson \ "uptimeSeconds").as[Long] must be <= (server.uptime.toSeconds)
             (respJson \ "build" \ "timestamp").asOpt[String].isDefined mustBe true
             (respJson \ "build" \ "scalaVersion").asOpt[String].isDefined mustBe true
-            (respJson \ "build" \ "javacVersion").asOpt[String].isDefined mustBe true
-            (respJson \ "build" \ "javaVm").asOpt[String].isDefined mustBe true
+            (respJson \ "build" \ "javaVersion").asOpt[String].isDefined mustBe true
+            (respJson \ "build" \ "javaVmName").asOpt[String].isDefined mustBe true
+            (respJson \ "build" \ "javaVmVersion").asOpt[String].isDefined mustBe true
             (respJson \ "schemata").as[Seq[JsValue]].size mustBe 3
          }
       }

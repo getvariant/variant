@@ -44,11 +44,13 @@ libraryDependencies ++= Seq(
 
 // sbt-buildinfo plugin configuration
 buildInfoKeys := Seq[BuildInfoKey](moduleName, version, scalaVersion, sbtVersion)
-buildInfoOptions := Seq(BuildInfoOption.BuildTime)
+//buildInfoOptions := Seq(BuildInfoOption.BuildTime)
 buildInfoPackage := "com.variant.server.build"
 buildInfoKeys += BuildInfoKey.action("javaVersion")(sys.props("java.version"))
-buildInfoKeys += BuildInfoKey.action("javaVm")(sys.props("java.vm.name"))
+buildInfoKeys += BuildInfoKey.action("javaVmName")(sys.props("java.vm.name"))
+buildInfoKeys += BuildInfoKey.action("javaVmVersion")(sys.props("java.vm.version"))
 buildInfoKeys += BuildInfoKey.action("product")(product)
+buildInfoKeys += BuildInfoKey.action("buildTimestamp")(java.time.Instant.now.toString)
 
 // ...and prepend it to the startup script's classpath.
 scriptClasspath := Seq("../conf/") ++ scriptClasspath.value

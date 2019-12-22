@@ -28,10 +28,11 @@ object RootRoute extends VariantRoute {
          "version" -> JsString(VariantServer.version),
          "uptimeSeconds" -> JsNumber(server.uptime.toSeconds),
          "build" -> JsObject(Seq(
-               "timestamp" -> JsString(BuildInfo.builtAtString),
+               "timestamp" -> JsString(BuildInfo.buildTimestamp),
                "scalaVersion" -> JsString(BuildInfo.scalaVersion),
-               "javacVersion" -> JsString(BuildInfo.javaVersion),
-               "javaVm" -> JsString(BuildInfo.javaVm))),
+               "javaVersion" -> JsString(BuildInfo.javaVersion),
+               "javaVmName" -> JsString(BuildInfo.javaVmName),
+               "javaVmVersion" -> JsString(BuildInfo.javaVmVersion))),
          "schemata" -> JsArray(
                server.schemata.getLiveGens
                   .sortBy(_.getMeta.getName)
@@ -45,6 +46,6 @@ object RootRoute extends VariantRoute {
           )
       ))
              
-      HttpResponse(StatusCodes.OK, entity = HttpEntity(ContentTypes.`application/json`, Json.prettyPrint(response)))
+      HttpResponse(StatusCodes.OK, entity = HttpEntity(ContentTypes.`application/json`, Json.prettyPrint(response) + '\n'))
    }
 }
