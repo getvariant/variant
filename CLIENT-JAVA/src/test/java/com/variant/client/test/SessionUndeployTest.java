@@ -276,7 +276,7 @@ public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 
 		restartServer();
 
-		// Restore the monstrosity
+		// Deploy the monster schema
 	    IoUtils.fileCopy(SCHEMATA_DIR_SRC + "monster.schema", SCHEMATA_DIR + "/monster.schema");
 
 		// restart the server with the longger session timeout
@@ -303,7 +303,7 @@ public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 		assertEquals(conn1.getClient(), conn3.getClient());
 		assertEquals("petclinic", conn3.getSchemaName());
 
-		// Create sessions in conn1
+		// Create sessions in conn1 and target them
 		Session[] sessions1 = new Session[SESSIONS];
 		StateRequest[] requests1 = new StateRequest[SESSIONS];
 		for (int i = 0; i < SESSIONS; i++) {
@@ -346,7 +346,7 @@ public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 			});
 		}
 
-		// Create sessions in conn3
+		// Create sessions in conn3 and target them
 		Session[] sessions3 = new Session[SESSIONS];
 		StateRequest[] requests3 = new StateRequest[SESSIONS];
 		for (int i = 0; i < SESSIONS; i++) {
@@ -366,11 +366,12 @@ public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 
 		joinAll();
 
+		// Undeploy moster schema 
 		IoUtils.delete(SCHEMATA_DIR + "/monster.schema");
 		Thread.sleep(dirWatcherLatencyMillis);
-
-		// Long session timeout => all sessions should be alive.
 				
+      // Long session timeout => all sessions should be alive.
+
 		for (int i = 0; i < SESSIONS; i++) {
 			final int _i = i;
 			async (() -> {
@@ -458,7 +459,26 @@ public class SessionUndeployTest extends ClientBaseTestWithServerAsync {
 				String value = "value" + _i;
 				assertEquals(value, ssn.getAttributes().get(key));
 				sessions1[_i].getAttributes().remove(key);
-				assertNotNull(ssn.targetForState(ssn.getSchema().getState("state" + ((_i % 5) + 1)).get()));
+				State state = ssn.getSchema().getState("state" + ((_i % 5) + 1)).get();
+				
+				// state2 is phantom in test2.a => targeting must throw exception
+				if (state.getName().equals("state2") && ssn.getLiveExperience("test2").get().getName().equals("A")) {
+
+			      new ClientExceptionInterceptor() {
+
+			         @Override public void toRun() {
+			            ssn.targetForState(state);          
+			         }
+			         
+			         @Override public void onThrown(VariantException e) {
+			            assertEquals(ServerError.STATE_PHANTOM_IN_EXPERIENCE.asMessage("state2", "test2.A"), e.getMessage());
+			         }
+
+			      }.assertThrown();
+			   }
+				else {
+				   assertNotNull(ssn.targetForState(state));
+				}
 				req.commit();
 		
 			});

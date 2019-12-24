@@ -5,7 +5,7 @@ import java.util.Map;
 
 /**
  * Variant trace event. Trace events can be triggered explicitly by the client code or implicitly by Variant server.
- * Explicit trace events are triggered by {@link Session#triggerTraceEvent(com.variant.core.TraceEvent)}. Implicit trace events
+ * Explicit trace events are triggered by {@link Session#triggerTraceEvent()}. Implicit trace events
  * are generated automatically by Variant server. All trace events are processed by Variant Server, outside of the host application.
  * 
  * @since 0.5

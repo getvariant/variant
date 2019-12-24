@@ -1,12 +1,13 @@
 package com.variant.client.test;
 
-import static com.variant.client.StateRequest.Status.Committed;
-import static com.variant.client.StateRequest.Status.InProgress;
+import static com.variant.client.StateRequest.Status.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+
+import java.util.List;
 
 import com.variant.client.Connection;
 import com.variant.client.Session;
@@ -14,12 +15,15 @@ import com.variant.client.SessionExpiredException;
 import com.variant.client.StateRequest;
 import com.variant.client.TraceEvent;
 import com.variant.client.VariantException;
+import com.variant.client.impl.SchemaImpl;
 import com.variant.client.impl.StateVisitedEvent;
 import com.variant.client.test.util.ClientBaseTestWithServer;
+import com.variant.client.test.util.event.TraceEventFromDatabase;
 import com.variant.share.error.ServerError;
 import com.variant.share.schema.Schema;
 import com.variant.share.schema.State;
 import com.variant.share.schema.Variation;
+import com.variant.share.util.CollectionsUtils;
 
 public class StateRequestTest extends ClientBaseTestWithServer {
 		
@@ -97,7 +101,7 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 	}
 	
 	/**
-	 *
+	 */
 	@org.junit.Test
 	public void deterministicTest() throws Exception {
 		
@@ -149,7 +153,7 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 	}
 
 	/**
-	 *
+	 */
 	@org.junit.Test
 	public void commitTest() throws Exception {
 		
@@ -215,7 +219,7 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 	/**
 	 * 
 	 * @throws Exception
-	 *
+	 */
 	@org.junit.Test
 	public void failTest() throws Exception {
 		
@@ -299,8 +303,8 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 	
 	/**
 	 * Petclinic schema defines a qualification hook which will fail, if "user" session attribute is not set.
-	 *
-	//@org.junit.Test
+	 */
+	@org.junit.Test
 	public void targetingHookExceptionTest() throws Exception {
 		
 		Connection conn = client.connectTo("variant://localhost:5377/petclinic");		
@@ -320,8 +324,7 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 		
 		assertFalse(ssn.getStateRequest().isPresent());
 		assertTrue(ssn.getTraversedStates().isEmpty());
-		// See # 193
-		assertEquals(2, ssn.getTraversedVariations().size());
+		assertEquals(0, ssn.getTraversedVariations().size());
 		assertTrue(ssn.getDisqualifiedVariations().isEmpty());
 		
 		// Set the attribute and target. 
@@ -373,5 +376,4 @@ public class StateRequestTest extends ClientBaseTestWithServer {
 		assertEquals(Committed, req1.getStatus());
 
 	}
-*/
 }

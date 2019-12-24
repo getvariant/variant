@@ -73,8 +73,16 @@ abstract public class VariantBaseTest {
 	//---------------------------------------------------------------------------------------------//
 	//                                        ASSERTION                                            //
 	//---------------------------------------------------------------------------------------------//
-	
 	/**
+    * Why Junit doesn't provide this is anyone's guess.
+    * @param o1
+    * @param o2
+    */
+   protected static void assertNotEquals(Object o1, Object o2) {
+      assertTrue(!o1.equals(o2));
+   }
+   
+   /**
 	 * 
 	 * @param pattern
 	 * @param string
@@ -122,91 +130,7 @@ abstract public class VariantBaseTest {
 		assertEquals(expected.getText(), actual.getText());
 	}
 		
-	/**
-	 * Assert that two collections are set-equivalent, i.e.
-	 * for each element in one, there's an equal element in the other.
-	 * Custom comparator.
-	 *  
-	 * @param 
-	 *
-	protected static <T> void assertEqualAsSets(Collection<T> actual, Collection<T> expected, Comparator<T> comp) {
-		
-	   assertTrue(CollectionsUtils.equalAsSets(actual, expected, comp));
-	}
-
-	/**
-	 * Same as above with the natural comparator
-	 *  
-	 * @param 
-	 *
-	protected static <T> void assertEqualAsSets(Collection<T> actual, Collection<T> expected) {
-
-		assertTrue(CollectionsUtils.equalAsSets(actual, expected));
-	}
-
-	/**
-	 * Assert that two lists are the same, including order.
-	 * Custom comparator.
-	 *  
-	 * @param 
-	 *
-	protected static <T> void assertEqualAsLists(List<T> actual, List<T> expected, Comparator<T> comp) {
-		
-		assertEquals("Actual list of size " + actual.size() + "was not equal expected size " + expected.size(), actual.size(), expected.size());
-		
-		Iterator<T> actualIter = actual.iterator(); 
-		Iterator<T> expectedIter = expected.iterator(); 
-		while (actualIter.hasNext()) {
-
-			T a = actualIter.next();
-			T e = expectedIter.next();
-			if (comp.compare(a, e) != 0) {
-				fail("Actual element " + a + " was not equal expected element " + e);
-			}
-		}		
-	}
-
-	/**
-	 * Same as above with the trivial comparator
-	 *  
-	 * @param 
-	 *
-	protected static <T> void assertEqualAsLists(List<T> actual, List<T> expected) {
-
-		Comparator<T> comp = new Comparator<T>() {
-			@Override
-			public int compare(Object o1, Object o2) {return o1.equals(o2) ? 0 : 1;}
-		};
-		assertEqualAsSets(actual, expected, comp);
-	}
-
-	/**
-	 * Same as above for varargs
-	 * @param actual
-	 * @param expected
-	 *
-	protected <T> void assertEqualAsSets(Collection<T> actual, @SuppressWarnings("unchecked") T...expected) {
-		assertEqualAsSets(actual, Arrays.asList(expected));
-	}
-
-	/**
-	 * Same as above for maps
-	 * @param actual
-	 * @param expected
-	 *
-	protected <K,V> void assertEqualAsSets(Map<K,V> actual, Map<K,V> expected) {
-		assertEqualAsSets(actual.entrySet(), expected.entrySet());
-	}
-
-	/**
-	 * Same as above with custom comparator over entries.
-	 * @param actual
-	 * @param expected
-	 *
-	protected <K,V> void assertEqualAsSets(Map<K,V> actual, Map<K,V> expected, Comparator<Map.Entry<K, V>> comp) {
-		assertEqualAsSets(actual.entrySet(), expected.entrySet(), comp);
-	}
-*/
+	
 	//---------------------------------------------------------------------------------------------//
 	//                                  EXCEPTION INTERCEPTORS                                     //
 	//---------------------------------------------------------------------------------------------//

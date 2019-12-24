@@ -66,7 +66,7 @@ public class StandaloneServer {
 	 * @param config
 	 */
 	public void start(Map<String, Object> config) throws Exception {
-			   
+			   	   
 		// Build the command
 		String command = serverDir + "/bin/variant start";
 		for (Map.Entry<String,Object> entry: config.entrySet()) {
@@ -121,7 +121,7 @@ public class StandaloneServer {
 			throw new RuntimeException("Unable to stop server");
 	}
 	
-	/**
+   /**
 	 * Destroy the server.
 	 */
 	public void destroy() throws Exception {
