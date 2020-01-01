@@ -42,9 +42,10 @@ libraryDependencies ++= Seq(
   
 )
 
-// sbt-buildinfo plugin configuration
+/*
+ * sbt-buildinfo plugin configuration
+ */
 buildInfoKeys := Seq[BuildInfoKey](moduleName, version, scalaVersion, sbtVersion)
-//buildInfoOptions := Seq(BuildInfoOption.BuildTime)
 buildInfoPackage := "com.variant.server.build"
 buildInfoKeys += BuildInfoKey.action("javaVersion")(sys.props("java.version"))
 buildInfoKeys += BuildInfoKey.action("javaVmName")(sys.props("java.vm.name"))

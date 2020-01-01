@@ -6,17 +6,17 @@
 
 {
    'meta':{
-      'name':'exampleSchema',
+      'name':'example',
       'comment':'Basic sample variation schema. See User Guide for details.'
    },
    'states':[
    	{
-   	  'name':'state1'
+   	  'name':'MyState'
       }
    ],
    'variations': [
       {
-         'name':'var1',
+         'name':'MyVariation',
          'experiences':[                              
             {                                                
                'name':'control',
@@ -30,7 +30,7 @@
          ],                                                  
          'onStates':[
             {
-               'stateRef':'state1'
+               'stateRef':'state'
             }
          ]
       }

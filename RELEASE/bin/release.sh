@@ -30,12 +30,10 @@ rm -rf ${stage_dir} ${target_dir}
 mkdir ${stage_dir} ${target_dir} ${stage_dir}/server ${stage_dir}/java
 
 #
-# CORE
+# SHARE
 #
-${variant_root}/CORE/bin/release.sh
-cp $variant_root/CORE/target/variant-core*.jar ${stage_dir}/java
-cp $variant_root/CORE/target/variant-core*.jar $extapi_root/lib
-cp $variant_root/CORE/target/variant-core*.jar $servlet_adapter_root/lib
+cd ${variant_root}/SHARE
+mvn clean install -DskipTests
 
 #
 # SERVER

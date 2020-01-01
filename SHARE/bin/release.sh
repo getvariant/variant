@@ -5,7 +5,7 @@
 
 workspace_root_dir=$(cd $(dirname $0)/../..; pwd)
 
-cd ${workspace_root_dir}/CORE
+cd ${workspace_root_dir}/SHARE
 mvn clean install -DskipTests
 
 

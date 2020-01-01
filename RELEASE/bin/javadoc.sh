@@ -6,7 +6,7 @@
 version=0.10
 dot_version=0.10.3
 workspace_root_dir=$(cd $(dirname $0)/../..; pwd)
-core_src_dir=${workspace_root_dir}/CORE/src/main/java
+share_src_dir=${workspace_root_dir}/SHARE/src/main/java
 server_src_dir=${workspace_root_dir}/SERVER/src/main/scala
 client_src_dir=${workspace_root_dir}/CLIENT-JAVA/src/main/java
 javadoc_dir=${workspace_root_dir}/RELEASE/javadoc
@@ -16,7 +16,7 @@ rm -rf ${javadoc_dir} ${target_dir}
 mkdir ${target_dir} ${javadoc_dir}
 
 javadoc --allow-script-in-comments -d ${javadoc_dir}  \
-   -sourcepath ${core_src_dir}:${client_src_dir}:${server_src_dir} \
+   -sourcepath ${share_src_dir}:${client_src_dir}:${server_src_dir} \
    -windowtitle "Variant Experience Server ${version} JavaDoc" \
    -doctitle "Variant Experiment Server ${version}" \
    -header "<a onclick=\"window.top.location.href='http://getvariant.com';\" href=\"#\"> <img style=\"margin-bottom:5px;\" src=\"http://getvariant.com/wp-content/uploads/2016/05/VariantLogoSmall.png\"/> \</a> \
@@ -29,7 +29,7 @@ javadoc --allow-script-in-comments -d ${javadoc_dir}  \
     ga('send', 'pageview');                                                            \
   </script>" \
    -bottom "Variant Experience Server release $dot_version. Updated $(date +"%d %b %Y").<br/> Copyright &copy; 2019 <a onclick=\"window.top.location.href='http://getvariant.com';\" href=\"#\">Variant Inc.</a>" \
-   com.variant.core.schema            \
+   com.variant.share.schema            \
    com.variant.client                 \
    com.variant.server.api             \
    com.variant.server.api.lifecycle
