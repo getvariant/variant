@@ -30,7 +30,7 @@
          ],                                                  
          'onStates':[
             {
-               'stateRef':'state'
+               'stateRef':'MyState'
             }
          ]
       }
