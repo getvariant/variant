@@ -1,0 +1,1140 @@
+body {
+  color: #222;
+  font-weight: 300 !important;
+    font: 18px "Lato";
+	background: #fafafa;
+}
+
+a {
+  font-weight: 400;
+  font-family: "Lato";
+	font-size: inherit;
+  color: #3f5f5f;
+  text-decoration: underline;
+  text-decoration-style: dotted;
+}
+
+a:hover {
+  color: #1F635E;
+  text-decoration: underline;
+  text-decoration-style: dotted;
+}
+
+ul {
+  list-style: disc;
+}
+
+table, td {
+  font-weight: 300;
+  border: none;
+  width: auto;
+}
+
+/* Kill empty paragraphs inserted by WP */
+p:empty {
+  display: none;
+
+}
+
+/* Kill Page titles on all pages, except front, where it's h2
+************************************/
+#content h1 {
+	font-weight: 400 !important;
+    font: 42px "Mukta";
+    color: #3f5f5f;
+    margin: 20px 0;
+    display: none;
+}
+
+#content h2 {
+    font-weight: 400 !important;
+    font: 36px "Mukta";
+    color: #3f5f5f;
+    margin: 20px 0;
+    display: inline-block;
+}
+
+#content h3 {
+    font-weight: 400 !important;
+    font: 28px "Mukta";
+    color: #3f5f5f;
+    margin: 10px 0;
+}
+
+#content h4 {
+  margin: 0;
+  font-weight: 400 !important;
+  font: 18px "Mukta";
+  color: #3f5f5f;
+}
+
+#content h5 {
+  margin: 0;
+  font-weight: 300 !important;
+  font: 20px "Mukta";
+  color: #5f7f7f;
+}
+
+#content img.avatar {
+	border-radius: 50%;
+}
+
+#content .variant-clickable {
+	text-decoration: none;
+	cursor: pointer;
+}
+
+#content .variant-crumbs,
+#content .variant-crumbs a {
+    font-weight: 500 !important;
+    font: 16px "Mukta";
+    color: #333;
+    margin: 4px 0;
+}
+
+
+#content .variant-section {
+  margin: 30px 0 0;
+  border-top: 1px solid #3D807B;
+}
+
+
+#content .variant-section h2 {
+  margin: 0 0 10px;
+}
+/*
+#content .variant-section h3 {
+  margin: 0 0 10px;
+}
+*/
+@media only screen and (max-width: 640px) {
+  #content .variant-crumbs,
+  #content .variant-crumbs a {
+    font-size: 9px;
+  }
+	/*
+  #content .variant-section h2 {
+    font-size: 18px;
+  }
+  img.phantom {
+    display: none;
+  }
+	*/
+}
+/* Variant responsive grid (3 columns across)
+   Generated with http://www.responsivegridsystem.com.
+**********************************************/
+.variant-grid-section {
+  clear: both;
+  padding: 0 0 10px;
+  margin: 2%;
+  border-bottom: 1px solid #eee;
+}
+
+/*  COLUMN SETUP  */
+.variant-grid-col {
+  display: block;
+  float:left;
+  height: 100%;
+  margin: 1% 0 1% 0.5%;
+  padding: 0 1%;
+	text-align: center;
+}
+.variant-grid-col:first-child { margin-left: 0; }
+
+/*  GROUPING  */
+.variant-grid-group:before,
+.variant-grid-group:after { content:""; display:table; }
+.variant-grid-group:after { clear:both;}
+
+/*  GRID OF THREE  */
+.variant-grid-span_3_of_3 { width: 100%; }
+.variant-grid-span_2_of_3 { width: 66.13%; }
+.variant-grid-span_1_of_3 { width: 32.26%; }
+
+@media only screen and (max-width: 640px) {
+  .variant-grid-section { margin: 0; }
+  .variant-grid-group:before,
+  .variant-grid-group:after { display:block; }
+  .variant-grid-col {  margin: 1% 0 1% 0%; float: none;}
+  .variant-grid-span_3_of_3, .variant-grid-span_2_of_3, .variant-grid-span_1_of_3 { width: 100%; }
+}
+
+/* End variant responsive grid
+*******************************************/
+
+/* Variant responsive columns (2 columns across)
+*******************************************/
+
+.variant-columns {
+  display: table;
+  width: 100%;
+}
+
+.variant-columns .variant-column:first-child {
+  margin: 0;
+}
+
+.variant-columns .variant-column {
+  	float: left;
+  	display: block;
+	margin-left: 3%;
+}
+
+.variant-columns .variant-leftcol {
+  width: 31%;
+}
+
+.variant-columns .variant-rightcol {
+  width: 62%;
+}
+
+@media only screen and (max-width: 640px) {
+  .variant-columns .variant-leftcol,
+  .variant-columns .variant-rightcol {
+    float: none;
+    width: 100%;
+    padding: 0;
+    border: none;
+    margin-top: 0;
+  }
+}
+
+.variant-clear::after {
+    clear: both;
+    content: " ";
+    display: block;
+    font-size: 0;
+    height: 0;
+    line-height: 0;
+    visibility: hidden;
+    width: 0;
+}
+
+.variant-clear {
+    clear: both;
+    display: block;
+    height: 0;
+    overflow: hidden;
+    visibility: hidden;
+    width: 0;
+}
+/* End variant responsive columns
+*******************************************/
+/* Don't leave space at top. */
+#primary { margin: 0; }
+
+/* Pull down a bit when navigating to page anchors, to account for the
+   sticky header */
+.variant-header-offset {
+    display: block;
+    margin: -90px 0 0 0;
+    padding: 90px 0 0 0;
+    width: 100%;
+}
+
+/* Buttons
+*******************************************/
+button, input[type="button"], input[type="reset"], input[type="submit"] {
+    padding: 5px 10px;
+    border-radius: 3px;
+    background-color: #E8602E;
+	opacity: 0.7;
+    font: 14px "Mukta";
+    font-weight: 600 !important;
+}
+
+button:hover, input[type="button"]:hover, input[type="reset"]:hover, input[type="submit"]:hover {
+	opacity: 0.6;
+}
+
+button.standard-button {
+  border: 3px solid #E8602E;
+  border-radius: none;
+  box-shadow: none;
+  padding: 12px 24px;
+  margin: 0 6px;
+  background-color: rgba(232,96,46, 0.4);
+  text-transform: none;
+  cursor: pointer;
+  font: 18px "Mukta";
+  font-weight: 600 !important;
+}
+
+button.standard-button:hover {
+  text-decoration: underline;
+  background-color: rgba(232,96,46, 0.4);
+  box-shadow: none;
+}
+
+/* top sticky header background color
+************************************/
+.sticky-navigation {
+  background: #3D807B;
+}
+
+/* Main menu
+************************************/
+.sticky-navigation .main-navigation ul ul {
+    background: #3D807B;
+}
+
+.sticky-navigation .menu-item:hover {
+/*  background: rgba(13, 60, 85, 0.05); */
+    background: #E8602E;
+	opacity: 0.75;
+}
+
+.sticky-navigation .main-navigation ul li a {
+  font-weight: 300 !important;
+  font: 18px "Mukta";
+  text-transform: none;
+  color: #f5f5f5 !important;
+  line-height: 0.8em;
+}
+
+.sticky-navigation .main-navigation ul li a:hover {
+  font-weight: 300 !important;
+  text-transform: none;
+  color: #fff !important;
+  text-decoration: none;
+}
+
+/* kill triangles next to main menu items which presence indicate sub-items */
+.main-navigation .menu-item-has-children > a:after {
+  content: none;
+}
+
+.variant-single-column span.variant-pipe,
+.variant-double-column span.variant-pipe {
+	color: #ccc;
+	margin: 0 8px;
+}
+
+/* Common Footer
+************************************/
+.footer {
+  background: linear-gradient(to bottom, #ffffff 20%,#ccc 100%);
+  color: #666;
+  font-weight: 300 !important;
+  font: 16px "Lato";
+}
+
+.footer a {
+  color: #666;
+  font-weight: 300 !important;
+  font: 16px "Lato";
+}
+
+.footer a:hover {
+  color: #000;
+  text-decoration: underline;
+}
+
+.footer p {
+  margin: 0;
+}
+
+.footer .footer-bottom-wrap,
+.footer .variant-section-title {
+  font-weight: 500 !important;
+  color: #666;
+  font: 18px "Lato";
+}
+
+p.variant-fig-footer {
+  margin: 0 0 20px;
+  font: 16px "Lato" !important;
+  font-weight:400 !important;
+}
+
+.powered-by {
+  display: none;
+}
+
+/*
+Variant tabs
+************************************/
+.variant-tabs button {
+  border-color: #eee;
+  border-style: solid;
+  border-width: 1px 1px 0 1px;
+  border-radius: 2px;
+  padding: 4px;
+  margin: 0;
+  background: none #fdfdfd;
+  text-transform: none;
+  cursor: pointer;
+  font: 12px "Mukta";
+  color: #666;
+  font-weight: 400 !important;
+}
+
+.variant-tabs button.active {
+  color: #333;
+  border-color: #ccc;
+  background-color: #fdfdf7;
+  border-bottom: none;
+}
+
+.variant-tabs button:hover {
+  border-color: #ccc;
+  background-color: #fdfdf7;
+  color: #333;
+}
+
+.variant-tabcontent {
+	display: none;
+}
+/*
+End Tabs
+************************************/
+
+/* Single column layot
+************************************/
+.variant-single-column {
+  width: 600px;
+}
+
+.variant-single-column .variant-columns {
+  margin: 20px 0;
+}
+
+.variant-single-column h2 {
+  display: block;
+  text-align: left;
+}
+
+.variant-single-column .variant-columns h2 {
+  margin: 0px;
+  text-align: left;
+  font: 28px "Kanto";
+  font-weight: 400 !important;
+  color: #3D807B;
+}
+
+.variant-single-column p,
+.variant-single-column li,
+.variant-single-column span {
+  font-weight: 300 !important;
+  font: 18px "Lato";
+  color: #333;
+  margin: 4px 0 10px 0;
+  padding: 0;
+}
+
+/* Single column small device */
+@media only screen and (max-width: 640px) {
+  .variant-single-column .variant-columns .variant-leftcol,
+  .variant-single-column .variant-columns .variant-rightcol { width: 100%; margin: 0;}
+  .variant-single-column .variant-columns h3 { font-size: 18px; }
+  .variant-single-column .variant-columns p,
+  .variant-single-column .variant-columns li {font-size: 12px; }
+  .variant-single-column .variant-summary {font-size: 12px; margin: 0;}
+}
+
+/* Double column layout
+************************************/
+.variant-double-column {
+	margin: 0 10%;
+}
+
+
+.variant-double-column .variant-columns {
+	margin: 0 0 20px 0;
+}
+
+.variant-double-column .variant-leftcol {
+  width: 38%;
+}
+
+.variant-double-column .variant-rightcol {
+  width: 59%;
+}
+
+.variant-double-column p,
+.variant-double-column li,
+.variant-double-column span {
+  font-weight: 300 !important;
+  font: 18px "Lato";
+  color: #333;
+  margin: 10px 0 16px 0;
+  padding: 0;
+}
+
+.variant-double-column li {
+	margin: 4px 0 0;
+}
+
+#content .variant-double-column h3 {
+    font-weight: 300 !important;
+    font:28px "Mukta";
+    text-align: left;
+    margin: 40px 0 2px;
+	border-top: 1px solid #3D807B;
+	border-bottom: 1px solid #ddd;
+}
+
+#content .variant-double-column h4 {
+  font-weight: 500 !important;
+  font:22px "Mukta";
+  text-align: left;
+  margin: 0;
+}
+
+#content .variant-double-column img {
+	margin: 0 6px 0;
+}
+
+.variant-subhead {
+	margin-left: 5%;
+}
+
+.variant-subhead p,
+.variant-subhead li {
+	font-weight: 400 !important;
+}
+
+/* Front Page
+************************************/
+
+#content .frontpage-content {
+  padding-top: 30px;
+  background: #fdfdfd;
+}
+
+/* No page title, but show h1 */
+
+#content .frontpage-content h1 {
+	display: inline-block;
+	font-weight: 300 !important;
+    font: 52px "Mukta";
+    text-align: center;
+    width: 100%;
+    margin: 0;
+}
+
+#content .frontpage-content h2 {
+  display: none;
+}
+
+/* Home page small device */
+@media only screen and (max-width: 640px) {
+  #intro-section { margin-top: -50px; }
+  h1#intro_section_text_1 { font-size: 38px; }
+  h5#intro_section_text_2 { font-size: 12px; }
+  #content h2 { font-size: 28px; }
+  #content .frontpage-content h1,
+  #content .frontpage-content h3 {
+    font-size: 32px;
+    text-align: center;
+  }
+  #content .frontpage-content .variant-band {
+    background: linear-gradient(to bottom, #fdfdfd 20%,#efefef 100%);
+    margin: 0;
+    padding: 0;
+  }
+
+  #content .frontpage-content .variant-leftcol,
+  #content .frontpage-content.variant-rightcol {
+    float: none;
+    width: 100%;
+    margin: 0;
+	box-sizing: content-box;
+/*    padding: 0 3%; */
+ }
+
+  #content .frontpage-content .variant-leftcol p,
+  #content .frontpage-content .variant-rightcol p {
+  }
+
+  #content .variant-grid-col h3 {
+    font-size: 16px;
+    text-align: center;
+  }
+  section#ribbon { display: none; }
+  #intro-section button.standard-button { font-size: 14px; }
+  .col-md-12.brief-content-one .variant-columns .variant-leftcol,
+  .col-md-12.brief-content-one .variant-columns .variant-rightcol { float: none; width: 100%; margin: 0;}
+  .variant-grid-col p { margin: 0 2%; }
+}
+
+/* About Variant
+************************************/
+div#variant-about .variant-columns .variant-leftcol,
+div#variant-about .variant-columns .variant-rightcol {
+  width: 45%;
+}
+
+div#variant-about p {
+  font: 18px "Barlow";
+  font-weight: 400 !important;
+  color: #333;
+}
+
+/* Documentation pages
+**********************************/
+#variant-doc-header {
+  width: 100%;
+  margin: 0 0 32px;
+}
+
+#variant-doc-header h1 {
+  display: block;
+  font: 42px "Mukta";
+  font-weight: 600;
+  color: #3f5f5f;
+  margin: 20px 0 0 0;
+}
+
+#variant-doc-header h1 span.variant-amp {
+  font-family: "Mukta";
+  font-size: inherit;
+  font-weight: inherit;
+  color: inherit;
+}
+#variant-doc-header h3 {
+  display: block;
+  font: 18px "Mukta";
+  font-weight: 400;
+  margin: 0;
+  color: #3f5f5f;
+}
+
+/* Table of content */
+/* This doesn't work because stuck div doesn't scroll.
+#variant-toc {
+  position: sticky;
+  top: 100px;
+  overflow-y:scroll;
+  overflow-x:hide;
+}
+*/
+#variant-toc h2 {
+  display: inline-block;
+  font: 28px "Mukta";
+  font-weight: 300 !important;
+  color: #3f5f5f;
+  margin: 4px 0 14px;
+  padding: 0;
+  width: 100%;
+  border-bottom: 1px solid #aaa;
+}
+
+#variant-toc h2 span.variant-underlined {
+  position: relative;
+  top: 6px;
+  display: inherit;
+  font: inherit;
+  font-weight: inherit;
+  color: inherit;
+}
+
+#variant-toc tr.variant-toc-h1 td,
+#variant-toc tr.variant-toc-h1 a {
+  padding: 0;
+  font: 18px "Lato";
+  font-weight: 500 !important;
+  vertical-align: top;
+}
+
+#variant-toc tr.variant-toc-h2 td,
+#variant-toc tr.variant-toc-h2 a {
+  padding: 0;
+  font: 16px "Lato";
+  font-weight: 400 !important;
+  vertical-align: top;
+}
+
+
+#variant-toc tr.variant-toc-h3 td,
+#variant-toc tr.variant-toc-h3 a {
+  padding: 0;
+  font: 16px "Lato";
+  font-weight: 300 !important;
+  vertical-align: top;
+}
+
+#variant-toc tr.variant-toc-h1 a,
+#variant-toc tr.variant-toc-h2 a,
+#variant-toc tr.variant-toc-h3 a {
+  padding-left: 10px;
+  display: block;
+}
+
+#variant-toc td {
+  color: #222;
+}
+
+#variant-toc tr.variant-toc-h1 td {
+  padding-top: 14px;
+}
+
+#variant-toc tr.variant-toc-h2 td {
+  padding-top: 10px;
+}
+
+#variant-toc tr.variant-toc-h3 td {
+  padding-top: 6px;
+}
+
+/* Documentation body column */
+#variant-doc-body {
+ padding: 0 0 0 3%;
+ margin: 0;
+ /* border-left: 1px solid #999; */
+}
+
+@media only screen and (max-width: 640px) {
+  #variant-doc-body {
+    padding: 0;
+    border-left: none;
+  }
+}
+#variant-doc-body h1 {
+  display: inline-block;
+  font: 36px "Mukta";
+  font-weight: 400 !important;
+  margin: 0 0 10px;
+  padding: 0;
+  width: 100%;
+  border-bottom: 1px solid #aaa;
+}
+
+#variant-doc-body h2 {
+  display: block;
+  font: 24px "Mukta";
+  font-weight: 500 !important;
+  margin: 0 0 4px;
+  border-bottom: 1px solid #ddd;
+}
+
+#variant-doc-body h3 {
+  display: block;
+  font: 20px "Mukta";
+  font-weight: 500 !important;
+  margin: 4px 0;
+}
+
+#variant-doc-body h1 span.variant-underlined {
+  position: relative;
+  top: 7px;
+  display: inherit;
+  font: inherit;
+  font-weight: inherit;
+  color: inherit;
+}
+#variant-doc-body h2 span.variant-underlined {
+  position: relative;
+  top: 7px;
+  display: inherit;
+  font: inherit;
+  font-weight: inherit;
+  color: inherit;
+}
+
+#variant-doc-body .indent {
+  margin-left: 26px;
+}
+
+#variant-doc-body p,
+#variant-doc-body li {
+  font: 20px "Cormorant";
+  font-weight: 300;
+  color: #222;
+}
+
+#variant-doc-body li {
+  margin: 6px 0;
+}
+
+#variant-doc-body a {
+  font: 20px "Cormorant";
+  color: #3f5f5f;
+  text-decoration: underline;
+  text-decoration-style: dotted;
+}
+
+#variant-doc-body a i.fa {
+  font-size: 14px;
+}
+
+span.tombstone {
+font-size: 20px;
+  color: #666;
+  margin-right: 10px;
+}
+
+h2 code {
+  font-size: 20px;
+}
+
+/* Documentation tables */
+table.variant-table,
+table.variant-table-reference {
+  border-collapse: collapse;
+  margin: 12px 0;
+  border: 1px solid #ddd;
+	background: #fff;
+}
+
+table.variant-table tr:nth-child(odd) {
+  background-color: #fcfcfc;
+}
+
+table.variant-table th,
+table.variant-table th p,
+table.variant-table td,
+table.variant-table td p,
+table.variant-table td li,
+table.variant-table-reference th,
+table.variant-table-reference th p,
+table.variant-table-reference td,
+table.variant-table-reference td p,
+table.variant-table-reference td li {
+  font-size: 16px;
+  font-weight: 400;
+  color: #333;
+  font-family: Lato;
+  border: 1px solid #efefef;
+  text-align: left;
+}
+
+table.variant-table th p,
+table.variant-table td p {
+	border: none;
+}
+
+table.variant-table th {
+  background: #eee;
+  font-weight: 500;
+  padding: 4px 10px;
+}
+
+table.variant-table td {
+  vertical-align: top;
+}
+
+table.variant-table th:first-child {
+  border-left: none;
+}
+
+table.variant-table-reference th {
+  background: #DFEBEA;
+  font-weight: 400;
+  padding: 8px;
+  border-left: 1px solid #666;
+  color: #555;
+}
+table.variant-table-reference th:first-child {
+  border-left: none;
+}
+
+table.variant-table-reference td.subhead {
+  background: #fafafa;
+  font-weight: 400;
+  padding: 8px;
+  border-left: 1px solid #ddd;
+  color: #555;
+}
+
+table.variant-table-reference td {
+  padding-left: 20px;
+}
+
+table.variant-table-reference td.subhead:first-child {
+  border-left: none;
+}
+
+table.variant-table-reference td pre.variant-code {
+  border: none;
+  background: inherit;
+}
+
+table.variant-table td.variant-code,
+table.variant-table td span.variant-code,
+table.variant-table-reference td.variant-code,
+table.variant-table-reference td span.variant-code {
+  font-family: Consolas, Verdana, Arial, Helvetica, sans-serif;
+  font-weight: 300;
+  font-size: 14px;
+  color: inherit;
+  white-space: nowrap;
+}
+
+/* Newsroom
+************************************/
+div#variant-newsroom .variant-columns {
+  border-top: 1px solid #aaa;
+  margin-top: 10px;
+  padding: 6px 0 0;
+}
+
+div#variant-newsroom .variant-leftcol {
+  width: 40%;
+}
+div#variant-newsroom .variant-rightcol {
+  width: 55%;
+}
+
+div#variant-newsroom h2 {
+  font-weight: 600 !important;
+}
+div#variant-newsroom .variant-columns h3 {
+  margin: 0;
+  text-align: left;
+  font: 36px "Barlow";
+  font-weight: 600 !important;
+  color: #3D807B;
+  line-height: 1;
+}
+
+div#variant-newsroom .variant-columns h4 {
+  margin: 0 0 4px;
+  text-align: left;
+  font: 18px "Barlow";
+  font-weight: 500 !important;
+}
+
+div#variant-newsroom .variant-columns h4 a {
+  font: inherit;
+  color: #333;
+}
+
+div#variant-newsroom .variant-columns h5 {
+  font: 16px "Barlow";
+  font-weight: 400 !important;
+  color: #999;
+  margin: 0 0 14px;
+  padding: 0;
+}
+
+div#variant-newsroom p,
+div#variant-newsroom p a,
+div#variant-newsroom li {
+  font: 16px "Barlow";
+  color: #666;
+  margin: 2px 0 14px;
+  padding: 0;
+}
+
+
+/*
+********** Landing Pages ***********/
+/* get */
+#post-3892 .entry-content {
+  margin: 0;
+}
+
+#variant-get #band-img {
+  background-image: url(/wp-content/uploads/2017/11/macbook-variant.jpg);
+  background-repeat: no-repeat;
+  background-size: cover;
+  width: 100%;
+  min-height: 500px;
+  margin: 0;
+  padding: 60px 0 0 0;
+}
+
+#variant-get #band-img p {
+  font: 50px "Barlow Semi Condensed";
+  color: #fff;
+  font-weight: 300 !important;
+  margin: 0 0 24px 32px;
+  width: 60%;
+}
+
+#variant-get .buttons {
+  margin: 60px 0 0 0;
+  width: 100%;
+  text-align: center;
+}
+
+#variant-get #band-2 {
+  margin: 0;
+  padding: 60px 10%;
+  background: #efefee;
+}
+
+#variant-get .variant-columns h2 {
+  font-weight: 400 !important;
+  font: 32px "Barlow Semi Condensed";
+  color: #3D807B;
+  display: inline-block;
+  text-align: left;
+  width: 100%;
+}
+#variant-get .variant-leftcol {
+  width: 47%;
+  padding: 0;
+}
+#variant-get .variant-rightcol {
+  width: 47%;
+  padding: 0 0 0 5%;
+}
+
+#variant-get .variant-leftcol p,
+#variant-get .variant-rightcol p {
+  font-weight: 300 !important;
+  font: 18px "Barlow";
+  margin: 4px 0;
+  padding: 0;
+  color: #222;
+}
+
+#variant-get button {
+  border: 2px solid #fff;
+  background-color: rgba(200,200,200, 0.75);
+  color: #dd0000;
+  border-radius: none;
+  padding: 8px 24px;
+  margin: 0 12px 0 0;
+  text-transform: none;
+  cursor: pointer;
+  font-size: 18px;
+  font-weight: 600 !important;
+  transition: all 500ms linear;
+}
+
+#variant-get button:hover {
+  background-color: rgba(200,200,200, 0.6);
+  border-color: #eee;
+}
+
+#variant-get .buttons a {
+  font: 16px "Titillium Web";
+  font-weight: 600 !important;
+}
+
+/*
+ * highlight.js styles snagged from docs.scala-lang.org
+ * We had to prepend everything with span.
+ */
+/* Clear all pre and code styles so that highlight.js work property */
+pre,
+code,
+pre code.hljs,
+pre code.hljs span,
+#variant-doc-body code.hljs a {
+    font-family: Consolas, Verdana, Arial, Helvetica, sans-serif;
+    font-size: 14px;
+    font-stretch: condensed;
+    padding: 0;
+	margin: 0;
+	background: #fdfdf7;
+	line-height: 1;
+	overflow-x: nowrap;
+}
+
+pre {
+	margin-bottom: 16px;
+    padding: 8px 6px;
+	overflow-x: nowrap;
+}
+
+code {
+	color: darkred;
+	background: #fdfdf7;
+}
+
+th code,
+h3 code {
+    font-size: 16px;
+	background: transparent;
+}
+
+code.hljs {
+  font-family: 'Consolas';
+  display: inline-block;
+  overflow-x: auto;
+  padding: 0.5em;
+  color: #333;
+  white-space: pre;
+  min-width: 100%;
+}
+
+span.hljs-comment,
+span.hljs-quote {
+  color: #998;
+  font-style: italic;
+}
+
+span.hljs-keyword,
+span.hljs-selector-tag,
+span.hljs-subst {
+  color: #333;
+  font-weight: bold;
+}
+
+span.hljs-number,
+span.hljs-literal,
+span.hljs-variable,
+span.hljs-template-variable,
+span.hljs-tag .hljs-attr {
+  color: #008080;
+}
+
+span.hljs-string,
+span.hljs-doctag {
+  color: #da322f;
+}
+
+span.hljs-title,
+span.hljs-section,
+span.hljs-selector-id {
+  color: #900;
+  font-weight: bold;
+}
+
+span.hljs-subst {
+  font-weight: normal;
+}
+
+span.hljs-type,
+span.hljs-class .hljs-title {
+  color: #2f8ad2;
+  font-weight: bold;
+}
+
+span.hljs-tag,
+span.hljs-name,
+span.hljs-attribute {
+  color: #000080;
+  font-weight: normal;
+}
+
+span.hljs-regexp,
+span.hljs-link {
+  color: #859a00;
+}
+
+span.hljs-symbol,
+span.hljs-bullet {
+  color: #990073;
+}
+
+span.hljs-built_in,
+span.hljs-builtin-name {
+  color: #2f8ad2;
+}
+
+span.hljs-meta {
+  color: #93a1a1;
+  font-weight: bold;
+}
+
+span.hljs-deletion {
+  background: #fdd;
+}
+
+span.hljs-addition {
+  background: #dfd;
+}
+
+span.hljs-emphasis {
+  font-style: italic;
+}
+
+span.hljs-strong {
+  font-weight: bold;
+}
