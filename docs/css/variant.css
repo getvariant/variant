@@ -1,5 +1,8 @@
 // Variant Code Variation Server.
 
+@import url(https://fonts.googleapis.com/css?family=Lato:100,300,400,700);
+@import url(https://fonts.googleapis.com/css?family=Barlow+Semi+Condensed:300,400);
+@import url(https://fonts.googleapis.com/css?family=Cormorant);
 @import url(https://fonts.googleapis.com/css?family=Mukta:200,300,400,500,600,700);
 
 body {
@@ -8,6 +11,44 @@ body {
     font: 18px "Lato";
 	background: #fafafa;
 }
+
+h1 {
+	font-weight: 400 !important;
+    font: 42px "Mukta";
+    color: #3f5f5f;
+    margin: 20px 0;
+    display: none;
+}
+
+h2 {
+    font-weight: 400 !important;
+    font: 36px "Mukta";
+    color: #3f5f5f;
+    margin: 20px 0;
+    display: inline-block;
+}
+
+h3 {
+    font-weight: 400 !important;
+    font: 28px "Mukta";
+    color: #3f5f5f;
+    margin: 10px 0;
+}
+
+h4 {
+  margin: 0;
+  font-weight: 400 !important;
+  font: 18px "Mukta";
+  color: #3f5f5f;
+}
+
+h5 {
+  margin: 0;
+  font-weight: 300 !important;
+  font: 20px "Mukta";
+  color: #5f7f7f;
+}
+
 
 a {
   font-weight: 400;
@@ -32,47 +73,6 @@ table, td {
   font-weight: 300;
   border: none;
   width: auto;
-}
-
-h1 {
-	font-weight: 400 !important;
-    font: 42px "Mukta";
-    color: #3f5f5f;
-    margin: 20px 0;
-    display: none;
-}
-
-h2 {
-    font-weight: 400 !important;
-    font: 36px "Mukta";
-    color: #3f5f5f;
-    margin: 20px 0;
-    display: inline-block;
-}
-
-#content h3 {
-    font-weight: 400 !important;
-    font: 28px "Mukta";
-    color: #3f5f5f;
-    margin: 10px 0;
-}
-
-#content h4 {
-  margin: 0;
-  font-weight: 400 !important;
-  font: 18px "Mukta";
-  color: #3f5f5f;
-}
-
-#content h5 {
-  margin: 0;
-  font-weight: 300 !important;
-  font: 20px "Mukta";
-  color: #5f7f7f;
-}
-
-#content img.avatar {
-	border-radius: 50%;
 }
 
 #content .variant-clickable {
@@ -462,7 +462,7 @@ End Tabs
 	margin: 4px 0 0;
 }
 
-#content .variant-double-column h3 {
+.variant-double-column h3 {
     font-weight: 300 !important;
     font:28px "Mukta";
     text-align: left;
@@ -471,14 +471,14 @@ End Tabs
 	border-bottom: 1px solid #ddd;
 }
 
-#content .variant-double-column h4 {
+.variant-double-column h4 {
   font-weight: 500 !important;
   font:22px "Mukta";
   text-align: left;
   margin: 0;
 }
 
-#content .variant-double-column img {
+.variant-double-column img {
 	margin: 0 6px 0;
 }
 
@@ -493,67 +493,6 @@ End Tabs
 
 /* Front Page
 ************************************/
-
-#content .frontpage-content {
-  padding-top: 30px;
-  background: #fdfdfd;
-}
-
-/* No page title, but show h1 */
-
-#content .frontpage-content h1 {
-	display: inline-block;
-	font-weight: 300 !important;
-    font: 52px "Mukta";
-    text-align: center;
-    width: 100%;
-    margin: 0;
-}
-
-#content .frontpage-content h2 {
-  display: none;
-}
-
-/* Home page small device */
-@media only screen and (max-width: 640px) {
-  #intro-section { margin-top: -50px; }
-  h1#intro_section_text_1 { font-size: 38px; }
-  h5#intro_section_text_2 { font-size: 12px; }
-  #content h2 { font-size: 28px; }
-  #content .frontpage-content h1,
-  #content .frontpage-content h3 {
-    font-size: 32px;
-    text-align: center;
-  }
-  #content .frontpage-content .variant-band {
-    background: linear-gradient(to bottom, #fdfdfd 20%,#efefef 100%);
-    margin: 0;
-    padding: 0;
-  }
-
-  #content .frontpage-content .variant-leftcol,
-  #content .frontpage-content.variant-rightcol {
-    float: none;
-    width: 100%;
-    margin: 0;
-	box-sizing: content-box;
-/*    padding: 0 3%; */
- }
-
-  #content .frontpage-content .variant-leftcol p,
-  #content .frontpage-content .variant-rightcol p {
-  }
-
-  #content .variant-grid-col h3 {
-    font-size: 16px;
-    text-align: center;
-  }
-  section#ribbon { display: none; }
-  #intro-section button.standard-button { font-size: 14px; }
-  .col-md-12.brief-content-one .variant-columns .variant-leftcol,
-  .col-md-12.brief-content-one .variant-columns .variant-rightcol { float: none; width: 100%; margin: 0;}
-  .variant-grid-col p { margin: 0 2%; }
-}
 
 /* About Variant
 ************************************/
