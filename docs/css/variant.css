@@ -5,7 +5,7 @@
 @import url(https://fonts.googleapis.com/css?family=Cormorant);
 @import url(https://fonts.googleapis.com/css?family=Mukta:200,300,400,500,600,700);
 
-body {
+body p {
   color: #222;
   font-weight: 300;
   font: 18px "Lato";
@@ -13,23 +13,25 @@ body {
 }
 
 h1 {
-	font-weight: 400 !important;
+	font-weight: 400;
     font: 42px "Mukta";
     color: #3f5f5f;
     margin: 20px 0;
     display: block;
+    text-align: center;
 }
 
 h2 {
-    font-weight: 400 !important;
+    font-weight: 400;
     font: 36px "Mukta";
     color: #3f5f5f;
     margin: 20px 0;
-    display: inline-block;
+    display: block;
+    text-align: center;
 }
 
 h3 {
-    font-weight: 400 !important;
+    font-weight: 400;
     font: 28px "Mukta";
     color: #3f5f5f;
     margin: 10px 0;
@@ -76,35 +78,9 @@ table, td {
 
 /* Single column layot
 ************************************/
-.variant-single-column {
-  width: 600px;
-}
-
-.variant-single-column .variant-columns {
+.single-column {
+  width: 800px;
   margin: 20px 0;
-}
-
-.variant-single-column h2 {
-  display: block;
-  text-align: left;
-}
-
-.variant-single-column .variant-columns h2 {
-  margin: 0px;
-  text-align: left;
-  font: 28px "Kanto";
-  font-weight: 400 !important;
-  color: #3D807B;
-}
-
-.variant-single-column p,
-.variant-single-column li,
-.variant-single-column span {
-  font-weight: 300 !important;
-  font: 18px "Lato";
-  color: #333;
-  margin: 4px 0 10px 0;
-  padding: 0;
 }
 
 /* Single column small device */
