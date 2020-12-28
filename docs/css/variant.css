@@ -49,7 +49,6 @@ h5 {
   color: #5f7f7f;
 }
 
-
 a {
   font-weight: 400;
   font-family: "Lato";
@@ -75,6 +74,120 @@ table, td {
   width: auto;
 }
 
+/* Single column layot
+************************************/
+.variant-single-column {
+  width: 600px;
+}
+
+.variant-single-column .variant-columns {
+  margin: 20px 0;
+}
+
+.variant-single-column h2 {
+  display: block;
+  text-align: left;
+}
+
+.variant-single-column .variant-columns h2 {
+  margin: 0px;
+  text-align: left;
+  font: 28px "Kanto";
+  font-weight: 400 !important;
+  color: #3D807B;
+}
+
+.variant-single-column p,
+.variant-single-column li,
+.variant-single-column span {
+  font-weight: 300 !important;
+  font: 18px "Lato";
+  color: #333;
+  margin: 4px 0 10px 0;
+  padding: 0;
+}
+
+/* Single column small device */
+@media only screen and (max-width: 640px) {
+  .variant-single-column .variant-columns .variant-leftcol,
+  .variant-single-column .variant-columns .variant-rightcol { width: 100%; margin: 0;}
+  .variant-single-column .variant-columns h3 { font-size: 18px; }
+  .variant-single-column .variant-columns p,
+  .variant-single-column .variant-columns li {font-size: 12px; }
+  .variant-single-column .variant-summary {font-size: 12px; margin: 0;}
+}
+
+/* Double column layout
+************************************/
+.variant-double-column {
+	margin: 0 10%;
+}
+
+
+.variant-double-column .variant-columns {
+	margin: 0 0 20px 0;
+}
+
+.variant-double-column .variant-leftcol {
+  width: 38%;
+}
+
+.variant-double-column .variant-rightcol {
+  width: 59%;
+}
+
+.variant-double-column p,
+.variant-double-column li,
+.variant-double-column span {
+  font-weight: 300 !important;
+  font: 18px "Lato";
+  color: #333;
+  margin: 10px 0 16px 0;
+  padding: 0;
+}
+
+.variant-double-column li {
+	margin: 4px 0 0;
+}
+
+.variant-double-column h3 {
+    font-weight: 300 !important;
+    font:28px "Mukta";
+    text-align: left;
+    margin: 40px 0 2px;
+	border-top: 1px solid #3D807B;
+	border-bottom: 1px solid #ddd;
+}
+
+.variant-double-column h4 {
+  font-weight: 500 !important;
+  font:22px "Mukta";
+  text-align: left;
+  margin: 0;
+}
+
+.variant-double-column img {
+	margin: 0 6px 0;
+}
+
+.variant-subhead {
+	margin-left: 5%;
+}
+
+.variant-subhead p,
+.variant-subhead li {
+	font-weight: 400 !important;
+}
+
+
+
+
+
+
+
+
+
+/* ************************************************************ */
 #content .variant-clickable {
 	text-decoration: none;
 	cursor: pointer;
@@ -98,66 +211,6 @@ table, td {
 #content .variant-section h2 {
   margin: 0 0 10px;
 }
-/*
-#content .variant-section h3 {
-  margin: 0 0 10px;
-}
-*/
-@media only screen and (max-width: 640px) {
-  #content .variant-crumbs,
-  #content .variant-crumbs a {
-    font-size: 9px;
-  }
-	/*
-  #content .variant-section h2 {
-    font-size: 18px;
-  }
-  img.phantom {
-    display: none;
-  }
-	*/
-}
-/* Variant responsive grid (3 columns across)
-   Generated with http://www.responsivegridsystem.com.
-**********************************************/
-.variant-grid-section {
-  clear: both;
-  padding: 0 0 10px;
-  margin: 2%;
-  border-bottom: 1px solid #eee;
-}
-
-/*  COLUMN SETUP  */
-.variant-grid-col {
-  display: block;
-  float:left;
-  height: 100%;
-  margin: 1% 0 1% 0.5%;
-  padding: 0 1%;
-	text-align: center;
-}
-.variant-grid-col:first-child { margin-left: 0; }
-
-/*  GROUPING  */
-.variant-grid-group:before,
-.variant-grid-group:after { content:""; display:table; }
-.variant-grid-group:after { clear:both;}
-
-/*  GRID OF THREE  */
-.variant-grid-span_3_of_3 { width: 100%; }
-.variant-grid-span_2_of_3 { width: 66.13%; }
-.variant-grid-span_1_of_3 { width: 32.26%; }
-
-@media only screen and (max-width: 640px) {
-  .variant-grid-section { margin: 0; }
-  .variant-grid-group:before,
-  .variant-grid-group:after { display:block; }
-  .variant-grid-col {  margin: 1% 0 1% 0%; float: none;}
-  .variant-grid-span_3_of_3, .variant-grid-span_2_of_3, .variant-grid-span_1_of_3 { width: 100%; }
-}
-
-/* End variant responsive grid
-*******************************************/
 
 /* Variant responsive columns (2 columns across)
 *******************************************/
@@ -217,6 +270,49 @@ table, td {
 }
 /* End variant responsive columns
 *******************************************/
+/* Variant responsive grid (3 columns across)
+   Generated with http://www.responsivegridsystem.com.
+**********************************************/
+.variant-grid-section {
+  clear: both;
+  padding: 0 0 10px;
+  margin: 2%;
+  border-bottom: 1px solid #eee;
+}
+
+/*  COLUMN SETUP  */
+.variant-grid-col {
+  display: block;
+  float:left;
+  height: 100%;
+  margin: 1% 0 1% 0.5%;
+  padding: 0 1%;
+	text-align: center;
+}
+.variant-grid-col:first-child { margin-left: 0; }
+
+/*  GROUPING  */
+.variant-grid-group:before,
+.variant-grid-group:after { content:""; display:table; }
+.variant-grid-group:after { clear:both;}
+
+/*  GRID OF THREE  */
+.variant-grid-span_3_of_3 { width: 100%; }
+.variant-grid-span_2_of_3 { width: 66.13%; }
+.variant-grid-span_1_of_3 { width: 32.26%; }
+
+@media only screen and (max-width: 640px) {
+  .variant-grid-section { margin: 0; }
+  .variant-grid-group:before,
+  .variant-grid-group:after { display:block; }
+  .variant-grid-col {  margin: 1% 0 1% 0%; float: none;}
+  .variant-grid-span_3_of_3, .variant-grid-span_2_of_3, .variant-grid-span_1_of_3 { width: 100%; }
+}
+
+/* End variant responsive grid
+*******************************************/
+
+
 /* Don't leave space at top. */
 #primary { margin: 0; }
 
@@ -386,110 +482,6 @@ Variant tabs
 End Tabs
 ************************************/
 
-/* Single column layot
-************************************/
-.variant-single-column {
-  width: 600px;
-}
-
-.variant-single-column .variant-columns {
-  margin: 20px 0;
-}
-
-.variant-single-column h2 {
-  display: block;
-  text-align: left;
-}
-
-.variant-single-column .variant-columns h2 {
-  margin: 0px;
-  text-align: left;
-  font: 28px "Kanto";
-  font-weight: 400 !important;
-  color: #3D807B;
-}
-
-.variant-single-column p,
-.variant-single-column li,
-.variant-single-column span {
-  font-weight: 300 !important;
-  font: 18px "Lato";
-  color: #333;
-  margin: 4px 0 10px 0;
-  padding: 0;
-}
-
-/* Single column small device */
-@media only screen and (max-width: 640px) {
-  .variant-single-column .variant-columns .variant-leftcol,
-  .variant-single-column .variant-columns .variant-rightcol { width: 100%; margin: 0;}
-  .variant-single-column .variant-columns h3 { font-size: 18px; }
-  .variant-single-column .variant-columns p,
-  .variant-single-column .variant-columns li {font-size: 12px; }
-  .variant-single-column .variant-summary {font-size: 12px; margin: 0;}
-}
-
-/* Double column layout
-************************************/
-.variant-double-column {
-	margin: 0 10%;
-}
-
-
-.variant-double-column .variant-columns {
-	margin: 0 0 20px 0;
-}
-
-.variant-double-column .variant-leftcol {
-  width: 38%;
-}
-
-.variant-double-column .variant-rightcol {
-  width: 59%;
-}
-
-.variant-double-column p,
-.variant-double-column li,
-.variant-double-column span {
-  font-weight: 300 !important;
-  font: 18px "Lato";
-  color: #333;
-  margin: 10px 0 16px 0;
-  padding: 0;
-}
-
-.variant-double-column li {
-	margin: 4px 0 0;
-}
-
-.variant-double-column h3 {
-    font-weight: 300 !important;
-    font:28px "Mukta";
-    text-align: left;
-    margin: 40px 0 2px;
-	border-top: 1px solid #3D807B;
-	border-bottom: 1px solid #ddd;
-}
-
-.variant-double-column h4 {
-  font-weight: 500 !important;
-  font:22px "Mukta";
-  text-align: left;
-  margin: 0;
-}
-
-.variant-double-column img {
-	margin: 0 6px 0;
-}
-
-.variant-subhead {
-	margin-left: 5%;
-}
-
-.variant-subhead p,
-.variant-subhead li {
-	font-weight: 400 !important;
-}
 
 /* Front Page
 ************************************/
