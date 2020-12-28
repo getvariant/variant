@@ -7,9 +7,9 @@
 
 body {
   color: #222;
-  font-weight: 300 !important;
-    font: 18px "Lato";
-	background: #fafafa;
+  font-weight: 300;
+  font: 18px "Lato";
+  background: #fafafa;
 }
 
 h1 {
@@ -17,7 +17,7 @@ h1 {
     font: 42px "Mukta";
     color: #3f5f5f;
     margin: 20px 0;
-    display: none;
+    display: block;
 }
 
 h2 {
