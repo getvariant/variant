@@ -79,9 +79,12 @@ table, td {
 
 blockquote {
   background: #f9f9f9;
-  border-left: 10px solid #ccc;
+  border-left: 4px solid #ccc;
   margin: 1.5em 10px;
   padding: 0.5em 10px;
+  color: #222;
+  font-weight: 300;
+  font: 18px "Mukta";
 }
 
 /* Single column layot
@@ -95,7 +98,6 @@ blockquote {
   color: #222;
   font-weight: 300;
   font: 18px "Mukta";
-  display=block;
 }
 
 /* Single column small device */
