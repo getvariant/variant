@@ -1,3 +1,7 @@
+// Variant Code Variation Server.
+
+@import url(https://fonts.googleapis.com/css?family=Mukta:200,300,400,500,600,700);
+
 body {
   color: #222;
   font-weight: 300 !important;
@@ -30,15 +34,7 @@ table, td {
   width: auto;
 }
 
-/* Kill empty paragraphs inserted by WP */
-p:empty {
-  display: none;
-
-}
-
-/* Kill Page titles on all pages, except front, where it's h2
-************************************/
-#content h1 {
+h1 {
 	font-weight: 400 !important;
     font: 42px "Mukta";
     color: #3f5f5f;
@@ -46,7 +42,7 @@ p:empty {
     display: none;
 }
 
-#content h2 {
+h2 {
     font-weight: 400 !important;
     font: 36px "Mukta";
     color: #3f5f5f;
