@@ -10,6 +10,7 @@ p.ss {
   font-weight: 300;
   font: 18px "Lato";
   background: #fafafa;
+  display=block;
 }
 
 h1 {
