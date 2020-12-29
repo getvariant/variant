@@ -521,14 +521,14 @@ div#variant-about p {
 
 /* Table of content */
 /* This doesn't work because stuck div doesn't scroll.
-#variant-toc {
+#toc {
   position: sticky;
   top: 100px;
   overflow-y:scroll;
   overflow-x:hide;
 }
 */
-#variant-toc h2 {
+#toc h2 {
   display: inline-block;
   font: 28px "Mukta";
   font-weight: 300 !important;
@@ -539,7 +539,7 @@ div#variant-about p {
   border-bottom: 1px solid #aaa;
 }
 
-#variant-toc h2 span.variant-underlined {
+#toc h2 span.underlined {
   position: relative;
   top: 6px;
   display: inherit;
@@ -548,16 +548,16 @@ div#variant-about p {
   color: inherit;
 }
 
-#variant-toc tr.variant-toc-h1 td,
-#variant-toc tr.variant-toc-h1 a {
+#toc tr.variant-toc-h1 td,
+#toc tr.variant-toc-h1 a {
   padding: 0;
   font: 18px "Lato";
   font-weight: 500 !important;
   vertical-align: top;
 }
 
-#variant-toc tr.variant-toc-h2 td,
-#variant-toc tr.variant-toc-h2 a {
+#toc tr.variant-toc-h2 td,
+#toc tr.variant-toc-h2 a {
   padding: 0;
   font: 16px "Lato";
   font-weight: 400 !important;
@@ -565,34 +565,34 @@ div#variant-about p {
 }
 
 
-#variant-toc tr.variant-toc-h3 td,
-#variant-toc tr.variant-toc-h3 a {
+#toc tr.variant-toc-h3 td,
+#toc tr.variant-toc-h3 a {
   padding: 0;
   font: 16px "Lato";
   font-weight: 300 !important;
   vertical-align: top;
 }
 
-#variant-toc tr.variant-toc-h1 a,
-#variant-toc tr.variant-toc-h2 a,
-#variant-toc tr.variant-toc-h3 a {
+#toc tr.variant-toc-h1 a,
+#toc tr.variant-toc-h2 a,
+#toc tr.variant-toc-h3 a {
   padding-left: 10px;
   display: block;
 }
 
-#variant-toc td {
+#toc td {
   color: #222;
 }
 
-#variant-toc tr.variant-toc-h1 td {
+#toc tr.variant-toc-h1 td {
   padding-top: 14px;
 }
 
-#variant-toc tr.variant-toc-h2 td {
+#toc tr.variant-toc-h2 td {
   padding-top: 10px;
 }
 
-#variant-toc tr.variant-toc-h3 td {
+#toc tr.variant-toc-h3 td {
   padding-top: 6px;
 }
 
@@ -634,7 +634,7 @@ div#variant-about p {
   margin: 4px 0;
 }
 
-#doc-body h1 span.variant-underlined {
+#doc-body h1 span.underlined {
   position: relative;
   top: 7px;
   display: inherit;
@@ -642,7 +642,7 @@ div#variant-about p {
   font-weight: inherit;
   color: inherit;
 }
-#doc-body h2 span.variant-underlined {
+#doc-body h2 span.underlined {
   position: relative;
   top: 7px;
   display: inherit;
