@@ -80,7 +80,7 @@ table.header h3 {
     margin: 0;
 }
 
-table.header img.logo {
+table.header td img.logo {
   float:left;
   margin:2px;
   cursor: pointer;
