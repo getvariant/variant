@@ -4,7 +4,7 @@
 @import url(https://fonts.googleapis.com/css?family=Barlow+Semi+Condensed:300,400);
 @import url(https://fonts.googleapis.com/css?family=Cormorant);
 @import url(https://fonts.googleapis.com/css?family=Mukta:200,300,400,500,600,700);
-</style>
+@import url('https://fonts.googleapis.com/css2?family=Mukta:wght@200;300;400;500;600,700&display=swap');</style>
 
 p {
   color: #222;
