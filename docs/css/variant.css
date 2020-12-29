@@ -172,7 +172,7 @@ pre, code {
     font-stretch: condensed;
     padding: 0;
 	margin: 0;
-	background: #fdfefd;
+	background: #fdfcfd;
 	overflow-x: nowrap;
 }
 
@@ -184,7 +184,7 @@ pre {
 
 code {
 	color: darkred;
-	background: #fdfefd;
+	border: 1px #ddd;
 }
 
 
