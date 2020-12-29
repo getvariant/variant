@@ -80,6 +80,11 @@ table.header h3 {
     margin: 0;
 }
 
+table.header img.logo {
+  float:left;
+  margin:2px;
+  cursor: pointer;
+}
 
 /* Single column layot
 ************************************/
