@@ -72,7 +72,7 @@ table.header h2 {
     margin: 0;
     display: block;
     text-align: left;
-    line-height: 80%;
+    line-height: 90%;
 }
 
 /* Single column layot
@@ -83,10 +83,10 @@ table.header h2 {
 }
 
 .single-column p {
-  color: #222;
+  color: #666;
   font-weight: 300;
   font: 18px "Mukta";
-  line-height = 1em;
+  line-height = 0.9em;
 }
 
 /* Single column small device */
