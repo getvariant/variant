@@ -148,15 +148,6 @@ table.header h3 {
 	margin: 0 6px 0;
 }
 
-.variant-subhead {
-	margin-left: 5%;
-}
-
-.variant-subhead p,
-.variant-subhead li {
-	font-weight: 400 !important;
-}
-
 pre, code {
     font-family: Consolas, Verdana, Arial, Helvetica, sans-serif;
     font-size: 14px;
@@ -178,325 +169,37 @@ code {
 	color: darkred;
 }
 
-
-
-
-
-
-
-
-
-/* ************************************************************ */
-#content .variant-clickable {
-	text-decoration: none;
-	cursor: pointer;
-}
-
-#content .variant-crumbs,
-#content .variant-crumbs a {
-    font-weight: 500 !important;
-    font: 16px "Mukta";
-    color: #333;
-    margin: 4px 0;
-}
-
-
-#content .variant-section {
-  margin: 30px 0 0;
-  border-top: 1px solid #3D807B;
-}
-
-
-#content .variant-section h2 {
-  margin: 0 0 10px;
-}
-
 /* Variant responsive columns (2 columns across)
 *******************************************/
 
-.variant-columns {
+.columns {
   display: table;
   width: 100%;
 }
 
-.variant-columns .variant-column:first-child {
+.columns .column:first-child {
   margin: 0;
 }
 
-.variant-columns .variant-column {
+.columns .column {
   	float: left;
   	display: block;
 	margin-left: 3%;
 }
 
-.variant-columns .variant-leftcol {
+.columns .leftcol {
   width: 31%;
 }
 
-.variant-columns .variant-rightcol {
+.columns .rightcol {
   width: 62%;
 }
 
-@media only screen and (max-width: 640px) {
-  .variant-columns .variant-leftcol,
-  .variant-columns .variant-rightcol {
-    float: none;
-    width: 100%;
-    padding: 0;
-    border: none;
-    margin-top: 0;
-  }
-}
 
-.variant-clear::after {
-    clear: both;
-    content: " ";
-    display: block;
-    font-size: 0;
-    height: 0;
-    line-height: 0;
-    visibility: hidden;
-    width: 0;
-}
-
-.variant-clear {
-    clear: both;
-    display: block;
-    height: 0;
-    overflow: hidden;
-    visibility: hidden;
-    width: 0;
-}
 /* End variant responsive columns
 *******************************************/
-/* Variant responsive grid (3 columns across)
-   Generated with http://www.responsivegridsystem.com.
-**********************************************/
-.variant-grid-section {
-  clear: both;
-  padding: 0 0 10px;
-  margin: 2%;
-  border-bottom: 1px solid #eee;
-}
-
-/*  COLUMN SETUP  */
-.variant-grid-col {
-  display: block;
-  float:left;
-  height: 100%;
-  margin: 1% 0 1% 0.5%;
-  padding: 0 1%;
-	text-align: center;
-}
-.variant-grid-col:first-child { margin-left: 0; }
-
-/*  GROUPING  */
-.variant-grid-group:before,
-.variant-grid-group:after { content:""; display:table; }
-.variant-grid-group:after { clear:both;}
-
-/*  GRID OF THREE  */
-.variant-grid-span_3_of_3 { width: 100%; }
-.variant-grid-span_2_of_3 { width: 66.13%; }
-.variant-grid-span_1_of_3 { width: 32.26%; }
-
-@media only screen and (max-width: 640px) {
-  .variant-grid-section { margin: 0; }
-  .variant-grid-group:before,
-  .variant-grid-group:after { display:block; }
-  .variant-grid-col {  margin: 1% 0 1% 0%; float: none;}
-  .variant-grid-span_3_of_3, .variant-grid-span_2_of_3, .variant-grid-span_1_of_3 { width: 100%; }
-}
-
-/* End variant responsive grid
-*******************************************/
 
 
-/* Don't leave space at top. */
-#primary { margin: 0; }
-
-/* Pull down a bit when navigating to page anchors, to account for the
-   sticky header */
-.variant-header-offset {
-    display: block;
-    margin: -90px 0 0 0;
-    padding: 90px 0 0 0;
-    width: 100%;
-}
-
-/* Buttons
-*******************************************/
-button, input[type="button"], input[type="reset"], input[type="submit"] {
-    padding: 5px 10px;
-    border-radius: 3px;
-    background-color: #E8602E;
-	opacity: 0.7;
-    font: 14px "Mukta";
-    font-weight: 600 !important;
-}
-
-button:hover, input[type="button"]:hover, input[type="reset"]:hover, input[type="submit"]:hover {
-	opacity: 0.6;
-}
-
-button.standard-button {
-  border: 3px solid #E8602E;
-  border-radius: none;
-  box-shadow: none;
-  padding: 12px 24px;
-  margin: 0 6px;
-  background-color: rgba(232,96,46, 0.4);
-  text-transform: none;
-  cursor: pointer;
-  font: 18px "Mukta";
-  font-weight: 600 !important;
-}
-
-button.standard-button:hover {
-  text-decoration: underline;
-  background-color: rgba(232,96,46, 0.4);
-  box-shadow: none;
-}
-
-/* top sticky header background color
-************************************/
-.sticky-navigation {
-  background: #3D807B;
-}
-
-/* Main menu
-************************************/
-.sticky-navigation .main-navigation ul ul {
-    background: #3D807B;
-}
-
-.sticky-navigation .menu-item:hover {
-/*  background: rgba(13, 60, 85, 0.05); */
-    background: #E8602E;
-	opacity: 0.75;
-}
-
-.sticky-navigation .main-navigation ul li a {
-  font-weight: 300 !important;
-  font: 18px "Mukta";
-  text-transform: none;
-  color: #f5f5f5 !important;
-  line-height: 0.8em;
-}
-
-.sticky-navigation .main-navigation ul li a:hover {
-  font-weight: 300 !important;
-  text-transform: none;
-  color: #fff !important;
-  text-decoration: none;
-}
-
-/* kill triangles next to main menu items which presence indicate sub-items */
-.main-navigation .menu-item-has-children > a:after {
-  content: none;
-}
-
-.single-column span.variant-pipe,
-.double-column span.variant-pipe {
-	color: #ccc;
-	margin: 0 8px;
-}
-
-/* Common Footer
-************************************/
-.footer {
-  background: linear-gradient(to bottom, #ffffff 20%,#ccc 100%);
-  color: #666;
-  font-weight: 300 !important;
-  font: 16px "Lato";
-}
-
-.footer a {
-  color: #666;
-  font-weight: 300 !important;
-  font: 16px "Lato";
-}
-
-.footer a:hover {
-  color: #000;
-  text-decoration: underline;
-}
-
-.footer p {
-  margin: 0;
-}
-
-.footer .footer-bottom-wrap,
-.footer .variant-section-title {
-  font-weight: 500 !important;
-  color: #666;
-  font: 18px "Lato";
-}
-
-p.variant-fig-footer {
-  margin: 0 0 20px;
-  font: 16px "Lato" !important;
-  font-weight:400 !important;
-}
-
-.powered-by {
-  display: none;
-}
-
-/*
-Variant tabs
-************************************/
-.variant-tabs button {
-  border-color: #eee;
-  border-style: solid;
-  border-width: 1px 1px 0 1px;
-  border-radius: 2px;
-  padding: 4px;
-  margin: 0;
-  background: none #fdfdfd;
-  text-transform: none;
-  cursor: pointer;
-  font: 12px "Mukta";
-  color: #666;
-  font-weight: 400 !important;
-}
-
-.variant-tabs button.active {
-  color: #333;
-  border-color: #ccc;
-  background-color: #fdfdf7;
-  border-bottom: none;
-}
-
-.variant-tabs button:hover {
-  border-color: #ccc;
-  background-color: #fdfdf7;
-  color: #333;
-}
-
-.variant-tabcontent {
-	display: none;
-}
-/*
-End Tabs
-************************************/
-
-
-/* Front Page
-************************************/
-
-/* About Variant
-************************************/
-div#variant-about .variant-columns .variant-leftcol,
-div#variant-about .variant-columns .variant-rightcol {
-  width: 45%;
-}
-
-div#variant-about p {
-  font: 18px "Barlow";
-  font-weight: 400 !important;
-  color: #333;
-}
 
 /* Documentation pages
 **********************************/
@@ -513,7 +216,7 @@ div#variant-about p {
   margin: 20px 0 0 0;
 }
 
-#doc-header h1 span.variant-amp {
+#doc-header h1 span.amp {
   font-family: "Mukta";
   font-size: inherit;
   font-weight: inherit;
@@ -556,16 +259,16 @@ div#variant-about p {
   color: inherit;
 }
 
-#toc tr.variant-toc-h1 td,
-#toc tr.variant-toc-h1 a {
+#toc tr.toc-h1 td,
+#toc tr.toc-h1 a {
   padding: 0;
   font: 18px "Lato";
   font-weight: 500 !important;
   vertical-align: top;
 }
 
-#toc tr.variant-toc-h2 td,
-#toc tr.variant-toc-h2 a {
+#toc tr.toc-h2 td,
+#toc tr.toc-h2 a {
   padding: 0;
   font: 16px "Lato";
   font-weight: 400 !important;
@@ -573,17 +276,17 @@ div#variant-about p {
 }
 
 
-#toc tr.variant-toc-h3 td,
-#toc tr.variant-toc-h3 a {
+#toc tr.toc-h3 td,
+#toc tr.toc-h3 a {
   padding: 0;
   font: 16px "Lato";
   font-weight: 300 !important;
   vertical-align: top;
 }
 
-#toc tr.variant-toc-h1 a,
-#toc tr.variant-toc-h2 a,
-#toc tr.variant-toc-h3 a {
+#toc tr.toc-h1 a,
+#toc tr.toc-h2 a,
+#toc tr.toc-h3 a {
   padding-left: 10px;
   display: block;
 }
@@ -592,15 +295,15 @@ div#variant-about p {
   color: #222;
 }
 
-#toc tr.variant-toc-h1 td {
+#toc tr.toc-h1 td {
   padding-top: 14px;
 }
 
-#toc tr.variant-toc-h2 td {
+#toc tr.toc-h2 td {
   padding-top: 10px;
 }
 
-#toc tr.variant-toc-h3 td {
+#toc tr.toc-h3 td {
   padding-top: 6px;
 }
 
@@ -696,28 +399,28 @@ h2 code {
 }
 
 /* Documentation tables */
-table.variant-table,
-table.variant-table-reference {
+table.table,
+table.table-reference {
   border-collapse: collapse;
   margin: 12px 0;
   border: 1px solid #ddd;
 	background: #fff;
 }
 
-table.variant-table tr:nth-child(odd) {
+table.table tr:nth-child(odd) {
   background-color: #fcfcfc;
 }
 
-table.variant-table th,
-table.variant-table th p,
-table.variant-table td,
-table.variant-table td p,
-table.variant-table td li,
-table.variant-table-reference th,
-table.variant-table-reference th p,
-table.variant-table-reference td,
-table.variant-table-reference td p,
-table.variant-table-reference td li {
+table.table th,
+table.table th p,
+table.table td,
+table.table td p,
+table.table td li,
+table.table-reference th,
+table.table-reference th p,
+table.table-reference td,
+table.table-reference td p,
+table.table-reference td li {
   font-size: 16px;
   font-weight: 400;
   color: #333;
@@ -726,37 +429,37 @@ table.variant-table-reference td li {
   text-align: left;
 }
 
-table.variant-table th p,
-table.variant-table td p {
+table.table th p,
+table.table td p {
 	border: none;
 }
 
-table.variant-table th {
+table.table th {
   background: #eee;
   font-weight: 500;
   padding: 4px 10px;
 }
 
-table.variant-table td {
+table.table td {
   vertical-align: top;
 }
 
-table.variant-table th:first-child {
+table.table th:first-child {
   border-left: none;
 }
 
-table.variant-table-reference th {
+table.table-reference th {
   background: #DFEBEA;
   font-weight: 400;
   padding: 8px;
   border-left: 1px solid #666;
   color: #555;
 }
-table.variant-table-reference th:first-child {
+table.table-reference th:first-child {
   border-left: none;
 }
 
-table.variant-table-reference td.subhead {
+table.table-reference td.subhead {
   background: #fafafa;
   font-weight: 400;
   padding: 8px;
@@ -764,29 +467,138 @@ table.variant-table-reference td.subhead {
   color: #555;
 }
 
-table.variant-table-reference td {
+table.table-reference td {
   padding-left: 20px;
 }
 
-table.variant-table-reference td.subhead:first-child {
+table.table-reference td.subhead:first-child {
   border-left: none;
 }
 
-table.variant-table-reference td pre.variant-code {
+table.table-reference td pre.code {
   border: none;
   background: inherit;
 }
 
-table.variant-table td.variant-code,
-table.variant-table td span.variant-code,
-table.variant-table-reference td.variant-code,
-table.variant-table-reference td span.variant-code {
+table.table td.code,
+table.table td span.code,
+table.table-reference td.code,
+table.table-reference td span.code {
   font-family: Consolas, Verdana, Arial, Helvetica, sans-serif;
   font-weight: 300;
   font-size: 14px;
   color: inherit;
   white-space: nowrap;
 }
+
+
+
+
+.variant-subhead {
+	margin-left: 5%;
+}
+
+.variant-subhead p,
+.variant-subhead li {
+	font-weight: 400 !important;
+}
+
+
+/* Variant responsive grid (3 columns across)
+   Generated with http://www.responsivegridsystem.com.
+**********************************************/
+.variant-grid-section {
+  clear: both;
+  padding: 0 0 10px;
+  margin: 2%;
+  border-bottom: 1px solid #eee;
+}
+
+/*  COLUMN SETUP  */
+.variant-grid-col {
+  display: block;
+  float:left;
+  height: 100%;
+  margin: 1% 0 1% 0.5%;
+  padding: 0 1%;
+	text-align: center;
+}
+.variant-grid-col:first-child { margin-left: 0; }
+
+/*  GROUPING  */
+.variant-grid-group:before,
+.variant-grid-group:after { content:""; display:table; }
+.variant-grid-group:after { clear:both;}
+
+/*  GRID OF THREE  */
+.variant-grid-span_3_of_3 { width: 100%; }
+.variant-grid-span_2_of_3 { width: 66.13%; }
+.variant-grid-span_1_of_3 { width: 32.26%; }
+
+@media only screen and (max-width: 640px) {
+  .variant-grid-section { margin: 0; }
+  .variant-grid-group:before,
+  .variant-grid-group:after { display:block; }
+  .variant-grid-col {  margin: 1% 0 1% 0%; float: none;}
+  .variant-grid-span_3_of_3, .variant-grid-span_2_of_3, .variant-grid-span_1_of_3 { width: 100%; }
+}
+
+/* End variant responsive grid
+*******************************************/
+
+
+/* Don't leave space at top. */
+#primary { margin: 0; }
+
+/* Pull down a bit when navigating to page anchors, to account for the
+   sticky header */
+.variant-header-offset {
+    display: block;
+    margin: -90px 0 0 0;
+    padding: 90px 0 0 0;
+    width: 100%;
+}
+
+/* Buttons
+*******************************************/
+button, input[type="button"], input[type="reset"], input[type="submit"] {
+    padding: 5px 10px;
+    border-radius: 3px;
+    background-color: #E8602E;
+	opacity: 0.7;
+    font: 14px "Mukta";
+    font-weight: 600 !important;
+}
+
+button:hover, input[type="button"]:hover, input[type="reset"]:hover, input[type="submit"]:hover {
+	opacity: 0.6;
+}
+
+button.standard-button {
+  border: 3px solid #E8602E;
+  border-radius: none;
+  box-shadow: none;
+  padding: 12px 24px;
+  margin: 0 6px;
+  background-color: rgba(232,96,46, 0.4);
+  text-transform: none;
+  cursor: pointer;
+  font: 18px "Mukta";
+  font-weight: 600 !important;
+}
+
+button.standard-button:hover {
+  text-decoration: underline;
+  background-color: rgba(232,96,46, 0.4);
+  box-shadow: none;
+}
+
+.single-column span.pipe,
+.double-column span.pipe {
+	color: #ccc;
+	margin: 0 8px;
+}
+
 
 /* Newsroom
 ************************************/
