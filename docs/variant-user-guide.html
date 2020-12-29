@@ -3,7 +3,7 @@
 <head>
     <link type="text/css" rel="stylesheet" href="css/variant.css" />
     <meta charset="UTF-8">
-    <title>User Guide | Variant CVM</title>
+    <title>CVM Server User Guide | Variant</title>
 </head>
 <body>
 
@@ -35,7 +35,7 @@
     </tr>
     <tr class="toc-h2">
     <td>1.1</td>
-    <td><a href="#section-1.1">Application Iteration Management (AIM)</a></td>
+    <td><a href="#section-1.1">Code Variation Management (CVM)</a></td>
     </tr>
     <tr class="toc-h3">
     <td>1.1.1</td>
@@ -244,8 +244,8 @@
     <a class="header-offset" name="section-1"></a>
     <h1><span class="underlined">1<span class="indent"></span>Variant Server Overview</span></h1>
     <a class="header-offset" name="section-1.1"></a>
-    <h2><span class="underlined">1.1<span class="indent"></span>Application Iteration Management (AIM)</span></h2>
-    Software application development is accelerating. Many leading teams releaese new code continuously, with each independently deployable code delta being released as soon as it's ready, unbundled from other such deltas, — sometimes multiple times per second. In such dymanic operational environment, <em>code variations</em> play instrumental role in de-risking the SDLC. A code variation is when one or more alternate code paths, intended to co-exist with an existing code path, must be provided by an application. There are several use cases which call for the instrumentation of code variations, which are described below.
+    <h2><span class="underlined">1.1<span class="indent"></span>Code Variation Management (CVM)</span></h2>
+    Software application development is accelerating. Many leading teams release new code continuously, with each independently deployable code delta being released as soon as it's ready, unbundled from other such deltas, — sometimes multiple times per second. In such dymanic operational environment, <em>code variations</em> play instrumental role in de-risking the SDLC. A code variation is when one or more alternate code paths, intended to co-exist with an existing code path, must be provided by an application. There are several use cases which call for the instrumentation of code variations, which are described below.
     
     <a class="header-offset" name="section-1.1.1"></a>
     <h3>1.1.1<span class="indent"></span>Online Controlled Experiments</h3>
@@ -265,7 +265,7 @@
     <h2><span class="underlined">1.1<span class="indent"></span>Key Features</span></h2>
     <a class="header-offset" name="section-1.2.1"></a>
     <h3>1.2.1<span class="indent"></span>Client-Server Architecture</h3>
-    Variant AIM Server is deployed on the same network as the host application(s), either on premises or in the cloud, facilitating low network latency and proximity to operational data. The server manages variation schemata, which contain the code variation metadata. Each variation schema is a JSON-superset human readable file containing complete definitions of all related code variations. A single server instance can manage an unlimited number of variation schemata.
+    Variant CVM Server is deployed on the same network as the host application(s), either on premises or in the cloud, facilitating low network latency and proximity to operational data. The server manages variation schemata, which contain the code variation metadata. Each variation schema is a JSON-superset human readable file containing complete definitions of all related code variations. A single server instance can manage an unlimited number of variation schemata.
     
     Each component of the host application that needs to participate in an code variation, communicates with Variant server via a native client library. At the time of this writing the following Variant client libraries are available:
     <table class="table" style="background:#fdfdf7;">
@@ -306,7 +306,7 @@
     
     <a class="header-offset" name="section-1.2.6"></a>
     <h3>1.2.6<span class="indent"></span>Extensibility</h3>
-    Variant AIM Server’s default behavior can be extended via the server-side <em>Extension API</em>. It supports creation and configuration of user code which runs in the server’s address space, augmenting the server's default behavior with custom semantics. ExtAPI exposes two principal extension mechanisms: <em>lifecycle hooks</em> and <em>trace event flushers</em>. Lifecycle hooks are listeners for various lifecycle events raised by Variant server, such as the session qualification or session targeting events. They are configured in the variation schema and are made available to the server's JVM at run time via the <code>/ext</code> directory. Lifecycle hooks can be chained to help you modularize and reuse your code.
+    Variant CVM Server’s default behavior can be extended via the server-side <em>Extension API</em>. It supports creation and configuration of user code which runs in the server’s address space, augmenting the server's default behavior with custom semantics. ExtAPI exposes two principal extension mechanisms: <em>lifecycle hooks</em> and <em>trace event flushers</em>. Lifecycle hooks are listeners for various lifecycle events raised by Variant server, such as the session qualification or session targeting events. They are configured in the variation schema and are made available to the server's JVM at run time via the <code>/ext</code> directory. Lifecycle hooks can be chained to help you modularize and reuse your code.
     
     Event flushers handle the terminal ingestion of Variant trace events. A few standard event flushers, intended for saving trace events in popular databases, such as PostgreSQL and MySQL, come with Variant server, but you may want to create your own, suitable for your operating environment — it is simply a matter of implementing a Java interface.
     
@@ -314,7 +314,7 @@
     <h1><span class="underlined">2<span class="indent"></span>Variant Architecture</span></h1>
     <a class="header-offset" name="section-2.1"></a>
     <h2><span class="underlined">2.1<span class="indent"></span>Overview</span></h2>
-    Variant AIM Server handles all the work related to managing code variations. Host applications accesses it via native client libraries, suitable for their language.
+    Variant CVM Server handles all the work related to managing code variations. Host applications accesses it via native client libraries, suitable for their language.
     
     Variant server is deployed on the network local to the host application(s) and the operational database, facilitating low network latency and real-time integration with the host application's operational data. This architecture is particularly attractive to modern distributed applications which are comprised of multiple service components. Each component communicates with Variant server independently, with the server responsible for the maintenance of shared session state.
     
@@ -330,7 +330,7 @@
     <h2><span class="underlined">2.2<span class="indent"></span>Server Configuration</span></h2>
     Variant server is configured using the <a href="https://github.com/lightbend/config" target="_blank" rel="noopener">Lightbend Config library <i class="fa fa-external-link"></i></a>. At startup, Variant server looks for configuration in the file <code>conf/variant.conf</code>. If it is found, its contents override <a href="/resources/docs/0-10/application-iteration-server/reference/#section-2.2">the defaults</a>. You may further override this configuration at run time by providing an alternative configuration file, or override an individual config key in a JVM system property.
     
-    Refer to the <a href="/resources/docs/0-10/application-iteration-server/reference/#section-2">Variant AIM Server Reference</a> for further information.
+    Refer to the <a href="/resources/docs/0-10/application-iteration-server/reference/#section-2">Variant CVM Server Reference</a> for further information.
     
     <a class="header-offset" name="section-2.3"></a>
     <h2><span class="underlined">2.3<span class="indent"></span>Integration With the Host Application</span></h2>
@@ -392,7 +392,7 @@
     <h2><span class="underlined">3.4<span class="indent"></span>Variation Schemata</span></h2>
     <a class="header-offset" name="section-3.4.1"></a>
     <h3>3.4.1<span class="indent"></span>Metadata for Code Varations</h3>
-    Each variation schema is a human readable file containing complete definitions of all related code variations expressed with JSON-superset grammar. A single Variant server can manage any number of such schema files, located in the server's <code>/schemata</code> directory. This section introduces CVM's concepts by example. For a complete reference, refer to the <a href="/resources/docs/0-10/application-iteration-server/reference/#section-3">Variant AIM Server Reference</a>.
+    Each variation schema is a human readable file containing complete definitions of all related code variations expressed with JSON-superset grammar. A single Variant server can manage any number of such schema files, located in the server's <code>/schemata</code> directory. This section introduces CVM's concepts by example. For a complete reference, refer to the <a href="/resources/docs/0-10/application-iteration-server/reference/#section-3">Variant CVM Server Reference</a>.
     
     The two top-level entities in CVM are <em>states</em> and <em>variations</em>. The states represent host application's <a href="#fig-2">interface states</a>. They are a rather opaque concept to CVM: all it needs to know about a state is its name and an optional set of state parameters. The state parameters are simple key/value pairs of strings, whose meaning is external to CVM and only meaningful to the host application.
     
@@ -949,9 +949,9 @@
     
     <a class="header-offset" name="section-5"></a>
     <h1><span class="underlined">5<span class="indent"></span>Extending Variant Server</span></h1>
-    Variant AIM Server’s default behavior can be extended via the server-side <em>Extension API</em>. It supports creation and configuration of user code which runs in the server’s address space, augmenting the server's default behavior with custom semantics. ExtAPI exposes two principal extension mechanisms: <em>lifecycle hooks</em> and <em>trace event flushers</em>. They are configured in the variation schema and made available to the server's JVM at run time via the <code>/ext</code> directory.
+    Variant CVM Server’s default behavior can be extended via the server-side <em>Extension API</em>. It supports creation and configuration of user code which runs in the server’s address space, augmenting the server's default behavior with custom semantics. ExtAPI exposes two principal extension mechanisms: <em>lifecycle hooks</em> and <em>trace event flushers</em>. They are configured in the variation schema and made available to the server's JVM at run time via the <code>/ext</code> directory.
     
-    Refer to the <a href="/resources/docs/0-10/application-iteration-server/reference/#section-4">Variant AIM Server Reference</a> for further details on configuring ExtAPI.
+    Refer to the <a href="/resources/docs/0-10/application-iteration-server/reference/#section-4">Variant CVM Server Reference</a> for further details on configuring ExtAPI.
     
     <a class="header-offset" name="section-5.1"></a>
     <h2>5.1<span class="indent"></span>Lifecycle Hooks</h2>
