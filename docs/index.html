@@ -9,7 +9,7 @@
 <title>Variant Code Variation Management Middleware</title>
 
 <div id="controller">
-    <div class="single-column">
+    <p class="single-column">
 
         <table class="header">
             <tr>
@@ -32,7 +32,10 @@
 
         <h4>Server Side</h4>
 
-        To instrument a simple A/B test, you may simply take advantage of the example schema, shipped with the server in the file <code>schemata/example.schema</code>, and reproduced below.
+        <p>
+        To instrument a simple A/B test, you may simply take advantage of the example schema, shipped with the server in
+        the file <code>schemata/example.schema</code>, and reproduced below.
+        </p>
         <pre><code>
         {
            'meta':{
@@ -67,7 +70,10 @@
            ]
         }
         </code></pre>
+
+        <p>
         Start Variant server:
+        </p>
         <pre><code class="shell">
         $ /path/to/variant/server/bin/variant start
         2019-12-26 15:23:26,412 INFO - c.v.s.boot.ConfigLoader$ - Found  config resource [/variant.conf] as [/Users/Igor/soft/variant-server-0.10.3/conf/variant.conf]
@@ -76,10 +82,16 @@
         2019-12-26 15:23:27,689 INFO - c.v.s.schema.Schemata - [422] Deployed schema [exampleSchema] from file [example.schema]
         2019-12-26 15:23:27,695 INFO - c.v.s.boot.VariantServerImpl - [433] Variant AIM Server release 0.10.3 started on port [5377] in 2.63s
         </code></pre>
+
         <h4>Client Side</h4>
-        The application-side code is similarly simple. Start by creating Variant client — you only need one per your application. Then connect to the above variation schema on the server. When user navigates to the state of interest <code>MyState</code> (may be an HTML page, or an Angular view, or an IVR menu, etc), target current session for that state and obtain the state request object, containing the experience targeting information you need to decide on the code path.
-        <div class="variant-tabs"><button class="active">Pure Java</button><button>Java+Servlet</button><button>Java+Play</button><button>JavaScript</button></div>
-        <div id="java" class="variant-tabcontent" style="display: block;">
+        <p>
+        The application-side code is similarly simple. Start by creating Variant client — you only need one per your
+            application. Then connect to the above variation schema on the server. When user navigates to the state
+            of interest <code>MyState</code> (may be an HTML page, or an Angular view, or an IVR menu, etc), target
+            current session for that state and obtain the state request object, containing the experience targeting
+            information you need to decide on the code path.
+        </p>
+
         <pre><code>
         // Create Variant client.
         VariantClient client = VariantClient.builder()
@@ -113,50 +125,6 @@
           // the treatment code path
         }
         </code></pre>
-        </div>
-        <div id="java-servlet" class="variant-tabcontent">
-        <pre><code>
-        // Create Variant client.
-        ServletVariantClient client = ServletVariantClient.Builder.build();
-
-        // Connect to the Example schema on the server
-        ServletConnection connetion = client.connectTo("variant://localhost:5377/example");
-
-        // Create Variant session
-        ServletSession session = connection.getOrCreateSession(httpRequest);
-
-        // The schema we're connected to
-        Schema schema = session.getSchema();
-
-        // The variable state, e.g. an HTML page, we want to target the session for.
-        State state = schema.getState("MySate").get();
-
-        // Target the session for the state.
-        ServletStateRequest request = session.targetForState(state);
-
-        // Find out what experience in the A/B test we got.
-        Variation variation = schema.getVariation("MyVariation").get();
-        Experience experience = request.getLiveExperience(variation).get();
-
-        // Bifurcate
-        if (experience.getName().equals("control")) {
-          // the control code path.
-        {
-        else {
-          // the treatment code path
-        }
-        </code></pre>
-        </div>
-        <div id="java-play" class="variant-tabcontent">
-        <pre class="variant-code">Support for Play applications is coming soon.
-        </pre>
-        </div>
-        <div id="javascript" class="variant-tabcontent">
-        <pre class="variant-code">Support for JavaScript is coming soon.
-        </pre>
-        </div>
-        <p class="variant-fig-footer"><strong>1.</strong>&nbsp; Variant Java Client requires an implementation of the <a href="/resources/docs/0-10/clients/variant-java-client/#section-4.1">session ID tracker</a>. If your application is built with a Servlet framework (e.g. Spring MVC) or with the Play framework, you should use <a href="/resources/docs/0-10/clients/variant-java-client/#section-5">respective adapters</a> instead of the standalone Java client.</p>
-        <p class="variant-fig-footer"><strong>2.</strong>&nbsp; When using the standalone Variant Java Client, some of its API methods have <a href="/resources/docs/0-10/clients/variant-java-client/#section-4.2">deferred signatures</a>. If your application is built with a Servlet framework (e.g. Spring MVC) or with the Play framework, you should use <a href="/resources/docs/0-10/clients/variant-java-client/#section-5">respective adapters</a> instead of the standalone Java client.</p>
     </div>
 </div>
 </body>
