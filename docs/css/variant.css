@@ -84,6 +84,7 @@ table.header img.logo {
   float:left;
   margin:2px;
   cursor: pointer;
+  width: 80px;
 }
 
 /* Single column layot
