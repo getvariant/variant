@@ -7,13 +7,7 @@
 @import url('https://fonts.googleapis.com/css?family=Mukta:wght@200;300;400;500;600,700&display=swap');
 </style>
 
-.container p {
-  color: #222;
-  font-weight: 300;
-  font: 18px "Mukta";
-}
-
-.container h1 {
+#container h1 {
 	font-weight: 400 !important;
     font: 34px "Mukta";
     color: #3f5f5f;
@@ -92,6 +86,12 @@ table, td {
 .single-column {
   width: 800px;
   margin: 20px;
+}
+
+.single-column p {
+  color: #222;
+  font-weight: 300;
+  font: 18px "Mukta";
 }
 
 /* Single column small device */
