@@ -87,38 +87,28 @@ table.header h1 {
   line-height = 0.9em;
 }
 
-/* Single column small device */
-@media only screen and (max-width: 640px) {
-  .variant-single-column .variant-columns .variant-leftcol,
-  .variant-single-column .variant-columns .variant-rightcol { width: 100%; margin: 0;}
-  .variant-single-column .variant-columns h3 { font-size: 18px; }
-  .variant-single-column .variant-columns p,
-  .variant-single-column .variant-columns li {font-size: 12px; }
-  .variant-single-column .variant-summary {font-size: 12px; margin: 0;}
-}
-
 /* Double column layout
 ************************************/
-.variant-double-column {
+.double-column {
 	margin: 0 10%;
 }
 
 
-.variant-double-column .variant-columns {
+.double-column .columns {
 	margin: 0 0 20px 0;
 }
 
-.variant-double-column .variant-leftcol {
+.double-column .leftcol {
   width: 38%;
 }
 
-.variant-double-column .variant-rightcol {
+.double-column .rightcol {
   width: 59%;
 }
 
-.variant-double-column p,
-.variant-double-column li,
-.variant-double-column span {
+.double-column p,
+.double-column li,
+.double-column span {
   font-weight: 300 !important;
   font: 18px "Lato";
   color: #333;
@@ -126,11 +116,11 @@ table.header h1 {
   padding: 0;
 }
 
-.variant-double-column li {
+.double-column li {
 	margin: 4px 0 0;
 }
 
-.variant-double-column h3 {
+.double-column h3 {
     font-weight: 300 !important;
     font:28px "Mukta";
     text-align: left;
@@ -139,14 +129,14 @@ table.header h1 {
 	border-bottom: 1px solid #ddd;
 }
 
-.variant-double-column h4 {
+.double-column h4 {
   font-weight: 500 !important;
   font:22px "Mukta";
   text-align: left;
   margin: 0;
 }
 
-.variant-double-column img {
+.double-column img {
 	margin: 0 6px 0;
 }
 
@@ -398,8 +388,8 @@ button.standard-button:hover {
   content: none;
 }
 
-.variant-single-column span.variant-pipe,
-.variant-double-column span.variant-pipe {
+.single-column span.variant-pipe,
+.double-column span.variant-pipe {
 	color: #ccc;
 	margin: 0 8px;
 }

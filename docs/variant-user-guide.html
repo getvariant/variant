@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link type="text/css" rel="stylesheet" href="css/variant.css" />
+    <meta charset="UTF-8">
+    <title>Code Variation Management | Variant</title>
+</head>
+<body>
+<title>Variant Code Variation Management Middleware</title>
+
+<div id="container">
+    <div class="single-column">
+
+        <table class="header">
+            <tr>
+                <td><img src="img/logo-300x300.png" style="float:left;margin:2px;" width="80" height="80"></td>
+                <td>
+                    <h1>Variant Code Variation Management Middleware</h1>
+                </td>
+            </tr>
+        </table>
+
+        <h4>Instrument hundreds of feature flags daily. Run hundreds of A/B experiments concurrently.</h4>
+
+        <p>
+        Variant is a robust, high performance middleware for managing <em>code variations</em>, which, typically, come
+        in the form of A/B tests or feature flags. Architected as client/server middleware, Variant is tightly
+        integrated with the host application's runtime and its operational data. Variant is particularly attractive to
+        distributed and cloud-native host applications.
+        </p>
+
+        <h3>Simple Example</h3>
+
+        <p>
+        To instrument a simple A/B test, you may simply take advantage of the example schema, shipped with the server in
+        the file <code>schemata/example.schema</code>, and reproduced below.
+        </p>
+        <pre><code>
+{
+   'meta':{
+      'name':'example',
+      'comment':'Basic sample variation schema. See Server User Guide for details.'
+   },
+   'states':[
+    {
+      'name':'MyState'
+      }
+   ],
+   'variations': [
+      {
+         'name':'MyVariation',
+         'experiences':[
+            {
+               'name':'control',
+               'isControl':true,
+               'weight': 3
+            },
+            {
+               'name':'treatment',
+               'weight': 1
+            }
+         ],
+         'onStates':[
+            {
+               'stateRef':'state'
+            }
+         ]
+      }
+   ]
+}
+        </code></pre>
+
+        <p>
+        Start Variant server:
+        </p>
+        <pre><code class="shell">
+$ /path/to/variant/server/bin/variant start
+2019-12-26 15:23:26,412 INFO - c.v.s.boot.ConfigLoader$ - Found  config resource [/variant.conf] as [/Users/Igor/soft/variant-server-0.10.3/conf/variant.conf]
+2019-12-26 15:23:27,425 INFO - c.v.s.schema.SchemaDeployerFileSystem - Mounted schemata directory [/Users/Igor/soft/variant-server-0.10.3/schemata]
+2019-12-26 15:23:27,428 INFO - c.v.s.schema.SchemaDeployerFileSystem - [421] Deploying schema from file [/Users/Igor/soft/variant-server-0.10.3/schemata/example.schema]
+2019-12-26 15:23:27,689 INFO - c.v.s.schema.Schemata - [422] Deployed schema [exampleSchema] from file [example.schema]
+2019-12-26 15:23:27,695 INFO - c.v.s.boot.VariantServerImpl - [433] Variant AIM Server release 0.10.3 started on port [5377] in 2.63s
+        </code></pre>
+
+        <p>
+        In your Java application, create a Variant client. You only need one per your application. Then connect to the
+            above variation schema on the server. When user navigates to the state
+            of interest <code>MyState</code> (may be an HTML page, or an Angular view, or an IVR menu, etc), target
+            current session for that state and obtain the state request object, containing the experience targeting
+            information you need to decide on the code path.
+        </p>
+
+        <pre><code>
+// Create Variant client.
+VariantClient client = VariantClient.builder()
+      .withSessionIdTrackerClass(MySessionIdTracker.class) // Footnote 1 below
+      .build();
+
+// Connect to the Example schema on the server
+Connection connetion = client.connectTo("variant://localhost:5377/example");
+
+// Create Variant session
+Session session = connection.getOrCreateSession(myParameters); // Footnote 2 below
+
+// The schema we're connected to
+Schema schema = session.getSchema();
+
+// The variable state, e.g. an HTML page, we want to target the session for.
+State state = schema.getState("MySate").get();
+
+// Target the session for the state.
+StateRequest request = session.targetForState(state);
+
+// Find out what experience in the A/B test we got.
+Variation variation = schema.getVariation("MyVariation").get();
+Experience experience = request.getLiveExperience(variation).get();
+
+// Bifurcate
+if (experience.getName().equals("control")) {
+  // the control code path.
+{
+else {
+  // the treatment code path
+}
+        </code></pre>
+    </div>
+</div>
+</body>
+</html>
