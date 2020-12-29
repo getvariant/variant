@@ -81,10 +81,9 @@ $ /path/to/variant/server/bin/variant start
 2019-12-26 15:23:27,695 INFO - c.v.s.boot.VariantServerImpl - [433] Variant AIM Server release 0.10.3 started on port [5377] in 2.63s
         </code></pre>
 
-        <h4>Client Side</h4>
         <p>
-        The application-side code is similarly simple. Start by creating Variant client — you only need one per your
-            application. Then connect to the above variation schema on the server. When user navigates to the state
+        In your Java application, create a Variant client. You only need one per your application. Then connect to the
+            above variation schema on the server. When user navigates to the state
             of interest <code>MyState</code> (may be an HTML page, or an Angular view, or an IVR menu, etc), target
             current session for that state and obtain the state request object, containing the experience targeting
             information you need to decide on the code path.
