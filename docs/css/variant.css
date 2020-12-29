@@ -492,12 +492,12 @@ div#variant-about p {
 
 /* Documentation pages
 **********************************/
-#variant-doc-header {
+#doc-header {
   width: 100%;
   margin: 0 0 32px;
 }
 
-#variant-doc-header h1 {
+#doc-header h1 {
   display: block;
   font: 42px "Mukta";
   font-weight: 600;
@@ -505,13 +505,13 @@ div#variant-about p {
   margin: 20px 0 0 0;
 }
 
-#variant-doc-header h1 span.variant-amp {
+#doc-header h1 span.variant-amp {
   font-family: "Mukta";
   font-size: inherit;
   font-weight: inherit;
   color: inherit;
 }
-#variant-doc-header h3 {
+#doc-header h3 {
   display: block;
   font: 18px "Mukta";
   font-weight: 400;
@@ -597,19 +597,19 @@ div#variant-about p {
 }
 
 /* Documentation body column */
-#variant-doc-body {
+#doc-body {
  padding: 0 0 0 3%;
  margin: 0;
  /* border-left: 1px solid #999; */
 }
 
 @media only screen and (max-width: 640px) {
-  #variant-doc-body {
+  #doc-body {
     padding: 0;
     border-left: none;
   }
 }
-#variant-doc-body h1 {
+#doc-body h1 {
   display: inline-block;
   font: 36px "Mukta";
   font-weight: 400 !important;
@@ -619,7 +619,7 @@ div#variant-about p {
   border-bottom: 1px solid #aaa;
 }
 
-#variant-doc-body h2 {
+#doc-body h2 {
   display: block;
   font: 24px "Mukta";
   font-weight: 500 !important;
@@ -627,14 +627,14 @@ div#variant-about p {
   border-bottom: 1px solid #ddd;
 }
 
-#variant-doc-body h3 {
+#doc-body h3 {
   display: block;
   font: 20px "Mukta";
   font-weight: 500 !important;
   margin: 4px 0;
 }
 
-#variant-doc-body h1 span.variant-underlined {
+#doc-body h1 span.variant-underlined {
   position: relative;
   top: 7px;
   display: inherit;
@@ -642,7 +642,7 @@ div#variant-about p {
   font-weight: inherit;
   color: inherit;
 }
-#variant-doc-body h2 span.variant-underlined {
+#doc-body h2 span.variant-underlined {
   position: relative;
   top: 7px;
   display: inherit;
@@ -651,29 +651,29 @@ div#variant-about p {
   color: inherit;
 }
 
-#variant-doc-body .indent {
+#doc-body .indent {
   margin-left: 26px;
 }
 
-#variant-doc-body p,
-#variant-doc-body li {
+#doc-body p,
+#doc-body li {
   font: 20px "Cormorant";
   font-weight: 300;
   color: #222;
 }
 
-#variant-doc-body li {
+#doc-body li {
   margin: 6px 0;
 }
 
-#variant-doc-body a {
+#doc-body a {
   font: 20px "Cormorant";
   color: #3f5f5f;
   text-decoration: underline;
   text-decoration-style: dotted;
 }
 
-#variant-doc-body a i.fa {
+#doc-body a i.fa {
   font-size: 14px;
 }
 
