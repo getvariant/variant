@@ -30,8 +30,6 @@
 
         <h3>Simple Example</h3>
 
-        <h4>Server Side</h4>
-
         <p>
         To instrument a simple A/B test, you may simply take advantage of the example schema, shipped with the server in
         the file <code>schemata/example.schema</code>, and reproduced below.
@@ -75,12 +73,12 @@
         Start Variant server:
         </p>
         <pre><code class="shell">
-        $ /path/to/variant/server/bin/variant start
-        2019-12-26 15:23:26,412 INFO - c.v.s.boot.ConfigLoader$ - Found  config resource [/variant.conf] as [/Users/Igor/soft/variant-server-0.10.3/conf/variant.conf]
-        2019-12-26 15:23:27,425 INFO - c.v.s.schema.SchemaDeployerFileSystem - Mounted schemata directory [/Users/Igor/soft/variant-server-0.10.3/schemata]
-        2019-12-26 15:23:27,428 INFO - c.v.s.schema.SchemaDeployerFileSystem - [421] Deploying schema from file [/Users/Igor/soft/variant-server-0.10.3/schemata/example.schema]
-        2019-12-26 15:23:27,689 INFO - c.v.s.schema.Schemata - [422] Deployed schema [exampleSchema] from file [example.schema]
-        2019-12-26 15:23:27,695 INFO - c.v.s.boot.VariantServerImpl - [433] Variant AIM Server release 0.10.3 started on port [5377] in 2.63s
+$ /path/to/variant/server/bin/variant start
+2019-12-26 15:23:26,412 INFO - c.v.s.boot.ConfigLoader$ - Found  config resource [/variant.conf] as [/Users/Igor/soft/variant-server-0.10.3/conf/variant.conf]
+2019-12-26 15:23:27,425 INFO - c.v.s.schema.SchemaDeployerFileSystem - Mounted schemata directory [/Users/Igor/soft/variant-server-0.10.3/schemata]
+2019-12-26 15:23:27,428 INFO - c.v.s.schema.SchemaDeployerFileSystem - [421] Deploying schema from file [/Users/Igor/soft/variant-server-0.10.3/schemata/example.schema]
+2019-12-26 15:23:27,689 INFO - c.v.s.schema.Schemata - [422] Deployed schema [exampleSchema] from file [example.schema]
+2019-12-26 15:23:27,695 INFO - c.v.s.boot.VariantServerImpl - [433] Variant AIM Server release 0.10.3 started on port [5377] in 2.63s
         </code></pre>
 
         <h4>Client Side</h4>
@@ -93,37 +91,37 @@
         </p>
 
         <pre><code>
-        // Create Variant client.
-        VariantClient client = VariantClient.builder()
-              .withSessionIdTrackerClass(MySessionIdTracker.class) // Footnote 1 below
-              .build();
+// Create Variant client.
+VariantClient client = VariantClient.builder()
+      .withSessionIdTrackerClass(MySessionIdTracker.class) // Footnote 1 below
+      .build();
 
-        // Connect to the Example schema on the server
-        Connection connetion = client.connectTo("variant://localhost:5377/example");
+// Connect to the Example schema on the server
+Connection connetion = client.connectTo("variant://localhost:5377/example");
 
-        // Create Variant session
-        Session session = connection.getOrCreateSession(myParameters); // Footnote 2 below
+// Create Variant session
+Session session = connection.getOrCreateSession(myParameters); // Footnote 2 below
 
-        // The schema we're connected to
-        Schema schema = session.getSchema();
+// The schema we're connected to
+Schema schema = session.getSchema();
 
-        // The variable state, e.g. an HTML page, we want to target the session for.
-        State state = schema.getState("MySate").get();
+// The variable state, e.g. an HTML page, we want to target the session for.
+State state = schema.getState("MySate").get();
 
-        // Target the session for the state.
-        StateRequest request = session.targetForState(state);
+// Target the session for the state.
+StateRequest request = session.targetForState(state);
 
-        // Find out what experience in the A/B test we got.
-        Variation variation = schema.getVariation("MyVariation").get();
-        Experience experience = request.getLiveExperience(variation).get();
+// Find out what experience in the A/B test we got.
+Variation variation = schema.getVariation("MyVariation").get();
+Experience experience = request.getLiveExperience(variation).get();
 
-        // Bifurcate
-        if (experience.getName().equals("control")) {
-          // the control code path.
-        {
-        else {
-          // the treatment code path
-        }
+// Bifurcate
+if (experience.getName().equals("control")) {
+  // the control code path.
+{
+else {
+  // the treatment code path
+}
         </code></pre>
     </div>
 </div>
