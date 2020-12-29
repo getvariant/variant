@@ -61,6 +61,9 @@ ul {
   list-style: disc;
 }
 
+table.header td {
+  vertical-align: top;
+}
 
 table.header h1 {
 	font-weight: 300 !important;
