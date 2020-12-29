@@ -166,6 +166,27 @@ table.header h2 {
 	font-weight: 400 !important;
 }
 
+pre, code {
+    font-family: Consolas, Verdana, Arial, Helvetica, sans-serif;
+    font-size: 14px;
+    font-stretch: condensed;
+    padding: 0;
+	margin: 0;
+	background: #fdfdf7;
+	overflow-x: nowrap;
+}
+
+pre {
+	margin-bottom: 16px;
+    padding: 8px 6px;
+	overflow-x: scroll;
+}
+
+code {
+	color: darkred;
+	background: #fdfdf7;
+}
+
 
 
 
@@ -925,31 +946,6 @@ div#variant-newsroom li {
  * We had to prepend everything with span.
  */
 /* Clear all pre and code styles so that highlight.js work property */
-pre,
-code,
-pre code.hljs,
-pre code.hljs span,
-#variant-doc-body code.hljs a {
-    font-family: Consolas, Verdana, Arial, Helvetica, sans-serif;
-    font-size: 14px;
-    font-stretch: condensed;
-    padding: 0;
-	margin: 0;
-	background: #fdfdf7;
-	line-height: 1;
-	overflow-x: nowrap;
-}
-
-pre {
-	margin-bottom: 16px;
-    padding: 8px 6px;
-	overflow-x: nowrap;
-}
-
-code {
-	color: darkred;
-	background: #fdfdf7;
-}
 
 th code,
 h3 code {
