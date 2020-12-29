@@ -37,38 +37,38 @@
         the file <code>schemata/example.schema</code>, and reproduced below.
         </p>
         <pre><code>
-        {
-           'meta':{
-              'name':'example',
-              'comment':'Basic sample variation schema. See Server User Guide for details.'
-           },
-           'states':[
-           	{
-           	  'name':'MyState'
-              }
-           ],
-           'variations': [
-              {
-                 'name':'MyVariation',
-                 'experiences':[
-                    {
-                       'name':'control',
-                       'isControl':true,
-                       'weight': 3
-                    },
-                    {
-                       'name':'treatment',
-                       'weight': 1
-                    }
-                 ],
-                 'onStates':[
-                    {
-                       'stateRef':'state'
-                    }
-                 ]
-              }
-           ]
-        }
+{
+   'meta':{
+      'name':'example',
+      'comment':'Basic sample variation schema. See Server User Guide for details.'
+   },
+   'states':[
+    {
+      'name':'MyState'
+      }
+   ],
+   'variations': [
+      {
+         'name':'MyVariation',
+         'experiences':[
+            {
+               'name':'control',
+               'isControl':true,
+               'weight': 3
+            },
+            {
+               'name':'treatment',
+               'weight': 1
+            }
+         ],
+         'onStates':[
+            {
+               'stateRef':'state'
+            }
+         ]
+      }
+   ]
+}
         </code></pre>
 
         <p>
