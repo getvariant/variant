@@ -433,6 +433,7 @@ table.table-reference td li {
   font-family: Mukta;
   border: 1px solid #efefef;
   text-align: left;
+  padding: 2px;
 }
 
 table.table th p,
