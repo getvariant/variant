@@ -261,17 +261,23 @@
         </p>
     <a class="header-offset" name="section-1.1.2"></a>
     <h3>1.1.2<span class="indent"></span>Managed Feature Roll-Outs</h3>
-    The other use case for code variations is <em>feature flags</em>. They refer to a software delivery practice, where a new product feature is rolled out gradually to a carefully controlled group of customers before it is made generally available. Whenever you roll out a new product feature, a feature flag enables you to first publish it to a limited population of users, while sending all others into the stable existing experience. If all goes well, you gradually increase traffic into the new code path until you reach full production, at which point the existing code path can be discarded. But if a defect is discovered, the new feature can be temporarily toggled off until the problem is fixed.
-    
-    In contrast with online controlled experiments, when instrumenting feature flags you will likely use some deterministic targeting rules for your user traffic. For example you may want to start by allowing into the new code users by their Zip code, or customers by their organization ID.
-    
+        <p>
+            The other use case for code variations is <em>feature flags</em>. They refer to a software delivery practice, where a new product feature is rolled out gradually to a carefully controlled group of customers before it is made generally available. Whenever you roll out a new product feature, a feature flag enables you to first publish it to a limited population of users, while sending all others into the stable existing experience. If all goes well, you gradually increase traffic into the new code path until you reach full production, at which point the existing code path can be discarded. But if a defect is discovered, the new feature can be temporarily toggled off until the problem is fixed.
+        </p>
+        <p>
+            In contrast with online controlled experiments, when instrumenting feature flags you will likely use some deterministic targeting rules for your user traffic. For example you may want to start by allowing into the new code users by their Zip code, or customers by their organization ID.
+        </p>
+
     <a class="header-offset" name="section-1.2"></a>
     <h2><span class="underlined">1.1<span class="indent"></span>Key Features</span></h2>
     <a class="header-offset" name="section-1.2.1"></a>
     <h3>1.2.1<span class="indent"></span>Client-Server Architecture</h3>
-    Variant CVM Server is deployed on the same network as the host application(s), either on premises or in the cloud, facilitating low network latency and proximity to operational data. The server manages variation schemata, which contain the code variation metadata. Each variation schema is a JSON-superset human readable file containing complete definitions of all related code variations. A single server instance can manage an unlimited number of variation schemata.
-    
-    Each component of the host application that needs to participate in an code variation, communicates with Variant server via a native client library. At the time of this writing the following Variant client libraries are available:
+        <p>
+            Variant CVM Server is deployed on the same network as the host application(s), either on premises or in the cloud, facilitating low network latency and proximity to operational data. The server manages variation schemata, which contain the code variation metadata. Each variation schema is a JSON-superset human readable file containing complete definitions of all related code variations. A single server instance can manage an unlimited number of variation schemata.
+        </p>
+        <p>
+            Each component of the host application that needs to participate in an code variation, communicates with Variant server via a native client library. At the time of this writing the following Variant client libraries are available:
+        </p>
     <table class="table" style="background:#fdfdf7;">
     <tbody>
     <tr>
@@ -284,8 +290,10 @@
     </tr>
     </tbody>
     </table>
-    In addition to the client API, Variant server also exposes server side Extension API, used to extend the server’s default behavior with custom semantics.
-    
+
+        <p>
+            In addition to the client API, Variant server also exposes server side Extension API, used to extend the server’s default behavior with custom semantics.
+        </p>
     <a class="header-offset" name="section-1.2.2"></a>
     <h3>1.2.2<span class="indent"></span>Separation of Instrumenttion and Implementation</h3>
     At the core of Variant's philosphy is the idea of strict separation between <em>variation instrumentation</em> and <em>experience implementation</em>. Variation schemata enable developers to define variations as abstract ideas about the behavior of the host application, leaving the implementation of that behavior out, i.e. up to the application developer.
