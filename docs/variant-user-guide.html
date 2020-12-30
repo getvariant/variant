@@ -139,7 +139,7 @@
     </tr>
     <tr class="toc-h2">
     <td>3.7</td>
-    <td><a href="#section-3.7">Mixed Instrumentation</a></td>
+    <td><a href="#section-3.7">Phantom Instrumentation</a></td>
     </tr>
     <tr class="toc-h2">
     <td>3.8</td>
@@ -692,21 +692,21 @@
             This mechanism of state parameter overrides is a convenient way for the developer to introduce application state into the schema at both global and local scopes.
         </p>
     <a class="header-offset" name="section-3.7"></a>
-    <h2><span class="underlined">3.7<span class="indent"></span>Mixed Instrumentation</span></h2>
+    <h2><span class="underlined">3.7<span class="indent"></span>Phantom Instrumentation</span></h2>
 
         <p>
             Typically, all experiences in a variation will instrument the same set of states. But there are use cases where this assumption does not hold. For example, you may want to split a busy page in two, or to consolidate two sparse pages into one, as illustrated in Figure 4 below.
         </p>
 
     <a class="header-offset" name="fig-4"></a>
-    <img class="aligncenter size-medium wp-image-3990" src="http://getvariant2.wpengine.com/wp-content/uploads/Figure4-300x300.png" alt="Variant Mixed Instrumentation" width="300" height="300">
-    <p class="fig-footer">Figure 4. Mixed Instrumentation with a phantom state in the control experience (A) and in a variant experience (B).</p>
+    <img src="img/variant-phantom-instrumentation.png" alt="Variant Phantom Instrumentation" width="300">
+    <p class="fig-footer">Figure 4. Phantom Instrumentation with a phantom state in the control experience (A) and in a variant experience (B).</p>
 
         <p>
-            The type of instrumentation where a state is instrumented by some, but not all experiences in a variation is referred to as <em>mixed instrumentation</em>. Whenever a state variant is undefined in some experience, it is referred to as <em>phantom state variant</em> in that experience. A phantom state variant constitutes an obligation on the part of the host application not to enter this state if it is in the experience where this variant is phantom. For example, in the <a href="#fig-4">Figure 4.A</a> above, if a session targeted to the control experience attempts to enter state <code>S<sub>2</sub></code>, Variant will throw a runtime exception.
+            The type of instrumentation where a state is instrumented by some, but not all experiences in a variation is referred to as <em>phantom instrumentation</em>. Whenever a state variant is undefined in some experience, it is referred to as <em>phantom state variant</em> in that experience. A phantom state variant constitutes an obligation on the part of the host application not to enter this state if it is in the experience where this variant is phantom. For example, in the <a href="#fig-4">Figure 4.A</a> above, if a session targeted to the control experience attempts to enter state <code>S<sub>2</sub></code>, Variant will throw a runtime exception.
         </p>
         <p>
-           The next section introduces an example of mixed instrumentation.
+           The next section introduces an example of phantom instrumentation.
         </p>
 
     <a class="header-offset" name="section-3.8"></a>
