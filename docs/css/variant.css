@@ -497,11 +497,7 @@ table.table-reference td span.code {
   white-space: nowrap;
 }
 
-.variant-subhead {
-	margin-left: 5%;
-}
-
-p.fig-footer {
+#doc-body p.fig-footer {
   margin: 0 0 20px;
   font: 16px "Lato" !important;
   font-weight:400 !important;
