@@ -382,9 +382,9 @@ code {
 
 #doc-body p,
 #doc-body li {
-  font: 20px "Cormorant";
-  font-weight: 300;
-  color: #222;
+  font: 18px "Cormorant";
+  font-weight: 200;
+  color: #333;
 }
 
 #doc-body li {
