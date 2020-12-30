@@ -163,7 +163,7 @@ table.header img.logo {
 }
 
 pre, code {
-    font-family: "Fira Code", Verdana, Arial, Helvetica, sans-serif;
+    font-family: 'Fira Code', monospace;
     font-size: 14px;
     font-stretch: condensed;
     padding: 0;
