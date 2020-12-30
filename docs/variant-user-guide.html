@@ -346,98 +346,135 @@
     <h1><span class="underlined">2<span class="indent"></span>Variant Architecture</span></h1>
     <a class="header-offset" name="section-2.1"></a>
     <h2><span class="underlined">2.1<span class="indent"></span>Overview</span></h2>
-    Variant CVM Server handles all the work related to managing code variations. Host applications accesses it via native client libraries, suitable for their language.
-    
-    Variant server is deployed on the network local to the host application(s) and the operational database, facilitating low network latency and real-time integration with the host application's operational data. This architecture is particularly attractive to modern distributed applications which are comprised of multiple service components. Each component communicates with Variant server independently, with the server responsible for the maintenance of shared session state.
-    
-    The following diagram presents a high-level overview of the different components of Variant software platform:
-    
+
+        <p>
+            Variant CVM Server handles all the work related to managing code variations. Host applications accesses it via native client libraries, suitable for their language.
+        </p>
+        <p>
+            Variant server is deployed on the network local to the host application(s) and the operational database, facilitating low network latency and real-time integration with the host application's operational data. This architecture is particularly attractive to modern distributed applications which are comprised of multiple service components. Each component communicates with Variant server independently, with the server responsible for the maintenance of shared session state.
+        </p>
+        <p>
+            The following diagram presents a high-level overview of the different components of Variant software platform:
+        </p>
     <img class="aligncenter size-full wp-image-4138" src="http://getvariant2.wpengine.com/wp-content/uploads/Architecture.png" alt="" width="591" height="561">
-    
-    &nbsp;
     <p class="fig-footer">Figure 1. Variant Architecture.</p>
-    [Todo: Add LevelDB]
-    
+
     <a class="header-offset" name="section-2.2"></a>
     <h2><span class="underlined">2.2<span class="indent"></span>Server Configuration</span></h2>
-    Variant server is configured using the <a href="https://github.com/lightbend/config" target="_blank" rel="noopener">Lightbend Config library <i class="fa fa-external-link"></i></a>. At startup, Variant server looks for configuration in the file <code>conf/variant.conf</code>. If it is found, its contents override <a href="/resources/docs/0-10/application-iteration-server/reference/#section-2.2">the defaults</a>. You may further override this configuration at run time by providing an alternative configuration file, or override an individual config key in a JVM system property.
-    
-    Refer to the <a href="/resources/docs/0-10/application-iteration-server/reference/#section-2">Variant CVM Server Reference</a> for further information.
-    
+
+        <p>
+            Variant server is configured using the <a href="https://github.com/lightbend/config" target="_blank" rel="noopener">Lightbend Config library <i class="fa fa-external-link"></i></a>. At startup, Variant server looks for configuration in the file <code>conf/variant.conf</code>. If it is found, its contents override <a href="/resources/docs/0-10/application-iteration-server/reference/#section-2.2">the defaults</a>. You may further override this configuration at run time by providing an alternative configuration file, or override an individual config key in a JVM system property.
+        </p>
+        <p>
+            Refer to the <a href="/resources/docs/0-10/application-iteration-server/reference/#section-2">Variant CVM Server Reference</a> for further information.
+        </p>
     <a class="header-offset" name="section-2.3"></a>
     <h2><span class="underlined">2.3<span class="indent"></span>Integration With the Host Application</span></h2>
-    A host application communicates with Variant server via a native client library, supplied by Variant and suitable for the application's language. Variant release 0.10 ships with a fully functional <a href="/resources/docs/0-10/clients/variant-java-client/">Java client</a> and a partial <a href="/resources/docs/0-10/clients/variant-javascript-client/">JavaScript client</a>, suitable for deployment to Web browsers.
-    
+
+        <p>
+            A host application communicates with Variant server via a native client library, supplied by Variant and suitable for the application's language. Variant release 0.10 ships with a fully functional <a href="/resources/docs/0-10/clients/variant-java-client/">Java client</a> and a partial <a href="/resources/docs/0-10/clients/variant-javascript-client/">JavaScript client</a>, suitable for deployment to Web browsers.
+        </p>
     <a class="header-offset" name="section-2.3.1"></a>
     <h3>2.3.1<span class="indent"></span>Variant Java Client</h3>
-    Variant Java client is consumable by any host application running on a Java Virtual Machine (JVM) release 8 or later. It makes no assumptions about host application's other technology details, which makes it universally applicable to any interactive JVM host application, e.g. an HTTP server or an IVR call center. This flexibility, inevitably, comes at the expense of some runtime environment dependencies, which had to be abstracted out and surfaced in the client's API, such as a mechanism to track Variant session ID. These dependencies have to be provided at runtime.
-    
-    Most JVM Web applications are written on top of a Web framework, like Java Servlets or Play!. Such applications should take advantage of the available <a href="https://getvariant2.wpengine.com/resources/docs/0-10/clients/variant-java-client/#section-5.1">Servlet adapter for Variant Java client</a> or <a href="https://getvariant2.wpengine.com/resources/docs/0-10/clients/variant-java-client/#section-5.2">Play! adapter for Variant Java client</a>. (Get in touch if you want to contribute a different adapter.) These adapters wrap Variant Java client API with a functionally equivalent API, which re-writes environment-dependent method signatures in terms of particular framework classes, such as <code>javax.servlet.http.HttpServletRequest</code> and <code>play.mvc.Http.Request</code> and provides framework-specific implementations of all environment-dependent objects.
-    
-    Refer to the Variant <a href="/resources/docs/0-10/clients/variant-java-client/">Java Client User Guide</a> for further information.
-    
+
+        <p>
+            Variant Java client is consumable by any host application running on a Java Virtual Machine (JVM) release 8 or later. It makes no assumptions about host application's other technology details, which makes it universally applicable to any interactive JVM host application, e.g. an HTTP server or an IVR call center. This flexibility, inevitably, comes at the expense of some runtime environment dependencies, which had to be abstracted out and surfaced in the client's API, such as a mechanism to track Variant session ID. These dependencies have to be provided at runtime.
+        </p>
+        <p>
+            Most JVM Web applications are written on top of a Web framework, like Java Servlets or Play!. Such applications should take advantage of the available <a href="https://getvariant2.wpengine.com/resources/docs/0-10/clients/variant-java-client/#section-5.1">Servlet adapter for Variant Java client</a> or <a href="https://getvariant2.wpengine.com/resources/docs/0-10/clients/variant-java-client/#section-5.2">Play! adapter for Variant Java client</a>. (Get in touch if you want to contribute a different adapter.) These adapters wrap Variant Java client API with a functionally equivalent API, which re-writes environment-dependent method signatures in terms of particular framework classes, such as <code>javax.servlet.http.HttpServletRequest</code> and <code>play.mvc.Http.Request</code> and provides framework-specific implementations of all environment-dependent objects.
+        </p>
+        <p>
+            Refer to the Variant <a href="/resources/docs/0-10/clients/variant-java-client/">Java Client User Guide</a> for further information.
+        </p>
     <a class="header-offset" name="section-2.3.2"></a>
     <h3>2.3.2<span class="indent"></span>Variant JavaScript Client</h3>
-    Variant.js supports triggering of trace events from a Web browser environment. For more information, refer to the <a href="/resources/docs/0-10/clients/variant-javascript-client/">Variant JavaScript Client User Guide</a>.
-    
+        <p>
+            Variant.js supports triggering of trace events from a Web browser environment. For more information, refer to the <a href="/resources/docs/0-10/clients/variant-javascript-client/">Variant JavaScript Client User Guide</a>.
+        </p>
     <a class="header-offset" name="section-3"></a>
     <h1><span class="underlined">3<span class="indent"></span>Code Variation Model (CVM)</span></h1>
     <a class="header-offset" name="section-3.1"></a>
     <h2><span class="underlined">3.1<span class="indent"></span>Interactive Application as a Finate State Machine</span></h2>
-    The only assumption Variant makes about the host application is that it is <em>interactive</em>, i.e. responds to real time user input. Its control flow cycles between two states, as illustrated in Figure 2 below: the <em>processing</em> state, where the application reads, processes and responds to user’s input, and the <em>interface</em> state, where the application waits for it.
-    
+
+        <p>
+            The only assumption Variant makes about the host application is that it is <em>interactive</em>, i.e. responds to real time user input. Its control flow cycles between two states, as illustrated in Figure 2 below: the <em>processing</em> state, where the application reads, processes and responds to user’s input, and the <em>interface</em> state, where the application waits for it.
+        </p>
+
     <a class="header-offset" name="fig-2"></a>
     <img class="aligncenter size-medium wp-image-4094" src="http://getvariant2.wpengine.com/wp-content/uploads/Figure2-300x300.gif" alt="" width="300" height="300">
     <p class="fig-footer">Figure 2. An interactive application is a two-state state machine.</p>
-    Irrespective of the user interface mechanism, the host application pauses in an interface state while waiting for user’s response. Interface states render some response from the application and provide the means for the user to respond to that response. Depending on the type of the host application, an interface state may be manifested as a computer desktop window (desktop application, e.g. MFC), an HTML page (Web application), an activity (Android mobile app), a phone menu (an IVR application), an XML document (RESTful API), etc. These details are not relevant to the CVM.
-    
-    A user experience then can be thought of as a traversal of a set of interface states, e.g. transitions from one Web page or one telephone menu to the next. The order of traversal is not important to the CVM and is left up to the host application.
-    
+
+        <p>
+            Irrespective of the user interface mechanism, the host application pauses in an interface state while waiting for user’s response. Interface states render some response from the application and provide the means for the user to respond to that response. Depending on the type of the host application, an interface state may be manifested as a computer desktop window (desktop application, e.g. MFC), an HTML page (Web application), an activity (Android mobile app), a phone menu (an IVR application), an XML document (RESTful API), etc. These details are not relevant to the CVM.
+        </p>
+        <p>
+            A user experience then can be thought of as a traversal of a set of interface states, e.g. transitions from one Web page or one telephone menu to the next. The order of traversal is not important to the CVM and is left up to the host application.
+        </p>
+
     <a class="header-offset" name="section-3.2"></a>
     <h2>3.2<span class="indent"></span>Code Variations</h2>
-    Suppose now that the some interface state(s) exist in more than one variation: the <em>base</em> state and one or more <em>state variants</em>, which the host application may choose from, in place of the base state. The <em>control user experience</em> then is one that traverses the base states, while a <em>variant user experience</em> is one that traverses variant states.
-    
-    The control experience and one or more related variant experiences form an <em>code variation</em>. A feature toggle or an online experiment are both examples of code variations: they comprise the control experience (the current code path) and one or more variant experiences (new code paths), which will co-exist for a time.
-    
-    Whenever the host application is in a processing state, it must decide what next interface state to present to the user, Figure 3 below:
-    
+
+        <p>
+            Suppose now that the some interface state(s) exist in more than one variation: the <em>base</em> state and one or more <em>state variants</em>, which the host application may choose from, in place of the base state. The <em>control user experience</em> then is one that traverses the base states, while a <em>variant user experience</em> is one that traverses variant states.
+        </p>
+        <p>
+            The control experience and one or more related variant experiences form an <em>code variation</em>. A feature toggle or an online experiment are both examples of code variations: they comprise the control experience (the current code path) and one or more variant experiences (new code paths), which will co-exist for a time.
+        </p>
+        <p>
+            Whenever the host application is in a processing state, it must decide what next interface state to present to the user, Figure 3 below:
+        </p>
+
     <a class="header-offset" name="figure-3"></a>
-    
     <img class="aligncenter size-full wp-image-3987" src="http://getvariant2.wpengine.com/wp-content/uploads/Figure3.png" alt="Variant State Request" width="500" height="500">
     <p class="fig-footer">Figure 3. Processing state of the host application without code variation (A); and with code variation (B).</p>
-    In the regular, uninstrumented case (A), the application simply figures out the next state based on the user's input, carries out requisite computations, renders the state to the user, and pauses. However, if the next state is instrumented by one or more code variations (B), the host application has a set of additional state variants it can choose from. It is exactly this task of figuring out the particular state variant that the host application delegates to Variant server, just like it delegates the task of storing data on disk to a database server.
-    
-    The step of the processing state where the host application turns to Variant for targeting, followed by the step where the host application carries out the computations needed for rendering of the targeted state variant is called a <em>state request</em>. A Variant session is, in the nutshell, a succession of state requests plus the common state, preserved between the requests.
-    
+
+        <p>
+            In the regular, uninstrumented case (A), the application simply figures out the next state based on the user's input, carries out requisite computations, renders the state to the user, and pauses. However, if the next state is instrumented by one or more code variations (B), the host application has a set of additional state variants it can choose from. It is exactly this task of figuring out the particular state variant that the host application delegates to Variant server, just like it delegates the task of storing data on disk to a database server.
+        </p>
+        <p>
+            The step of the processing state where the host application turns to Variant for targeting, followed by the step where the host application carries out the computations needed for rendering of the targeted state variant is called a <em>state request</em>. A Variant session is, in the nutshell, a succession of state requests plus the common state, preserved between the requests.
+        </p>
     <a class="header-offset" name="section-3.3"></a>
     <h2>3.3<span class="indent"></span>CVM: a Domain Model for Code Variations</h2>
-    Code Variation Model (CVM) is a domain model for code variations. It offers a formal framework for defining code variations and for reasoning about them. Its key practical benefit is that it provides a way to externalize the metadata for a set of related code variations in a human-readable documents called variation schemata. Schemata are managed centrally and externally of the host application(s) by Variant server.
-    
-    This, in turn, enables these two important benefits:
-    <ul>
-     	<li><strong>Separation of instrumentation from implementation</strong>.
-    Variation schemata enable developers to define variations as abstract ideas about the behavior of the host application, leaving the implementation of that behavior out and up to the application developer. The application developer uses familiar tools to implement new application behavior, unconcerned with how it will be instrumented as code variations. Variant server, on the other hand, handles the complexity of managing code variations, as defined in variation schemata, hiding enormous amounts of complexity from the application developer.</li>
-     	<li><strong>Separation of lifecycles</strong>.
-    Externalization of variation metadata out of the host application and onto Variant server leads to a very low compute overhead on the host application. All the actual overhead associated with instrumentation of code variations, such as computations, persistence of targeting and qualification information, and dealing with trace event back-pressure is handled by Variant server.</li>
-    </ul>
+
+        <p>
+            Code Variation Model (CVM) is a domain model for code variations. It offers a formal framework for defining code variations and for reasoning about them. Its key practical benefit is that it provides a way to externalize the metadata for a set of related code variations in a human-readable documents called variation schemata. Schemata are managed centrally and externally of the host application(s) by Variant server.
+        </p>
+        <p>
+           This, in turn, enables these two important benefits:
+            <ul>
+                <li><strong>Separation of instrumentation from implementation</strong>.
+            Variation schemata enable developers to define variations as abstract ideas about the behavior of the host application, leaving the implementation of that behavior out and up to the application developer. The application developer uses familiar tools to implement new application behavior, unconcerned with how it will be instrumented as code variations. Variant server, on the other hand, handles the complexity of managing code variations, as defined in variation schemata, hiding enormous amounts of complexity from the application developer.</li>
+                <li><strong>Separation of lifecycles</strong>.
+            Externalization of variation metadata out of the host application and onto Variant server leads to a very low compute overhead on the host application. All the actual overhead associated with instrumentation of code variations, such as computations, persistence of targeting and qualification information, and dealing with trace event back-pressure is handled by Variant server.</li>
+            </ul>
+        </p>
     <a class="header-offset" name="section-3.4"></a>
     <h2><span class="underlined">3.4<span class="indent"></span>Variation Schemata</span></h2>
     <a class="header-offset" name="section-3.4.1"></a>
     <h3>3.4.1<span class="indent"></span>Metadata for Code Varations</h3>
-    Each variation schema is a human readable file containing complete definitions of all related code variations expressed with JSON-superset grammar. A single Variant server can manage any number of such schema files, located in the server's <code>/schemata</code> directory. This section introduces CVM's concepts by example. For a complete reference, refer to the <a href="/resources/docs/0-10/application-iteration-server/reference/#section-3">Variant CVM Server Reference</a>.
-    
-    The two top-level entities in CVM are <em>states</em> and <em>variations</em>. The states represent host application's <a href="#fig-2">interface states</a>. They are a rather opaque concept to CVM: all it needs to know about a state is its name and an optional set of state parameters. The state parameters are simple key/value pairs of strings, whose meaning is external to CVM and only meaningful to the host application.
-    
-    The variations, on the other hand, are complex structures entirely managed by CVM. At a minimum, a variation must have:
-    <ul>
-     	<li>Name</li>
-     	<li>Exactly one <em>control</em>  experience (typically mapped to the existing code path) and at least one <em>variant</em> experience(s), mapped to alternate code path(s).</li>
-     	<li>A list of <em>on-state</em> value objects, one per each state instrumented by this variation.</li>
-    </ul>
+
+        <p>
+            Each variation schema is a human readable file containing complete definitions of all related code variations expressed with JSON-superset grammar. A single Variant server can manage any number of such schema files, located in the server's <code>/schemata</code> directory. This section introduces CVM's concepts by example. For a complete reference, refer to the <a href="/resources/docs/0-10/application-iteration-server/reference/#section-3">Variant CVM Server Reference</a>.
+        </p>
+        <p>
+            The two top-level entities in CVM are <em>states</em> and <em>variations</em>. The states represent host application's <a href="#fig-2">interface states</a>. They are a rather opaque concept to CVM: all it needs to know about a state is its name and an optional set of state parameters. The state parameters are simple key/value pairs of strings, whose meaning is external to CVM and only meaningful to the host application.
+        </p>
+        <p>
+            The variations, on the other hand, are complex structures entirely managed by CVM. At a minimum, a variation must have:
+            <ul>
+                <li>Name</li>
+                <li>Exactly one <em>control</em>  experience (typically mapped to the existing code path) and at least one <em>variant</em> experience(s), mapped to alternate code path(s).</li>
+                <li>A list of <em>on-state</em> value objects, one per each state instrumented by this variation.</li>
+            </ul>
+        </p>
     <a class="header-offset" name="section-3.4.2"></a>
     <h3>3.4.2<span class="indent"></span>Minimal Valid Variation Schema</h3>
-    A minimal valid variation schema consists of a single state, instrumented by a single variation with one variant experience, like the one in Listing 1 below, where we model a feature rollout that adds Recaptcha to the existing password reset page.
-    
+
+        <p>
+            A minimal valid variation schema consists of a single state, instrumented by a single variation with one variant experience, like the one in Listing 1 below, where we model a feature rollout that adds Recaptcha to the existing password reset page.
+        </p>
+
     <a class="header-offset" name="listing-1"></a>
     <pre><code class="json">
     // A very simple variation schema with a single state,
@@ -460,16 +497,21 @@
     }
     </code></pre>
     <p class="fig-footer">Listing 1. A minimal variation schema with one state and one variation.</p>
-    The <code>meta</code> section contains the schema's name by which it is known to the connecting clients. The <code>states</code> clause contains the sole state definition, representing the password reset page on which the new feature is expressed. The <code>variations</code> clause contains the sole variation <code>RecaptchaOnPasswordReset</code> with two experiences, <code>noRecaptcha</code> and <code>withRecaptcha</code>.
-    
+
+        <p>
+            The <code>meta</code> section contains the schema's name by which it is known to the connecting clients. The <code>states</code> clause contains the sole state definition, representing the password reset page on which the new feature is expressed. The <code>variations</code> clause contains the sole variation <code>RecaptchaOnPasswordReset</code> with two experiences, <code>noRecaptcha</code> and <code>withRecaptcha</code>.
+        </p>
     <a class="header-offset" name="section-3.4.3"></a>
     <h3>3.4.3<span class="indent"></span>Minimal Practical Variation Schema</h3>
-    In the next example, borrowed varbatim from the <a href="https://github.com/getvariant/variant-java-demo" target="_blank" rel="noopener">Variant Demo Application <i class="fa fa-external-link"></i></a>, we introduce a number of important new concepts:
-    <ul>
-     	<li>Concurrent variations.</li>
-     	<li>Variations spanning multiple states.</li>
-     	<li>Lifecycle hooks.</li>
-    </ul>
+
+        <p>
+            In the next example, borrowed varbatim from the <a href="https://github.com/getvariant/variant-java-demo" target="_blank" rel="noopener">Variant Demo Application <i class="fa fa-external-link"></i></a>, we introduce a number of important new concepts:
+            <ul>
+                <li>Concurrent variations.</li>
+                <li>Variations spanning multiple states.</li>
+                <li>Lifecycle hooks.</li>
+            </ul>
+        </p>
     <a class="header-offset" name="listing-2"></a>
     <pre><code class="json">
     /*
@@ -544,26 +586,37 @@
     }
     </code></pre>
     <p class="fig-footer">Listing 2. The variation schema of the <a href="https://github.com/getvariant/variant-java-demo" target="_blank" rel="noopener">Variant Demo Application <i class="fa fa-external-link"></i></a>.</p>
-    This schema contains two variations: 1) the feature flag <code>VetsHourlyRateFeature</code> exposes an early release of a the new feature on the <code>vets</code> page; and 2) the experiment <code>ScheduleVisitTest</code> on pages <code>vets</code> and <code>newVisit</code>. The new feature adds the hourly rate column to the vets table, and the experiment verifies the hypothesized lift in new appointment bookings due to the new <code>Schedule vist</code> link to the <code>newVisit</code> page also on the vets table.
-    
-    The <code>ScheduleVisitTest</code> experiment has a lifecycle hook disqualifying black-listed customers from this test. Variant server posts this hook whenever it must determine if a new user session qualifies for this experiment. Lifecycle hooks are managed via the server-side Extension API. For more information, refer to <a href="#section-5.1">Section 5.1</a>.
-    
-    The fact that both variations in the <code>petclinic</code> schema are instrumented on the <code>vets</code> page makes them <em>concurrent</em>. By default, Variant assumes concurrent variations to be <em>disjoint</em>, which is to say that <strong>only one of them can be in a non-control variant</strong>. This convenient default shields application developers, working on new features, from needing to know what other developers are doing. If two independent features happen to overlap, Variant server will ensure that a user session is never targeted for both of them.
-    
-    However, this default behavior can be overridden. If the two developers join forces and provide the code path, which implements both features simmultaneously, then they can direct Variant server to treat these two code variations as <em>conjointly</em> concurrent. This is accomplished by providing the <code>conjointVariationRefs</code> schema property, e.g. like in the schema in <a href="#listing-2">Listing 2</a> above. Concurrent variations are considered in detail in <a href="#section-3.6">Section 3.6</a>.
-    
+
+        <p>
+            This schema contains two variations: 1) the feature flag <code>VetsHourlyRateFeature</code> exposes an early release of a the new feature on the <code>vets</code> page; and 2) the experiment <code>ScheduleVisitTest</code> on pages <code>vets</code> and <code>newVisit</code>. The new feature adds the hourly rate column to the vets table, and the experiment verifies the hypothesized lift in new appointment bookings due to the new <code>Schedule vist</code> link to the <code>newVisit</code> page also on the vets table.
+        </p>
+        <p>
+            The <code>ScheduleVisitTest</code> experiment has a lifecycle hook disqualifying black-listed customers from this test. Variant server posts this hook whenever it must determine if a new user session qualifies for this experiment. Lifecycle hooks are managed via the server-side Extension API. For more information, refer to <a href="#section-5.1">Section 5.1</a>.
+        </p>
+        <p>
+            The fact that both variations in the <code>petclinic</code> schema are instrumented on the <code>vets</code> page makes them <em>concurrent</em>. By default, Variant assumes concurrent variations to be <em>disjoint</em>, which is to say that <strong>only one of them can be in a non-control variant</strong>. This convenient default shields application developers, working on new features, from needing to know what other developers are doing. If two independent features happen to overlap, Variant server will ensure that a user session is never targeted for both of them.
+        </p>
+        <p>
+            However, this default behavior can be overridden. If the two developers join forces and provide the code path, which implements both features simmultaneously, then they can direct Variant server to treat these two code variations as <em>conjointly</em> concurrent. This is accomplished by providing the <code>conjointVariationRefs</code> schema property, e.g. like in the schema in <a href="#listing-2">Listing 2</a> above. Concurrent variations are considered in detail in <a href="#section-3.6">Section 3.6</a>.
+        </p>
+
     <a class="header-offset" name="section-3.5"></a>
     <h2><span class="underlined">3.5<span class="indent"></span>State Variants</span></h2>
-    Whenever a state is instrumented by a variation, this instrumentation constitutes an obligation, on the part of the host application, to provide an implementation of any experience defined by the variation. In practical terms this means that the host application must provide a code path for each <em>state variant</em> defined by the schema either explicitly or implicitly.
-    
-    By default, Variant can infer state variants from the <code>onStates</code> properties. For example, in <a href="#listing-2">Listing 2</a> above, the <code>onStates</code> properties define the many-to-many mapping between variations and states instrumented by them. This mapping is sufficient for Variant server to infer all state variants for each state. However, there are cases when the application developer wants to override one or more of these default state variants, as discussed in the following sections.
-    
+        <p>
+            Whenever a state is instrumented by a variation, this instrumentation constitutes an obligation, on the part of the host application, to provide an implementation of any experience defined by the variation. In practical terms this means that the host application must provide a code path for each <em>state variant</em> defined by the schema either explicitly or implicitly.
+        </p>
+        <p>
+            By default, Variant can infer state variants from the <code>onStates</code> properties. For example, in <a href="#listing-2">Listing 2</a> above, the <code>onStates</code> properties define the many-to-many mapping between variations and states instrumented by them. This mapping is sufficient for Variant server to infer all state variants for each state. However, there are cases when the application developer wants to override one or more of these default state variants, as discussed in the following sections.
+        <p>
     <a class="header-offset" name="section-3.6"></a>
     <h2><span class="underlined">3.6<span class="indent"></span>State Parameters</span></h2>
-    Code Variation Model makes no assumptions about technology or semantics of the host application. It is equally applicable to Web, native mobile, IVR or any other interactive applications. To help applications enrich variation schema with application-specific state, CVM provides <em>state parameters</em>, — simple key/value pairs of strings, whose meaning is entirely up to the host application.
-    
-    State parameters can be specified either at the state or at the state variant level, as illustrated in Listing 3 below.
-    
+
+        <p>
+            Code Variation Model makes no assumptions about technology or semantics of the host application. It is equally applicable to Web, native mobile, IVR or any other interactive applications. To help applications enrich variation schema with application-specific state, CVM provides <em>state parameters</em>, — simple key/value pairs of strings, whose meaning is entirely up to the host application.
+        </p>
+        <p>
+            State parameters can be specified either at the state or at the state variant level, as illustrated in Listing 3 below.
+        </p>
     <a class="header-offset" name="listing-3"></a>
     <pre><code class="json">
     {
@@ -622,68 +675,102 @@
     }
     </code></pre>
     <p class="fig-footer">Listing 3. State parameters at the state and state variant levels.</p>
-    State parameters specified at the state level, provide the base values, which have the global scope. At runtime, these parameters are available to the host application within the scope of each state variant deriving from this state, across all variations.
-    
-    State parameters specified at the state variant level have the scope of that state variant only and within that scope override the likely-named base parameter values. In other words, at runtime, these client calls will return the following results:
+
+        <p>
+            State parameters specified at the state level, provide the base values, which have the global scope. At runtime, these parameters are available to the host application within the scope of each state variant deriving from this state, across all variations.
+        </p>
+        <p>
+            State parameters specified at the state variant level have the scope of that state variant only and within that scope override the likely-named base parameter values. In other words, at runtime, these client calls will return the following results:
+        </p>
     <pre><code class="java">
     stateRequest.getResolvedStateParameters().get("key1");  // "value1"
     stateRequest.getResolvedStateParameters().get("key2");  // "value2 in state variant"
     stateRequest.getResolvedStateParameters().get("key3");  // "value3 in state variant"
     </code></pre>
-    This mechanism of state parameter overrides is a convenient way for the developer to introduce application state into the schema at both global and local scopes.
-    
+
+        <p>
+            This mechanism of state parameter overrides is a convenient way for the developer to introduce application state into the schema at both global and local scopes.
+        </p>
     <a class="header-offset" name="section-3.7"></a>
     <h2><span class="underlined">3.7<span class="indent"></span>Mixed Instrumentation</span></h2>
-    Typically, all experiences in a variation will instrument the same set of states. But there are use cases where this assumption does not hold. For example, you may want to split a busy page in two, or to consolidate two sparse pages into one, as illustrated in Figure 4 below.
-    
+
+        <p>
+            Typically, all experiences in a variation will instrument the same set of states. But there are use cases where this assumption does not hold. For example, you may want to split a busy page in two, or to consolidate two sparse pages into one, as illustrated in Figure 4 below.
+        </p>
+
     <a class="header-offset" name="fig-4"></a>
     <img class="aligncenter size-medium wp-image-3990" src="http://getvariant2.wpengine.com/wp-content/uploads/Figure4-300x300.png" alt="Variant Mixed Instrumentation" width="300" height="300">
     <p class="fig-footer">Figure 4. Mixed Instrumentation with a phantom state in the control experience (A) and in a variant experience (B).</p>
-    The type of instrumentation where a state is instrumented by some, but not all experiences in a variation is referred to as <em>mixed instrumentation</em>. Whenever a state variant is undefined in some experience, it is referred to as <em>phantom state variant</em> in that experience. A phantom state variant constitutes an obligation on the part of the host application not to enter this state if it is in the experience where this variant is phantom. For example, in the <a href="#fig-4">Figure 4.A</a> above, if a session targeted to the control experience attempts to enter state <code>S<sub>2</sub></code>, Variant will throw a runtime exception.
-    
-    The next section introduces an example of mixed instrumentation.
-    
+
+        <p>
+            The type of instrumentation where a state is instrumented by some, but not all experiences in a variation is referred to as <em>mixed instrumentation</em>. Whenever a state variant is undefined in some experience, it is referred to as <em>phantom state variant</em> in that experience. A phantom state variant constitutes an obligation on the part of the host application not to enter this state if it is in the experience where this variant is phantom. For example, in the <a href="#fig-4">Figure 4.A</a> above, if a session targeted to the control experience attempts to enter state <code>S<sub>2</sub></code>, Variant will throw a runtime exception.
+        </p>
+        <p>
+           The next section introduces an example of mixed instrumentation.
+        </p>
+
     <a class="header-offset" name="section-3.8"></a>
     <h2><span class="underlined">3.8<span class="indent"></span>Variation Concurrency</span></h2>
     <a class="header-offset" name="section-3.8.1"></a>
     <h3>3.8.1<span class="indent"></span>Motivation</h3>
-    If two variations instrument no states in common, they are referred to as <em>serial variations</em>, meaning that a user session can only traverse them one at a time. Conversely, whenever two variations instrument one or more states in common, they are referred to as <em>concurrent variations</em> because a user session may be traversing them concurrently. Variant Code Variation Model offers full support for variation concurrency; any possible interleaving of two concurrent variations can be defined in the variation schema.
-    
-    In Figure 5 below, the Blue and the Green variations are serial, but the Red variation is concurrent with both Blue and Green.
-    
+
+        <p>
+            If two variations instrument no states in common, they are referred to as <em>serial variations</em>, meaning that a user session can only traverse them one at a time. Conversely, whenever two variations instrument one or more states in common, they are referred to as <em>concurrent variations</em> because a user session may be traversing them concurrently. Variant Code Variation Model offers full support for variation concurrency; any possible interleaving of two concurrent variations can be defined in the variation schema.
+        </p>
+
+        <p>
+            In Figure 5 below, the Blue and the Green variations are serial, but the Red variation is concurrent with both Blue and Green.
+        </p>
+
     <a class="header-offset" name="fig-5"></a>
     <img class="aligncenter size-full wp-image-1124" src="http://getvariant2.wpengine.com/wp-content/uploads/2016/04/Fig3-ConcurrentExperiments.png" alt="Concurrent Experiments" width="740" height="300">
     <p class="fig-footer">Figure 5. Concurrent experiments. Blue and Green variations are serial, while Red is concurrent with both Blue and Green. The grey boxes denote control states, while the colored ones denote state variants.</p>
-    When a user session targets a state that is instrumented by two or more variations, there is a <em>state variant space</em> of possible experience permutations from which a state variant can be chosen. For example, in Figure 5 above, state <code>S<sub>2</sub></code> is instrumented by Blue and Red variations. Blue only has one variant experience and Red has two variant experiences, so the complete variant space of the state <code>S<sub>2</sub></code> has 6 cells:
-    
+
+        <p>
+            When a user session targets a state that is instrumented by two or more variations, there is a <em>state variant space</em> of possible experience permutations from which a state variant can be chosen. For example, in Figure 5 above, state <code>S<sub>2</sub></code> is instrumented by Blue and Red variations. Blue only has one variant experience and Red has two variant experiences, so the complete variant space of the state <code>S<sub>2</sub></code> has 6 cells:
+        </p>
+
     <a class="header-offset" name="fig-6"></a>
     <img class="aligncenter size-full wp-image-1129" src="http://getvariant2.wpengine.com/wp-content/uploads/2016/04/Fig4-VariantSpace.png" alt="Variant Space" width="385" height="288">
     <p class="fig-footer">Figure 6. Variant space of the state <code>S<sub>2</sub></code> has one control, three proper, and two hybrid state variants.</p>
-    The relationship of concurrence between two variations V<sub>1</sub> and V<sub>2</sub> has the following properties:
-    <ul>
-     	<li><strong>Symmetric</strong>: If variation V<sub>1</sub> is concurrent with variation V<sub>2</sub>, then V<sub>2</sub> is concurrent with V<sub>1</sub>.</li>
-     	<li><strong>Not Reflexive</strong>: a variation cannot be concurrent with itself.</li>
-     	<li><strong>Not Transitive</strong>: If V<sub>1</sub> is concurrent with V<sub>2</sub> and V<sub>2</sub> is concurrent with V<sub>3</sub>, then V<sub>1</sub> and V<sub>3</sub> need not be concurrent.</li>
-    </ul>
-    Variant server supports two runtime strategies for managing concurrent variations: a simplified, pseudo-serial strategy, called <em>disjoint concurrency</em> and the more powerful <em>conjoint concurrency</em>, as discussed in the next two sections.
-    
+
+        <p>
+            The relationship of concurrence between two variations V<sub>1</sub> and V<sub>2</sub> has the following properties:
+        <ul>
+            <li><strong>Symmetric</strong>: If variation V<sub>1</sub> is concurrent with variation V<sub>2</sub>, then V<sub>2</sub> is concurrent with V<sub>1</sub>.</li>
+            <li><strong>Not Reflexive</strong>: a variation cannot be concurrent with itself.</li>
+            <li><strong>Not Transitive</strong>: If V<sub>1</sub> is concurrent with V<sub>2</sub> and V<sub>2</sub> is concurrent with V<sub>3</sub>, then V<sub>1</sub> and V<sub>3</sub> need not be concurrent.</li>
+        </ul>
+        </p>
+        <p>
+            Variant server supports two runtime strategies for managing concurrent variations: a simplified, pseudo-serial strategy, called <em>disjoint concurrency</em> and the more powerful <em>conjoint concurrency</em>, as discussed in the next two sections.
+        </p>
+
     <a class="header-offset" name="section-3.8.2"></a>
     <h3>3.8.2<span class="indent"></span>Disjoint Concurrency</h3>
-    First, let’s consider a <em>pseudo-serial</em> execution, when the two variations are traversed in isolation. To support Blue variation by itself, application developer needs to implement the <code>S<sub>2blue</sub></code> experience. Similarly, to support Red variation in isolation, (probably some other) developer needs to implement its two variant experiences <code>S<sub>21red</sub></code> and <code>S<sub>22red</sub></code>. This is a perfectly acceptable scenario, so long as no user session ends up targeted to variant experiences in both variations. If that were to happen, the host application would have no code path, implementing both <code>S<sub>2blue</sub></code> and <code>S<sub>21red</sub></code> state variants at once.
-    
-    This type of constrained concurrency is referred to as <em>disjoint concurrency</em> and is the default behavior. Unless instructed otherwise (as described in the next section), Variant will not target a user session to two variant experiences in two concurrent variations. This default makes sense: application developers should not have to communicate with each other simply because they work on overlapping features.
-    
-    The price of this convenience is the potential starvation of downstream variations of user traffic, which is frequently acceptable.
-    
+
+        <p>
+            First, let’s consider a <em>pseudo-serial</em> execution, when the two variations are traversed in isolation. To support Blue variation by itself, application developer needs to implement the <code>S<sub>2blue</sub></code> experience. Similarly, to support Red variation in isolation, (probably some other) developer needs to implement its two variant experiences <code>S<sub>21red</sub></code> and <code>S<sub>22red</sub></code>. This is a perfectly acceptable scenario, so long as no user session ends up targeted to variant experiences in both variations. If that were to happen, the host application would have no code path, implementing both <code>S<sub>2blue</sub></code> and <code>S<sub>21red</sub></code> state variants at once.
+        </p>
+        <p>
+            This type of constrained concurrency is referred to as <em>disjoint concurrency</em> and is the default behavior. Unless instructed otherwise (as described in the next section), Variant will not target a user session to two variant experiences in two concurrent variations. This default makes sense: application developers should not have to communicate with each other simply because they work on overlapping features.
+        </p>
+        <p>
+            The price of this convenience is the potential starvation of downstream variations of user traffic, which is frequently acceptable.
+        </p>
     <a class="header-offset" name="section-3.8.3"></a>
     <h3>3.8.3<span class="indent"></span>Conjoint Concurrency</h3>
-    The unconstrained concurrency mode, where a session's ability to participate in Red variation is not constrained by its participation in Blue variation, and vice versa, is referred to as <em>conjoint concurrency</em>. To instrument two conjointly concurrent variations, the application developer has to do the following:
-    <ul>
-     	<li>Implement all hybrid experiences, e.g. the two hybrid state variants shaded in two colors in <a href="#fig-6">Figure 6</a> above.</li>
-     	<li>Tell Variant to treat the two variations as conjoint by using the <code>conjointVariationRefs</code> schema property, as we did in the <code>petclinic</code> schema in <a href="#listing-2">Listing 2</a>.</li>
-    </ul>
-    Listing 4 below is the complete variation schema for the Blue, Red and Green variations from <a href="#fig-5">Figure 5</a> above. To illustrate both concurrency modes, Red and Blue variations as defined as conjoint and Green and Red variations as disjoint.
-    
+
+        <p>
+            The unconstrained concurrency mode, where a session's ability to participate in Red variation is not constrained by its participation in Blue variation, and vice versa, is referred to as <em>conjoint concurrency</em>. To instrument two conjointly concurrent variations, the application developer has to do the following:
+            <ul>
+                <li>Implement all hybrid experiences, e.g. the two hybrid state variants shaded in two colors in <a href="#fig-6">Figure 6</a> above.</li>
+                <li>Tell Variant to treat the two variations as conjoint by using the <code>conjointVariationRefs</code> schema property, as we did in the <code>petclinic</code> schema in <a href="#listing-2">Listing 2</a>.</li>
+            </ul>
+        </p>
+        <p>
+            Listing 4 below is the complete variation schema for the Blue, Red and Green variations from <a href="#fig-5">Figure 5</a> above. To illustrate both concurrency modes, Red and Blue variations as defined as conjoint and Green and Red variations as disjoint.
+        </p>
     <a class="header-offset" name="listing-4"></a>
     <pre><code class="json">
     {
@@ -737,44 +824,65 @@
     }
     </code></pre>
     <p class="fig-footer">Listing 4. The Tricolor variation schema of concurrent tests from <a href="#fig-5">Figure 5</a>.</p>
-    Note the explicit state variant for the Green variation's control experience on state <code>S<sub>4</sub></code>. It is needed in order to declare it as phantom to account for the fact that there is no control state variant, i.e. that a user session is not allowed to target for <code>S<sub>4</sub></code> if it has already been targeted to the control experience in Green variation.
-    
+
+        <p>
+        Note the explicit state variant for the Green variation's control experience on state <code>S<sub>4</sub></code>. It is needed in order to declare it as phantom to account for the fact that there is no control state variant, i.e. that a user session is not allowed to target for <code>S<sub>4</sub></code> if it has already been targeted to the control experience in Green variation.
+        </p>
+
     <a class="header-offset" name="section-4"></a>
     <h1><span class="underlined">4<span class="indent"></span>Variant Runtime</span></h1>
     <a class="header-offset" name="section-4.1"></a>
     <h2><span class="underlined">4.1<span class="indent"></span>The Lifecycle of a State Request</span></h2>
-    As already explained, Code Variation Model treats interactive applications as <a href="#section-3.1">finite state machines</a>. Each user session traverses some state graph, whose nodes are the interface states, where the host application pauses for user input. In real world, state nodes can be traditional HTML pages, Angular views, IVR menus, Android activities, etc. — the points in the host application where it pauses waiting for user input.
-    
-    Whenever host application is about to return to the user session a particular interface state, it must determine if this state exists in more than one variant (i.e. is instrumented by any code variations), and, if so, which of these variants to return. Both of these tasks are accomplished by the <a href="/javadoc/0.10/com/variant/client/Session.html#targetForState-com.variant.core.schema.State-" target="_blank" rel="noopener"><code>Session.targetForState(state)</code> <i class="fa fa-external-link"></i></a> method. It returns the <a href="/javadoc/0.10/com/variant/client/StateRequest.html" target="_blank" rel="noopener"><code>StateRequest</code> <i class="fa fa-external-link"></i></a> object which may be further examined for the list of live experiences in all variations instrumenting this state.
-    
-    Thus, a Variant session can be thought of as a succession of consecutive state requests, united into a single user experience by Variant session. At runtime, the session must be created first, before any state targeting may happen, so we consider it first in the next section, followed by a closer look at the state request.
-    
+
+        <p>
+            As already explained, Code Variation Model treats interactive applications as <a href="#section-3.1">finite state machines</a>. Each user session traverses some state graph, whose nodes are the interface states, where the host application pauses for user input. In real world, state nodes can be traditional HTML pages, Angular views, IVR menus, Android activities, etc. — the points in the host application where it pauses waiting for user input.
+        </p>
+        <p>
+            Whenever host application is about to return to the user session a particular interface state, it must determine if this state exists in more than one variant (i.e. is instrumented by any code variations), and, if so, which of these variants to return. Both of these tasks are accomplished by the <a href="/javadoc/0.10/com/variant/client/Session.html#targetForState-com.variant.core.schema.State-" target="_blank" rel="noopener"><code>Session.targetForState(state)</code> <i class="fa fa-external-link"></i></a> method. It returns the <a href="/javadoc/0.10/com/variant/client/StateRequest.html" target="_blank" rel="noopener"><code>StateRequest</code> <i class="fa fa-external-link"></i></a> object which may be further examined for the list of live experiences in all variations instrumenting this state.
+        </p>
+        <p>
+            Thus, a Variant session can be thought of as a succession of consecutive state requests, united into a single user experience by Variant session. At runtime, the session must be created first, before any state targeting may happen, so we consider it first in the next section, followed by a closer look at the state request.
+        </p>
+
     <a class="header-offset" name="section-4.1.1"></a>
     <h3>4.1.1<span class="indent"></span>Variant Session</h3>
-    In order to communicate with Variant server, host application must <a href="/resources/docs/0-10/clients/variant-java-client/#section-2.4">connect to it</a> and create a Variant session as follows:
+        <p>
+            In order to communicate with Variant server, host application must <a href="/resources/docs/0-10/clients/variant-java-client/#section-2.4">connect to it</a> and create a Variant session as follows:
+        </p>
     <pre><code class="java">
     // Arguments are environment-dependent
     Session variantSession = variantConnection.getOrCreateSession(...);
     </code></pre>
-    The arguments to the <a href="/javadoc/0.10/com/variant/client/Connection.html#getOrCreateSession-java.lang.Object...-" target="_blank" rel="noopener"><code>getOrCreateSession()</code> <i class="fa fa-external-link"></i></a> method are environment-dependent and are discussed in detail in the <a href="/resources/docs/0-10/clients/variant-java-client/#section-2.4">Java Client User Guide</a>.
-    
-    Variant sessions provide
-    <ul>
-     	<li>A way to identify a user across multiple state requests;</li>
-     	<li>Storage for the session state that must be preserved between state requests;</li>
-     	<li>Metadata isolation context.</li>
-    </ul>
-    Variant server acts as the centralized session repository, accessible to any Variant client by the session ID. All clients sharing a session are guaranteed a consistent view of the session state. Sessions are expired after a configurable period of inactivity.
-    
-    Variant hides any changes to variation schema from active sessions, which continue to see the variation metadata as it was at the time when the sessions were created. This isolation guarantee is critical in protecting user sessions from (potentially fatal) inconsistencies. For example, if a variation is taken offline, or one of its variant experiences is dropped, existing sessions, currently traversing this variation, would be thrown out of their experiences, if this change were visible.
-    
-    Note, that Variant sessions are completely separate of the host application's own native sessions. Variant sessions are configured independently and do not require that the host application even have any native notion of a session.
-    
+
+        <p>
+            The arguments to the <a href="/javadoc/0.10/com/variant/client/Connection.html#getOrCreateSession-java.lang.Object...-" target="_blank" rel="noopener"><code>getOrCreateSession()</code> <i class="fa fa-external-link"></i></a> method are environment-dependent and are discussed in detail in the <a href="/resources/docs/0-10/clients/variant-java-client/#section-2.4">Java Client User Guide</a>.
+        </p>
+        <p>
+            Variant sessions provide
+            <ul>
+                <li>A way to identify a user across multiple state requests;</li>
+                <li>Storage for the session state that must be preserved between state requests;</li>
+                <li>Metadata isolation context.</li>
+            </ul>
+        </p>
+        <p>
+            Variant server acts as the centralized session repository, accessible to any Variant client by the session ID. All clients sharing a session are guaranteed a consistent view of the session state. Sessions are expired after a configurable period of inactivity.
+        </p>
+        <p>
+            Variant hides any changes to variation schema from active sessions, which continue to see the variation metadata as it was at the time when the sessions were created. This isolation guarantee is critical in protecting user sessions from (potentially fatal) inconsistencies. For example, if a variation is taken offline, or one of its variant experiences is dropped, existing sessions, currently traversing this variation, would be thrown out of their experiences, if this change were visible.
+        </p>
+        <p>
+            Note, that Variant sessions are completely separate of the host application's own native sessions. Variant sessions are configured independently and do not require that the host application even have any native notion of a session.
+        </p>
     <a class="header-offset" name="section-4.1.1"></a>
     <h3>4.1.2<span class="indent"></span>State Request</h3>
-    Whenever the host application is about to serve a user session a particular interface state, potentially instrumented by one or more code variation, it consults Variant server for the targeting information by calling the <a href="/javadoc/0.10/com/variant/client/Session.html#targetForState-com.variant.core.schema.State-" target="_blank" rel="noopener"><code>Session.targetForState(state)</code> <i class="fa fa-external-link"></i></a> method, which returns the <a href="/javadoc/0.10/com/variant/client/StateRequest.html" target="_blank" rel="noopener"><code>StateRequest</code> <i class="fa fa-external-link"></i></a> object.
-    
-    Continuing with our <a href="#listing-4">Tricolor schema from the Listing 4</a>, this is how a Variant session gets targeted for the state <code>S2</code>:
+
+        <p>
+            Whenever the host application is about to serve a user session a particular interface state, potentially instrumented by one or more code variation, it consults Variant server for the targeting information by calling the <a href="/javadoc/0.10/com/variant/client/Session.html#targetForState-com.variant.core.schema.State-" target="_blank" rel="noopener"><code>Session.targetForState(state)</code> <i class="fa fa-external-link"></i></a> method, which returns the <a href="/javadoc/0.10/com/variant/client/StateRequest.html" target="_blank" rel="noopener"><code>StateRequest</code> <i class="fa fa-external-link"></i></a> object.
+        </p>
+        <p>
+            Continuing with our <a href="#listing-4">Tricolor schema from the Listing 4</a>, this is how a Variant session gets targeted for the state <code>S2</code>:
+        </p>
     <pre><code class="java">
     // Obtian the state from the variation schema.
     State s2 = variantSession.getSchema().getState("S2").orElseThrow(
@@ -783,11 +891,16 @@
     // Taraget current session for the state.
     StateRequest variantStateRequest = variantSession.targetForState(s2);
     </code></pre>
-    Much of the complexity, hidden by Variant server from the application developer, is inside the <code>targetForState(state)</code> method. Indeed, for each variation, instrumented on the given state, Variant server must perform the following steps:
-    
+
+        <p>
+            Much of the complexity, hidden by Variant server from the application developer, is inside the <code>targetForState(state)</code> method. Indeed, for each variation, instrumented on the given state, Variant server must perform the following steps:
+        </p>
     <img class="aligncenter size-full wp-image-4096" src="http://getvariant2.wpengine.com/wp-content/uploads/TargetingFlow.png" alt="" width="400" height="650">
     <p class="fig-footer">Figure 7. Qualification and targeting of a session.</p>
-    The <code>StateRequest</code> object has methods that the host application can call to figure out to what experience in a particular variation it is targeted. For example, to find out to what experience in Red variation the session has been targeted:
+
+        <p>
+            The <code>StateRequest</code> object has methods that the host application can call to figure out to what experience in a particular variation it is targeted. For example, to find out to what experience in Red variation the session has been targeted:
+        </p>
     <pre><code class="java">
     // Obtain the variation from the variation schema.
     Variation redVar = variantSession.getSchema().getVariation("Red").orElseThrow(
@@ -809,31 +922,42 @@
       throw new RuntimeException("Don't know what to do for experience " + redExperience);
     }
     </code></pre>
+
     <a class="header-offset" name="section-4.2"></a>
     <h2><span class="underlined">4.2<span class="indent"></span>Session Qualification</span></h2>
     <a class="header-offset" name="section-4.2.1"></a>
     <h3>4.2.1<span class="indent"></span>How Variant Qualifies Sessions</h3>
-    Qualification is a distinct idea from targeting. Suppose, for example, that a newspaper wants to test promotional rates, offered on its website. This promotion cannot be combined with another promotion, so the traffic coming from other promotional offers must be disqualified from the experiment.
-    
-    Whenever Variant determines that the calling session's qualification for a particular vairation must be (re)established, it raises the <a href="/javadoc/0.10/com/variant/server/api/lifecycle/VariationQualificationLifecycleEvent.html" target="_blank" rel="noopener"><code>VariationQualificationLifecycleEvent</code> <i class="fa fa-external-link"></i></a> lifecycle event, which posts eligible lifecycle hooks. If none were defined or none returned a usable result, the default built-in qualification hook is posted, which unconditionally qualifies all session for all variations. For more information on lifecycle hooks, refer to <a href="#section-5.1">Section 5.1</a>.
-    
-    If the session is qualified for a variation, Variant proceeds to the targeting step, discussed in the next section. If the session is disqualified, it is <em>assigned</em> to the control experience, but not <em>targeted</em> for it. The differene between an assignment to the control experience outside of a variation and beting targeted to the control experience in variation is that
-    <ul>
-     	<li>The set, returned by the <a href="/javadoc/0.10/com/variant/client/StateRequest.html#getLiveExperiences--" target="_blank" rel="noopener"><code>StateRequest.getLiveExperiences()</code> <i class="fa fa-external-link"></i></a> method, doesn't contain an entry for the disqualified variation;</li>
-     	<li>No <a href="#section-4.5">trace events</a> are triggered on behalf of disqualified variations, neither explicit nor implicit.</li>
-    </ul>
+
+        <p>
+            Qualification is a distinct idea from targeting. Suppose, for example, that a newspaper wants to test promotional rates, offered on its website. This promotion cannot be combined with another promotion, so the traffic coming from other promotional offers must be disqualified from the experiment.
+        </p>
+        <p>
+            Whenever Variant determines that the calling session's qualification for a particular vairation must be (re)established, it raises the <a href="/javadoc/0.10/com/variant/server/api/lifecycle/VariationQualificationLifecycleEvent.html" target="_blank" rel="noopener"><code>VariationQualificationLifecycleEvent</code> <i class="fa fa-external-link"></i></a> lifecycle event, which posts eligible lifecycle hooks. If none were defined or none returned a usable result, the default built-in qualification hook is posted, which unconditionally qualifies all session for all variations. For more information on lifecycle hooks, refer to <a href="#section-5.1">Section 5.1</a>.
+        </p>
+        <p>
+            If the session is qualified for a variation, Variant proceeds to the targeting step, discussed in the next section. If the session is disqualified, it is <em>assigned</em> to the control experience, but not <em>targeted</em> for it. The differene between an assignment to the control experience outside of a variation and beting targeted to the control experience in variation is that
+            <ul>
+                <li>The set, returned by the <a href="/javadoc/0.10/com/variant/client/StateRequest.html#getLiveExperiences--" target="_blank" rel="noopener"><code>StateRequest.getLiveExperiences()</code> <i class="fa fa-external-link"></i></a> method, doesn't contain an entry for the disqualified variation;</li>
+                <li>No <a href="#section-4.5">trace events</a> are triggered on behalf of disqualified variations, neither explicit nor implicit.</li>
+            </ul>
+        </p>
     <a class="header-offset" name="section-4.2.2"></a>
     <h3>4.2.2<span class="indent"></span>Qualification Longevity</h3>
-    Once a session has been (dis)qualified for a variation, the natural question is how long this qualification decision should remain in effect before it is reëvaluated. Variant supports three longevity scopes: <em>request</em>, <em>session</em> and <em>variation</em>, which correspond to these three qualification guarantees:
-    
-    <strong>Unstable qualification.</strong> Since each session is re-qualified for each state request, its qualification outcome may change midstream. While this may be desireble behavior in some cases, application developers must account for this possibility.
-    
-    <strong>Stable qualification.</strong> Each session is qualified only once for each code variation it traverses and this qualification outcome stayis in effect until the session expires. This is the default qualification longevity.
-    
-    <strong>Durable qualification.</strong> Once a recognized user is (dis)qualified for a particular variation, this qualification decision stays in effect this variation is removed from the schema.
-    
-    Qualification longevity is defined in the variation schema on the per-variation basis as follows:
-    
+        <p>
+            Once a session has been (dis)qualified for a variation, the natural question is how long this qualification decision should remain in effect before it is reëvaluated. Variant supports three longevity scopes: <em>request</em>, <em>session</em> and <em>variation</em>, which correspond to these three qualification guarantees:
+        </p>
+        <p>
+            <strong>Unstable qualification.</strong> Since each session is re-qualified for each state request, its qualification outcome may change midstream. While this may be desireble behavior in some cases, application developers must account for this possibility.
+        </p>
+        <p>
+            <strong>Stable qualification.</strong> Each session is qualified only once for each code variation it traverses and this qualification outcome stayis in effect until the session expires. This is the default qualification longevity.
+        </p>
+        <p>
+            <strong>Durable qualification.</strong> Once a recognized user is (dis)qualified for a particular variation, this qualification decision stays in effect this variation is removed from the schema.
+        </p>
+        <p>
+            Qualification longevity is defined in the variation schema on the per-variation basis as follows:
+        </p>
     <a class="header-offset" name="listing-5"></a>
     <pre><code class="json">
     {
@@ -853,7 +977,10 @@
     }
     </code></pre>
     <p class="fig-footer">Listing 5. The Tricolor variation schema with different levels of qualification longevity.</p>
-    Unstable and stable qualification is provided by Variant automatically: all you have to do is to define it in the schema. (If you don't define any, Variant will default to stable qualification.) But durable qualification, requires that host application identifies each session with a unique key, such as user ID, by which the user can be identified between sessions.
+
+        <p>
+            Unstable and stable qualification is provided by Variant automatically: all you have to do is to define it in the schema. (If you don't define any, Variant will default to stable qualification.) But durable qualification, requires that host application identifies each session with a unique key, such as user ID, by which the user can be identified between sessions.
+        <p>
     <pre><code class="java">
     // Get or create session.
     Session ssn = connection.getOrCreateSession(...).withIdentity(userId);
@@ -862,11 +989,16 @@
     <h2><span class="underlined">4.3<span class="indent"></span>Session Targeting</span></h2>
     <a class="header-offset" name="section-4.3.1"></a>
     <h3>4.3.1<span class="indent"></span>How Variant Targets Sessions</h3>
-    After a session has been qualified for a code variation, Variant must target it to some experience in that variation. Even in a serial case, when the requested state is only instrumented by one variation, the targeting algorighm is complex. As will be discussed in the next section, targeting decision is subject to the <a href="#section-4.2.2">same longevity rules as qualification</a>. Consequently, there may already be an existing targeting information. The server will make best attempt to honored it, though it may not awalys be possible.
-    
-    If this state is phantom in any of the experiences, these experiences must be excluded from the set of possible targets, unless there's already targeting decision to be honored, in which case, if the requested state is phantom in that experience, the session's attempt to target for this state is a user error. The complexity of the targeting algorithm grows dramatically for concurrent variations.
-    
-    Whenever, inside the <a href="/javadoc/0.10/com/variant/client/Session.html#targetForState-com.variant.core.schema.State-" target="_blank" rel="noopener"><code>targetForState(state)</code> <i class="fa fa-external-link"></i></a> method, Variant determines that the calling session must be targeted for a particular vairation, it raises the <a href="/javadoc/0.10/com/variant/server/api/lifecycle/VariationTargetingLifecycleEvent.html" target="_blank" rel="noopener"><code>VariationTargetingLifecycleEvent</code> <i class="fa fa-external-link"></i></a> lifecycle event, which posts eligible lifecycle hooks. If none were defined or none returned a usable result, the default built-in targeting hook is posted, which targets randomly, according to the weights provided in the schema, e.g
+
+        <p>
+        After a session has been qualified for a code variation, Variant must target it to some experience in that variation. Even in a serial case, when the requested state is only instrumented by one variation, the targeting algorighm is complex. As will be discussed in the next section, targeting decision is subject to the <a href="#section-4.2.2">same longevity rules as qualification</a>. Consequently, there may already be an existing targeting information. The server will make best attempt to honored it, though it may not awalys be possible.
+        </p>
+        <p>
+            If this state is phantom in any of the experiences, these experiences must be excluded from the set of possible targets, unless there's already targeting decision to be honored, in which case, if the requested state is phantom in that experience, the session's attempt to target for this state is a user error. The complexity of the targeting algorithm grows dramatically for concurrent variations.
+        </p>
+        <p>
+            Whenever, inside the <a href="/javadoc/0.10/com/variant/client/Session.html#targetForState-com.variant.core.schema.State-" target="_blank" rel="noopener"><code>targetForState(state)</code> <i class="fa fa-external-link"></i></a> method, Variant determines that the calling session must be targeted for a particular vairation, it raises the <a href="/javadoc/0.10/com/variant/server/api/lifecycle/VariationTargetingLifecycleEvent.html" target="_blank" rel="noopener"><code>VariationTargetingLifecycleEvent</code> <i class="fa fa-external-link"></i></a> lifecycle event, which posts eligible lifecycle hooks. If none were defined or none returned a usable result, the default built-in targeting hook is posted, which targets randomly, according to the weights provided in the schema, e.g
+        </p>
     <pre><code class="json">
     {
       ...
@@ -890,20 +1022,28 @@
       ]
     }
     </code></pre>
-    For more information on lifecycle hooks, refer to <a href="#section-5.1">Section 5.1</a>.
-    
+
+        <p>
+            For more information on lifecycle hooks, refer to <a href="#section-5.1">Section 5.1</a>.
+        </p>
     <a class="header-offset" name="section-4.3.2"></a>
     <h3>4.3.2<span class="indent"></span>Targeting Longevity</h3>
-    The longevity of a targeting decision is subject the same rules as that of qualification, already considered in <a href="#section-4.2.2">Section 4.2.2</a>. You can specify one of three longevity levels: <em>unstable</em>, <em>stable</em>, or <em>durable</em>, which correspond to the three longevigy scopes: <em>request</em>, <em>session</em> and <em>variation</em>.
-    
-    <strong>Unstable targeting</strong> means that the session is re-targeted for each state request. In other words, each time the host application calls <code>Session.targetForState()</code> all pre-existing targeting information is discarded. While this behavior may be desireble in some cases, application developers must account for the possibility of a session being retargeted mid-stream.
-    
-    <strong>Stable targeting</strong> means that a session is (re)targeted exactly once, when it first requests a state instrumented by a particular variation. This targeting decision stays in effect until the session expires. This is the default targeting longevity. It guarantees each user session a consistent experience, but a return user may see a different experience.
-    
-    Finally, <strong>durable targeting</strong> implies that once targeted for a particular experience, it persists between sessions, and a recognized return user will see the same experience, so long as the variation is defined in the schema. Note, that this guarantee is subject to certain conditions, as described in the next section.
-    
-    Targeting longevity is defined in the variation schema on the per-variation basis as follows:
-    
+
+        <p>
+            The longevity of a targeting decision is subject the same rules as that of qualification, already considered in <a href="#section-4.2.2">Section 4.2.2</a>. You can specify one of three longevity levels: <em>unstable</em>, <em>stable</em>, or <em>durable</em>, which correspond to the three longevigy scopes: <em>request</em>, <em>session</em> and <em>variation</em>.
+        </p>
+        <p>
+            <strong>Unstable targeting</strong> means that the session is re-targeted for each state request. In other words, each time the host application calls <code>Session.targetForState()</code> all pre-existing targeting information is discarded. While this behavior may be desireble in some cases, application developers must account for the possibility of a session being retargeted mid-stream.
+        </p>
+        <p>
+            <strong>Stable targeting</strong> means that a session is (re)targeted exactly once, when it first requests a state instrumented by a particular variation. This targeting decision stays in effect until the session expires. This is the default targeting longevity. It guarantees each user session a consistent experience, but a return user may see a different experience.
+        </p>
+        <p>
+            Finally, <strong>durable targeting</strong> implies that once targeted for a particular experience, it persists between sessions, and a recognized return user will see the same experience, so long as the variation is defined in the schema. Note, that this guarantee is subject to certain conditions, as described in the next section.
+        </p>
+        <p>
+            Targeting longevity is defined in the variation schema on the per-variation basis as follows:
+        </p>
     <a class="header-offset" name="listing-6"></a>
     <pre><code class="json">
     {
@@ -923,71 +1063,93 @@
     }
     </code></pre>
     <p class="fig-footer">Listing 6. The Tricolor variation schema with different levels of targeting longevity.</p>
-    Unstable and stable targeting is provided by Variant automatically: all you have to do is to define it in the schema. (If you don't define any, Variant will default to stable targeting.) But durable targeting, requires that host application identifies each session with a unique key, such as user ID, by which the user can be identified between sessions.
+
+        <p>
+            Unstable and stable targeting is provided by Variant automatically: all you have to do is to define it in the schema. (If you don't define any, Variant will default to stable targeting.) But durable targeting, requires that host application identifies each session with a unique key, such as user ID, by which the user can be identified between sessions.
+        </p>
     <pre><code class="java">
     // Get or create session.
     Session ssn = connection.getOrCreateSession(...).withIdentity(userId);
     </code></pre>
     <a class="header-offset" name="section-4.3.3"></a>
     <h3>4.3.3<span class="indent"></span>Metadata Modifications</h3>
-    Stable targeting is guaranteed by Variant unconditionally, because Variant sessions are isolated from any schema changes. Variant hides any changes to variation schema from active sessions, which continue to see the variation metadata as it was at the time when the sessions were created.
-    
-    However, because the variation schema may have changed between a user's two consecutive session, durable targeting cannot be guaranteed unconditionally. Consider the following scenario:
-    <ol>
-     	<li>Your schema contains two conjointly concurrent variations, both defined with durable targeting;</li>
-     	<li>Some user has traversed these variations and was randomly targeted to variant experiences in both;</li>
-     	<li>A bug was discovered in the hybrid experience and you've changed concurrency to disjoint;</li>
-     	<li>The same user visits again. His targeting information is no longer consistent with the schema and must be revised.</li>
-    </ol>
-    When cases like this arise, Variant will discard the least recently used targeting decision.
-    
+
+        <p>
+        Stable targeting is guaranteed by Variant unconditionally, because Variant sessions are isolated from any schema changes. Variant hides any changes to variation schema from active sessions, which continue to see the variation metadata as it was at the time when the sessions were created.
+        </p>
+        <p>
+            However, because the variation schema may have changed between a user's two consecutive session, durable targeting cannot be guaranteed unconditionally. Consider the following scenario:
+            <ol>
+                <li>Your schema contains two conjointly concurrent variations, both defined with durable targeting;</li>
+                <li>Some user has traversed these variations and was randomly targeted to variant experiences in both;</li>
+                <li>A bug was discovered in the hybrid experience and you've changed concurrency to disjoint;</li>
+                <li>The same user visits again. His targeting information is no longer consistent with the schema and must be revised.</li>
+            </ol>
+        </p>
+        <p>
+            When cases like this arise, Variant will discard the least recently used targeting decision.
+        </p>
     <a class="header-offset" name="section-4.4"></a>
     <h2><span class="underlined">4.4<span class="indent"></span>Schema Management</span></h2>
-    When Variant server starts, it looks for variation schema files in the <code>schemata</code> directory and attempts to deploy them sequentially. A schema file must contain exactly one uniquely named Variant schema. There is no requirement that the schema file name match that of the schema it contains, though it is recommended that you name each schema file similarly to the schema therein.
-    
-    For each schema file in the <code>schemata</code> directory Variant server takes these steps:
-    <ol>
-     	<li><b>Parse the schema file.</b>
-    Any messages emitted by the parser are written to the server log file.</li>
-     	<li><b>Deploy if no parse errors.</b>
-    If any parser errors were encountered, Variant server skps this schema file. Otherwise, if no parser errors and provided no already deployed schemata has the same name, Variant will deploy this schema.</li>
-    </ol>
-    To (re)deploy a variation schema on a running Variant server, simply place the (updated) schema file in the <code>schemata</code> directory. A running server detects the new (or updated) file and attempts to deploy the schema from it by following these steps:
-    <ol>
-     	<li><b>Parse the schema.</b>
-    Any messages emitted by the parser are written to the server log file.</li>
-     	<li><b>Deploy if no parse errors.</b>
-    If any parser errors were encountered, Variant server skips this schema file. Otherwise, if no parser errors, Variant will attempt to deploy this schema, subject to the following conditions:
-    <ol>
-     	<li>If no currently deployed schemata has the same name as this schema, this schema is deployed.</li>
-     	<li>If a currently deployed schema has the same name as this schema, their respective file names must also be the same.</li>
-    </ol>
-    </li>
-     	<li>If both of the above conditions stand, the currently deployed schema is undeployed and the new one is deployed in its place.</li>
-    </ol>
-    To undeploy a currently deployed schema, simply remove the corresponding schema file.
-    
-    Whenever a schema is undeployed, Variant server will hold on to its memory representation, while all active sessions connected to it naturally expire. All new sessions are created against the currently deployed generation, if any. Session draining isolates active sessions from schema updates, which is instrumental in Variant's ability to provide stable qualification and targeting. In practice this means that, for instance, you can shut off a feature flag without worrying about disrupting active users who are already in the experience.
-    
+        <p>
+            When Variant server starts, it looks for variation schema files in the <code>schemata</code> directory and attempts to deploy them sequentially. A schema file must contain exactly one uniquely named Variant schema. There is no requirement that the schema file name match that of the schema it contains, though it is recommended that you name each schema file similarly to the schema therein.
+        </p>
+        <p>
+            For each schema file in the <code>schemata</code> directory Variant server takes these steps:
+            <ol>
+                <li><b>Parse the schema file.</b>
+            Any messages emitted by the parser are written to the server log file.</li>
+                <li><b>Deploy if no parse errors.</b>
+            If any parser errors were encountered, Variant server skps this schema file. Otherwise, if no parser errors and provided no already deployed schemata has the same name, Variant will deploy this schema.</li>
+            </ol>
+            To (re)deploy a variation schema on a running Variant server, simply place the (updated) schema file in the <code>schemata</code> directory. A running server detects the new (or updated) file and attempts to deploy the schema from it by following these steps:
+            <ol>
+                <li><b>Parse the schema.</b>
+            Any messages emitted by the parser are written to the server log file.</li>
+                <li><b>Deploy if no parse errors.</b>
+            If any parser errors were encountered, Variant server skips this schema file. Otherwise, if no parser errors, Variant will attempt to deploy this schema, subject to the following conditions:
+            <ol>
+                <li>If no currently deployed schemata has the same name as this schema, this schema is deployed.</li>
+                <li>If a currently deployed schema has the same name as this schema, their respective file names must also be the same.</li>
+            </ol>
+            </li>
+                <li>If both of the above conditions stand, the currently deployed schema is undeployed and the new one is deployed in its place.</li>
+            </ol>
+            To undeploy a currently deployed schema, simply remove the corresponding schema file.
+
+        </p>
+        <p>
+            Whenever a schema is undeployed, Variant server will hold on to its memory representation, while all active sessions connected to it naturally expire. All new sessions are created against the currently deployed generation, if any. Session draining isolates active sessions from schema updates, which is instrumental in Variant's ability to provide stable qualification and targeting. In practice this means that, for instance, you can shut off a feature flag without worrying about disrupting active users who are already in the experience.
+        </p>
     <a class="header-offset" name="section-4.5"></a>
     <h2><span class="underlined">4.5<span class="indent"></span>Trace Event Logging</span></h2>
-    Variant trace events are generated by user traffic, as it flows through Variant variations, with the purpose of subsequent analysis by a downstream process. Trace events can be triggered implicitly, by Variant, or explicitly by the host application. In either case, the host application can attach attributes to these events, to aid in the downstream analysis.
-    
-    The only implicit trace event is the <em>state visited event</em>. It is created at the start of the state request, <a href="#figure-3">Figure 3</a>, and triggered when <a href="/javadoc/0.10/com/variant/client/StateRequest.html" target="_blank" rel="noopener"><code>StateRequest</code> <i class="fa fa-external-link"></i></a> is committed or failed. This gives the host application a chance to attach custom attributes to the event. For example, if the host application caught an exception, it may wish to set the status of the event to error, and add the name of the class that threw the exception. This information can be used downstream to exclude this session from the statistical analysis (if this is an experiment), or to shut off the variation (if this is a feature flag).
-    
-    Explicist trace events are triggered by calling the <a class="nowrap" href="/javadoc/0.10/com/variant/client/Session.html#triggerTraceEvent-com.variant.client.TraceEvent-" target="_blank" rel="noopener"><code>Session.triggerTraceEvent()</code> <i class="fa fa-external-link"></i></a> method.
-    
-    Trace events are egested onto external storage via <a href="#section-5.2">Trace Event Flushers</a> which are part of the Extension API, discussed next.
-    
+        <p>
+            Variant trace events are generated by user traffic, as it flows through Variant variations, with the purpose of subsequent analysis by a downstream process. Trace events can be triggered implicitly, by Variant, or explicitly by the host application. In either case, the host application can attach attributes to these events, to aid in the downstream analysis.
+        </p>
+        <p>
+            The only implicit trace event is the <em>state visited event</em>. It is created at the start of the state request, <a href="#figure-3">Figure 3</a>, and triggered when <a href="/javadoc/0.10/com/variant/client/StateRequest.html" target="_blank" rel="noopener"><code>StateRequest</code> <i class="fa fa-external-link"></i></a> is committed or failed. This gives the host application a chance to attach custom attributes to the event. For example, if the host application caught an exception, it may wish to set the status of the event to error, and add the name of the class that threw the exception. This information can be used downstream to exclude this session from the statistical analysis (if this is an experiment), or to shut off the variation (if this is a feature flag).
+        </p>
+        <p>
+            Explicist trace events are triggered by calling the <a class="nowrap" href="/javadoc/0.10/com/variant/client/Session.html#triggerTraceEvent-com.variant.client.TraceEvent-" target="_blank" rel="noopener"><code>Session.triggerTraceEvent()</code> <i class="fa fa-external-link"></i></a> method.
+        </p>
+        <p>
+            Trace events are egested onto external storage via <a href="#section-5.2">Trace Event Flushers</a> which are part of the Extension API, discussed next.
+        </p>
     <a class="header-offset" name="section-5"></a>
     <h1><span class="underlined">5<span class="indent"></span>Extending Variant Server</span></h1>
-    Variant CVM Server’s default behavior can be extended via the server-side <em>Extension API</em>. It supports creation and configuration of user code which runs in the server’s address space, augmenting the server's default behavior with custom semantics. ExtAPI exposes two principal extension mechanisms: <em>lifecycle hooks</em> and <em>trace event flushers</em>. They are configured in the variation schema and made available to the server's JVM at run time via the <code>/ext</code> directory.
-    
-    Refer to the <a href="/resources/docs/0-10/application-iteration-server/reference/#section-4">Variant CVM Server Reference</a> for further details on configuring ExtAPI.
-    
+
+        <p>
+            Variant CVM Server’s default behavior can be extended via the server-side <em>Extension API</em>. It supports creation and configuration of user code which runs in the server’s address space, augmenting the server's default behavior with custom semantics. ExtAPI exposes two principal extension mechanisms: <em>lifecycle hooks</em> and <em>trace event flushers</em>. They are configured in the variation schema and made available to the server's JVM at run time via the <code>/ext</code> directory.
+        </p>
+        <p>
+            Refer to the <a href="/resources/docs/0-10/application-iteration-server/reference/#section-4">Variant CVM Server Reference</a> for further details on configuring ExtAPI.
+        </p>
     <a class="header-offset" name="section-5.1"></a>
     <h2>5.1<span class="indent"></span>Lifecycle Hooks</h2>
-    The <code>ScheduleVisitTest</code> from <a href="#listing-2">Listing 2</a> above defined a lifecycle hook class <code>UserQualifyingHook</code>, which disqualifies black-listed users from the experiment. Here's the relevant section from Listing 2:
+
+        <p>
+            The <code>ScheduleVisitTest</code> from <a href="#listing-2">Listing 2</a> above defined a lifecycle hook class <code>UserQualifyingHook</code>, which disqualifies black-listed users from the experiment. Here's the relevant section from Listing 2:
+        </p>
     <pre><code class="json">
     ...
           'hooks': [
@@ -999,43 +1161,56 @@
           ]
     ...
     </code></pre>
-    Lifecycle event hooks are callback methods, executed by Variant server when correponding lifecycle events are raised. For example, when a user session must be qualified or targeted for a particular variation, two corresponding lifecycle events are raised: the session qualification event and the session targeting event. If you have defined custom hooks for these events, Variant will post them by calling their <a href="/javadoc/0.10/com/variant/server/api/lifecycle/LifecycleHook.html#post-E-" target="_blank" rel="noopener"><code>post()</code> <i class="fa fa-external-link"></i></a> method.
-    
-    Lifecycle hooks provide a way to extend Variant server’s default behavior with application-specific semantics. They are executed in the server process’s address space and are highly reusable modules encapsulating common semantics and having their own lifecycle, independent of that of the host application.
-    
-    Depending on where a hook is defined in the schema, it may have the global (or meta) scope, a state scope or a variation scope. Global hooks are defined in the <code>meta</code> section and apply to all states and all variations in this schema. A state-scoped hook only applies to the state with which it is defined, and a variation-scoped hook applies only to the variation with which it is defined.
-    
-    In any scope, any number of hooks can be defined. If more than one lifecycle hook is eligible to be posted by a lifecycle event at runtime, they form a <em>hook chain</em>. More locally defined hooks are posted before the global ones on the chain, and within a scope hooks are posted in ordinal order. The hooks are posted serially, until a hook's <a href="/javadoc/0.10/com/variant/server/api/lifecycle/LifecycleHook.html#post-E-" target="_blank" rel="noopener"><code>post()</code> <i class="fa fa-external-link"></i></a> method returns a non-empty <code>Optional</code>. If no custom hooks have been defined for a lifecycle event, or all returned an empty <code>Optional</code>, the default built-in hook for the event is posted, which is guaranteed to return a usable value.
-    
-    For more information, refer to the <a href="/resources/docs/0-10/application-iteration-server/reference/#section-4.1">Variant Server Reference</a>.
-    
+
+        <p>
+            Lifecycle event hooks are callback methods, executed by Variant server when correponding lifecycle events are raised. For example, when a user session must be qualified or targeted for a particular variation, two corresponding lifecycle events are raised: the session qualification event and the session targeting event. If you have defined custom hooks for these events, Variant will post them by calling their <a href="/javadoc/0.10/com/variant/server/api/lifecycle/LifecycleHook.html#post-E-" target="_blank" rel="noopener"><code>post()</code> <i class="fa fa-external-link"></i></a> method.
+        </p>
+        <p>
+            Lifecycle hooks provide a way to extend Variant server’s default behavior with application-specific semantics. They are executed in the server process’s address space and are highly reusable modules encapsulating common semantics and having their own lifecycle, independent of that of the host application.
+        </p>
+        <p>
+            Depending on where a hook is defined in the schema, it may have the global (or meta) scope, a state scope or a variation scope. Global hooks are defined in the <code>meta</code> section and apply to all states and all variations in this schema. A state-scoped hook only applies to the state with which it is defined, and a variation-scoped hook applies only to the variation with which it is defined.
+        </p>
+        <p>
+            In any scope, any number of hooks can be defined. If more than one lifecycle hook is eligible to be posted by a lifecycle event at runtime, they form a <em>hook chain</em>. More locally defined hooks are posted before the global ones on the chain, and within a scope hooks are posted in ordinal order. The hooks are posted serially, until a hook's <a href="/javadoc/0.10/com/variant/server/api/lifecycle/LifecycleHook.html#post-E-" target="_blank" rel="noopener"><code>post()</code> <i class="fa fa-external-link"></i></a> method returns a non-empty <code>Optional</code>. If no custom hooks have been defined for a lifecycle event, or all returned an empty <code>Optional</code>, the default built-in hook for the event is posted, which is guaranteed to return a usable value.
+        </p>
+        <p>
+            For more information, refer to the <a href="/resources/docs/0-10/application-iteration-server/reference/#section-4.1">Variant Server Reference</a>.
+        </p>
     <a class="header-offset" name="section-5.2"></a>
     <h2>5.2<span class="indent"></span>Trace Event Flushers</h2>
-    Event flushers handle the terminal ingestion of Variant trace events. A typical event flusher writes them to a persistent storage mechanism, such as an external database or event stream. Whenever a trace event is triggered — implicitly by Variant server or explicitly by user code — it is picked up by the Variant's asynchronous event writer, where it is held in a memory buffer until a dedicated flusher thread becomes available. There is one event writer per Variant server, shared by all schemata. Event writer groups trace events by the schema that produced them and turns them over to the apropriate event flusher by calling its <a href="/javadoc/0.10/com/variant/server/api/TraceEventFlusher.html#flush-com.variant.server.api.FlushableTraceEvent:A-int-" target="_blank" rel="noopener"><code>flush()</code> <i class="fa fa-external-link"></i></a> method.
-    
-    The size of the trace event buffer, passed to the <code>flush()</code> method, is configured by the <code>variant.event.writer.flush.size</code> server config property, whose value refers to the number of trace events held in a single flush buffer. The overall size of the event writer cache is configured by the <code>variant.event.writer.flush.buffers</code> server config property, whose value refers to the total number of flush buffers available to the event writer. The larger the number of flush buffers, the better the event writer is able cope with bursts of trace evens, but at the price of additional memory footprint.
-    
-    Whenever the event writer is not keeping up with the event load, it will discard new events (with an error message to the server log) until a flush buffer becomes available.
-    
-    A few ready-made event flushers, intended for saving trace events in popular databases, such as PostgreSQL and MySQL, are included in Variant server's <a href="/resources/docs/0-10/application-iteration-server/reference/#section-4.4" target="_blank" rel="noopener">standard extension library<i class="fa fa-external-link"></i></a>, included with the server. These can be configured and used out of the box.
-    
-    It is also straightforward to create a custom event flusher by implementing the <a href="/javadoc/0.10/com/variant/server/api/TraceEventFlusher.html" target="_blank" rel="noopener"><code>TraceEventFlusher</code> interface <i class="fa fa-external-link"></i></a>. See <a href="/resources/docs/0-10/application-iteration-server/reference/#section-4.3">Variant Server Reference Guide</a> for more information.
-    
+        <p>
+            Event flushers handle the terminal ingestion of Variant trace events. A typical event flusher writes them to a persistent storage mechanism, such as an external database or event stream. Whenever a trace event is triggered — implicitly by Variant server or explicitly by user code — it is picked up by the Variant's asynchronous event writer, where it is held in a memory buffer until a dedicated flusher thread becomes available. There is one event writer per Variant server, shared by all schemata. Event writer groups trace events by the schema that produced them and turns them over to the apropriate event flusher by calling its <a href="/javadoc/0.10/com/variant/server/api/TraceEventFlusher.html#flush-com.variant.server.api.FlushableTraceEvent:A-int-" target="_blank" rel="noopener"><code>flush()</code> <i class="fa fa-external-link"></i></a> method.
+        </p>
+        <p>
+            The size of the trace event buffer, passed to the <code>flush()</code> method, is configured by the <code>variant.event.writer.flush.size</code> server config property, whose value refers to the number of trace events held in a single flush buffer. The overall size of the event writer cache is configured by the <code>variant.event.writer.flush.buffers</code> server config property, whose value refers to the total number of flush buffers available to the event writer. The larger the number of flush buffers, the better the event writer is able cope with bursts of trace evens, but at the price of additional memory footprint.
+        </p>
+        <p>
+            Whenever the event writer is not keeping up with the event load, it will discard new events (with an error message to the server log) until a flush buffer becomes available.
+        </p>
+        <p>
+            A few ready-made event flushers, intended for saving trace events in popular databases, such as PostgreSQL and MySQL, are included in Variant server's <a href="/resources/docs/0-10/application-iteration-server/reference/#section-4.4" target="_blank" rel="noopener">standard extension library<i class="fa fa-external-link"></i></a>, included with the server. These can be configured and used out of the box.
+        </p>
+        <p>
+            It is also straightforward to create a custom event flusher by implementing the <a href="/javadoc/0.10/com/variant/server/api/TraceEventFlusher.html" target="_blank" rel="noopener"><code>TraceEventFlusher</code> interface <i class="fa fa-external-link"></i></a>. See <a href="/resources/docs/0-10/application-iteration-server/reference/#section-4.3">Variant Server Reference Guide</a> for more information.
+        </p>
     <a class="header-offset" name="appendix-a"></a>
     <h1><span class="underlined">Appendix A Analyzing Variant Controlled Experiments</span></h1>
     <a class="header-offset" name="appendix-a.1"></a>
     <h2><span class="underlined">5.1<span class="indent"></span>Trace Event Data Aggregation</span></h2>
-    Each Variant experiment is designed with particular target metric(s) in mind. But regardless of the target metric(s), the starting data point is always a time-series of trace events, such as the page visited event, which must be aggregated into a time series of measurements, such as revenue as a function of number of users through the experiment. The details of this aggregation step depend entirely on the longevity mechanism you've chosen for your trace events. If your flusher inserts them into a relational database, you will likely use SQL. A distributed data processing framework, like <a href="http://hadoop.apache.org/" target="_blank" rel="noopener">Apache Hadoop <i class="fa fa-external-link"></i></a>, can also be successfully deployed for longevity and aggregation of Variant trace events.
-    
+        <p>
+            Each Variant experiment is designed with particular target metric(s) in mind. But regardless of the target metric(s), the starting data point is always a time-series of trace events, such as the page visited event, which must be aggregated into a time series of measurements, such as revenue as a function of number of users through the experiment. The details of this aggregation step depend entirely on the longevity mechanism you've chosen for your trace events. If your flusher inserts them into a relational database, you will likely use SQL. A distributed data processing framework, like <a href="http://hadoop.apache.org/" target="_blank" rel="noopener">Apache Hadoop <i class="fa fa-external-link"></i></a>, can also be successfully deployed for longevity and aggregation of Variant trace events.
+        </p>
     <a class="header-offset" name="appendix-a.2"></a>
     <h2><span class="underlined">5.2<span class="indent"></span>Statistical Analysis</span></h2>
-    The goal of an experiment to
-    <ul>
-     	<li>Discover if there is a difference between control and variant experience(s) with respect to the target metric of interest;</li>
-     	<li>Asses how certain can we be that this difference is not just random noise.</li>
-    </ul>
-    The latter can be accomplished with some well-known mathematical formulas developed in the field of statistical hypothesis testing. The fundamental idea there is to develop a procedure that will enable the researcher to make a claim about the entire population with a given degree of certainty, based on a set of sample observations. Refer to the <a href="/white-papers/statistical-analysis-of-variant-experiments">Statistical Analysis of Variant Experiments</a> white paper for more information.
-    
+        <p>
+            The goal of an experiment to
+            <ul>
+                <li>Discover if there is a difference between control and variant experience(s) with respect to the target metric of interest;</li>
+                <li>Asses how certain can we be that this difference is not just random noise.</li>
+            </ul>
+            The latter can be accomplished with some well-known mathematical formulas developed in the field of statistical hypothesis testing. The fundamental idea there is to develop a procedure that will enable the researcher to make a claim about the entire population with a given degree of certainty, based on a set of sample observations. Refer to the <a href="/white-papers/statistical-analysis-of-variant-experiments">Statistical Analysis of Variant Experiments</a> white paper for more information.
+        </p>
     </div>
     </div>
     </div>
