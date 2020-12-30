@@ -294,34 +294,54 @@
         <p>
             In addition to the client API, Variant server also exposes server side Extension API, used to extend the server’s default behavior with custom semantics.
         </p>
+
     <a class="header-offset" name="section-1.2.2"></a>
-    <h3>1.2.2<span class="indent"></span>Separation of Instrumenttion and Implementation</h3>
-    At the core of Variant's philosphy is the idea of strict separation between <em>variation instrumentation</em> and <em>experience implementation</em>. Variation schemata enable developers to define variations as abstract ideas about the behavior of the host application, leaving the implementation of that behavior out, i.e. up to the application developer.
-    
-    The application developer uses familiar tools to implement new application behavior, unconcerned with how it will be instrumented as code variations. Variant server, on the other hand, handles the complexity of managing code variations, as defined in variation schemata, hiding enormous amounts of complexity from the application developer.
-    
-    This clean separation dramatically reduces the amount of client code the application developer must write (and, in most cases, remove), in order to instrument code variations.
-    
+    <h3>1.2.2<span class="indent"></span>Separation of Instrumentation and Implementation</h3>
+
+        <p>
+            At the core of Variant's philosphy is the idea of strict separation between <em>variation instrumentation</em> and <em>experience implementation</em>. Variation schemata enable developers to define variations as abstract ideas about the behavior of the host application, leaving the implementation of that behavior out, i.e. up to the application developer.
+        </p>
+        <p>
+            The application developer uses familiar tools to implement new application behavior, unconcerned with how it will be instrumented as code variations. Variant server, on the other hand, handles the complexity of managing code variations, as defined in variation schemata, hiding enormous amounts of complexity from the application developer.
+        </p>
+        <p>
+            This clean separation dramatically reduces the amount of client code the application developer must write (and, in most cases, remove), in order to instrument code variations.
+        </p>
+
     <a class="header-offset" name="section-1.2.3"></a>
     <h3>1.2.3<span class="indent"></span>Distributed Session Management</h3>
-    Variant maintains its own user sessions, instead of relying on the native sessions, maintained by the host application. Variant user sessions are distributed, with Variant server managing their shared state. Any component of the host application, connected to a Variant server, can get a hold of a user session by its ID. Variant guarantees a consistent view of the session's shared state to all concurrent clients.
-    
+
+        <p>
+            Variant maintains its own user sessions, instead of relying on the native sessions, maintained by the host application. Variant user sessions are distributed, with Variant server managing their shared state. Any component of the host application, connected to a Variant server, can get a hold of a user session by its ID. Variant guarantees a consistent view of the session's shared state to all concurrent clients.
+        </p>
+
     <a class="header-offset" name="section-1.2.4"></a>
     <h3>1.2.4<span class="indent"></span>Concurrent Variations</h3>
-    Variation concurrency refers to those cases when different code variations affect one or more code segments. Concurrent code variations are more likely than it may first seem because of the Pareto principle, which, as applied to interactive computer applications, states that your users spend 80% of their time on 20% of your application’s code. These few high-contention code paths will be instrumented by multiple concurrent experiments and features rollouts, and Variant gives you a cogent abstraction to manage this concurrency.
-    
+
+        <p>
+            Variation concurrency refers to those cases when different code variations affect one or more code segments. Concurrent code variations are more likely than it may first seem because of the Pareto principle, which, as applied to interactive computer applications, states that your users spend 80% of their time on 20% of your application’s code. These few high-contention code paths will be instrumented by multiple concurrent experiments and features rollouts, and Variant gives you a cogent abstraction to manage this concurrency.
+        </p>
+
     <a class="header-offset" name="section-1.2.5"></a>
     <h3>1.2.5<span class="indent"></span>Targeting and Qualification Longevity</h3>
-    Once a user session has been targeted for an experience, it is typically desirable that he continues to see the same experience, i.e. that the targeting remains stable over time. Variant supports three lengevity levels: <code>unstable</code>, <code>stable</code> and <code>durable</code>, which refer, respectively, to longevity guarantees of <em>none</em> (the session may be (re)targeted multiple times), <em>session-scoped</em> (the session will be targeted only once and the targeting will remain in effect for the entire duration of the session), and <em>permanent</em> (a recoginzed return user will see the same experience as on his previous visit).
-    
-    This longevity model applies consistently to both session targeting and session qualification.
-    
+
+        <p>
+            Once a user session has been targeted for an experience, it is typically desirable that he continues to see the same experience, i.e. that the targeting remains stable over time. Variant supports three lengevity levels: <code>unstable</code>, <code>stable</code> and <code>durable</code>, which refer, respectively, to longevity guarantees of <em>none</em> (the session may be (re)targeted multiple times), <em>session-scoped</em> (the session will be targeted only once and the targeting will remain in effect for the entire duration of the session), and <em>permanent</em> (a recoginzed return user will see the same experience as on his previous visit).
+        </p>
+        <p>
+            This longevity model applies consistently to both session targeting and session qualification.
+        </p>
+
     <a class="header-offset" name="section-1.2.6"></a>
     <h3>1.2.6<span class="indent"></span>Extensibility</h3>
-    Variant CVM Server’s default behavior can be extended via the server-side <em>Extension API</em>. It supports creation and configuration of user code which runs in the server’s address space, augmenting the server's default behavior with custom semantics. ExtAPI exposes two principal extension mechanisms: <em>lifecycle hooks</em> and <em>trace event flushers</em>. Lifecycle hooks are listeners for various lifecycle events raised by Variant server, such as the session qualification or session targeting events. They are configured in the variation schema and are made available to the server's JVM at run time via the <code>/ext</code> directory. Lifecycle hooks can be chained to help you modularize and reuse your code.
-    
-    Event flushers handle the terminal ingestion of Variant trace events. A few standard event flushers, intended for saving trace events in popular databases, such as PostgreSQL and MySQL, come with Variant server, but you may want to create your own, suitable for your operating environment — it is simply a matter of implementing a Java interface.
-    
+
+        <p>
+            Variant CVM Server’s default behavior can be extended via the server-side <em>Extension API</em>. It supports creation and configuration of user code which runs in the server’s address space, augmenting the server's default behavior with custom semantics. ExtAPI exposes two principal extension mechanisms: <em>lifecycle hooks</em> and <em>trace event flushers</em>. Lifecycle hooks are listeners for various lifecycle events raised by Variant server, such as the session qualification or session targeting events. They are configured in the variation schema and are made available to the server's JVM at run time via the <code>/ext</code> directory. Lifecycle hooks can be chained to help you modularize and reuse your code.
+        </p>
+        <p>
+            Event flushers handle the terminal ingestion of Variant trace events. A few standard event flushers, intended for saving trace events in popular databases, such as PostgreSQL and MySQL, come with Variant server, but you may want to create your own, suitable for your operating environment — it is simply a matter of implementing a Java interface.
+        </p>
+
     <a class="header-offset" name="section-2"></a>
     <h1><span class="underlined">2<span class="indent"></span>Variant Architecture</span></h1>
     <a class="header-offset" name="section-2.1"></a>
