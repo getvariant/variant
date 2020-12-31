@@ -176,6 +176,7 @@ pre {
 
 code {
 	color: darkred;
+	overflow-x: scroll;
 }
 
 /* Variant responsive columns (2 columns across)
