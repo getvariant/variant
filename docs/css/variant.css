@@ -315,12 +315,6 @@ code {
  /* border-left: 1px solid #999; */
 }
 
-@media only screen and (max-width: 640px) {
-  #doc-body {
-    padding: 0;
-    border-left: none;
-  }
-}
 #doc-body h1 {
   display: inline-block;
   font: 36px "Mukta";
