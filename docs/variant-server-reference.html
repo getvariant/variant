@@ -145,15 +145,18 @@
 
         <a class="header-offset" name="section-1"></a>
         <h1><span class="underlined">1<span class="indent"></span>Variant Server Installation</span></h1>
+        <p>
         Variant server is entirely self-contained and does not have any external dependencies. It requires Java runtime 8 or later. To install Variant server:
-
+        </p>
         <span class="tombstone">∎</span><a class="nowrap" href="/get">Download</a> Variant Server distribution.
-
         <span class="tombstone">∎</span> Unpack the distribution in a directory of your choice by running
-        <pre><code class="shell">
+
+        <pre>
 $ unzip /path/to/variant-server-&lt;release&gt;.zip
-</code></pre>
-        This will create a server installation with the following directory structure:
+        </pre>
+        <p>
+          This will create a server installation with the following directory structure:
+        </p>
         <table class="table">
           <tbody>
           <tr>
@@ -188,16 +191,17 @@ $ unzip /path/to/variant-server-&lt;release&gt;.zip
         </table>
 
         <span class="tombstone">∎</span>Change directory to Variant server top level directory:
-        <pre><code class="shell">
+        <pre>
 $ cd variant-server-&lt;release&gt;
-</code></pre>
+</pre>
 
         <span class="tombstone">∎</span>Start Variant server in the foreground:
-        <pre><code class="shell">
+        <pre>
 $ bin/variant.sh start
-</code></pre>
+        </pre>
+        <p>
         If all goes well, the server console output should look something like this:
-
+        </p>
         <pre>
 $ bin/variant.sh start
 2019-12-10 09:54:44,477 INFO - c.v.s.boot.ConfigLoader$ - Found  config resource [/variant.conf] as [/Users/Igor/soft/variant-server-0.10.2/conf/variant.conf]
@@ -234,7 +238,7 @@ $ curl localhost:5377
   } ]
 }
 </code></pre>
-          
+
           A running server can be stopped by typing <code>Control-C</code> in the shell where it was started, or by typing in a different shell window
           <pre><code class="shell">
 $ bin/variant.sh stop
@@ -1139,7 +1143,6 @@ $ variant.sh start -Dvariant.schemata.dir=/Users/Igor/schemata
                   </tbody>
                 </table>
               </code></code></code></code>
--->
 
       </div>
     </div>
