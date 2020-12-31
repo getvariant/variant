@@ -26,216 +26,214 @@
     <div class="columns">
         <div id="toc" class="column leftcol">
             <h2><span class="underlined">Table of Contents</span></h2>
-            <div>
-                <table>
-                    <tbody>
-                    <tr class="toc-h1">
-                        <td>1</td>
-                        <td><a href="#section-1">Variant Server Overview</a></td>
-                    </tr>
-                    <tr class="toc-h2">
-                        <td>1.1</td>
-                        <td><a href="#section-1.1">Code Variation Management (CVM)</a></td>
-                    </tr>
-                    <tr class="toc-h3">
-                        <td>1.1.1</td>
-                        <td><a href="#section-1.1.1">Online Controlled Experiments</a></td>
-                    </tr>
-                    <tr class="toc-h3">
-                        <td>1.1.2</td>
-                        <td><a href="#section-1.1.2">Managed Feature Roll-Outs</a></td>
-                    </tr>
-                    <tr class="toc-h2">
-                        <td>1.2</td>
-                        <td><a href="#section-1.2">Key Features</a></td>
-                    </tr>
-                    <tr class="toc-h3">
-                        <td>1.2.1</td>
-                        <td><a href="#section-1.2.1">Client-Server Architecture</a></td>
-                    </tr>
-                    <tr class="toc-h3">
-                        <td>1.2.2</td>
-                        <td><a href="#section-1.2.2">Variation Schemata</a></td>
-                    </tr>
-                    <tr class="toc-h3">
-                        <td>1.2.3</td>
-                        <td><a href="#section-1.2.3">Distributed Session Management</a></td>
-                    </tr>
-                    <tr class="toc-h3">
-                        <td>1.2.4</td>
-                        <td><a href="#section-1.2.4">Concurrent Variations</a></td>
-                    </tr>
-                    <tr class="toc-h3">
-                        <td>1.2.5</td>
-                        <td><a href="#section-1.2.5">Targeting and Qualification Longevity</a></td>
-                    </tr>
-                    <tr class="toc-h3">
-                        <td>1.2.6</td>
-                        <td><a href="#section-1.2.6">Extensibility</a></td>
-                    </tr>
-                    <tr class="toc-h1">
-                        <td>2</td>
-                        <td><a href="#section-2">Variant Architecture</a></td>
-                    </tr>
-                    <tr class="toc-h2">
-                        <td>2.1</td>
-                        <td><a href="#section-2.1">Overview</a></td>
-                    </tr>
-                    <tr class="toc-h2">
-                        <td>2.2</td>
-                        <td><a href="#section-2.2">Server Configuration</a></td>
-                    </tr>
-                    <tr class="toc-h2">
-                        <td>2.3</td>
-                        <td><a href="#section-2.3">Integration With the Host Application</a></td>
-                    </tr>
-                    <tr class="toc-h3">
-                        <td>2.3.1</td>
-                        <td><a href="#section-2.3.1">Variant Java Client</a></td>
-                    </tr>
-                    <tr class="toc-h3">
-                        <td>2.3.2</td>
-                        <td><a href="#section-2.3.2">Variant JavaScript Client</a></td>
-                    </tr>
-                    <tr class="toc-h1">
-                        <td>3</td>
-                        <td><a href="#section-3">Code Variation Model (CVM)</a></td>
-                    </tr>
-                    <tr class="toc-h2">
-                        <td>3.1</td>
-                        <td><a href="#section-3.1">Interactive Application as a Finite State Machine</a></td>
-                    </tr>
-                    <tr class="toc-h2">
-                        <td>3.2</td>
-                        <td><a href="#section-3.2">Code Variations</a></td>
-                    </tr>
-                    <tr class="toc-h2">
-                        <td>3.3</td>
-                        <td><a href="#section-3.3">CVM: a Domain Model for Code Variations</a></td>
-                    </tr>
-                    <tr class="toc-h2">
-                        <td>3.4</td>
-                        <td><a href="#section-3.4">Variation Schemata</a></td>
-                    </tr>
-                    <tr class="toc-h3">
-                        <td>3.4.1</td>
-                        <td><a href="#section-3.4.1">Metadata for Code Variations</a></td>
-                    </tr>
-                    <tr class="toc-h3">
-                        <td>3.4.2</td>
-                        <td><a href="#section-3.4.2">Minimal Valid Variation Schema</a></td>
-                    </tr>
-                    <tr class="toc-h3">
-                        <td>3.4.3</td>
-                        <td><a href="#section-3.4.3">Minimal Practical Variation Schema</a></td>
-                    </tr>
-                    <tr class="toc-h2">
-                        <td>3.5</td>
-                        <td><a href="#section-3.5">State Variants</a></td>
-                    </tr>
-                    <tr class="toc-h2">
-                        <td>3.6</td>
-                        <td><a href="#section-3.6">State Parameters</a></td>
-                    </tr>
-                    <tr class="toc-h2">
-                        <td>3.7</td>
-                        <td><a href="#section-3.7">Phantom Instrumentation</a></td>
-                    </tr>
-                    <tr class="toc-h2">
-                        <td>3.8</td>
-                        <td><a href="#section-3.8">Variation Concurrency</a></td>
-                    </tr>
-                    <tr class="toc-h3">
-                        <td>3.8.1</td>
-                        <td><a href="#section-3.8.1">Motivation</a></td>
-                    </tr>
-                    <tr class="toc-h3">
-                        <td>3.8.2</td>
-                        <td><a href="#section-3.8.2">Disjoint Concurrency</a></td>
-                    </tr>
-                    <tr class="toc-h3">
-                        <td>3.8.3</td>
-                        <td><a href="#section-3.8.3">Conjoint Concurrency</a></td>
-                    </tr>
-                    <tr class="toc-h1">
-                        <td>4</td>
-                        <td><a href="#section-4">Variant Runtime</a></td>
-                    </tr>
-                    <tr class="toc-h2">
-                        <td>4.1</td>
-                        <td><a href="#section-4.1">The Lifecycle of a State Request</a></td>
-                    </tr>
-                    <tr class="toc-h3">
-                        <td>4.1.1</td>
-                        <td><a href="#section-4.1.1">Variant Session</a></td>
-                    </tr>
-                    <tr class="toc-h3">
-                        <td>4.1.2</td>
-                        <td><a href="#section-4.1.2">State Request</a></td>
-                    </tr>
-                    <tr class="toc-h2">
-                        <td>4.2</td>
-                        <td><a href="#section-4.2">Session Qualification</a></td>
-                    </tr>
-                    <tr class="toc-h3">
-                        <td>4.2.1</td>
-                        <td><a href="#section-4.2.1">How Variant Qualifies Sessions</a></td>
-                    </tr>
-                    <tr class="toc-h3">
-                        <td>4.2.2</td>
-                        <td><a href="#section-4.2.2">Qualification Longevity</a></td>
-                    </tr>
-                    <tr class="toc-h2">
-                        <td>4.3</td>
-                        <td><a href="#section-4.3">Session Targeting</a></td>
-                    </tr>
-                    <tr class="toc-h3">
-                        <td>4.3.1</td>
-                        <td><a href="#section-4.3.1">How Variant TargetsSessions</a></td>
-                    </tr>
-                    <tr class="toc-h3">
-                        <td>4.3.2</td>
-                        <td><a href="#section-4.3.2">Targeting Longevity</a></td>
-                    </tr>
-                    <tr class="toc-h3">
-                        <td>4.3.3</td>
-                        <td><a href="#section-4.3.3">Metadata Modifications</a></td>
-                    </tr>
-                    <tr class="toc-h2">
-                        <td>4.4</td>
-                        <td><a href="#section-4.4">Schema Management</a></td>
-                    </tr>
-                    <tr class="toc-h2">
-                        <td>4.5</td>
-                        <td><a href="#section-4.5">Trace Event Logging</a></td>
-                    </tr>
-                    <tr class="toc-h1">
-                        <td>5</td>
-                        <td><a href="#section-5">Extending Variant Server</a></td>
-                    </tr>
-                    <tr class="toc-h2">
-                        <td>5.1</td>
-                        <td><a href="#section-5.1">Lifecycle Hooks</a></td>
-                    </tr>
-                    <tr class="toc-h2">
-                        <td>5.2</td>
-                        <td><a href="#section-5.2">Trace Event Flushers</a></td>
-                    </tr>
-                    <tr class="toc-h1">
-                        <td>A</td>
-                        <td><a href="#appendix-a">Analyzing Variant Controlled Experiments</a></td>
-                    </tr>
-                    <tr class="toc-h2">
-                        <td>A.1</td>
-                        <td><a href="#appendix-a.1">Trace Event Data Aggregation</a></td>
-                    </tr>
-                    <tr class="toc-h2">
-                        <td>A.2</td>
-                        <td><a href="#appendix-a.2">Statistical Analysis</a></td>
-                    </tr>
-                    </tbody>
-                </table>
-            </div>
+            <table>
+                <tbody>
+                <tr class="toc-h1">
+                    <td>1</td>
+                    <td><a href="#section-1">Variant Server Overview</a></td>
+                </tr>
+                <tr class="toc-h2">
+                    <td>1.1</td>
+                    <td><a href="#section-1.1">Code Variation Management (CVM)</a></td>
+                </tr>
+                <tr class="toc-h3">
+                    <td>1.1.1</td>
+                    <td><a href="#section-1.1.1">Online Controlled Experiments</a></td>
+                </tr>
+                <tr class="toc-h3">
+                    <td>1.1.2</td>
+                    <td><a href="#section-1.1.2">Managed Feature Roll-Outs</a></td>
+                </tr>
+                <tr class="toc-h2">
+                    <td>1.2</td>
+                    <td><a href="#section-1.2">Key Features</a></td>
+                </tr>
+                <tr class="toc-h3">
+                    <td>1.2.1</td>
+                    <td><a href="#section-1.2.1">Client-Server Architecture</a></td>
+                </tr>
+                <tr class="toc-h3">
+                    <td>1.2.2</td>
+                    <td><a href="#section-1.2.2">Variation Schemata</a></td>
+                </tr>
+                <tr class="toc-h3">
+                    <td>1.2.3</td>
+                    <td><a href="#section-1.2.3">Distributed Session Management</a></td>
+                </tr>
+                <tr class="toc-h3">
+                    <td>1.2.4</td>
+                    <td><a href="#section-1.2.4">Concurrent Variations</a></td>
+                </tr>
+                <tr class="toc-h3">
+                    <td>1.2.5</td>
+                    <td><a href="#section-1.2.5">Targeting and Qualification Longevity</a></td>
+                </tr>
+                <tr class="toc-h3">
+                    <td>1.2.6</td>
+                    <td><a href="#section-1.2.6">Extensibility</a></td>
+                </tr>
+                <tr class="toc-h1">
+                    <td>2</td>
+                    <td><a href="#section-2">Variant Architecture</a></td>
+                </tr>
+                <tr class="toc-h2">
+                    <td>2.1</td>
+                    <td><a href="#section-2.1">Overview</a></td>
+                </tr>
+                <tr class="toc-h2">
+                    <td>2.2</td>
+                    <td><a href="#section-2.2">Server Configuration</a></td>
+                </tr>
+                <tr class="toc-h2">
+                    <td>2.3</td>
+                    <td><a href="#section-2.3">Integration With the Host Application</a></td>
+                </tr>
+                <tr class="toc-h3">
+                    <td>2.3.1</td>
+                    <td><a href="#section-2.3.1">Variant Java Client</a></td>
+                </tr>
+                <tr class="toc-h3">
+                    <td>2.3.2</td>
+                    <td><a href="#section-2.3.2">Variant JavaScript Client</a></td>
+                </tr>
+                <tr class="toc-h1">
+                    <td>3</td>
+                    <td><a href="#section-3">Code Variation Model (CVM)</a></td>
+                </tr>
+                <tr class="toc-h2">
+                    <td>3.1</td>
+                    <td><a href="#section-3.1">Interactive Application as a Finite State Machine</a></td>
+                </tr>
+                <tr class="toc-h2">
+                    <td>3.2</td>
+                    <td><a href="#section-3.2">Code Variations</a></td>
+                </tr>
+                <tr class="toc-h2">
+                    <td>3.3</td>
+                    <td><a href="#section-3.3">CVM: a Domain Model for Code Variations</a></td>
+                </tr>
+                <tr class="toc-h2">
+                    <td>3.4</td>
+                    <td><a href="#section-3.4">Variation Schemata</a></td>
+                </tr>
+                <tr class="toc-h3">
+                    <td>3.4.1</td>
+                    <td><a href="#section-3.4.1">Metadata for Code Variations</a></td>
+                </tr>
+                <tr class="toc-h3">
+                    <td>3.4.2</td>
+                    <td><a href="#section-3.4.2">Minimal Valid Variation Schema</a></td>
+                </tr>
+                <tr class="toc-h3">
+                    <td>3.4.3</td>
+                    <td><a href="#section-3.4.3">Minimal Practical Variation Schema</a></td>
+                </tr>
+                <tr class="toc-h2">
+                    <td>3.5</td>
+                    <td><a href="#section-3.5">State Variants</a></td>
+                </tr>
+                <tr class="toc-h2">
+                    <td>3.6</td>
+                    <td><a href="#section-3.6">State Parameters</a></td>
+                </tr>
+                <tr class="toc-h2">
+                    <td>3.7</td>
+                    <td><a href="#section-3.7">Phantom Instrumentation</a></td>
+                </tr>
+                <tr class="toc-h2">
+                    <td>3.8</td>
+                    <td><a href="#section-3.8">Variation Concurrency</a></td>
+                </tr>
+                <tr class="toc-h3">
+                    <td>3.8.1</td>
+                    <td><a href="#section-3.8.1">Motivation</a></td>
+                </tr>
+                <tr class="toc-h3">
+                    <td>3.8.2</td>
+                    <td><a href="#section-3.8.2">Disjoint Concurrency</a></td>
+                </tr>
+                <tr class="toc-h3">
+                    <td>3.8.3</td>
+                    <td><a href="#section-3.8.3">Conjoint Concurrency</a></td>
+                </tr>
+                <tr class="toc-h1">
+                    <td>4</td>
+                    <td><a href="#section-4">Variant Runtime</a></td>
+                </tr>
+                <tr class="toc-h2">
+                    <td>4.1</td>
+                    <td><a href="#section-4.1">The Lifecycle of a State Request</a></td>
+                </tr>
+                <tr class="toc-h3">
+                    <td>4.1.1</td>
+                    <td><a href="#section-4.1.1">Variant Session</a></td>
+                </tr>
+                <tr class="toc-h3">
+                    <td>4.1.2</td>
+                    <td><a href="#section-4.1.2">State Request</a></td>
+                </tr>
+                <tr class="toc-h2">
+                    <td>4.2</td>
+                    <td><a href="#section-4.2">Session Qualification</a></td>
+                </tr>
+                <tr class="toc-h3">
+                    <td>4.2.1</td>
+                    <td><a href="#section-4.2.1">How Variant Qualifies Sessions</a></td>
+                </tr>
+                <tr class="toc-h3">
+                    <td>4.2.2</td>
+                    <td><a href="#section-4.2.2">Qualification Longevity</a></td>
+                </tr>
+                <tr class="toc-h2">
+                    <td>4.3</td>
+                    <td><a href="#section-4.3">Session Targeting</a></td>
+                </tr>
+                <tr class="toc-h3">
+                    <td>4.3.1</td>
+                    <td><a href="#section-4.3.1">How Variant TargetsSessions</a></td>
+                </tr>
+                <tr class="toc-h3">
+                    <td>4.3.2</td>
+                    <td><a href="#section-4.3.2">Targeting Longevity</a></td>
+                </tr>
+                <tr class="toc-h3">
+                    <td>4.3.3</td>
+                    <td><a href="#section-4.3.3">Metadata Modifications</a></td>
+                </tr>
+                <tr class="toc-h2">
+                    <td>4.4</td>
+                    <td><a href="#section-4.4">Schema Management</a></td>
+                </tr>
+                <tr class="toc-h2">
+                    <td>4.5</td>
+                    <td><a href="#section-4.5">Trace Event Logging</a></td>
+                </tr>
+                <tr class="toc-h1">
+                    <td>5</td>
+                    <td><a href="#section-5">Extending Variant Server</a></td>
+                </tr>
+                <tr class="toc-h2">
+                    <td>5.1</td>
+                    <td><a href="#section-5.1">Lifecycle Hooks</a></td>
+                </tr>
+                <tr class="toc-h2">
+                    <td>5.2</td>
+                    <td><a href="#section-5.2">Trace Event Flushers</a></td>
+                </tr>
+                <tr class="toc-h1">
+                    <td>A</td>
+                    <td><a href="#appendix-a">Analyzing Variant Controlled Experiments</a></td>
+                </tr>
+                <tr class="toc-h2">
+                    <td>A.1</td>
+                    <td><a href="#appendix-a.1">Trace Event Data Aggregation</a></td>
+                </tr>
+                <tr class="toc-h2">
+                    <td>A.2</td>
+                    <td><a href="#appendix-a.2">Statistical Analysis</a></td>
+                </tr>
+                </tbody>
+            </table>
         </div>
 
         <div class="column rightcol">
