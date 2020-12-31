@@ -170,7 +170,7 @@ pre, code {
 pre {
 	margin-bottom: 16px;
     padding: 8px 6px;
-	overflow-x: scroll;
+	overflow-x: auto;
 	border: 1px solid #ddd;
 	width: 100%;
 }
