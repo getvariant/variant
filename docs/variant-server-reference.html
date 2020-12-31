@@ -1,182 +1,186 @@
-<div id="variant-doc-header">
-<h3 class="variant-crumbs"><a href="/">Variant AIM Server</a> ⟫ <a href="/resources">Resources</a> ⟫ <a href="/resources/docs">Documentation</a> ⟫ <a href="/resources/docs/0-10">0.10</a> ⟫ <a href="/resources/docs/0-10/application-iteration-server">AIM Server</a> ⟫ Reference</h3>
-<h1>Variant Application Iteration Server Reference</h1>
-<h3>Release 0.10.3, December 2019</h3>
-See also: <a href="/javadoc/0.10">Variant API JavaDoc</a> | <a href="/resources/docs/0-10/application-iteration-server/user-guide">Variant Server User Guide</a>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <link type="text/css" rel="stylesheet" href="css/variant.css" />
+  <meta charset="UTF-8">
+  <title>CVM Server Reference | Variant</title>
+</head>
+<body>
 
-</div>
-<div class="variant-columns">
-<div id="variant-toc" class="variant-column variant-leftcol">
-<h2><span class="variant-underlined">Table of Contents</span></h2>
-<table>
-<tbody>
-<tr class="variant-toc-h1">
-<td>1</td>
-<td><a href="#section-1">Variant Server Installation</a></td>
-</tr>
-<tr class="variant-toc-h1">
-<td>2</td>
-<td><a href="#section-2">Variant Server Configuration</a></td>
-</tr>
-<tr class="variant-toc-h2">
-<td>2.1</td>
-<td><a href="#section-2.1">Sources Of Configuration</a></td>
-</tr>
-<tr class="variant-toc-h2">
-<td>2.2</td>
-<td><a href="#section-2.2">Variant Server Configuration Properties</a></td>
-</tr>
-<tr class="variant-toc-h1">
-<td>3</td>
-<td><a href="#section-3">Variation Schema Grammar</a></td>
-</tr>
-<tr class="variant-toc-h2">
-<td>3.1</td>
-<td><a href="#section-3.1">Syntax</a></td>
-</tr>
-<tr class="variant-toc-h2">
-<td>3.2</td>
-<td><a href="#section-3.2">General Structure</a></td>
-</tr>
-<tr class="variant-toc-h2">
-<td>3.3</td>
-<td><a href="#section-3.3"><code>META</code> Section</a></td>
-</tr>
-<tr class="variant-toc-h2">
-<td>3.4</td>
-<td><a href="#section-3.4">Lifecycle Hooks</a></td>
-</tr>
-<tr class="variant-toc-h2">
-<td>3.5</td>
-<td><a href="#section-3.5"><code>STATES</code> Section</a></td>
-</tr>
-<tr class="variant-toc-h2">
-<td>3.6</td>
-<td><a href="#section-3.6">State Parameters</a></td>
-</tr>
-<tr class="variant-toc-h2">
-<td>3.7</td>
-<td><a href="#section-3.7"><code>VARIATIONS</code> Section</a></td>
-</tr>
-<tr class="variant-toc-h3">
-<td>3.7.1</td>
-<td><a href="#section-3.7.1">Variations</a></td>
-</tr>
-<tr class="variant-toc-h3">
-<td>3.7.2</td>
-<td><a href="#section-3.7.2">Variation Experiences</a></td>
-</tr>
-<tr class="variant-toc-h3">
-<td>3.7.3</td>
-<td><a href="#section-3.7.3">Variation On-States</a></td>
-</tr>
-<tr class="variant-toc-h3">
-<td>3.7.4</td>
-<td><a href="#section-3.7.4">State Variants</a></td>
-</tr>
-<tr class="variant-toc-h1">
-<td>4</td>
-<td><a href="#section-4">Server Extension API</a></td>
-</tr>
-<tr class="variant-toc-h2">
-<td>4.1</td>
-<td><a href="#section-4.1">Lifecycle Hooks</a></td>
-</tr>
-<tr class="variant-toc-h3">
-<td>4.1.1</td>
-<td><a href="#section-4.1.1">Lifecycle Events</a></td>
-</tr>
-<tr class="variant-toc-h3">
-<td>4.1.2</td>
-<td><a href="#section-4.1.2">Hooks' Instantiation and Scope</a></td>
-</tr>
-<tr class="variant-toc-h3">
-<td>4.1.3</td>
-<td><a href="#section-4.1.3">Hook Chaining</a></td>
-</tr>
-<tr class="variant-toc-h3">
-<td>4.1.4</td>
-<td><a href="#section-4.1.4">Custom Lifecycle Hooks</a></td>
-</tr>
-<tr class="variant-toc-h2">
-<td>4.2</td>
-<td><a href="#section-4.2">Trace Event Flushers</a></td>
-</tr>
-<tr class="variant-toc-h2">
-<td>4.3</td>
-<td><a href="#section-4.3">Developing for the ExtAPI</a></td>
-</tr>
-<tr class="variant-toc-h2">
-<td>4.4</td>
-<td><a href="#section-4.4">The Standard Extension Library</a></td>
-</tr>
-<tr class="variant-toc-h3">
-<td>4.4.1</td>
-<td><a href="#section-4.4.1">Package <code>com.variant.std.demo</code></a></td>
-</tr>
-<tr class="variant-toc-h3">
-<td>4.4.2</td>
-<td><a href="#section-4.4.2">Package <code>com.variant.std.flush</code></a></td>
-</tr>
-</tbody>
-</table>
-</div>
-<div class="variant-column variant-rightcol">
-<div id="variant-doc-body">
+<div style="width: 900px; margin: auto; overflow: scroll;">
 
-<a class="variant-header-offset" name="section-1"></a>
-<h1><span class="variant-underlined">1<span class="indent"></span>Variant Server Installation</span></h1>
-Variant server is entirely self-contained and does not have any external dependencies. It requires Java runtime 8 or later. To install Variant server:
+  <div class="columns">
+    <div id="toc" class="column leftcol">
+      <h2><span class="underlined">Table of Contents</span></h2>
+      <table>
+        <tbody>
+        <tr class="toc-h1">
+          <td>1</td>
+          <td><a href="#section-1">Variant Server Installation</a></td>
+        </tr>
+        <tr class="toc-h1">
+          <td>2</td>
+          <td><a href="#section-2">Variant Server Configuration</a></td>
+        </tr>
+        <tr class="toc-h2">
+          <td>2.1</td>
+          <td><a href="#section-2.1">Sources Of Configuration</a></td>
+        </tr>
+        <tr class="toc-h2">
+          <td>2.2</td>
+          <td><a href="#section-2.2">Variant Server Configuration Properties</a></td>
+        </tr>
+        <tr class="toc-h1">
+          <td>3</td>
+          <td><a href="#section-3">Variation Schema Grammar</a></td>
+        </tr>
+        <tr class="toc-h2">
+          <td>3.1</td>
+          <td><a href="#section-3.1">Syntax</a></td>
+        </tr>
+        <tr class="toc-h2">
+          <td>3.2</td>
+          <td><a href="#section-3.2">General Structure</a></td>
+        </tr>
+        <tr class="toc-h2">
+          <td>3.3</td>
+          <td><a href="#section-3.3"><code>META</code> Section</a></td>
+        </tr>
+        <tr class="toc-h2">
+          <td>3.4</td>
+          <td><a href="#section-3.4">Lifecycle Hooks</a></td>
+        </tr>
+        <tr class="toc-h2">
+          <td>3.5</td>
+          <td><a href="#section-3.5"><code>STATES</code> Section</a></td>
+        </tr>
+        <tr class="toc-h2">
+          <td>3.6</td>
+          <td><a href="#section-3.6">State Parameters</a></td>
+        </tr>
+        <tr class="toc-h2">
+          <td>3.7</td>
+          <td><a href="#section-3.7"><code>VARIATIONS</code> Section</a></td>
+        </tr>
+        <tr class="toc-h3">
+          <td>3.7.1</td>
+          <td><a href="#section-3.7.1">Variations</a></td>
+        </tr>
+        <tr class="toc-h3">
+          <td>3.7.2</td>
+          <td><a href="#section-3.7.2">Variation Experiences</a></td>
+        </tr>
+        <tr class="toc-h3">
+          <td>3.7.3</td>
+          <td><a href="#section-3.7.3">Variation On-States</a></td>
+        </tr>
+        <tr class="toc-h3">
+          <td>3.7.4</td>
+          <td><a href="#section-3.7.4">State Variants</a></td>
+        </tr>
+        <tr class="toc-h1">
+          <td>4</td>
+          <td><a href="#section-4">Server Extension API</a></td>
+        </tr>
+        <tr class="toc-h2">
+          <td>4.1</td>
+          <td><a href="#section-4.1">Lifecycle Hooks</a></td>
+        </tr>
+        <tr class="toc-h3">
+          <td>4.1.1</td>
+          <td><a href="#section-4.1.1">Lifecycle Events</a></td>
+        </tr>
+        <tr class="toc-h3">
+          <td>4.1.2</td>
+          <td><a href="#section-4.1.2">Hooks' Instantiation and Scope</a></td>
+        </tr>
+        <tr class="toc-h3">
+          <td>4.1.3</td>
+          <td><a href="#section-4.1.3">Hook Chaining</a></td>
+        </tr>
+        <tr class="toc-h3">
+          <td>4.1.4</td>
+          <td><a href="#section-4.1.4">Custom Lifecycle Hooks</a></td>
+        </tr>
+        <tr class="toc-h2">
+          <td>4.2</td>
+          <td><a href="#section-4.2">Trace Event Flushers</a></td>
+        </tr>
+        <tr class="toc-h2">
+          <td>4.3</td>
+          <td><a href="#section-4.3">Developing for the ExtAPI</a></td>
+        </tr>
+        <tr class="toc-h2">
+          <td>4.4</td>
+          <td><a href="#section-4.4">The Standard Extension Library</a></td>
+        </tr>
+        <tr class="toc-h3">
+          <td>4.4.1</td>
+          <td><a href="#section-4.4.1">Package <code>com.variant.std.demo</code></a></td>
+        </tr>
+        <tr class="toc-h3">
+          <td>4.4.2</td>
+          <td><a href="#section-4.4.2">Package <code>com.variant.std.flush</code></a></td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="column rightcol">
+      <div id="doc-body">
 
-<span class="tombstone">∎</span><a class="nowrap" href="/get">Download</a> Variant Server distribution.
+        <a class="header-offset" name="section-1"></a>
+        <h1><span class="underlined">1<span class="indent"></span>Variant Server Installation</span></h1>
+        Variant server is entirely self-contained and does not have any external dependencies. It requires Java runtime 8 or later. To install Variant server:
 
-<span class="tombstone">∎</span> Unpack the distribution in a directory of your choice by running
-<pre><code class="shell">
+        <span class="tombstone">∎</span><a class="nowrap" href="/get">Download</a> Variant Server distribution.
+
+        <span class="tombstone">∎</span> Unpack the distribution in a directory of your choice by running
+        <pre><code class="shell">
 $ unzip /path/to/variant-server-&lt;release&gt;.zip
 </code></pre>
-This will create a server installation with the following directory structure:
-<table class="variant-table">
-<tbody>
-<tr>
-<th>Directory</th>
-<th>Description</th>
-</tr>
-<tr>
-<td><code>bin/</code></td>
-<td>Contains the server startup shell script <code>variant.sh</code> along with dependent scripts which you should never have to use.</td>
-</tr>
-<tr>
-<td><code>conf/</code></td>
-<td>Configuration directory, containing the server config file <code>variant.conf</code>, logging config file <code>logback.xml</code>, and other dependent configuration artifacts.</td>
-</tr>
-<tr>
-<td><code>lib/</code></td>
-<td>System libraries.</td>
-</tr>
-<tr>
-<td><code>ext/</code></td>
-<td>User extensions, developed on top of the <a href="#section-4">Extension API</a>, and their dependencies.  The distribution contains the <a href="#section-4.4">the standard extension</a> library <code>variant-extapi-standard-&lt;release&gt;.jar</code>. All JAR files in the <code>ext/</code> directory are added to Variant server's runtime classpath.</td>
-</tr>
-<tr>
-<td><code>log/</code></td>
-<td>Default destination for the server log files.</td>
-</tr>
-<tr>
-<td><code>schemata/</code></td>
-<td>Default location of the variation schema files. The distribution contains the <code>example.schema</code> file.</td>
-</tr>
-</tbody>
-</table>
-<span class="tombstone">∎</span>Change directory to Variant server top level directory:
-<pre><code class="shell">
+        This will create a server installation with the following directory structure:
+        <table class="table">
+          <tbody>
+          <tr>
+            <th>Directory</th>
+            <th>Description</th>
+          </tr>
+          <tr>
+            <td><code>bin/</code></td>
+            <td>Contains the server startup shell script <code>variant.sh</code> along with dependent scripts which you should never have to use.</td>
+          </tr>
+          <tr>
+            <td><code>conf/</code></td>
+            <td>Configuration directory, containing the server config file <code>variant.conf</code>, logging config file <code>logback.xml</code>, and other dependent configuration artifacts.</td>
+          </tr>
+          <tr>
+            <td><code>lib/</code></td>
+            <td>System libraries.</td>
+          </tr>
+          <tr>
+            <td><code>ext/</code></td>
+            <td>User extensions, developed on top of the <a href="#section-4">Extension API</a>, and their dependencies.  The distribution contains the <a href="#section-4.4">the standard extension</a> library <code>variant-extapi-standard-&lt;release&gt;.jar</code>. All JAR files in the <code>ext/</code> directory are added to Variant server's runtime classpath.</td>
+          </tr>
+          <tr>
+            <td><code>log/</code></td>
+            <td>Default destination for the server log files.</td>
+          </tr>
+          <tr>
+            <td><code>schemata/</code></td>
+            <td>Default location of the variation schema files. The distribution contains the <code>example.schema</code> file.</td>
+          </tr>
+          </tbody>
+        </table>
+        <span class="tombstone">∎</span>Change directory to Variant server top level directory:
+        <pre><code class="shell">
 $ cd variant-server-&lt;release&gt;
 </code></pre>
-<span class="tombstone">∎</span>Start Variant server in the foreground:
-<pre><code class="shell">
+        <span class="tombstone">∎</span>Start Variant server in the foreground:
+        <pre><code class="shell">
 $ bin/variant.sh start
 </code></pre>
-If all goes well, the server console output should look something like this:
-<pre><code class="json">
+        If all goes well, the server console output should look something like this:
+        <pre><code class="json">
 $ bin/variant.sh start
 2019-12-10 09:54:44,477 INFO - c.v.s.boot.ConfigLoader$ - Found  config resource [/variant.conf] as [/Users/Igor/soft/variant-server-0.10.2/conf/variant.conf]
 2019-12-10 09:54:45,285 INFO - c.v.s.schema.SchemaDeployerFileSystem - Mounted schemata directory [/Users/Igor/soft/variant-server-0.10.2/schemata]
@@ -184,14 +188,14 @@ $ bin/variant.sh start
 2019-12-10 09:54:45,490 INFO - c.v.s.schema.Schemata - [422] Deployed schema [exampleSchema] from file [example.schema]
 2019-12-10 09:54:45,494 INFO - c.v.s.boot.VariantServerImpl - [433] Variant AIM Server release 0.10.2 started on port [5377] in 2.131s
 </code></pre>
-At this point, the server is ready to deploy variation schema files, which you copy into the <code>schemata/</code> directory.
+        At this point, the server is ready to deploy variation schema files, which you copy into the <code>schemata/</code> directory.
 
-By default, the server attaches to port 5377. To start the server on a different port, pass the port number in the <code>variant.http.port</code> on the startup command line. For example, to start on port 9999:
-<pre><code class="shell">
+        By default, the server attaches to port 5377. To start the server on a different port, pass the port number in the <code>variant.http.port</code> on the startup command line. For example, to start on port 9999:
+        <pre><code class="shell">
 $ bin/variant.sh start -Dvariant.http.port=9999
 </code></pre>
-<code class="shell">You may always ping a running server by typing its URL into a Web browser, or with the <code>curl</code> command:
-<pre class="shell"><code>
+        <code class="shell">You may always ping a running server by typing its URL into a Web browser, or with the <code>curl</code> command:
+          <pre class="shell"><code>
 $ curl localhost:5377
 {
   "name" : "Variant AIM Server",
@@ -210,145 +214,145 @@ $ curl localhost:5377
   } ]
 }
 </code></pre>
-A running server can be stopped by typing <code>Control-C</code> in the shell where it was started, or by typing in a different shell window
-<pre><code class="shell">
+          A running server can be stopped by typing <code>Control-C</code> in the shell where it was started, or by typing in a different shell window
+          <pre><code class="shell">
 $ bin/variant.sh stop
 </code></pre>
-<a class="variant-header-offset" name="section-2"></a>
-<h1><span class="variant-underlined">2<span class="indent"></span>Variant Server Configuration</span></h1>
-<a class="variant-header-offset" name="section-2.1"></a>
-<h2><span class="variant-underlined">2.1<span class="indent"></span>Sources Of Configuration</span></h2>
-Variant server is configured via configuration properties organized in conf files. At startup, Variant server looks for configuration in the file <code>conf/variant.conf</code>. If it is found, its contents override the default settings, listed in the next section. If you need to modify any configuration properties, you may either update them directly in the <code>conf/variant.conf</code> file, or provide an alternate configuration file whose contents take precedence over those of the  <code>conf/variant.conf</code> file.
+          <a class="header-offset" name="section-2"></a>
+          <h1><span class="underlined">2<span class="indent"></span>Variant Server Configuration</span></h1>
+          <a class="header-offset" name="section-2.1"></a>
+          <h2><span class="underlined">2.1<span class="indent"></span>Sources Of Configuration</span></h2>
+          Variant server is configured via configuration properties organized in conf files. At startup, Variant server looks for configuration in the file <code>conf/variant.conf</code>. If it is found, its contents override the default settings, listed in the next section. If you need to modify any configuration properties, you may either update them directly in the <code>conf/variant.conf</code> file, or provide an alternate configuration file whose contents take precedence over those of the  <code>conf/variant.conf</code> file.
 
-The alternate config file may be provided on the command line either as a file system file:
-<pre><code class="shell">
+          The alternate config file may be provided on the command line either as a file system file:
+          <pre><code class="shell">
 $ variant.sh start -Dvariant.config.file=/path/to/alt/config/as/file
 </code></pre>
-or as a Java classpath resource:
-<pre><code class="shell">
+          or as a Java classpath resource:
+          <pre><code class="shell">
 $ variant.sh start -Dvariant.config.resource=resource-name
 </code></pre>
-The simplest way to add a resource to the server classpath is to place it in the server's <code>conf</code> directory, which is added to the server's runtime classpath at the root level. In other words, the file <code>conf/extra.conf</code> should be referenced as
-<pre><code class="shell">
+          The simplest way to add a resource to the server classpath is to place it in the server's <code>conf</code> directory, which is added to the server's runtime classpath at the root level. In other words, the file <code>conf/extra.conf</code> should be referenced as
+          <pre><code class="shell">
 $ variant.sh start -Dvariant.config.resource=/extra.conf
 </code></pre>
-It is an error to set both <code>variant.config.file</code> and <code>variant.config.resource</code> system properties.
+          It is an error to set both <code>variant.config.file</code> and <code>variant.config.resource</code> system properties.
 
-Finally, each individual config parameter may be overridden from the command line via the JVM system variable of the same name, e.g.:
+          Finally, each individual config parameter may be overridden from the command line via the JVM system variable of the same name, e.g.:
 
-</code>
-<pre><code class="shell"></code>
+        </code>
+        <pre><code class="shell"></code>
 $ variant.sh start -Dvariant.schemata.dir=/Users/Igor/schemata
 </pre>
-<a class="variant-header-offset" name="section-2.2"></a>
-<h2><span class="variant-underlined">2.2<span class="indent"></span>Variant Server Configuration Properties</span></h2>
-The following table lists all config properties recognized by Variant server.
+        <a class="header-offset" name="section-2.2"></a>
+        <h2><span class="underlined">2.2<span class="indent"></span>Variant Server Configuration Properties</span></h2>
+        The following table lists all config properties recognized by Variant server.
 
-<a class="variant-header-offset" name="table-1"></a>
-<table class="variant-table">
-<tbody>
-<tr>
-<th>Property</th>
-<th>Default Value / Description</th>
-</tr>
-<tr>
-<td><code>variant.event.flusher.class.name</code></td>
-<td><code>com.variant.server.api.EventFlusherAppLogger</code>
-Default event flusher implementation, implicitly provided to those variation schemata that do not define their own.</td>
-</tr>
-<tr>
-<td><code>variant.event.flusher.class.init<code></code></code></td>
-<td><code>null</code>
-Arbitrary JSON object, whose parsed representation will be passed to the constructor of the event flusher implementation. Not required by the default <code>com.variant.server.api.EventFlusherAppLogger</code> above.</td>
-</tr>
-<tr>
-<td><code>variant.event.writer.flush.buffers</code></td>
-<td><code>[10,20]</code>
-Min and max number of flush buffers in the event writer buffer cache. The first value is the number of buffers which will be always kept around even if fewer would suffice to keep up with the trace event production rate. Whenever event writer requires more flush buffers than is currently allocated (due to an increased rate of production or deployment of new schema(ta)) additional buffers will be allocated up to the second number.  Whenever the demand for flush buffers drops, additional flush buffers will be deallocated until the total number of buffers reaches the first number again. The second value must be &gt;= the first value.</td>
-</tr>
-<tr>
-<td><code>variant.event.writer.flush.buffer.size</code></td>
-<td><code>500</code>
-Number of trace events each event buffer can hold.</td>
-</tr>
-<tr>
-<td><code>variant.event.writer.max.delay</code></td>
-<td><code>30</code>
-Maximum delay in seconds between the time when a trace event is triggered and the time it is passed to an event flusher. This ensures that events triggered by a low-traffic schema and not stuck in the asynchronous event writer for exessively long periods of time.</td>
-</tr>
-<tr>
-<td><code>variant.event.writer.flush.pool.size</code></td>
-<td><strong>Twice the number of available cores.</strong>
-The size of the flush thread pool. Event writer schedules calls to the <code>flush()</code> methods to be executed concurrently in a dedicated thread pool of this size. Buffers are flushed in the order they fill up. The flush pool is shared between all schemata.</td>
-</tr>
-<tr>
-<td><code>variant.http.port</code></td>
-<td><code>5377</code>
-Variant server HTTP port.</td>
-</tr>
-<tr>
-<td><code>variant.https.port</code></td>
-<td><code>5378</code>
-Variant server HTTPS port.</td>
-</tr>
-<tr>
-<td><code>variant.schemata.dir</code></td>
-<td><code>"schemata"</code>
-The directory where Variant server looks for variation schemata, as an OS file name. If starts with a slash, interpreted as an absolute path. Otherwise, as relative path to the server startup directory.</td>
-</tr>
-<tr>
-<td><code>variant.session.timeout</code></td>
-<td><code>900</code>
-Session timeout. User sessions are expired after this many seconds of inactivity.</td>
-</tr>
-<tr>
-<td><code>variant.session.vacuum.interval</code></td>
-<td><code>10</code>
-The session vacuum thread is woken up no less frequently than this many seconds.</td>
-</tr>
-</tbody>
-</table>
-<a class="variant-header-offset" name="section-3"></a>
-<h1><span class="variant-underlined">3<span class="indent"></span>Variation Schema Grammar</span></h1>
-Variant manages code variation metadata in human readable files, called <em>schema files</em>. Each schema file contains a single code variation schema describing a set of related code variations instrumented on some host application using familiar JSON syntax. This chapter provides detailed information on the schema grammar.
+        <a class="header-offset" name="table-1"></a>
+        <table class="table">
+          <tbody>
+          <tr>
+            <th>Property</th>
+            <th>Default Value / Description</th>
+          </tr>
+          <tr>
+            <td><code>variant.event.flusher.class.name</code></td>
+            <td><code>com.variant.server.api.EventFlusherAppLogger</code>
+              Default event flusher implementation, implicitly provided to those variation schemata that do not define their own.</td>
+          </tr>
+          <tr>
+            <td><code>variant.event.flusher.class.init<code></code></code></td>
+            <td><code>null</code>
+              Arbitrary JSON object, whose parsed representation will be passed to the constructor of the event flusher implementation. Not required by the default <code>com.variant.server.api.EventFlusherAppLogger</code> above.</td>
+          </tr>
+          <tr>
+            <td><code>variant.event.writer.flush.buffers</code></td>
+            <td><code>[10,20]</code>
+              Min and max number of flush buffers in the event writer buffer cache. The first value is the number of buffers which will be always kept around even if fewer would suffice to keep up with the trace event production rate. Whenever event writer requires more flush buffers than is currently allocated (due to an increased rate of production or deployment of new schema(ta)) additional buffers will be allocated up to the second number.  Whenever the demand for flush buffers drops, additional flush buffers will be deallocated until the total number of buffers reaches the first number again. The second value must be &gt;= the first value.</td>
+          </tr>
+          <tr>
+            <td><code>variant.event.writer.flush.buffer.size</code></td>
+            <td><code>500</code>
+              Number of trace events each event buffer can hold.</td>
+          </tr>
+          <tr>
+            <td><code>variant.event.writer.max.delay</code></td>
+            <td><code>30</code>
+              Maximum delay in seconds between the time when a trace event is triggered and the time it is passed to an event flusher. This ensures that events triggered by a low-traffic schema and not stuck in the asynchronous event writer for exessively long periods of time.</td>
+          </tr>
+          <tr>
+            <td><code>variant.event.writer.flush.pool.size</code></td>
+            <td><strong>Twice the number of available cores.</strong>
+              The size of the flush thread pool. Event writer schedules calls to the <code>flush()</code> methods to be executed concurrently in a dedicated thread pool of this size. Buffers are flushed in the order they fill up. The flush pool is shared between all schemata.</td>
+          </tr>
+          <tr>
+            <td><code>variant.http.port</code></td>
+            <td><code>5377</code>
+              Variant server HTTP port.</td>
+          </tr>
+          <tr>
+            <td><code>variant.https.port</code></td>
+            <td><code>5378</code>
+              Variant server HTTPS port.</td>
+          </tr>
+          <tr>
+            <td><code>variant.schemata.dir</code></td>
+            <td><code>"schemata"</code>
+              The directory where Variant server looks for variation schemata, as an OS file name. If starts with a slash, interpreted as an absolute path. Otherwise, as relative path to the server startup directory.</td>
+          </tr>
+          <tr>
+            <td><code>variant.session.timeout</code></td>
+            <td><code>900</code>
+              Session timeout. User sessions are expired after this many seconds of inactivity.</td>
+          </tr>
+          <tr>
+            <td><code>variant.session.vacuum.interval</code></td>
+            <td><code>10</code>
+              The session vacuum thread is woken up no less frequently than this many seconds.</td>
+          </tr>
+          </tbody>
+        </table>
+        <a class="header-offset" name="section-3"></a>
+        <h1><span class="underlined">3<span class="indent"></span>Variation Schema Grammar</span></h1>
+        Variant manages code variation metadata in human readable files, called <em>schema files</em>. Each schema file contains a single code variation schema describing a set of related code variations instrumented on some host application using familiar JSON syntax. This chapter provides detailed information on the schema grammar.
 
-<a class="variant-header-offset" name="section-3.1"></a>
-<h2><span class="variant-underlined">3.1<span class="indent"></span>Syntax</span></h2>
-The following conventions are used throughout this chapter:
-<table class="variant-table">
-<tbody>
-<tr>
-<td><em><code>any-string</code></em></td>
-<td>Arbitrary, case sensitive, quoted Unicode string. Follow JSON's escape rules if you want a string contain special characters.</td>
-</tr>
-<tr>
-<td><em><code>name-string</code></em></td>
-<td>Case insensitive, quoted string containing only Unicode letters, digits or the '_' (underscore) and not starting with a digit. The name <code>mySchema</code> in the above example is a <em><code>name-string</code></em>. Variant server will emit a parse time error if a non-conforming string is found where a <em><code>name-string</code></em> is expected.</td>
-</tr>
-<tr>
-<td><em><code>boolean</code></em></td>
-<td>JSON Boolean value of <code>true</code> or <code>false</code>.</td>
-</tr>
-<tr>
-<td><em><code>number</code></em></td>
-<td>JSON numeric value.</td>
-</tr>
-<tr>
-<td><em><code>literal</code></em></td>
-<td>Arbitrary JSON literal. This may be a primitive type, an object, or an array.</td>
-</tr>
-<tr>
-<td><em><code>object@type</code></em></td>
-<td>JSON object literal enclosed in <code>{...}</code> of a particular type.</td>
-</tr>
-<tr>
-<td><em><code>[object@type]</code></em></td>
-<td>JSON array literal enclosed in <code>[...]</code> of <code>object@type</code> objects.</td>
-</tr>
-</tbody>
-</table>
-Variation schema format extends the standard JSON grammar by allowing comments. A single-line comment starts with <code>//</code> and continues to the end of line, and a multi-line comment starts with <code>/*</code> and ends with <code>*/</code>. <code>//</code> style comments can be nested inside <code>/*</code> style comments.
-<pre><code class="json">
+        <a class="header-offset" name="section-3.1"></a>
+        <h2><span class="underlined">3.1<span class="indent"></span>Syntax</span></h2>
+        The following conventions are used throughout this chapter:
+        <table class="table">
+          <tbody>
+          <tr>
+            <td><em><code>any-string</code></em></td>
+            <td>Arbitrary, case sensitive, quoted Unicode string. Follow JSON's escape rules if you want a string contain special characters.</td>
+          </tr>
+          <tr>
+            <td><em><code>name-string</code></em></td>
+            <td>Case insensitive, quoted string containing only Unicode letters, digits or the '_' (underscore) and not starting with a digit. The name <code>mySchema</code> in the above example is a <em><code>name-string</code></em>. Variant server will emit a parse time error if a non-conforming string is found where a <em><code>name-string</code></em> is expected.</td>
+          </tr>
+          <tr>
+            <td><em><code>boolean</code></em></td>
+            <td>JSON Boolean value of <code>true</code> or <code>false</code>.</td>
+          </tr>
+          <tr>
+            <td><em><code>number</code></em></td>
+            <td>JSON numeric value.</td>
+          </tr>
+          <tr>
+            <td><em><code>literal</code></em></td>
+            <td>Arbitrary JSON literal. This may be a primitive type, an object, or an array.</td>
+          </tr>
+          <tr>
+            <td><em><code>object@type</code></em></td>
+            <td>JSON object literal enclosed in <code>{...}</code> of a particular type.</td>
+          </tr>
+          <tr>
+            <td><em><code>[object@type]</code></em></td>
+            <td>JSON array literal enclosed in <code>[...]</code> of <code>object@type</code> objects.</td>
+          </tr>
+          </tbody>
+        </table>
+        Variation schema format extends the standard JSON grammar by allowing comments. A single-line comment starts with <code>//</code> and continues to the end of line, and a multi-line comment starts with <code>/*</code> and ends with <code>*/</code>. <code>//</code> style comments can be nested inside <code>/*</code> style comments.
+        <pre><code class="json">
 /*
  * This is a comment.
  */
@@ -358,33 +362,33 @@ Variation schema format extends the standard JSON grammar by allowing comments. 
     'name':'login',  // And this too.
   ...
 </code></pre>
-<code class="json"><code></code>
+        <code class="json"><code></code>
 
-<code>Property names, i.e. the strings to the left of the ‘:’, are the schema keywords. Keywords are case-insensitive: in the listing above, <code>'States'</code> or <code>'NAME'</code> will also work.
+          <code>Property names, i.e. the strings to the left of the ‘:’, are the schema keywords. Keywords are case-insensitive: in the listing above, <code>'States'</code> or <code>'NAME'</code> will also work.
 
-<a class="variant-header-offset" name="section-3.2"></a>
-<h2><span class="variant-underlined">3.2<span class="indent"></span>General Structure</span></h2>
-A variation schema is made up of three sections: <code>meta</code>, <code>states</code> and <code>tests</code>, which must appear in this order:
+            <a class="header-offset" name="section-3.2"></a>
+            <h2><span class="underlined">3.2<span class="indent"></span>General Structure</span></h2>
+            A variation schema is made up of three sections: <code>meta</code>, <code>states</code> and <code>tests</code>, which must appear in this order:
 
-<a class="variant-header-offset" name="listing-1"></a>
-<pre><code>
+            <a class="header-offset" name="listing-1"></a>
+            <pre><code>
 <strong>schema-spec</strong> :=
 {
   'meta':<em>object@<a href="#listing-2">meta-spec</a></em>,
   'states':[<em>object@<a href="#listing-5">state-spec</a></em>],
   'variations':[<em>object@<a href="#listing-7">variation-spec</a></em>]
 }</code></pre>
-<code>
-</code><code></code>
-<p class="variant-fig-footer">Listing 1. Basic structure of a variation schema.</p>
-Variant schema parser is single-pass, so no forward references are allowed. The <code>meta</code> section must appear first, followed by states, followed by variations, because variation definitions refer back to states. Similarly, referenced variations must be defined before the referring variations.
+            <code>
+            </code><code></code>
+            <p class="fig-footer">Listing 1. Basic structure of a variation schema.</p>
+            Variant schema parser is single-pass, so no forward references are allowed. The <code>meta</code> section must appear first, followed by states, followed by variations, because variation definitions refer back to states. Similarly, referenced variations must be defined before the referring variations.
 
-<a class="variant-header-offset" name="section-3.3"></a>
-<h2><span class="variant-underlined">3.3<span class="indent"></span><code>META</code> Section</span></h2>
-The <code>meta</code> section contains properties which apply to the entire schema:
+            <a class="header-offset" name="section-3.3"></a>
+            <h2><span class="underlined">3.3<span class="indent"></span><code>META</code> Section</span></h2>
+            The <code>meta</code> section contains properties which apply to the entire schema:
 
-<a class="variant-header-offset" name="listing-2"></a>
-<pre><code>
+            <a class="header-offset" name="listing-2"></a>
+            <pre><code>
 <strong>meta-spec</strong> :=
   {
     'name':<em><a href="#section-3.1">name-string</a></em>,
@@ -393,92 +397,92 @@ The <code>meta</code> section contains properties which apply to the entire sche
     'hooks':[<em>object@<a href="#listing-4">hook-spec</a></em>]<em></em>
   }
 </code></pre>
-<code>
-</code><code></code>
-<table class="variant-table">
-<tbody>
-<tr>
-<th>Property</th>
-<th>Type</th>
-<th>Description</th>
-<th>Required</th>
-<th>Default</th>
-</tr>
-<tr>
-<td><code>name</code></td>
-<td><a href="#section-3.1"><code>name-string</code></a></td>
-<td>The name by which this schema will be connected to by clients.</td>
-<td>Yes</td>
-<td></td>
-</tr>
-<tr>
-<td><code>comment</code></td>
-<td><a href="#section-3.1"><code>any-string</code></a></td>
-<td>A comment about this schema.</td>
-<td>No</td>
-<td>—</td>
-</tr>
-<tr>
-<td><code>flusher</code></td>
-<td>Object of type <a href="#listing-3"><code>flusher-spec</code></a></td>
-<td>An event flusher specification defines a schema-specific trace event flusher. Applies to all trace events generated by the variations configured by this schema.</td>
-<td>No</td>
-<td>As configured by the <a href="#section-2.2">server config properties</a>.</td>
-</tr>
-<tr>
-<td><code>hooks</code></td>
-<td>Array of objects of type <a href="#listing-4"><code>hook-spec</code></a></td>
-<td>A list of meta-scoped lifecycle hook specifications. Hooks defined at this scope apply to all states and all variations defined by this schema.</td>
-<td>No</td>
-<td>—</td>
-</tr>
-</tbody>
-</table>
-<p class="variant-fig-footer">Listing 2. The <code></code> section of a variation schema.</p>
-The flusher specification defines a schema-specific event flusher:
+            <code>
+            </code><code></code>
+            <table class="table">
+              <tbody>
+              <tr>
+                <th>Property</th>
+                <th>Type</th>
+                <th>Description</th>
+                <th>Required</th>
+                <th>Default</th>
+              </tr>
+              <tr>
+                <td><code>name</code></td>
+                <td><a href="#section-3.1"><code>name-string</code></a></td>
+                <td>The name by which this schema will be connected to by clients.</td>
+                <td>Yes</td>
+                <td></td>
+              </tr>
+              <tr>
+                <td><code>comment</code></td>
+                <td><a href="#section-3.1"><code>any-string</code></a></td>
+                <td>A comment about this schema.</td>
+                <td>No</td>
+                <td>—</td>
+              </tr>
+              <tr>
+                <td><code>flusher</code></td>
+                <td>Object of type <a href="#listing-3"><code>flusher-spec</code></a></td>
+                <td>An event flusher specification defines a schema-specific trace event flusher. Applies to all trace events generated by the variations configured by this schema.</td>
+                <td>No</td>
+                <td>As configured by the <a href="#section-2.2">server config properties</a>.</td>
+              </tr>
+              <tr>
+                <td><code>hooks</code></td>
+                <td>Array of objects of type <a href="#listing-4"><code>hook-spec</code></a></td>
+                <td>A list of meta-scoped lifecycle hook specifications. Hooks defined at this scope apply to all states and all variations defined by this schema.</td>
+                <td>No</td>
+                <td>—</td>
+              </tr>
+              </tbody>
+            </table>
+            <p class="fig-footer">Listing 2. The <code></code> section of a variation schema.</p>
+            The flusher specification defines a schema-specific event flusher:
 
-<a class="variant-header-offset" name="listing-3"></a>
-<pre><code>
+            <a class="header-offset" name="listing-3"></a>
+            <pre><code>
 <strong>flusher-spec</strong> :=
   {
     'class':<em><a href="#section-3.1">any-string</a></em>,
     'init':<em><a href="#section-3.1">literal</a></em>
   }
 </code></pre>
-<table class="variant-table">
-<tbody>
-<tr>
-<th>Property</th>
-<th>Type</th>
-<th>Description</th>
-<th>Required</th>
-<th>Default</th>
-</tr>
-<tr>
-<td><code>class</code></td>
-<td><a href="#section-3.1"><code>any-string</code></a></td>
-<td>Fully qualified name of the implementing class.</td>
-<td>Yes</td>
-<td></td>
-</tr>
-<tr>
-<td><code>init</code></td>
-<td><a href="#section-3.1"><code>literal</code></a></td>
-<td>Flusher's initial state, passed to its constructor.</td>
-<td>No</td>
-<td>—</td>
-</tr>
-</tbody>
-</table>
-<p class="variant-fig-footer">Listing 3. Event flusher specification.</p>
-Each schema gets its own instance of an event flusher, instantiated by Variant server at schema deployment time. The Java class referenced by the <code>class</code> property must be on the server's class path. You may pass arbitrary state data to this instance by supplying the <code>init</code> property, which can be any JSON literal. This init object will be parsed into a <a href="http://lightbend.github.io/config/latest/api/com/typesafe/config/Config.html" target="_blank">Lightbend <code>Config</code>&nbsp;<i class="fa fa-external-link"></i></a> Java object and passed to the constructor of the implementing type, which must be provided by the implementation.
+            <table class="table">
+              <tbody>
+              <tr>
+                <th>Property</th>
+                <th>Type</th>
+                <th>Description</th>
+                <th>Required</th>
+                <th>Default</th>
+              </tr>
+              <tr>
+                <td><code>class</code></td>
+                <td><a href="#section-3.1"><code>any-string</code></a></td>
+                <td>Fully qualified name of the implementing class.</td>
+                <td>Yes</td>
+                <td></td>
+              </tr>
+              <tr>
+                <td><code>init</code></td>
+                <td><a href="#section-3.1"><code>literal</code></a></td>
+                <td>Flusher's initial state, passed to its constructor.</td>
+                <td>No</td>
+                <td>—</td>
+              </tr>
+              </tbody>
+            </table>
+            <p class="fig-footer">Listing 3. Event flusher specification.</p>
+            Each schema gets its own instance of an event flusher, instantiated by Variant server at schema deployment time. The Java class referenced by the <code>class</code> property must be on the server's class path. You may pass arbitrary state data to this instance by supplying the <code>init</code> property, which can be any JSON literal. This init object will be parsed into a <a href="http://lightbend.github.io/config/latest/api/com/typesafe/config/Config.html" target="_blank">Lightbend <code>Config</code>&nbsp;<i class="fa fa-external-link"></i></a> Java object and passed to the constructor of the implementing type, which must be provided by the implementation.
 
-For more information, see <a href="#section-4.2">Section 4.2 Event Flushers</a>.
+            For more information, see <a href="#section-4.2">Section 4.2 Event Flushers</a>.
 
-<a class="variant-header-offset" name="section-3.4"></a>
-<h2><span class="variant-underlined">3.4<span class="indent"></span>Lifecycle Hooks</span></h2>
-<a class="variant-header-offset" name="listing-4"></a>
-<pre><code>
+            <a class="header-offset" name="section-3.4"></a>
+            <h2><span class="underlined">3.4<span class="indent"></span>Lifecycle Hooks</span></h2>
+            <a class="header-offset" name="listing-4"></a>
+            <pre><code>
 <strong>hook-spec</strong> :=
   {
     'name':<em><a href="#section-3.1">name-string</a></em>,
@@ -486,49 +490,49 @@ For more information, see <a href="#section-4.2">Section 4.2 Event Flushers</a>.
     'init':<em><a href="#section-3.1">literal</a></em>
   }
 </code></pre>
-<table class="variant-table">
-<tbody>
-<tr>
-<th>Property</th>
-<th>Type</th>
-<th>Description</th>
-<th>Required</th>
-<th>Default</th>
-</tr>
-<tr>
-<td><code>name</code></td>
-<td><a href="#section-3.1"><code>name-string</code></a></td>
-<td>The name of the hook. Must be unique within its scope.</td>
-<td>Yes</td>
-<td></td>
-</tr>
-<tr>
-<td><code>class</code></td>
-<td><a href="#section-3.1"><code>any-string</code></a></td>
-<td>Fully qualified name of the implementing class.</td>
-<td>Yes</td>
-<td></td>
-</tr>
-<tr>
-<td><code>init</code></td>
-<td><a href="#section-3.1"><code>literal</code></a></td>
-<td>Externalized initial state, passed to the object's constructor.</td>
-<td>No</td>
-<td>—</td>
-</tr>
-</tbody>
-</table>
-<p class="variant-fig-footer">Listing 4. Lifecycle hook specification.</p>
-The Java class referenced by the <code>class</code> property must be on the server's class path. You may pass arbitrary state data to this instance by supplying the <code>init</code> property, which can be any JSON literal. This object will be parsed into a <a href="http://lightbend.github.io/config/latest/api/com/typesafe/config/Config.html" target="_blank">Lightbend <code>Config</code>&nbsp;<i class="fa fa-external-link"></i></a> Java object and passed to the constructor of the implementing type, which must be provided by the implementation.
+            <table class="table">
+              <tbody>
+              <tr>
+                <th>Property</th>
+                <th>Type</th>
+                <th>Description</th>
+                <th>Required</th>
+                <th>Default</th>
+              </tr>
+              <tr>
+                <td><code>name</code></td>
+                <td><a href="#section-3.1"><code>name-string</code></a></td>
+                <td>The name of the hook. Must be unique within its scope.</td>
+                <td>Yes</td>
+                <td></td>
+              </tr>
+              <tr>
+                <td><code>class</code></td>
+                <td><a href="#section-3.1"><code>any-string</code></a></td>
+                <td>Fully qualified name of the implementing class.</td>
+                <td>Yes</td>
+                <td></td>
+              </tr>
+              <tr>
+                <td><code>init</code></td>
+                <td><a href="#section-3.1"><code>literal</code></a></td>
+                <td>Externalized initial state, passed to the object's constructor.</td>
+                <td>No</td>
+                <td>—</td>
+              </tr>
+              </tbody>
+            </table>
+            <p class="fig-footer">Listing 4. Lifecycle hook specification.</p>
+            The Java class referenced by the <code>class</code> property must be on the server's class path. You may pass arbitrary state data to this instance by supplying the <code>init</code> property, which can be any JSON literal. This object will be parsed into a <a href="http://lightbend.github.io/config/latest/api/com/typesafe/config/Config.html" target="_blank">Lightbend <code>Config</code>&nbsp;<i class="fa fa-external-link"></i></a> Java object and passed to the constructor of the implementing type, which must be provided by the implementation.
 
-Lifecycle hooks can be defined at the meta, state, or variation scope, which determines which lifecycle event types post them and in what order. For more information, see <a href="#section-4.1">Section 4.1 Lifecycle Hooks</a>.
+            Lifecycle hooks can be defined at the meta, state, or variation scope, which determines which lifecycle event types post them and in what order. For more information, see <a href="#section-4.1">Section 4.1 Lifecycle Hooks</a>.
 
-<a class="variant-header-offset" name="section-3.5"></a>
-<h2><span class="variant-underlined">3.5<span class="indent"></span><code>SATES</code> Section</span></h2>
-In Code Variation Model, a state represents an <a href="/resources/docs/0-10/application-iteration-server/user-guide/#section-3.1">interface state</a> of the host application where it pauses for user input. CVM states are rather abstract: the only required property is <code>name</code>, by which the state can be referenced. States form a set, not a graph, i.e. user sessions traverse states one at a time, but there is no predefined order in which these states can be visited or which states are accessible from any particular state.
+            <a class="header-offset" name="section-3.5"></a>
+            <h2><span class="underlined">3.5<span class="indent"></span><code>SATES</code> Section</span></h2>
+            In Code Variation Model, a state represents an <a href="/resources/docs/0-10/application-iteration-server/user-guide/#section-3.1">interface state</a> of the host application where it pauses for user input. CVM states are rather abstract: the only required property is <code>name</code>, by which the state can be referenced. States form a set, not a graph, i.e. user sessions traverse states one at a time, but there is no predefined order in which these states can be visited or which states are accessible from any particular state.
 
-<a class="variant-header-offset" name="listing-5"></a>
-<pre><code>
+            <a class="header-offset" name="listing-5"></a>
+            <pre><code>
 <strong>state-spec</strong> :=
   {
     'name':<em><a href="#section-3.1">name-string</a></em>,
@@ -536,80 +540,80 @@ In Code Variation Model, a state represents an <a href="/resources/docs/0-10/app
     'hooks':[<em>object<a href="#listing-4">@hook-spec</a></em>]
   }
 </code></pre>
-<table class="variant-table">
-<tbody>
-<tr>
-<th>Property</th>
-<th>Type</th>
-<th>Description</th>
-<th>Required</th>
-<th>Default</th>
-</tr>
-<tr>
-<td><code>name</code></td>
-<td><a href="#section-3.1"><code>name-string</code></a></td>
-<td>The name of the state. Must be unique within a schema.</td>
-<td>Yes</td>
-<td></td>
-</tr>
-<tr>
-<td><code>parameters</code></td>
-<td>An object of type <a href="#listing-6"><code>state-parameter-spec</code></a></td>
-<td>Each field in the object represents a state parameter.</td>
-<td>No</td>
-<td>—</td>
-</tr>
-<tr>
-<td><code>hooks</code></td>
-<td>Array of objects of type <a href="#listing-4"><code>hook-spec</code></a></td>
-<td>A list of state-scoped lifecycle hook specifications. Hooks defined at this scope apply to this state only and must be subscribed to a lifecycle event descendant from <a href="/javadoc/0.10/com/variant/server/api/lifecycle/StateAwareLifecycleEvent.html" target="_blank"><code>StateAwareLifecycleEvent</code>&nbsp;<i class="fa fa-external-link"></i></a>.</td>
-<td>No</td>
-<td>—</td>
-</tr>
-</tbody>
-</table>
-<p class="variant-fig-footer">Listing 5. The schema definition of a state.</p>
-<a class="variant-header-offset" name="section-3.6"></a>
-<h2><span class="variant-underlined">3.6<span class="indent"></span>State Parameters</span></h2>
-Although CVM is agnostic of the nature or the technology of the host application, it provides a mechanism for the test designer to attach application-specific context to states, which the host application can access at run time. This is accomplished with <a href="/resources/docs/0-10/application-iteration-server/user-guide/#section-3.6">state parameters</a>. They can be specified either at the state level, as already explained in the previous section, or at the state variant level, as explained later in <a href="#section-3.7.3">Section 3.7.3</a>. Each state parameter is a name/value pair, where both the name and the value are strings.
+            <table class="table">
+              <tbody>
+              <tr>
+                <th>Property</th>
+                <th>Type</th>
+                <th>Description</th>
+                <th>Required</th>
+                <th>Default</th>
+              </tr>
+              <tr>
+                <td><code>name</code></td>
+                <td><a href="#section-3.1"><code>name-string</code></a></td>
+                <td>The name of the state. Must be unique within a schema.</td>
+                <td>Yes</td>
+                <td></td>
+              </tr>
+              <tr>
+                <td><code>parameters</code></td>
+                <td>An object of type <a href="#listing-6"><code>state-parameter-spec</code></a></td>
+                <td>Each field in the object represents a state parameter.</td>
+                <td>No</td>
+                <td>—</td>
+              </tr>
+              <tr>
+                <td><code>hooks</code></td>
+                <td>Array of objects of type <a href="#listing-4"><code>hook-spec</code></a></td>
+                <td>A list of state-scoped lifecycle hook specifications. Hooks defined at this scope apply to this state only and must be subscribed to a lifecycle event descendant from <a href="/javadoc/0.10/com/variant/server/api/lifecycle/StateAwareLifecycleEvent.html" target="_blank"><code>StateAwareLifecycleEvent</code>&nbsp;<i class="fa fa-external-link"></i></a>.</td>
+                <td>No</td>
+                <td>—</td>
+              </tr>
+              </tbody>
+            </table>
+            <p class="fig-footer">Listing 5. The schema definition of a state.</p>
+            <a class="header-offset" name="section-3.6"></a>
+            <h2><span class="underlined">3.6<span class="indent"></span>State Parameters</span></h2>
+            Although CVM is agnostic of the nature or the technology of the host application, it provides a mechanism for the test designer to attach application-specific context to states, which the host application can access at run time. This is accomplished with <a href="/resources/docs/0-10/application-iteration-server/user-guide/#section-3.6">state parameters</a>. They can be specified either at the state level, as already explained in the previous section, or at the state variant level, as explained later in <a href="#section-3.7.3">Section 3.7.3</a>. Each state parameter is a name/value pair, where both the name and the value are strings.
 
-<a class="variant-header-offset" name="listing-6"></a>
-<pre><code>
+            <a class="header-offset" name="listing-6"></a>
+            <pre><code>
 <strong>state-parameter-spec</strong> :=
   {
     <a href="#section-3.1">name-string</a>:<a href="#section-3.1"><em>any-string</em></a>
     ,...
   }
 </code></pre>
-<table class="variant-table">
-<tbody>
-<tr>
-<th>Property</th>
-<th>Type</th>
-<th>Description</th>
-<th>Required</th>
-<th>Default</th>
-</tr>
-<tr>
-<td>Parameter's name</td>
-<td><a href="#section-3.1"><code>any-string</code></a></td>
-<td>Parameter's name is an arbitrary case insensitive <a href="#section-3.1">name-string</a>, and parameter value is an aribitrary case sensitie <a href="#section-3.1">any-string</a>. Any number of parameters can be specified.</td>
-<td>Yes</td>
-<td>—</td>
-</tr>
-</tbody>
-</table>
-<p class="variant-fig-footer">Listing 6. State parameter specification.</p>
-Whenever the host application calls the <a href="/javadoc/0.10/com/variant/client/Session.html#targetForState-com.variant.core.schema.State-" target="_blank"><code>Session.targetForState()</code> <i class="fa fa-external-link"></i></a> method, server picks from the given state's variant space a single state variant. The state parameters defined at that state variant, if any, override the like-named parameters defined at the base state. (Remember, names are case sensitive.) These <em>resolved</em> state parameters are available to the host application via the <a href="/javadoc/0.10/com/variant/client/StateRequest.html#getResolvedParameters--" target="_blank"><code>StateRequest.getResolvedParameters()</code> <i class="fa fa-external-link"></i></a> method.
+            <table class="table">
+              <tbody>
+              <tr>
+                <th>Property</th>
+                <th>Type</th>
+                <th>Description</th>
+                <th>Required</th>
+                <th>Default</th>
+              </tr>
+              <tr>
+                <td>Parameter's name</td>
+                <td><a href="#section-3.1"><code>any-string</code></a></td>
+                <td>Parameter's name is an arbitrary case insensitive <a href="#section-3.1">name-string</a>, and parameter value is an aribitrary case sensitie <a href="#section-3.1">any-string</a>. Any number of parameters can be specified.</td>
+                <td>Yes</td>
+                <td>—</td>
+              </tr>
+              </tbody>
+            </table>
+            <p class="fig-footer">Listing 6. State parameter specification.</p>
+            Whenever the host application calls the <a href="/javadoc/0.10/com/variant/client/Session.html#targetForState-com.variant.core.schema.State-" target="_blank"><code>Session.targetForState()</code> <i class="fa fa-external-link"></i></a> method, server picks from the given state's variant space a single state variant. The state parameters defined at that state variant, if any, override the like-named parameters defined at the base state. (Remember, names are case sensitive.) These <em>resolved</em> state parameters are available to the host application via the <a href="/javadoc/0.10/com/variant/client/StateRequest.html#getResolvedParameters--" target="_blank"><code>StateRequest.getResolvedParameters()</code> <i class="fa fa-external-link"></i></a> method.
 
-<a class="variant-header-offset" name="section-3.7"></a>
-<h2><span class="variant-underlined">3.7<span class="indent"></span><code>VARIATIONS</code> Section</span></h2>
-<a class="variant-header-offset" name="section-3.7.1"></a>
-<h3>3.7.1<span class="indent"></span>Variations</h3>
-A variation is a code variation, instrumented over one or more states. It must have exactly one control experience (the one mapped to the current code path) and one or more variant experiences, mapped to the candidate code path(s).
+            <a class="header-offset" name="section-3.7"></a>
+            <h2><span class="underlined">3.7<span class="indent"></span><code>VARIATIONS</code> Section</span></h2>
+            <a class="header-offset" name="section-3.7.1"></a>
+            <h3>3.7.1<span class="indent"></span>Variations</h3>
+            A variation is a code variation, instrumented over one or more states. It must have exactly one control experience (the one mapped to the current code path) and one or more variant experiences, mapped to the candidate code path(s).
 
-<a class="variant-header-offset" name="listing-7"></a>
-<pre><code>
+            <a class="header-offset" name="listing-7"></a>
+            <pre><code>
 <strong>variation-spec</strong> :=
   {
     'name':<em><a href="#section-3.1">name-string</a></em>,
@@ -620,72 +624,72 @@ A variation is a code variation, instrumented over one or more states. It must h
     'hooks':[<em>object@<a href="#listing-4">hook-spec</a></em>]
   }
 </code></pre>
-<table class="variant-table">
-<tbody>
-<tr>
-<th>Property</th>
-<th>Type</th>
-<th>Description</th>
-<th>Required</th>
-<th>Default</th>
-</tr>
-<tr>
-<td><code>name</code></td>
-<td><a href="#section-3.1"><code>name-string</code></a></td>
-<td>The name of the variation. Must be unique within a schema.</td>
-<td>Yes</td>
-<td></td>
-</tr>
-<tr>
-<td><code>isOn</code></td>
-<td><a href="#section-3.1"><code>boolean</code></a></td>
-<td>Indicates whether the variation is online or offline.</td>
-<td>No</td>
-<td>true</td>
-</tr>
-<tr>
-<td><code>experiences</code></td>
-<td>Array of objects of type <a href="#listing-8"><code>experience-spec</code></a></td>
-<td>A list of experience specifications.</td>
-<td>Yes</td>
-<td></td>
-</tr>
-<tr>
-<td><code>conjointVariationRefs</code></td>
-<td>Array of objects of type <a href="#section-3.1"><code>name-string</code></a></td>
-<td>Conjoint variation references. These are names of variations conjointly concurrent with this variation. Referenced variation(s) must be already defined earlier in the schema.</td>
-<td>No</td>
-<td>—</td>
-</tr>
-<tr>
-<td><code>onStates</code></td>
-<td>Array of objects of type <a href="#listing-9"><code>on-state-spec</code></a></td>
-<td>A list of on-state specifications.</td>
-<td>Yes</td>
-<td></td>
-</tr>
-<tr>
-<td><code>hooks</code></td>
-<td>Array of objects of type <a href="#listing-4"><code>hook-spec</code></a></td>
-<td>A list of variation-scoped lifecycle hook specifications.  Hooks defined at this scope apply to this variation only and must be subscribed to a lifecycle event descendant from <a href="/javadoc/0.10/com/variant/server/api/lifecycle/VariationAwareLifecycleEvent.html" target="_blank"><code>VariationAwareLifecycleEvent</code>&nbsp;<i class="fa fa-external-link"></i></a>.</td>
-<td>No</td>
-<td>—</td>
-</tr>
-</tbody>
-</table>
-<p class="variant-fig-footer">Listing 7. The schema definition of a variation.</p>
-For each state on the <code>onStates</code> list, Variant builds a state variant space as a Cartesian product of this variation's experience set and the experience sets of all those variations mentioned on the <code>conjointVariationRefs</code> list. Refer to <a href="/resources/docs/0-10/application-iteration-server/user-guide/#section-3.8">Variant Server User Guide</a> for more information on concurrent variations.
+            <table class="table">
+              <tbody>
+              <tr>
+                <th>Property</th>
+                <th>Type</th>
+                <th>Description</th>
+                <th>Required</th>
+                <th>Default</th>
+              </tr>
+              <tr>
+                <td><code>name</code></td>
+                <td><a href="#section-3.1"><code>name-string</code></a></td>
+                <td>The name of the variation. Must be unique within a schema.</td>
+                <td>Yes</td>
+                <td></td>
+              </tr>
+              <tr>
+                <td><code>isOn</code></td>
+                <td><a href="#section-3.1"><code>boolean</code></a></td>
+                <td>Indicates whether the variation is online or offline.</td>
+                <td>No</td>
+                <td>true</td>
+              </tr>
+              <tr>
+                <td><code>experiences</code></td>
+                <td>Array of objects of type <a href="#listing-8"><code>experience-spec</code></a></td>
+                <td>A list of experience specifications.</td>
+                <td>Yes</td>
+                <td></td>
+              </tr>
+              <tr>
+                <td><code>conjointVariationRefs</code></td>
+                <td>Array of objects of type <a href="#section-3.1"><code>name-string</code></a></td>
+                <td>Conjoint variation references. These are names of variations conjointly concurrent with this variation. Referenced variation(s) must be already defined earlier in the schema.</td>
+                <td>No</td>
+                <td>—</td>
+              </tr>
+              <tr>
+                <td><code>onStates</code></td>
+                <td>Array of objects of type <a href="#listing-9"><code>on-state-spec</code></a></td>
+                <td>A list of on-state specifications.</td>
+                <td>Yes</td>
+                <td></td>
+              </tr>
+              <tr>
+                <td><code>hooks</code></td>
+                <td>Array of objects of type <a href="#listing-4"><code>hook-spec</code></a></td>
+                <td>A list of variation-scoped lifecycle hook specifications.  Hooks defined at this scope apply to this variation only and must be subscribed to a lifecycle event descendant from <a href="/javadoc/0.10/com/variant/server/api/lifecycle/VariationAwareLifecycleEvent.html" target="_blank"><code>VariationAwareLifecycleEvent</code>&nbsp;<i class="fa fa-external-link"></i></a>.</td>
+                <td>No</td>
+                <td>—</td>
+              </tr>
+              </tbody>
+            </table>
+            <p class="fig-footer">Listing 7. The schema definition of a variation.</p>
+            For each state on the <code>onStates</code> list, Variant builds a state variant space as a Cartesian product of this variation's experience set and the experience sets of all those variations mentioned on the <code>conjointVariationRefs</code> list. Refer to <a href="/resources/docs/0-10/application-iteration-server/user-guide/#section-3.8">Variant Server User Guide</a> for more information on concurrent variations.
 
-Each variation-scoped hook must listen to a lifecycle event descendant from <a href="/javadoc/0.10/com/variant/server/api/lifecycle/StateAwareLifecycleEvent.html" target="_blank"><code>VariationAwareLifecycleEvent</code>&nbsp;<i class="fa fa-external-link"></i></a>. For more information, see <a href="#section-4.1">Section 4.1 Lifecycle Hooks</a>.
+            Each variation-scoped hook must listen to a lifecycle event descendant from <a href="/javadoc/0.10/com/variant/server/api/lifecycle/StateAwareLifecycleEvent.html" target="_blank"><code>VariationAwareLifecycleEvent</code>&nbsp;<i class="fa fa-external-link"></i></a>. For more information, see <a href="#section-4.1">Section 4.1 Lifecycle Hooks</a>.
 
-The <code>isOn</code> property is used to turn an experiement or a feature toggle temporarily offline without removing it from the schema. No sessions are targeted for an offline variation, as if it didn't even exist. In fact, the only differences between an offline variation and a variation that is completely removed from the schema is that if it defines its targeting or qualification persistence as durable, this information is preserved. In practice this means that, after an offline variation is taken back online, return users will see the same experience they saw before the variation was taken offline.
+            The <code>isOn</code> property is used to turn an experiement or a feature toggle temporarily offline without removing it from the schema. No sessions are targeted for an offline variation, as if it didn't even exist. In fact, the only differences between an offline variation and a variation that is completely removed from the schema is that if it defines its targeting or qualification persistence as durable, this information is preserved. In practice this means that, after an offline variation is taken back online, return users will see the same experience they saw before the variation was taken offline.
 
-<a class="variant-header-offset" name="section-3.7.2"></a>
-<h3>3.7.2<span class="indent"></span>Variation Experiences</h3>
-Each element of a variation's <code>experiences</code> property describes one of its experiences.
+            <a class="header-offset" name="section-3.7.2"></a>
+            <h3>3.7.2<span class="indent"></span>Variation Experiences</h3>
+            Each element of a variation's <code>experiences</code> property describes one of its experiences.
 
-<a class="variant-header-offset" name="listing-8"></a>
-<pre><code>
+            <a class="header-offset" name="listing-8"></a>
+            <pre><code>
 <strong>experience-spec</strong> :=
   {
     'name':<em><a href="#section-3.1">name-string</a></em>,
@@ -693,92 +697,92 @@ Each element of a variation's <code>experiences</code> property describes one of
     'isControl':<em><a href="#section-3.1">boolean</a></em>
   }
 </code></pre>
-<table class="variant-table">
-<tbody>
-<tr>
-<th>Property</th>
-<th>Type</th>
-<th>Description</th>
-<th>Required</th>
-<th>Default</th>
-</tr>
-<tr>
-<td><code>name<code></code></code></td>
-<td><a href="#section-3.1"><code>name-string</code></a></td>
-<td>The name of the experience. Must be unique within enclosing variation.</td>
-<td>Yes</td>
-<td></td>
-</tr>
-<tr>
-<td><code>weight</code></td>
-<td><a href="#section-3.1"><code>number</code></a></td>
-<td>The probabilistic weight of this experience relative to other experiences of this variation. Used by the default targeting hook, which targets sessions randomly, according to these weights. The probability that a session is targeted to an experience is the ratio of the <code>weight</code> of the experience to the sum of weights of all of the variation's experiences.</td>
-<td>No</td>
-<td>1</td>
-</tr>
-<tr>
-<td><code>isControl<code></code></code></td>
-<td><a href="#section-3.1"><code>boolean</code></a></td>
-<td>Indicates whether this experience is the control experience in the enclosing variation. Exactly one experience must be marked as control.</td>
-<td>No</td>
-<td>false</td>
-</tr>
-</tbody>
-</table>
-<p class="variant-fig-footer">Listing 8. The schema definition of a test experience.</p>
-<a class="variant-header-offset" name="section-3.7.3"></a>
-<h3>3.7.3<span class="indent"></span>Variation On-States</h3>
-The <code>onStates</code> property contains a list of elements, each of which describes the enclosing variation's instrumentation details on a particular state.
+            <table class="table">
+              <tbody>
+              <tr>
+                <th>Property</th>
+                <th>Type</th>
+                <th>Description</th>
+                <th>Required</th>
+                <th>Default</th>
+              </tr>
+              <tr>
+                <td><code>name<code></code></code></td>
+                <td><a href="#section-3.1"><code>name-string</code></a></td>
+                <td>The name of the experience. Must be unique within enclosing variation.</td>
+                <td>Yes</td>
+                <td></td>
+              </tr>
+              <tr>
+                <td><code>weight</code></td>
+                <td><a href="#section-3.1"><code>number</code></a></td>
+                <td>The probabilistic weight of this experience relative to other experiences of this variation. Used by the default targeting hook, which targets sessions randomly, according to these weights. The probability that a session is targeted to an experience is the ratio of the <code>weight</code> of the experience to the sum of weights of all of the variation's experiences.</td>
+                <td>No</td>
+                <td>1</td>
+              </tr>
+              <tr>
+                <td><code>isControl<code></code></code></td>
+                <td><a href="#section-3.1"><code>boolean</code></a></td>
+                <td>Indicates whether this experience is the control experience in the enclosing variation. Exactly one experience must be marked as control.</td>
+                <td>No</td>
+                <td>false</td>
+              </tr>
+              </tbody>
+            </table>
+            <p class="fig-footer">Listing 8. The schema definition of a test experience.</p>
+            <a class="header-offset" name="section-3.7.3"></a>
+            <h3>3.7.3<span class="indent"></span>Variation On-States</h3>
+            The <code>onStates</code> property contains a list of elements, each of which describes the enclosing variation's instrumentation details on a particular state.
 
-<a class="variant-header-offset" name="listing-9"></a>
-<pre><code>
+            <a class="header-offset" name="listing-9"></a>
+            <pre><code>
 <strong>on-state-spec</strong> :=
   {
     'stateRef':<em><a href="#section-3.1">name-string</a></em>
     'variants':[<em>object@<a href="#listing-10">state-variant-spec</a></em>]
   }
 </code></pre>
-<table class="variant-table">
-<tbody>
-<tr>
-<th>Property</th>
-<th>Type</th>
-<th>Description</th>
-<th>Required</th>
-<th>Default</th>
-</tr>
-<tr>
-<td><code>stateRef</code></td>
-<td><a href="#section-3.1"><code>name-string</code></a></td>
-<td>Back reference to a state that’s already been defined, whose instrumentation by the enclosing test is defined by this property.</td>
-<td>Yes</td>
-<td></td>
-</tr>
-<tr>
-<td><code>varaints</code></td>
-<td>Array of objects of type <a href="#listing-10"><code>state-variant-spec</code></a></td>
-<td>A list of this state's variant specifications.</td>
-<td>No</td>
-<td>—</td>
-</tr>
-</tbody>
-</table>
-<p class="variant-fig-footer">Listing 9 The schema definition of an onState property.</p>
-Whenever a variation <code>V</code> instruments state <code>S</code>, Variant schema parser creates the state variant space <code>ν(V,S)</code> as a Cartesian product of the set of <code>V</code>'s experiences and the experience sets of all variations conjointly concurrent with <code>V</code>. All state variants in <code>ν(V,S)</code> implicitly inherit the state parameters as defined in the base state <code>S</code>. In most cases, this inferred state variant space is sufficient, and you will not need to define state vairants explicitly.
+            <table class="table">
+              <tbody>
+              <tr>
+                <th>Property</th>
+                <th>Type</th>
+                <th>Description</th>
+                <th>Required</th>
+                <th>Default</th>
+              </tr>
+              <tr>
+                <td><code>stateRef</code></td>
+                <td><a href="#section-3.1"><code>name-string</code></a></td>
+                <td>Back reference to a state that’s already been defined, whose instrumentation by the enclosing test is defined by this property.</td>
+                <td>Yes</td>
+                <td></td>
+              </tr>
+              <tr>
+                <td><code>varaints</code></td>
+                <td>Array of objects of type <a href="#listing-10"><code>state-variant-spec</code></a></td>
+                <td>A list of this state's variant specifications.</td>
+                <td>No</td>
+                <td>—</td>
+              </tr>
+              </tbody>
+            </table>
+            <p class="fig-footer">Listing 9 The schema definition of an onState property.</p>
+            Whenever a variation <code>V</code> instruments state <code>S</code>, Variant schema parser creates the state variant space <code>ν(V,S)</code> as a Cartesian product of the set of <code>V</code>'s experiences and the experience sets of all variations conjointly concurrent with <code>V</code>. All state variants in <code>ν(V,S)</code> implicitly inherit the state parameters as defined in the base state <code>S</code>. In most cases, this inferred state variant space is sufficient, and you will not need to define state vairants explicitly.
 
-However, there are two use cases when explicit re-definition of one or more state variants is needed:
-<ol>
- 	<li><strong>Phantom state variants.</strong>
-Implicitly inferred state variants are not phantom. If you need to define a state variant as phantom, you must define that state phantom explicitly. Refer to <a href="/resources/docs/0-10/application-iteration-server/user-guide/#section-3.7">Server User Guide</a> for more information on mixed instrumentation.</li>
- 	<li><strong>Variant-specific state parameters.</strong>
-Implicitly inferred state variants inherit their state parameters from the base state. If you need to define variant-specific parameters, you must define them explicitly. Refer to <a href="/resources/docs/0-10/application-iteration-server/user-guide/#section-3.6">Server User Guide</a> for more information on state parameter inheritence.</li>
-</ol>
-<a class="variant-header-offset" name="section-3.7.4"></a>
-<h3>3.7.4<span class="indent"></span>State Variants</h3>
-The <code>variants</code> property contains a list of elements, each of which describes a particular state variant.
+            However, there are two use cases when explicit re-definition of one or more state variants is needed:
+            <ol>
+              <li><strong>Phantom state variants.</strong>
+                Implicitly inferred state variants are not phantom. If you need to define a state variant as phantom, you must define that state phantom explicitly. Refer to <a href="/resources/docs/0-10/application-iteration-server/user-guide/#section-3.7">Server User Guide</a> for more information on mixed instrumentation.</li>
+              <li><strong>Variant-specific state parameters.</strong>
+                Implicitly inferred state variants inherit their state parameters from the base state. If you need to define variant-specific parameters, you must define them explicitly. Refer to <a href="/resources/docs/0-10/application-iteration-server/user-guide/#section-3.6">Server User Guide</a> for more information on state parameter inheritence.</li>
+            </ol>
+            <a class="header-offset" name="section-3.7.4"></a>
+            <h3>3.7.4<span class="indent"></span>State Variants</h3>
+            The <code>variants</code> property contains a list of elements, each of which describes a particular state variant.
 
-<a class="variant-header-offset" name="listing-10"></a>
-<pre><code>
+            <a class="header-offset" name="listing-10"></a>
+            <pre><code>
 <strong>state-variant-spec</strong> :=
   {
     'isPhantom':<em><a href="#section-3.1">boolean</a></em>,
@@ -793,147 +797,147 @@ The <code>variants</code> property contains a list of elements, each of which de
     'parameters':[<em>object@<a href="#listing-6">state-parameter-spec</a></em>]<em>?</em>
   }
 </code></pre>
-<table class="variant-table">
-<tbody>
-<tr>
-<th>Property</th>
-<th>Type</th>
-<th>Description</th>
-<th>Required</th>
-<th>Default</th>
-</tr>
-<tr>
-<td><code>isPhantom</code></td>
-<td><a href="#section-3.1"><code>boolean</code></a></td>
-<td>Indicates whether this state variant is phantom. If set to <code>true</code>, incompatible with any other property.</td>
-<td>No</td>
-<td>false</td>
-</tr>
-<tr>
-<td><code>experienceRef</code></td>
-<td><a href="#section-3.1"><code>name-string</code></a></td>
-<td>Reference to one of the enclosing variation's own variant experiences. Cannot refer to the control experience. Not allowed in phantom state variants.</td>
-<td>Yes</td>
-<td></td>
-</tr>
-<tr>
-<td><code>conjointExperienceRefs</code></td>
-<td>Array of objects.</td>
-<td>Reference to one of the enclosing variation's conjoint experiences. Not allowed in phantom state variants.</td>
-<td>Yes</td>
-<td></td>
-</tr>
-<tr>
-<td><code>parameters</code></td>
-<td>Array of objects of type <a href="#listing-6"><code>state-parameter-spec</code></a>.</td>
-<td>A list of state parameter specifications. Not allowed in phantom state variants.</td>
-<td>No</td>
-<td>—</td>
-</tr>
-</tbody>
-</table>
-<p class="variant-fig-footer">Listing 10. The schema definition of a state variant.</p>
-A state variant is phantom in a particular experience if it is not instrumented by the experience. Phantom state variants possess the following semantics:
-<ul>
- 	<li>When a session is targeted for a variation, phantom experiences are not considered.</li>
- 	<li>When a session requests a state which is phantom in a live experience, Variant will emit a runtime user error.</li>
-</ul>
-Refer to <a href="/resources/docs/0-10/application-iteration-server/user-guide/#section-3.7">Variant Server User Guide</a> for more information on mixed instrumentation.
+            <table class="table">
+              <tbody>
+              <tr>
+                <th>Property</th>
+                <th>Type</th>
+                <th>Description</th>
+                <th>Required</th>
+                <th>Default</th>
+              </tr>
+              <tr>
+                <td><code>isPhantom</code></td>
+                <td><a href="#section-3.1"><code>boolean</code></a></td>
+                <td>Indicates whether this state variant is phantom. If set to <code>true</code>, incompatible with any other property.</td>
+                <td>No</td>
+                <td>false</td>
+              </tr>
+              <tr>
+                <td><code>experienceRef</code></td>
+                <td><a href="#section-3.1"><code>name-string</code></a></td>
+                <td>Reference to one of the enclosing variation's own variant experiences. Cannot refer to the control experience. Not allowed in phantom state variants.</td>
+                <td>Yes</td>
+                <td></td>
+              </tr>
+              <tr>
+                <td><code>conjointExperienceRefs</code></td>
+                <td>Array of objects.</td>
+                <td>Reference to one of the enclosing variation's conjoint experiences. Not allowed in phantom state variants.</td>
+                <td>Yes</td>
+                <td></td>
+              </tr>
+              <tr>
+                <td><code>parameters</code></td>
+                <td>Array of objects of type <a href="#listing-6"><code>state-parameter-spec</code></a>.</td>
+                <td>A list of state parameter specifications. Not allowed in phantom state variants.</td>
+                <td>No</td>
+                <td>—</td>
+              </tr>
+              </tbody>
+            </table>
+            <p class="fig-footer">Listing 10. The schema definition of a state variant.</p>
+            A state variant is phantom in a particular experience if it is not instrumented by the experience. Phantom state variants possess the following semantics:
+            <ul>
+              <li>When a session is targeted for a variation, phantom experiences are not considered.</li>
+              <li>When a session requests a state which is phantom in a live experience, Variant will emit a runtime user error.</li>
+            </ul>
+            Refer to <a href="/resources/docs/0-10/application-iteration-server/user-guide/#section-3.7">Variant Server User Guide</a> for more information on mixed instrumentation.
 
-<a class="variant-header-offset" name="section-4"></a>
-<h1><span class="variant-underlined">4<span class="indent"></span>Server Extension API</span></h1>
-Variant server's functionality can be extended through the use of the server-side Extension API, or <em>ExtAPI</em>, which exposes Java bindings for supplying custom server-side extensions. These extensions facilitate injection of custom semantics into the server's default execution path via a callback mechanism. Two types of user-defined callback objects are supported:
-<ul>
- 	<li><b>Lifecycle Event Hooks</b> are listeners for various lifecycle events, raised by the server. They encapsulate custom, application-aware code, which takes over and alters the default handling of lifecycle events.</li>
- 	<li><b>Trace Event Flushers</b> handle the final ingestion of trace events. Each variation schema can have its own event flusher.</li>
-</ul>
-Both lifecycle hooks and event flushers are configured in the variation schema. The next two chapters explain their semantics and configuration, and <a href="#section-4.3">chapter 4.3</a> provides details on how to write them.
+            <a class="header-offset" name="section-4"></a>
+            <h1><span class="underlined">4<span class="indent"></span>Server Extension API</span></h1>
+            Variant server's functionality can be extended through the use of the server-side Extension API, or <em>ExtAPI</em>, which exposes Java bindings for supplying custom server-side extensions. These extensions facilitate injection of custom semantics into the server's default execution path via a callback mechanism. Two types of user-defined callback objects are supported:
+            <ul>
+              <li><b>Lifecycle Event Hooks</b> are listeners for various lifecycle events, raised by the server. They encapsulate custom, application-aware code, which takes over and alters the default handling of lifecycle events.</li>
+              <li><b>Trace Event Flushers</b> handle the final ingestion of trace events. Each variation schema can have its own event flusher.</li>
+            </ul>
+            Both lifecycle hooks and event flushers are configured in the variation schema. The next two chapters explain their semantics and configuration, and <a href="#section-4.3">chapter 4.3</a> provides details on how to write them.
 
-<a class="variant-header-offset" name="section-4.1"></a>
-<h2><span class="variant-underlined">4.1<span class="indent"></span>Lifecycle Hooks</span></h2>
-<a class="variant-header-offset" name="section-4.1.1"></a>
-<h3>4.1.1<span class="indent"></span>Lifecycle Events</h3>
-The following is the complete list of lifecycle events raised by Variant server:
-<table class="variant-table">
-<tbody>
-<tr>
-<th>Lifecycle Event</th>
-<th>Event Scope</th>
-<th>Default Hook</th>
-</tr>
-<tr>
-<td><a href="/javadoc/0.10/com/variant/server/api/lifecycle/VariationQualificationLifecycleEvent.html" target="_blank"><code>VariationQualificationLifecycleEvent</code>&nbsp;<i class="fa fa-external-link"></i></a></td>
-<td>Schema
-Variation</td>
-<td>Session is qualified for the variation.</td>
-</tr>
-<tr>
-<td colspan="3">Raised when a Variant session must be <a href="/resources/docs/0-10/application-iteration-server/user-guide/#section-4.2">qualified for a variation</a>. Posts all eligible schema-scoped hooks and those variation-scoped hooks whose variation matches that of triggering event. Used to qualify (or disqualify) a user session for the triggering variation, based on a custom qualification criteria.</td>
-</tr>
-<tr>
-<td><a href="/javadoc/0.10/com/variant/server/api/lifecycle/VariationTargetingLifecycleEvent.html" target="_blank"><code>VariationTargetingLifecycleEvent</code>&nbsp;<i class="fa fa-external-link"></i></a></td>
-<td>Schema
-State
-Variation</td>
-<td>Variation is targeted randomly, according to the <a href="#listing-8"><code>weight</code> properties</a>.</td>
-</tr>
-<tr>
-<td colspan="3">Raised when a Variant session must be <a href="/resources/docs/0-10/application-iteration-server/user-guide/#section-4.3">targeted for a variation</a>. Posts all eligible schema-scoped hooks, those state-scoped hooks whose state matches that of triggering event, and those variation-scoped hooks whose variation matches that of the triggering event. Used to provide custom targeting algorithm.</td>
-</tr>
-</tbody>
-</table>
-<a class="variant-header-offset" name="section-4.1.2"></a>
-<h3>4.1.2<span class="indent"></span>Hooks' Instantiation and Scope</h3>
-Lifecycle hooks provide callback methods which are posted by Variant server whenever a lifecycle event of interest is raised. A lifecycle hook subscribes to a particular lifecycle event type by implementing the <a href="/javadoc/0.10/com/variant/server/api/lifecycle/LifecycleHook.html#getLifecycleEventClass--" target="_blank"><code>LifecycleHook.gerLifecycleEventClass()</code>&nbsp;<i class="fa fa-external-link"></i></a> method. Whenever an event of that type is raised, the hook is notified by Variant server via its callback method <a href="/javadoc/0.10/com/variant/core/lifecycle/LifecycleHook.html#post-E-" target="_blank"><code>LifecycleHook.post()</code>&nbsp;<i class="fa fa-external-link"></i></a> method.
+            <a class="header-offset" name="section-4.1"></a>
+            <h2><span class="underlined">4.1<span class="indent"></span>Lifecycle Hooks</span></h2>
+            <a class="header-offset" name="section-4.1.1"></a>
+            <h3>4.1.1<span class="indent"></span>Lifecycle Events</h3>
+            The following is the complete list of lifecycle events raised by Variant server:
+            <table class="table">
+              <tbody>
+              <tr>
+                <th>Lifecycle Event</th>
+                <th>Event Scope</th>
+                <th>Default Hook</th>
+              </tr>
+              <tr>
+                <td><a href="/javadoc/0.10/com/variant/server/api/lifecycle/VariationQualificationLifecycleEvent.html" target="_blank"><code>VariationQualificationLifecycleEvent</code>&nbsp;<i class="fa fa-external-link"></i></a></td>
+                <td>Schema
+                  Variation</td>
+                <td>Session is qualified for the variation.</td>
+              </tr>
+              <tr>
+                <td colspan="3">Raised when a Variant session must be <a href="/resources/docs/0-10/application-iteration-server/user-guide/#section-4.2">qualified for a variation</a>. Posts all eligible schema-scoped hooks and those variation-scoped hooks whose variation matches that of triggering event. Used to qualify (or disqualify) a user session for the triggering variation, based on a custom qualification criteria.</td>
+              </tr>
+              <tr>
+                <td><a href="/javadoc/0.10/com/variant/server/api/lifecycle/VariationTargetingLifecycleEvent.html" target="_blank"><code>VariationTargetingLifecycleEvent</code>&nbsp;<i class="fa fa-external-link"></i></a></td>
+                <td>Schema
+                  State
+                  Variation</td>
+                <td>Variation is targeted randomly, according to the <a href="#listing-8"><code>weight</code> properties</a>.</td>
+              </tr>
+              <tr>
+                <td colspan="3">Raised when a Variant session must be <a href="/resources/docs/0-10/application-iteration-server/user-guide/#section-4.3">targeted for a variation</a>. Posts all eligible schema-scoped hooks, those state-scoped hooks whose state matches that of triggering event, and those variation-scoped hooks whose variation matches that of the triggering event. Used to provide custom targeting algorithm.</td>
+              </tr>
+              </tbody>
+            </table>
+            <a class="header-offset" name="section-4.1.2"></a>
+            <h3>4.1.2<span class="indent"></span>Hooks' Instantiation and Scope</h3>
+            Lifecycle hooks provide callback methods which are posted by Variant server whenever a lifecycle event of interest is raised. A lifecycle hook subscribes to a particular lifecycle event type by implementing the <a href="/javadoc/0.10/com/variant/server/api/lifecycle/LifecycleHook.html#getLifecycleEventClass--" target="_blank"><code>LifecycleHook.gerLifecycleEventClass()</code>&nbsp;<i class="fa fa-external-link"></i></a> method. Whenever an event of that type is raised, the hook is notified by Variant server via its callback method <a href="/javadoc/0.10/com/variant/core/lifecycle/LifecycleHook.html#post-E-" target="_blank"><code>LifecycleHook.post()</code>&nbsp;<i class="fa fa-external-link"></i></a> method.
 
-Hook definitions may appear in variation schema in one of three scopes:
-<ul>
- 	<li><em>Meta-scoped</em> hooks are defined inside the <a href="#section-3.3">meta section</a>. These hooks are applicable to all states and all variations in the schema. Hooks listening to lifecycle events descendant from <a href="/javadoc/0.10/com/variant/server/api/lifecycle/StateAwareLifecycleEvent.html" target="_blank"><code>StateAwareLifecycleEvent</code>&nbsp;<i class="fa fa-external-link"></i></a> will be posted for each state in the schema by every state aware lifecycle event. Hooks listening to lifecycle events descendant from <a href="/javadoc/0.10/com/variant/server/api/lifecycle/VariationAwareLifecycleEvent.html" target="_blank"><code>VariationAwareLifecycleEvent</code>&nbsp;<i class="fa fa-external-link"></i></a> will be posted for all online variations in the schema by every variation aware lifecycle event.</li>
- 	<li><em>State-scoped</em> hooks are defined inside the <a href="#listing-5">state definition</a>. These hooks are applicable to the enclosing state only and must listen to events descendant from <a href="/javadoc/0.10/com/variant/server/api/lifecycle/StateAwareLifecycleEvent.html" target="_blank"><code>StateAwareLifecycleEvent</code>&nbsp;<i class="fa fa-external-link"></i></a>.</li>
- 	<li><em>Variation-scoped</em> hooks are defined inside the <a href="#listing-7">variation definition</a>. These hooks are applicable to the enclosing variation only and must listen to events descendant from <a href="/javadoc/0.10/com/variant/server/api/lifecycle/VariationAwareLifecycleEvent.html" target="_blank"><code>VariationAwareLifecycleEvent</code>&nbsp;<i class="fa fa-external-link"></i></a>.</li>
-</ul>
-<a class="variant-header-offset" name="section-4.1.3"></a>
-<h3>4.1.3<span class="indent"></span>Hook Chaining</h3>
-In any scope, any number of hooks can be defined. If more than one lifecycle hook is eligible to be posted by a lifecycle event at runtime, they form a <em>hook chain</em>.
+            Hook definitions may appear in variation schema in one of three scopes:
+            <ul>
+              <li><em>Meta-scoped</em> hooks are defined inside the <a href="#section-3.3">meta section</a>. These hooks are applicable to all states and all variations in the schema. Hooks listening to lifecycle events descendant from <a href="/javadoc/0.10/com/variant/server/api/lifecycle/StateAwareLifecycleEvent.html" target="_blank"><code>StateAwareLifecycleEvent</code>&nbsp;<i class="fa fa-external-link"></i></a> will be posted for each state in the schema by every state aware lifecycle event. Hooks listening to lifecycle events descendant from <a href="/javadoc/0.10/com/variant/server/api/lifecycle/VariationAwareLifecycleEvent.html" target="_blank"><code>VariationAwareLifecycleEvent</code>&nbsp;<i class="fa fa-external-link"></i></a> will be posted for all online variations in the schema by every variation aware lifecycle event.</li>
+              <li><em>State-scoped</em> hooks are defined inside the <a href="#listing-5">state definition</a>. These hooks are applicable to the enclosing state only and must listen to events descendant from <a href="/javadoc/0.10/com/variant/server/api/lifecycle/StateAwareLifecycleEvent.html" target="_blank"><code>StateAwareLifecycleEvent</code>&nbsp;<i class="fa fa-external-link"></i></a>.</li>
+              <li><em>Variation-scoped</em> hooks are defined inside the <a href="#listing-7">variation definition</a>. These hooks are applicable to the enclosing variation only and must listen to events descendant from <a href="/javadoc/0.10/com/variant/server/api/lifecycle/VariationAwareLifecycleEvent.html" target="_blank"><code>VariationAwareLifecycleEvent</code>&nbsp;<i class="fa fa-external-link"></i></a>.</li>
+            </ul>
+            <a class="header-offset" name="section-4.1.3"></a>
+            <h3>4.1.3<span class="indent"></span>Hook Chaining</h3>
+            In any scope, any number of hooks can be defined. If more than one lifecycle hook is eligible to be posted by a lifecycle event at runtime, they form a <em>hook chain</em>.
 
-A hook chain is posted in the following order:
-<ul>
- 	<li> Variation-scoped hooks, then state-scoped hooks, then schema-scoped hooks.</li>
- 	<li> Within a scope, hooks are posted in the ordinal order, i.e. the order in which they are defined in the schema, in the corresponding scope.</li>
-</ul>
-The hooks are posted serially, until a hook's <a href="/javadoc/0.10/com/variant/server/api/lifecycle/LifecycleHook.html#post-E-" target="_blank" rel="noopener"><code>post()</code> <i class="fa fa-external-link"></i></a> method returns a non-empty <code>Optional</code>. If no custom hooks have been defined for a lifecycle event, or all returned an empty <code>Optional</code>, the default built-in hook for the event is posted, which is guaranteed to return a usable value.
+            A hook chain is posted in the following order:
+            <ul>
+              <li> Variation-scoped hooks, then state-scoped hooks, then schema-scoped hooks.</li>
+              <li> Within a scope, hooks are posted in the ordinal order, i.e. the order in which they are defined in the schema, in the corresponding scope.</li>
+            </ul>
+            The hooks are posted serially, until a hook's <a href="/javadoc/0.10/com/variant/server/api/lifecycle/LifecycleHook.html#post-E-" target="_blank" rel="noopener"><code>post()</code> <i class="fa fa-external-link"></i></a> method returns a non-empty <code>Optional</code>. If no custom hooks have been defined for a lifecycle event, or all returned an empty <code>Optional</code>, the default built-in hook for the event is posted, which is guaranteed to return a usable value.
 
-A hook chain is posted synchronously; the hooks' <code>post()</code> methods are invoked one at a time while the foreground user session thread is blocked. Conequently, the <code>post()</code> method need not be thread safe. A new instance of a hook is instantiated for each invocation of the <code>post()</code> method.
+            A hook chain is posted synchronously; the hooks' <code>post()</code> methods are invoked one at a time while the foreground user session thread is blocked. Conequently, the <code>post()</code> method need not be thread safe. A new instance of a hook is instantiated for each invocation of the <code>post()</code> method.
 
-When a hook is posted, its <a href="/javadoc/0.10/com/variant/core/lifecycle/LifecycleHook.html#post-E-" target="_blank"><code>post(E event)</code>&nbsp;<i class="fa fa-external-link"></i></a> method is called by Variant server with the actual triggering lifecycle event instance. If the <code>post(E event)</code> method returns a non-null value, Variant server ignores the rest of the hook chain, expecting the returned object to contain the information it requires to proceed. Otherwise, Variant posts the next hook on the chain.
+            When a hook is posted, its <a href="/javadoc/0.10/com/variant/core/lifecycle/LifecycleHook.html#post-E-" target="_blank"><code>post(E event)</code>&nbsp;<i class="fa fa-external-link"></i></a> method is called by Variant server with the actual triggering lifecycle event instance. If the <code>post(E event)</code> method returns a non-null value, Variant server ignores the rest of the hook chain, expecting the returned object to contain the information it requires to proceed. Otherwise, Variant posts the next hook on the chain.
 
-<a class="variant-header-offset" name="section-4.1.4"></a>
-<h3>4.1.4<span class="indent"></span>Custom Lifecycle Hooks</h3>
-A custom lifecycle hook must implement the <a href="/javadoc/0.10/com/variant/server/api/lifecycle/LifecycleHook.html" target="_blank"><code>LifecycleHook</code>&nbsp;<i class="fa fa-external-link"></i></a> interface. By contract, an implementation must also provide at least one of these constructors:
-<ul>
- 	<li>Nullary constructor, if no <code>init</code> property was given in the <a href="#listing-4">hook definition</a>.</li>
- 	<li>Single argument constructor with argument type <a href="http://lightbend.github.io/config/latest/api/com/typesafe/config/Config.html" target="_blank">Config&nbsp;<i class="fa fa-external-link"></i></a>. If no <code>init</code> property was given and no nullary constructor is available, this constructor will be called with <code>null</code> argument; otherwise, the value of the <code>init</code> property will be parsed and passed to this constructor.</li>
-</ul>
-Refer to <a href="#section-4.3">Section 4.3</a> for packaging details.
+            <a class="header-offset" name="section-4.1.4"></a>
+            <h3>4.1.4<span class="indent"></span>Custom Lifecycle Hooks</h3>
+            A custom lifecycle hook must implement the <a href="/javadoc/0.10/com/variant/server/api/lifecycle/LifecycleHook.html" target="_blank"><code>LifecycleHook</code>&nbsp;<i class="fa fa-external-link"></i></a> interface. By contract, an implementation must also provide at least one of these constructors:
+            <ul>
+              <li>Nullary constructor, if no <code>init</code> property was given in the <a href="#listing-4">hook definition</a>.</li>
+              <li>Single argument constructor with argument type <a href="http://lightbend.github.io/config/latest/api/com/typesafe/config/Config.html" target="_blank">Config&nbsp;<i class="fa fa-external-link"></i></a>. If no <code>init</code> property was given and no nullary constructor is available, this constructor will be called with <code>null</code> argument; otherwise, the value of the <code>init</code> property will be parsed and passed to this constructor.</li>
+            </ul>
+            Refer to <a href="#section-4.3">Section 4.3</a> for packaging details.
 
-<a class="variant-header-offset" name="section-4.2"></a>
-<h2><span class="variant-underlined">4.2<span class="indent"></span>Trace Event Flushers</span></h2>
-Trace events are generated by user traffic, as it flows through Variant variations. Event flushers handle the terminal ingestion of these events with the purpose of subsequent analysis by a downstream process. Trace events can be triggered implicitly, by Variant, or explicitly by the host application. In either case, the host application can attach attributes to these events, to aid in the downstream analysis.
+            <a class="header-offset" name="section-4.2"></a>
+            <h2><span class="underlined">4.2<span class="indent"></span>Trace Event Flushers</span></h2>
+            Trace events are generated by user traffic, as it flows through Variant variations. Event flushers handle the terminal ingestion of these events with the purpose of subsequent analysis by a downstream process. Trace events can be triggered implicitly, by Variant, or explicitly by the host application. In either case, the host application can attach attributes to these events, to aid in the downstream analysis.
 
-Variant server automatically enriches all trace events with the following metadata:
-<ul>
- 	<li>Variant session ID by which related events can be associated.</li>
- 	<li>Names of sessions's live experiences.</li>
- 	<li>Custom event attributes.</li>
-</ul>
-A typical event flusher writes trace events to a persistent storage mechanism, such as an external database or event stream. Whenever a trace event is triggered — implicitly by Variant server or explicitly by user code — it is picked up by the Variant's asynchronous event writer, where it is held in a memory buffer until a dedicated flusher thread becomes available. There is one event writer per Variant server, shared by all schemata. Event writer groups trace events by the schema that produced them and turns them over to the apropriate event flusher by calling its <a href="/javadoc/0.10/com/variant/server/api/TraceEventFlusher.html#flush-com.variant.server.api.FlushableTraceEvent:A-int-" target="_blank" rel="noopener"><code>flush()</code> <i class="fa fa-external-link"></i></a> method.
+            Variant server automatically enriches all trace events with the following metadata:
+            <ul>
+              <li>Variant session ID by which related events can be associated.</li>
+              <li>Names of sessions's live experiences.</li>
+              <li>Custom event attributes.</li>
+            </ul>
+            A typical event flusher writes trace events to a persistent storage mechanism, such as an external database or event stream. Whenever a trace event is triggered — implicitly by Variant server or explicitly by user code — it is picked up by the Variant's asynchronous event writer, where it is held in a memory buffer until a dedicated flusher thread becomes available. There is one event writer per Variant server, shared by all schemata. Event writer groups trace events by the schema that produced them and turns them over to the apropriate event flusher by calling its <a href="/javadoc/0.10/com/variant/server/api/TraceEventFlusher.html#flush-com.variant.server.api.FlushableTraceEvent:A-int-" target="_blank" rel="noopener"><code>flush()</code> <i class="fa fa-external-link"></i></a> method.
 
-Each call to the <code>flush()</code> method is scheduled to be executed asynchronously and, potentially concurrently with other similar calls, by a dedicated thread pool, whose size is configured by the <a href="#section-2.2"><code>variant.event.writer.buffer.flush.pool.size</code></a> config property. Buffers are passed to the thread pool as soon as they fill up or the <a href="#section-2.2"><code>variant.event.writer.max.delay</code></a> number of seconds has elapsed since the time when the oldest event in the buffer was triggered.
+            Each call to the <code>flush()</code> method is scheduled to be executed asynchronously and, potentially concurrently with other similar calls, by a dedicated thread pool, whose size is configured by the <a href="#section-2.2"><code>variant.event.writer.buffer.flush.pool.size</code></a> config property. Buffers are passed to the thread pool as soon as they fill up or the <a href="#section-2.2"><code>variant.event.writer.max.delay</code></a> number of seconds has elapsed since the time when the oldest event in the buffer was triggered.
 
-Note, that it is possible that the same flusher instance is accessed by multiple threads, so it is critical that the <code>flush()</code> method you write be thread safe. In particular, avoid mutable instance state in custom event flushers.
+            Note, that it is possible that the same flusher instance is accessed by multiple threads, so it is critical that the <code>flush()</code> method you write be thread safe. In particular, avoid mutable instance state in custom event flushers.
 
-Trace event flushers are configured in the <a href="#section-3.3"><code>META</code> section</a> of the variation schema, as in the following example:
-<pre><code>
+            Trace event flushers are configured in the <a href="#section-3.3"><code>META</code> section</a> of the variation schema, as in the following example:
+            <pre><code>
 {
    'meta':{
       'name':'petclinic',
@@ -948,105 +952,105 @@ Trace event flushers are configured in the <a href="#section-3.3"><code>META</co
    'variations':[...],
 }
 </code></pre>
-If no event flusher is configured in the schema, the system wide default is assumed, as configured by the <a href="#section-2.2"><code>variant.event.flusher.class.*</code></a> properties.
+            If no event flusher is configured in the schema, the system wide default is assumed, as configured by the <a href="#section-2.2"><code>variant.event.flusher.class.*</code></a> properties.
 
-A number of pre-built trace event flushers come with the server, as part of the standard extension library, discussed in <a href="#section-4.4">Section 4.4</a>.
+            A number of pre-built trace event flushers come with the server, as part of the standard extension library, discussed in <a href="#section-4.4">Section 4.4</a>.
 
-<a class="variant-header-offset" name="section-4.3"></a>
-<h2><span class="variant-underlined">4.3<span class="indent"></span>Developing for the ExtAPI</span></h2>
-Variant server extension API library <code>variant-server-extapi-&lt;release&gt;.jar</code> can be downloaded from the <a href="/get">Variant website</a>. Create a new Java project in your IDE, add this JAR file to the classpath and you are set. You must package your project as JAR. To add the packaged JAR file to Variant server's runtime classpath, copy it (and its dependencies) into the server's <code>ext/</code> directory.
+            <a class="header-offset" name="section-4.3"></a>
+            <h2><span class="underlined">4.3<span class="indent"></span>Developing for the ExtAPI</span></h2>
+            Variant server extension API library <code>variant-server-extapi-&lt;release&gt;.jar</code> can be downloaded from the <a href="/get">Variant website</a>. Create a new Java project in your IDE, add this JAR file to the classpath and you are set. You must package your project as JAR. To add the packaged JAR file to Variant server's runtime classpath, copy it (and its dependencies) into the server's <code>ext/</code> directory.
 
-Alternatively, but with the same ultimate result, — you may clone the <a href="https://github.com/getvariant/variant-server-extapi" target="_blank">standard extension public repository&nbsp;<i class="fa fa-external-link"></i></a> into a local workspace, remove the source files, change the <a href="https://github.com/getvariant/variant-extapi-standard/blob/213cae2972149c852a9b0c010deb30a8c5d71404/pom.xml#L22-L24" target="_blank">groupId, artifactId and the version&nbsp;<i class="fa fa-external-link"></i></a> to suit your environment,— and you have a working shell of a brand new ExtAPI development project.
+            Alternatively, but with the same ultimate result, — you may clone the <a href="https://github.com/getvariant/variant-server-extapi" target="_blank">standard extension public repository&nbsp;<i class="fa fa-external-link"></i></a> into a local workspace, remove the source files, change the <a href="https://github.com/getvariant/variant-extapi-standard/blob/213cae2972149c852a9b0c010deb30a8c5d71404/pom.xml#L22-L24" target="_blank">groupId, artifactId and the version&nbsp;<i class="fa fa-external-link"></i></a> to suit your environment,— and you have a working shell of a brand new ExtAPI development project.
 
-Note, that a running Variant server loads all hook and flusher classes from the class path only once, when they are first encountered. Therefore, replacing classes in the server's <code>ext/</code> directory will not have any effect and may even lead to unexpected behavior. Always restart your Variant server when you redeploy your custom ExtAPI classes.
+            Note, that a running Variant server loads all hook and flusher classes from the class path only once, when they are first encountered. Therefore, replacing classes in the server's <code>ext/</code> directory will not have any effect and may even lead to unexpected behavior. Always restart your Variant server when you redeploy your custom ExtAPI classes.
 
-<a class="variant-header-offset" name="section-4.4"></a>
-<h2><span class="variant-underlined">4.4<span class="indent"></span>The Standard Extension Library</span></h2>
-Variant server standard extension is a library of general purpose extensions, written on top of the ExtAPI. They provide out-of-the-box functionality which is not part of the core Variant server. They are packaged as <code>variant-extapi-standard-&lt;release&gt;.jar</code> file wich is incliuded in the server distribution in the <code>ext/</code> directory.
+            <a class="header-offset" name="section-4.4"></a>
+            <h2><span class="underlined">4.4<span class="indent"></span>The Standard Extension Library</span></h2>
+            Variant server standard extension is a library of general purpose extensions, written on top of the ExtAPI. They provide out-of-the-box functionality which is not part of the core Variant server. They are packaged as <code>variant-extapi-standard-&lt;release&gt;.jar</code> file wich is incliuded in the server distribution in the <code>ext/</code> directory.
 
-The standard extension library is an open source project, available on <a href="https://github.com/getvariant/variant-extapi-standard" rel="noopener" target="_blank">GitHub&nbsp;<i class="fa fa-external-link"></i></a> under the Apache 2 license. You may find it useful to examine the source code, before developing your own custom lifecyle event hooks and trace event flushers.
+            The standard extension library is an open source project, available on <a href="https://github.com/getvariant/variant-extapi-standard" rel="noopener" target="_blank">GitHub&nbsp;<i class="fa fa-external-link"></i></a> under the Apache 2 license. You may find it useful to examine the source code, before developing your own custom lifecyle event hooks and trace event flushers.
 
-<a class="variant-header-offset" name="section-4.4.1"></a>
-<h3>4.4.1<span class="indent"></span>Package <code>com.variant.extapi.std.demo</code></h3>
-<code>Contains the <a href="https://getvariant.github.io/variant-extapi-standard/com/variant/extapi/std/demo/UserQualifyingHook.html" target="_blank"><code>UserQualifyingHook</code>&nbsp;<i class="fa fa-external-link"></i></a> lifecycle hook, required by the <a href="https://github.com/getvariant/variant-java-demo" target="_blank">Servlet Demo Application&nbsp;<i class="fa fa-external-link"></i></a>.
+            <a class="header-offset" name="section-4.4.1"></a>
+            <h3>4.4.1<span class="indent"></span>Package <code>com.variant.extapi.std.demo</code></h3>
+            <code>Contains the <a href="https://getvariant.github.io/variant-extapi-standard/com/variant/extapi/std/demo/UserQualifyingHook.html" target="_blank"><code>UserQualifyingHook</code>&nbsp;<i class="fa fa-external-link"></i></a> lifecycle hook, required by the <a href="https://github.com/getvariant/variant-java-demo" target="_blank">Servlet Demo Application&nbsp;<i class="fa fa-external-link"></i></a>.
 
-<a class="variant-header-offset" name="section-4.4.2"></a>
-<h3>4.4.2<span class="indent"></span>Package <code>com.variant.extapi.std.fush</code></h3>
-<code>Contains the folloiwng ready to use trace event flushers:
-<table class="variant-table">
-<tbody>
-<tr>
-<th><a href="https://getvariant.github.io/variant-extapi-standard/com/variant/extapi/std/flush/TraceEventFlusherNull.html" target="_blank"><code>TraceEventFlusherNull</code>&nbsp;<i class="fa fa-external-link"></i></a></th>
-</tr>
-<tr>
-<td>Discards all trace events.
+              <a class="header-offset" name="section-4.4.2"></a>
+              <h3>4.4.2<span class="indent"></span>Package <code>com.variant.extapi.std.fush</code></h3>
+              <code>Contains the folloiwng ready to use trace event flushers:
+                <table class="table">
+                  <tbody>
+                  <tr>
+                    <th><a href="https://getvariant.github.io/variant-extapi-standard/com/variant/extapi/std/flush/TraceEventFlusherNull.html" target="_blank"><code>TraceEventFlusherNull</code>&nbsp;<i class="fa fa-external-link"></i></a></th>
+                  </tr>
+                  <tr>
+                    <td>Discards all trace events.
 
-<strong>Configuration:</strong> None.
+                      <strong>Configuration:</strong> None.
 
-<strong>Example:</strong>
-<pre><code>
+                      <strong>Example:</strong>
+                      <pre><code>
 'flusher': {
    'class':'com.variant.extapi.std.flush.TraceEventFlusherNull'
    }
 </code></pre>
-</td>
-</tr>
-<tr>
-<th><a href="https://getvariant.github.io/variant-extapi-standard/com/variant/extapi/std/flush/TraceEventFlusherServerLog.html" target="_blank"><code>TraceEventFlusherServerLog</code>&nbsp;<i class="fa fa-external-link"></i></a></th>
-</tr>
-<tr>
-<td>Appends trace events to the application logger. This is the default, out of the box event flusher, which is completely independent of the operational environment. Probably not for production use.
+                    </td>
+                  </tr>
+                  <tr>
+                    <th><a href="https://getvariant.github.io/variant-extapi-standard/com/variant/extapi/std/flush/TraceEventFlusherServerLog.html" target="_blank"><code>TraceEventFlusherServerLog</code>&nbsp;<i class="fa fa-external-link"></i></a></th>
+                  </tr>
+                  <tr>
+                    <td>Appends trace events to the application logger. This is the default, out of the box event flusher, which is completely independent of the operational environment. Probably not for production use.
 
-<strong>Configuration:</strong>
+                      <strong>Configuration:</strong>
 
-<code>level</code> - specifies the logging level to be used. Defaults to 'INFO'.
+                      <code>level</code> - specifies the logging level to be used. Defaults to 'INFO'.
 
-<strong>Example:</strong>
-<pre><code>
+                      <strong>Example:</strong>
+                      <pre><code>
 'flusher': {
    'class':'com.variant.extapi.std.flush.TraceEventFlusherApplicationLog',
    'init':{'init':"info"}
 }
 </code></pre>
-</td>
-</tr>
-<tr>
-<th><a href="https://getvariant.github.io/variant-extapi-standard/com/variant/extapi/std/flush/TraceEventFlusherCsv.html" target="_blank"><code>TraceEventFlusherCsv</code>&nbsp;<i class="fa fa-external-link"></i></a></th>
-</tr>
-<tr>
-<td>Writes trace events to a local CSV file. The output file format conforms to the IETF RFC4180 specification.
+                    </td>
+                  </tr>
+                  <tr>
+                    <th><a href="https://getvariant.github.io/variant-extapi-standard/com/variant/extapi/std/flush/TraceEventFlusherCsv.html" target="_blank"><code>TraceEventFlusherCsv</code>&nbsp;<i class="fa fa-external-link"></i></a></th>
+                  </tr>
+                  <tr>
+                    <td>Writes trace events to a local CSV file. The output file format conforms to the IETF RFC4180 specification.
 
-<strong>Configuration:</strong>
+                      <strong>Configuration:</strong>
 
-<code>header</code> - boolean - Wether or not to include the metadata header as very first line. The default is false.
+                      <code>header</code> - boolean - Wether or not to include the metadata header as very first line. The default is false.
 
-<code>file</code> - string - The name of the file to write to. Will be overwritten if exists. The default is "variant-events.csv"
+                      <code>file</code> - string - The name of the file to write to. Will be overwritten if exists. The default is "variant-events.csv"
 
-<strong>Example:</strong>
-<pre><code>
+                      <strong>Example:</strong>
+                      <pre><code>
 'flusher': {
    'class':'com.variant.extapi.std.flush.TraceEventFlusherCsv',
    'init':{'file':'/tmp/variant-events.csv','header':true}
 }
 </code></pre>
-</td>
-</tr>
-<tr>
-<th><a href="https://getvariant.github.io/variant-extapi-standard/com/variant/extapi/std/flush/jdbc/TraceEventFlusherH2.html" target="_blank"><code>jdbc/TraceEventFlusherH2</code>&nbsp;<i class="fa fa-external-link"></i></a></th>
-</tr>
-<tr>
-<td>Writes Variant events to an H2 database. The SQL scripts required to create the database schema expected by this flusher can be found in <a href="https://github.com/getvariant/variant-extapi-standard/tree/master/db/h2" target="_blank"><code>db/h2</code>&nbsp;<i class="fa fa-external-link"></i></a> directory. You must also copy the H2 JDBC driver into Variant server's <code>ext/</code> directory.
+                    </td>
+                  </tr>
+                  <tr>
+                    <th><a href="https://getvariant.github.io/variant-extapi-standard/com/variant/extapi/std/flush/jdbc/TraceEventFlusherH2.html" target="_blank"><code>jdbc/TraceEventFlusherH2</code>&nbsp;<i class="fa fa-external-link"></i></a></th>
+                  </tr>
+                  <tr>
+                    <td>Writes Variant events to an H2 database. The SQL scripts required to create the database schema expected by this flusher can be found in <a href="https://github.com/getvariant/variant-extapi-standard/tree/master/db/h2" target="_blank"><code>db/h2</code>&nbsp;<i class="fa fa-external-link"></i></a> directory. You must also copy the H2 JDBC driver into Variant server's <code>ext/</code> directory.
 
-<strong>Configuration:</strong>
+                      <strong>Configuration:</strong>
 
-<code>url</code> - string - The URL to the H2 database instance.
+                      <code>url</code> - string - The URL to the H2 database instance.
 
-<code>user</code> - string - The database user name.
+                      <code>user</code> - string - The database user name.
 
-<code>password</code> - string - The database user's password.
+                      <code>password</code> - string - The database user's password.
 
-<strong>Example:</strong>
-<pre><code>
+                      <strong>Example:</strong>
+                      <pre><code>
 'flusher': {
    'class':'com.variant.extapi.std.flush.jdbc.TraceEventFlusherH2',
    'init':{
@@ -1055,24 +1059,24 @@ The standard extension library is an open source project, available on <a href="
       'password":'variant'}
 }
 </code></pre>
-</td>
-</tr>
-<tr>
-<th><a href="https://getvariant.github.io/variant-extapi-standard/com/variant/extapi/std/flush/jdbc/TraceEventFlusherMysql.html" target="_blank"><code>jdbc/TraceEventFlusherMysql</code>&nbsp;<i class="fa fa-external-link"></i></a></th>
-</tr>
-<tr>
-<td>Writes Variant events to a MySQL database. The SQL scripts required to create the database schema expected by this flusher can be found in <a href="https://github.com/getvariant/variant-extapi-standard/tree/master/db/mysql" target="_blank"><code>db/mysql</code>&nbsp;<i class="fa fa-external-link"></i></a> directory. You must also copy the MySQL JDBC driver into Variant server's <code>ext/</code> directory.
+                    </td>
+                  </tr>
+                  <tr>
+                    <th><a href="https://getvariant.github.io/variant-extapi-standard/com/variant/extapi/std/flush/jdbc/TraceEventFlusherMysql.html" target="_blank"><code>jdbc/TraceEventFlusherMysql</code>&nbsp;<i class="fa fa-external-link"></i></a></th>
+                  </tr>
+                  <tr>
+                    <td>Writes Variant events to a MySQL database. The SQL scripts required to create the database schema expected by this flusher can be found in <a href="https://github.com/getvariant/variant-extapi-standard/tree/master/db/mysql" target="_blank"><code>db/mysql</code>&nbsp;<i class="fa fa-external-link"></i></a> directory. You must also copy the MySQL JDBC driver into Variant server's <code>ext/</code> directory.
 
-<strong>Configuration:</strong>
+                      <strong>Configuration:</strong>
 
-<code>url</code> - string - The URL to the MySQL database instance.
+                      <code>url</code> - string - The URL to the MySQL database instance.
 
-<code>user</code> - string - The database user name.
+                      <code>user</code> - string - The database user name.
 
-<code>password</code> - string - The database user's password.
+                      <code>password</code> - string - The database user's password.
 
-<strong>Example:</strong>
-<pre><code>
+                      <strong>Example:</strong>
+                      <pre><code>
 'flusher': {
    'class':'com.variant.extapi.std.flush.jdbc.TraceEventFlusherMysql',
    'init':{
@@ -1081,24 +1085,24 @@ The standard extension library is an open source project, available on <a href="
       'password":'variant'}
 }
 </code></pre>
-</td>
-</tr>
-<tr>
-<th><a href="https://getvariant.github.io/variant-extapi-standard/com/variant/extapi/std/flush/jdbc/TraceEventFlusherPostgres.html" target="_blank"><code>jdbc/TraceEventFlusherPostgres</code>&nbsp;<i class="fa fa-external-link"></i></a></th>
-</tr>
-<tr>
-<td>Writes Variant events to a PostgreSQL database. The SQL scripts required to create the database schema expected by this flusher can be found in <a href="https://github.com/getvariant/variant-extapi-standard/tree/master/db/postgres" target="_blank"><code>db/postgres</code>&nbsp;<i class="fa fa-external-link"></i></a> directory. You must also copy the Postgres JDBC driver into Variant server's <code>ext/</code> directory.
+                    </td>
+                  </tr>
+                  <tr>
+                    <th><a href="https://getvariant.github.io/variant-extapi-standard/com/variant/extapi/std/flush/jdbc/TraceEventFlusherPostgres.html" target="_blank"><code>jdbc/TraceEventFlusherPostgres</code>&nbsp;<i class="fa fa-external-link"></i></a></th>
+                  </tr>
+                  <tr>
+                    <td>Writes Variant events to a PostgreSQL database. The SQL scripts required to create the database schema expected by this flusher can be found in <a href="https://github.com/getvariant/variant-extapi-standard/tree/master/db/postgres" target="_blank"><code>db/postgres</code>&nbsp;<i class="fa fa-external-link"></i></a> directory. You must also copy the Postgres JDBC driver into Variant server's <code>ext/</code> directory.
 
-<strong>Configuration:</strong>
+                      <strong>Configuration:</strong>
 
-<code>url</code> - string - The URL to the PostgreSQL database instance.
+                      <code>url</code> - string - The URL to the PostgreSQL database instance.
 
-<code>user</code> - string - The database user name.
+                      <code>user</code> - string - The database user name.
 
-<code>password</code> - string - The database user's password.
+                      <code>password</code> - string - The database user's password.
 
-<strong>Example:</strong>
-<pre><code>
+                      <strong>Example:</strong>
+                      <pre><code>
 'flusher': {
    'class':'com.variant.extapi.std.flush.jdbc.TraceEventFlusherPostgres',
    'init':{
@@ -1107,12 +1111,12 @@ The standard extension library is an open source project, available on <a href="
       'password":'variant'}
 }
 </code></pre>
-</td>
-</tr>
-</tbody>
-</table>
-</code></code></code></code></div>
-<code class="json"><code><code><code>
-</code></code></code></code></div>
-<code class="json"><code><code><code>
-</code></code></code></code></div>
+                    </td>
+                  </tr>
+                  </tbody>
+                </table>
+              </code></code></code></code>
+      </div>
+    </div>
+  </div>
+</div>
