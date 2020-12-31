@@ -197,6 +197,7 @@ $ cd variant-server-&lt;release&gt;
 $ bin/variant.sh start
 </code></pre>
         If all goes well, the server console output should look something like this:
+        <!--
         <pre><code class="json">
 $ bin/variant.sh start
 2019-12-10 09:54:44,477 INFO - c.v.s.boot.ConfigLoader$ - Found  config resource [/variant.conf] as [/Users/Igor/soft/variant-server-0.10.2/conf/variant.conf]
@@ -211,7 +212,7 @@ $ bin/variant.sh start
         <pre><code class="shell">
 $ bin/variant.sh start -Dvariant.http.port=9999
 </code></pre>
-        <!--
+
         You may always ping a running server by typing its URL into a Web browser, or with the <code>curl</code> command:
           <pre class="shell"><code>
 $ curl localhost:5377
