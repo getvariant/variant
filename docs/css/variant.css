@@ -175,6 +175,12 @@ pre {
 	width: 525px;
 }
 
+span.tombstone {
+font-size: 20px;
+  color: #666;
+  margin-right: 10px;
+}
+
 /* Variant responsive columns (2 columns across)
 *******************************************/
 
