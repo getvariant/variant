@@ -213,16 +213,20 @@ $ bin/variant.sh start
 2019-12-10 09:54:45,490 INFO - c.v.s.schema.Schemata - [422] Deployed schema [exampleSchema] from file [example.schema]
 2019-12-10 09:54:45,494 INFO - c.v.s.boot.VariantServerImpl - [433] Variant AIM Server release 0.10.2 started on port [5377] in 2.131s
         </pre>
-
+        <p>
         At this point, the server is ready to deploy variation schema files, which you copy into the <code>schemata/</code> directory.
-
+        </p>
+          <p>
         By default, the server attaches to port 5377. To start the server on a different port, pass the port number in the <code>variant.http.port</code> on the startup command line. For example, to start on port 9999:
-        <pre><code class="shell">
+          </p>
+          <pre>
 $ bin/variant.sh start -Dvariant.http.port=9999
-</code></pre>
-
+          </pre>
+          <p>
         You may always ping a running server by typing its URL into a Web browser, or with the <code>curl</code> command:
-          <pre class="shell"><code>
+          </p>
+
+          <pre>
 $ curl localhost:5377
 {
   "name" : "Variant AIM Server",
@@ -240,12 +244,13 @@ $ curl localhost:5377
     "comment" : "Basic sample variation schema. See User Guide for details."
   } ]
 }
-</code></pre>
-
+</pre>
+          <p>
           A running server can be stopped by typing <code>Control-C</code> in the shell where it was started, or by typing in a different shell window
-          <pre><code class="shell">
+          </p>
+          <pre>
 $ bin/variant.sh stop
-</code></pre>
+</pre>
 
           <a class="header-offset" name="section-2"></a>
           <h1><span class="underlined">2<span class="indent"></span>Variant Server Configuration</span></h1>
