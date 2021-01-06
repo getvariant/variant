@@ -256,32 +256,42 @@ $ bin/variant.sh stop
           <h1><span class="underlined">2<span class="indent"></span>Variant Server Configuration</span></h1>
           <a class="header-offset" name="section-2.1"></a>
           <h2><span class="underlined">2.1<span class="indent"></span>Sources Of Configuration</span></h2>
-          Variant server is configured via configuration properties organized in conf files. At startup, Variant server looks for configuration in the file <code>conf/variant.conf</code>. If it is found, its contents override the default settings, listed in the next section. If you need to modify any configuration properties, you may either update them directly in the <code>conf/variant.conf</code> file, or provide an alternate configuration file whose contents take precedence over those of the  <code>conf/variant.conf</code> file.
-
+          <p>
+              Variant server is configured via configuration properties organized in conf files. At startup, Variant server looks for configuration in the file <code>conf/variant.conf</code>. If it is found, its contents override the default settings, listed in the next section. If you need to modify any configuration properties, you may either update them directly in the <code>conf/variant.conf</code> file, or provide an alternate configuration file whose contents take precedence over those of the  <code>conf/variant.conf</code> file.
+          </p>
+          <p>
           The alternate config file may be provided on the command line either as a file system file:
-          <pre><code class="shell">
+          </p>
+          <pre>
 $ variant.sh start -Dvariant.config.file=/path/to/alt/config/as/file
-</code></pre>
+</pre>
+          <p>
           or as a Java classpath resource:
-          <pre><code class="shell">
+          </p>
+          <pre>
 $ variant.sh start -Dvariant.config.resource=resource-name
-</code></pre>
+</pre>
+          <p>
           The simplest way to add a resource to the server classpath is to place it in the server's <code>conf</code> directory, which is added to the server's runtime classpath at the root level. In other words, the file <code>conf/extra.conf</code> should be referenced as
-          <pre><code class="shell">
+          </p>
+          <pre>
 $ variant.sh start -Dvariant.config.resource=/extra.conf
-</code></pre>
+</pre>
+          <p>
           It is an error to set both <code>variant.config.file</code> and <code>variant.config.resource</code> system properties.
-
+          </p>
+          <p>
           Finally, each individual config parameter may be overridden from the command line via the JVM system variable of the same name, e.g.:
-
-        </code>
-        <pre><code class="shell"></code>
+          </p>
+        <pre>
 $ variant.sh start -Dvariant.schemata.dir=/Users/Igor/schemata
 </pre>
         <a class="header-offset" name="section-2.2"></a>
         <h2><span class="underlined">2.2<span class="indent"></span>Variant Server Configuration Properties</span></h2>
-        The following table lists all config properties recognized by Variant server.
 
+          <p>
+              The following table lists all config properties recognized by Variant server.
+          </p>
         <a class="header-offset" name="table-1"></a>
         <table class="table">
           <tbody>
@@ -349,11 +359,15 @@ $ variant.sh start -Dvariant.schemata.dir=/Users/Igor/schemata
 
         <a class="header-offset" name="section-3"></a>
         <h1><span class="underlined">3<span class="indent"></span>Variation Schema Grammar</span></h1>
-        Variant manages code variation metadata in human readable files, called <em>schema files</em>. Each schema file contains a single code variation schema describing a set of related code variations instrumented on some host application using familiar JSON syntax. This chapter provides detailed information on the schema grammar.
 
+          <p>
+              Variant manages code variation metadata in human readable files, called <em>schema files</em>. Each schema file contains a single code variation schema describing a set of related code variations instrumented on some host application using familiar JSON syntax. This chapter provides detailed information on the schema grammar.
+          </p>
         <a class="header-offset" name="section-3.1"></a>
         <h2><span class="underlined">3.1<span class="indent"></span>Syntax</span></h2>
-        The following conventions are used throughout this chapter:
+          <p>
+              The following conventions are used throughout this chapter:
+          </p>
         <table class="table">
           <tbody>
           <tr>
@@ -386,8 +400,10 @@ $ variant.sh start -Dvariant.schemata.dir=/Users/Igor/schemata
           </tr>
           </tbody>
         </table>
+          <p>
         Variation schema format extends the standard JSON grammar by allowing comments. A single-line comment starts with <code>//</code> and continues to the end of line, and a multi-line comment starts with <code>/*</code> and ends with <code>*/</code>. <code>//</code> style comments can be nested inside <code>/*</code> style comments.
-        <pre><code class="json">
+          </p>
+          <pre>
 /*
  * This is a comment.
  */
@@ -396,26 +412,27 @@ $ variant.sh start -Dvariant.schemata.dir=/Users/Igor/schemata
     // And so is this.
     'name':'login',  // And this too.
   ...
-</code></pre>
-        <code class="json"><code></code>
-
-          <code>Property names, i.e. the strings to the left of the ‘:’, are the schema keywords. Keywords are case-insensitive: in the listing above, <code>'States'</code> or <code>'NAME'</code> will also work.
-
+</pre>
+          <p>
+          Property names, i.e. the strings to the left of the ‘:’, are the schema keywords. Keywords are case-insensitive: in the listing above, <code>'States'</code> or <code>'NAME'</code> will also work.
+          </p>
             <a class="header-offset" name="section-3.2"></a>
             <h2><span class="underlined">3.2<span class="indent"></span>General Structure</span></h2>
-            A variation schema is made up of three sections: <code>meta</code>, <code>states</code> and <code>tests</code>, which must appear in this order:
-
+          <p>
+          A variation schema is made up of three sections: <code>meta</code>, <code>states</code> and <code>tests</code>, which must appear in this order:
+          <p>
             <a class="header-offset" name="listing-1"></a>
-            <pre><code>
+            <pre>
 <strong>schema-spec</strong> :=
 {
   'meta':<em>object@<a href="#listing-2">meta-spec</a></em>,
   'states':[<em>object@<a href="#listing-5">state-spec</a></em>],
   'variations':[<em>object@<a href="#listing-7">variation-spec</a></em>]
-}</code></pre>
-            <code>
-            </code><code></code>
+}
+      </pre>
+
             <p class="fig-footer">Listing 1. Basic structure of a variation schema.</p>
+          
             Variant schema parser is single-pass, so no forward references are allowed. The <code>meta</code> section must appear first, followed by states, followed by variations, because variation definitions refer back to states. Similarly, referenced variations must be defined before the referring variations.
 
             <a class="header-offset" name="section-3.3"></a>
