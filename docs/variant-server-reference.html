@@ -432,15 +432,17 @@ $ variant.sh start -Dvariant.schemata.dir=/Users/Igor/schemata
       </pre>
 
             <p class="fig-footer">Listing 1. Basic structure of a variation schema.</p>
-
+          <p>
             Variant schema parser is single-pass, so no forward references are allowed. The <code>meta</code> section must appear first, followed by states, followed by variations, because variation definitions refer back to states. Similarly, referenced variations must be defined before the referring variations.
-
+          </p>
             <a class="header-offset" name="section-3.3"></a>
             <h2><span class="underlined">3.3<span class="indent"></span><code>META</code> Section</span></h2>
-            The <code>meta</code> section contains properties which apply to the entire schema:
+          <p>
+          The <code>meta</code> section contains properties which apply to the entire schema:
+          </p>
 
             <a class="header-offset" name="listing-2"></a>
-            <pre><code>
+            <pre>
 <strong>meta-spec</strong> :=
   {
     'name':<em><a href="#section-3.1">name-string</a></em>,
@@ -448,9 +450,7 @@ $ variant.sh start -Dvariant.schemata.dir=/Users/Igor/schemata
     'flusher':<em>object@<a href="#listing-3">flusher-spec</a></em>,
     'hooks':[<em>object@<a href="#listing-4">hook-spec</a></em>]<em></em>
   }
-</code></pre>
-            <code>
-            </code><code></code>
+</pre>
             <table class="table">
               <tbody>
               <tr>
@@ -491,16 +491,18 @@ $ variant.sh start -Dvariant.schemata.dir=/Users/Igor/schemata
               </tbody>
             </table>
             <p class="fig-footer">Listing 2. The <code></code> section of a variation schema.</p>
-            The flusher specification defines a schema-specific event flusher:
+          <p>
+          The flusher specification defines a schema-specific event flusher:
+          </p>
 
             <a class="header-offset" name="listing-3"></a>
-            <pre><code>
+            <pre>
 <strong>flusher-spec</strong> :=
   {
     'class':<em><a href="#section-3.1">any-string</a></em>,
     'init':<em><a href="#section-3.1">literal</a></em>
   }
-</code></pre>
+</pre>
             <table class="table">
               <tbody>
               <tr>
@@ -527,21 +529,23 @@ $ variant.sh start -Dvariant.schemata.dir=/Users/Igor/schemata
               </tbody>
             </table>
             <p class="fig-footer">Listing 3. Event flusher specification.</p>
+          <p>
             Each schema gets its own instance of an event flusher, instantiated by Variant server at schema deployment time. The Java class referenced by the <code>class</code> property must be on the server's class path. You may pass arbitrary state data to this instance by supplying the <code>init</code> property, which can be any JSON literal. This init object will be parsed into a <a href="http://lightbend.github.io/config/latest/api/com/typesafe/config/Config.html" target="_blank">Lightbend <code>Config</code>&nbsp;<i class="fa fa-external-link"></i></a> Java object and passed to the constructor of the implementing type, which must be provided by the implementation.
-
+          </p>
+          <p>
             For more information, see <a href="#section-4.2">Section 4.2 Event Flushers</a>.
-
+          </p>
             <a class="header-offset" name="section-3.4"></a>
             <h2><span class="underlined">3.4<span class="indent"></span>Lifecycle Hooks</span></h2>
             <a class="header-offset" name="listing-4"></a>
-            <pre><code>
+            <pre>
 <strong>hook-spec</strong> :=
   {
     'name':<em><a href="#section-3.1">name-string</a></em>,
     'class':<em><a href="#section-3.1">any-string</a></em>,
     'init':<em><a href="#section-3.1">literal</a></em>
   }
-</code></pre>
+</pre>
             <table class="table">
               <tbody>
               <tr>
