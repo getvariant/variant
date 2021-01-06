@@ -579,23 +579,26 @@ $ variant.sh start -Dvariant.schemata.dir=/Users/Igor/schemata
               </tbody>
             </table>
             <p class="fig-footer">Listing 4. Lifecycle hook specification.</p>
+          <p>
             The Java class referenced by the <code>class</code> property must be on the server's class path. You may pass arbitrary state data to this instance by supplying the <code>init</code> property, which can be any JSON literal. This object will be parsed into a <a href="http://lightbend.github.io/config/latest/api/com/typesafe/config/Config.html" target="_blank">Lightbend <code>Config</code>&nbsp;<i class="fa fa-external-link"></i></a> Java object and passed to the constructor of the implementing type, which must be provided by the implementation.
-
+          </p>
+          <p>
             Lifecycle hooks can be defined at the meta, state, or variation scope, which determines which lifecycle event types post them and in what order. For more information, see <a href="#section-4.1">Section 4.1 Lifecycle Hooks</a>.
-
+          </p>
             <a class="header-offset" name="section-3.5"></a>
             <h2><span class="underlined">3.5<span class="indent"></span><code>SATES</code> Section</span></h2>
-            In Code Variation Model, a state represents an <a href="/resources/docs/0-10/application-iteration-server/user-guide/#section-3.1">interface state</a> of the host application where it pauses for user input. CVM states are rather abstract: the only required property is <code>name</code>, by which the state can be referenced. States form a set, not a graph, i.e. user sessions traverse states one at a time, but there is no predefined order in which these states can be visited or which states are accessible from any particular state.
-
+          <p>
+          In Code Variation Model, a state represents an <a href="/resources/docs/0-10/application-iteration-server/user-guide/#section-3.1">interface state</a> of the host application where it pauses for user input. CVM states are rather abstract: the only required property is <code>name</code>, by which the state can be referenced. States form a set, not a graph, i.e. user sessions traverse states one at a time, but there is no predefined order in which these states can be visited or which states are accessible from any particular state.
+          </p>
             <a class="header-offset" name="listing-5"></a>
-            <pre><code>
+            <pre>
 <strong>state-spec</strong> :=
   {
     'name':<em><a href="#section-3.1">name-string</a></em>,
     'parameters':<em>object<a href="#listing-6">@state-parameter-spec</a></em>,
     'hooks':[<em>object<a href="#listing-4">@hook-spec</a></em>]
   }
-</code></pre>
+</pre>
             <table class="table">
               <tbody>
               <tr>
@@ -631,16 +634,17 @@ $ variant.sh start -Dvariant.schemata.dir=/Users/Igor/schemata
             <p class="fig-footer">Listing 5. The schema definition of a state.</p>
             <a class="header-offset" name="section-3.6"></a>
             <h2><span class="underlined">3.6<span class="indent"></span>State Parameters</span></h2>
-            Although CVM is agnostic of the nature or the technology of the host application, it provides a mechanism for the test designer to attach application-specific context to states, which the host application can access at run time. This is accomplished with <a href="/resources/docs/0-10/application-iteration-server/user-guide/#section-3.6">state parameters</a>. They can be specified either at the state level, as already explained in the previous section, or at the state variant level, as explained later in <a href="#section-3.7.3">Section 3.7.3</a>. Each state parameter is a name/value pair, where both the name and the value are strings.
-
+          <p>
+          Although CVM is agnostic of the nature or the technology of the host application, it provides a mechanism for the test designer to attach application-specific context to states, which the host application can access at run time. This is accomplished with <a href="/resources/docs/0-10/application-iteration-server/user-guide/#section-3.6">state parameters</a>. They can be specified either at the state level, as already explained in the previous section, or at the state variant level, as explained later in <a href="#section-3.7.3">Section 3.7.3</a>. Each state parameter is a name/value pair, where both the name and the value are strings.
+          </p>
             <a class="header-offset" name="listing-6"></a>
-            <pre><code>
+            <pre>
 <strong>state-parameter-spec</strong> :=
   {
     <a href="#section-3.1">name-string</a>:<a href="#section-3.1"><em>any-string</em></a>
     ,...
   }
-</code></pre>
+</pre>
             <table class="table">
               <tbody>
               <tr>
@@ -660,16 +664,18 @@ $ variant.sh start -Dvariant.schemata.dir=/Users/Igor/schemata
               </tbody>
             </table>
             <p class="fig-footer">Listing 6. State parameter specification.</p>
+          <p>
             Whenever the host application calls the <a href="/javadoc/0.10/com/variant/client/Session.html#targetForState-com.variant.core.schema.State-" target="_blank"><code>Session.targetForState()</code> <i class="fa fa-external-link"></i></a> method, server picks from the given state's variant space a single state variant. The state parameters defined at that state variant, if any, override the like-named parameters defined at the base state. (Remember, names are case sensitive.) These <em>resolved</em> state parameters are available to the host application via the <a href="/javadoc/0.10/com/variant/client/StateRequest.html#getResolvedParameters--" target="_blank"><code>StateRequest.getResolvedParameters()</code> <i class="fa fa-external-link"></i></a> method.
-
+          </p>
             <a class="header-offset" name="section-3.7"></a>
             <h2><span class="underlined">3.7<span class="indent"></span><code>VARIATIONS</code> Section</span></h2>
             <a class="header-offset" name="section-3.7.1"></a>
             <h3>3.7.1<span class="indent"></span>Variations</h3>
-            A variation is a code variation, instrumented over one or more states. It must have exactly one control experience (the one mapped to the current code path) and one or more variant experiences, mapped to the candidate code path(s).
-
+          <p>
+          A variation is a code variation, instrumented over one or more states. It must have exactly one control experience (the one mapped to the current code path) and one or more variant experiences, mapped to the candidate code path(s).
+          </p>
             <a class="header-offset" name="listing-7"></a>
-            <pre><code>
+            <pre>
 <strong>variation-spec</strong> :=
   {
     'name':<em><a href="#section-3.1">name-string</a></em>,
@@ -679,7 +685,7 @@ $ variant.sh start -Dvariant.schemata.dir=/Users/Igor/schemata
     'onStates':[<em>object@<a href="#listing-9">on-state-spec</a></em>],
     'hooks':[<em>object@<a href="#listing-4">hook-spec</a></em>]
   }
-</code></pre>
+</pre>
             <table class="table">
               <tbody>
               <tr>
@@ -734,25 +740,29 @@ $ variant.sh start -Dvariant.schemata.dir=/Users/Igor/schemata
               </tbody>
             </table>
             <p class="fig-footer">Listing 7. The schema definition of a variation.</p>
+          <p>
             For each state on the <code>onStates</code> list, Variant builds a state variant space as a Cartesian product of this variation's experience set and the experience sets of all those variations mentioned on the <code>conjointVariationRefs</code> list. Refer to <a href="/resources/docs/0-10/application-iteration-server/user-guide/#section-3.8">Variant Server User Guide</a> for more information on concurrent variations.
-
+          </p>
+          <p>
             Each variation-scoped hook must listen to a lifecycle event descendant from <a href="/javadoc/0.10/com/variant/server/api/lifecycle/StateAwareLifecycleEvent.html" target="_blank"><code>VariationAwareLifecycleEvent</code>&nbsp;<i class="fa fa-external-link"></i></a>. For more information, see <a href="#section-4.1">Section 4.1 Lifecycle Hooks</a>.
-
+          </p>
+          <p>
             The <code>isOn</code> property is used to turn an experiement or a feature toggle temporarily offline without removing it from the schema. No sessions are targeted for an offline variation, as if it didn't even exist. In fact, the only differences between an offline variation and a variation that is completely removed from the schema is that if it defines its targeting or qualification persistence as durable, this information is preserved. In practice this means that, after an offline variation is taken back online, return users will see the same experience they saw before the variation was taken offline.
-
+          </p>
             <a class="header-offset" name="section-3.7.2"></a>
             <h3>3.7.2<span class="indent"></span>Variation Experiences</h3>
-            Each element of a variation's <code>experiences</code> property describes one of its experiences.
-
+          <p>
+          Each element of a variation's <code>experiences</code> property describes one of its experiences.
+          </p>
             <a class="header-offset" name="listing-8"></a>
-            <pre><code>
+            <pre>
 <strong>experience-spec</strong> :=
   {
     'name':<em><a href="#section-3.1">name-string</a></em>,
     'weight':<em><a href="#section-3.1">number</a></em>,
     'isControl':<em><a href="#section-3.1">boolean</a></em>
   }
-</code></pre>
+</pre>
             <table class="table">
               <tbody>
               <tr>
@@ -788,16 +798,17 @@ $ variant.sh start -Dvariant.schemata.dir=/Users/Igor/schemata
             <p class="fig-footer">Listing 8. The schema definition of a test experience.</p>
             <a class="header-offset" name="section-3.7.3"></a>
             <h3>3.7.3<span class="indent"></span>Variation On-States</h3>
+          <p>
             The <code>onStates</code> property contains a list of elements, each of which describes the enclosing variation's instrumentation details on a particular state.
-
+          </p>
             <a class="header-offset" name="listing-9"></a>
-            <pre><code>
+            <pre>
 <strong>on-state-spec</strong> :=
   {
     'stateRef':<em><a href="#section-3.1">name-string</a></em>
     'variants':[<em>object@<a href="#listing-10">state-variant-spec</a></em>]
   }
-</code></pre>
+</pre>
             <table class="table">
               <tbody>
               <tr>
@@ -824,9 +835,12 @@ $ variant.sh start -Dvariant.schemata.dir=/Users/Igor/schemata
               </tbody>
             </table>
             <p class="fig-footer">Listing 9 The schema definition of an onState property.</p>
-            Whenever a variation <code>V</code> instruments state <code>S</code>, Variant schema parser creates the state variant space <code>ν(V,S)</code> as a Cartesian product of the set of <code>V</code>'s experiences and the experience sets of all variations conjointly concurrent with <code>V</code>. All state variants in <code>ν(V,S)</code> implicitly inherit the state parameters as defined in the base state <code>S</code>. In most cases, this inferred state variant space is sufficient, and you will not need to define state vairants explicitly.
-
-            However, there are two use cases when explicit re-definition of one or more state variants is needed:
+          <p>
+          Whenever a variation <code>V</code> instruments state <code>S</code>, Variant schema parser creates the state variant space <code>ν(V,S)</code> as a Cartesian product of the set of <code>V</code>'s experiences and the experience sets of all variations conjointly concurrent with <code>V</code>. All state variants in <code>ν(V,S)</code> implicitly inherit the state parameters as defined in the base state <code>S</code>. In most cases, this inferred state variant space is sufficient, and you will not need to define state vairants explicitly.
+          </p>
+          <p>
+              However, there are two use cases when explicit re-definition of one or more state variants is needed:
+          </p>
             <ol>
               <li><strong>Phantom state variants.</strong>
                 Implicitly inferred state variants are not phantom. If you need to define a state variant as phantom, you must define that state phantom explicitly. Refer to <a href="/resources/docs/0-10/application-iteration-server/user-guide/#section-3.7">Server User Guide</a> for more information on mixed instrumentation.</li>
@@ -835,10 +849,11 @@ $ variant.sh start -Dvariant.schemata.dir=/Users/Igor/schemata
             </ol>
             <a class="header-offset" name="section-3.7.4"></a>
             <h3>3.7.4<span class="indent"></span>State Variants</h3>
+          <p>
             The <code>variants</code> property contains a list of elements, each of which describes a particular state variant.
-
+          </p>
             <a class="header-offset" name="listing-10"></a>
-            <pre><code>
+            <pre>
 <strong>state-variant-spec</strong> :=
   {
     'isPhantom':<em><a href="#section-3.1">boolean</a></em>,
@@ -852,7 +867,7 @@ $ variant.sh start -Dvariant.schemata.dir=/Users/Igor/schemata
     ],
     'parameters':[<em>object@<a href="#listing-6">state-parameter-spec</a></em>]<em>?</em>
   }
-</code></pre>
+</pre>
             <table class="table">
               <tbody>
               <tr>
@@ -893,13 +908,16 @@ $ variant.sh start -Dvariant.schemata.dir=/Users/Igor/schemata
               </tbody>
             </table>
             <p class="fig-footer">Listing 10. The schema definition of a state variant.</p>
-            A state variant is phantom in a particular experience if it is not instrumented by the experience. Phantom state variants possess the following semantics:
-            <ul>
+          <p>
+          A state variant is phantom in a particular experience if it is not instrumented by the experience. Phantom state variants possess the following semantics:
+          </p>
+          <ul>
               <li>When a session is targeted for a variation, phantom experiences are not considered.</li>
               <li>When a session requests a state which is phantom in a live experience, Variant will emit a runtime user error.</li>
             </ul>
+          <p>
             Refer to <a href="/resources/docs/0-10/application-iteration-server/user-guide/#section-3.7">Variant Server User Guide</a> for more information on mixed instrumentation.
-
+          </p>
             <a class="header-offset" name="section-4"></a>
             <h1><span class="underlined">4<span class="indent"></span>Server Extension API</span></h1>
             Variant server's functionality can be extended through the use of the server-side Extension API, or <em>ExtAPI</em>, which exposes Java bindings for supplying custom server-side extensions. These extensions facilitate injection of custom semantics into the server's default execution path via a callback mechanism. Two types of user-defined callback objects are supported:
