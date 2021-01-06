@@ -432,7 +432,7 @@ $ variant.sh start -Dvariant.schemata.dir=/Users/Igor/schemata
       </pre>
 
             <p class="fig-footer">Listing 1. Basic structure of a variation schema.</p>
-          
+
             Variant schema parser is single-pass, so no forward references are allowed. The <code>meta</code> section must appear first, followed by states, followed by variations, because variation definitions refer back to states. Similarly, referenced variations must be defined before the referring variations.
 
             <a class="header-offset" name="section-3.3"></a>

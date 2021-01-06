@@ -157,7 +157,7 @@ table.header img.logo {
 	margin: 0 6px 0;
 }
 
-pre, code {
+pre, pre a, code {
     font-family: 'Fira Code', monospace;
     font-size: 14px;
     color: darkred;
