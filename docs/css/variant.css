@@ -162,7 +162,7 @@ table.header img.logo {
 #doc-body code {
     font-family: 'Fira Code', monospace;
     font-size: 14px;
-    color: darkred;
+    color: DarkRed;
     font-stretch: condensed;
     padding: 0;
 	margin: 0;
@@ -171,8 +171,9 @@ table.header img.logo {
 }
 
 #doc-body pre a {
-  color: slate;
+  color: CadetBlue;
 }
+
 #doc-body pre {
 	margin-bottom: 16px;
     padding: 8px 6px;
