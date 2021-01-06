@@ -170,6 +170,9 @@ table.header img.logo {
 	overflow-x: scroll;
 }
 
+#doc-body pre a {
+  color: slate;
+}
 #doc-body pre {
 	margin-bottom: 16px;
     padding: 8px 6px;
