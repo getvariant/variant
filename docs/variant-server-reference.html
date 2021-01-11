@@ -1079,12 +1079,16 @@ $ variant.sh start -Dvariant.schemata.dir=/Users/Igor/schemata
           </p>
             <a class="header-offset" name="section-4.4.1"></a>
             <h3>4.4.1<span class="indent"></span>Package <code>com.variant.extapi.std.demo</code></h3>
-            <code>Contains the <a href="https://getvariant.github.io/variant-extapi-standard/com/variant/extapi/std/demo/UserQualifyingHook.html" target="_blank"><code>UserQualifyingHook</code>&nbsp;<i class="fa fa-external-link"></i></a> lifecycle hook, required by the <a href="https://github.com/getvariant/variant-java-demo" target="_blank">Servlet Demo Application&nbsp;<i class="fa fa-external-link"></i></a>.
-
+          <p>
+          Contains the <a href="https://getvariant.github.io/variant-extapi-standard/com/variant/extapi/std/demo/UserQualifyingHook.html" target="_blank"><code>UserQualifyingHook</code>&nbsp;<i class="fa fa-external-link"></i></a> lifecycle hook, required by the <a href="https://github.com/getvariant/variant-java-demo" target="_blank">Servlet Demo Application&nbsp;<i class="fa fa-external-link"></i></a>.
+          </p>
               <a class="header-offset" name="section-4.4.2"></a>
               <h3>4.4.2<span class="indent"></span>Package <code>com.variant.extapi.std.fush</code></h3>
-              <code>Contains the folloiwng ready to use trace event flushers:
-                <table class="table">
+
+          <p>
+          Contains the folloiwng ready to use trace event flushers:
+          </p>
+          <table class="table">
                   <tbody>
                   <tr>
                     <th><a href="https://getvariant.github.io/variant-extapi-standard/com/variant/extapi/std/flush/TraceEventFlusherNull.html" target="_blank"><code>TraceEventFlusherNull</code>&nbsp;<i class="fa fa-external-link"></i></a></th>
@@ -1095,11 +1099,11 @@ $ variant.sh start -Dvariant.schemata.dir=/Users/Igor/schemata
                       <strong>Configuration:</strong> None.
 
                       <strong>Example:</strong>
-                      <pre><code>
+                      <pre>
 'flusher': {
    'class':'com.variant.extapi.std.flush.TraceEventFlusherNull'
    }
-</code></pre>
+</pre>
                     </td>
                   </tr>
                   <tr>
@@ -1113,12 +1117,12 @@ $ variant.sh start -Dvariant.schemata.dir=/Users/Igor/schemata
                       <code>level</code> - specifies the logging level to be used. Defaults to 'INFO'.
 
                       <strong>Example:</strong>
-                      <pre><code>
+                      <pre>
 'flusher': {
    'class':'com.variant.extapi.std.flush.TraceEventFlusherApplicationLog',
    'init':{'init':"info"}
 }
-</code></pre>
+</pre>
                     </td>
                   </tr>
                   <tr>
@@ -1134,12 +1138,12 @@ $ variant.sh start -Dvariant.schemata.dir=/Users/Igor/schemata
                       <code>file</code> - string - The name of the file to write to. Will be overwritten if exists. The default is "variant-events.csv"
 
                       <strong>Example:</strong>
-                      <pre><code>
+                      <pre>
 'flusher': {
    'class':'com.variant.extapi.std.flush.TraceEventFlusherCsv',
    'init':{'file':'/tmp/variant-events.csv','header':true}
 }
-</code></pre>
+</pre>
                     </td>
                   </tr>
                   <tr>
@@ -1157,7 +1161,7 @@ $ variant.sh start -Dvariant.schemata.dir=/Users/Igor/schemata
                       <code>password</code> - string - The database user's password.
 
                       <strong>Example:</strong>
-                      <pre><code>
+                      <pre>
 'flusher': {
    'class':'com.variant.extapi.std.flush.jdbc.TraceEventFlusherH2',
    'init':{
@@ -1165,7 +1169,7 @@ $ variant.sh start -Dvariant.schemata.dir=/Users/Igor/schemata
       'user':'variant',
       'password":'variant'}
 }
-</code></pre>
+</pre>
                     </td>
                   </tr>
                   <tr>
@@ -1183,7 +1187,7 @@ $ variant.sh start -Dvariant.schemata.dir=/Users/Igor/schemata
                       <code>password</code> - string - The database user's password.
 
                       <strong>Example:</strong>
-                      <pre><code>
+                      <pre>
 'flusher': {
    'class':'com.variant.extapi.std.flush.jdbc.TraceEventFlusherMysql',
    'init':{
@@ -1191,7 +1195,7 @@ $ variant.sh start -Dvariant.schemata.dir=/Users/Igor/schemata
       'user':'variant',
       'password":'variant'}
 }
-</code></pre>
+</pre>
                     </td>
                   </tr>
                   <tr>
@@ -1209,7 +1213,7 @@ $ variant.sh start -Dvariant.schemata.dir=/Users/Igor/schemata
                       <code>password</code> - string - The database user's password.
 
                       <strong>Example:</strong>
-                      <pre><code>
+                      <pre>
 'flusher': {
    'class':'com.variant.extapi.std.flush.jdbc.TraceEventFlusherPostgres',
    'init':{
@@ -1217,7 +1221,7 @@ $ variant.sh start -Dvariant.schemata.dir=/Users/Igor/schemata
       'user':'variant',
       'password":'variant'}
 }
-</code></pre>
+</pre>
                     </td>
                   </tr>
                   </tbody>
