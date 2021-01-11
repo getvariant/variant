@@ -920,19 +920,24 @@ $ variant.sh start -Dvariant.schemata.dir=/Users/Igor/schemata
           </p>
             <a class="header-offset" name="section-4"></a>
             <h1><span class="underlined">4<span class="indent"></span>Server Extension API</span></h1>
-            Variant server's functionality can be extended through the use of the server-side Extension API, or <em>ExtAPI</em>, which exposes Java bindings for supplying custom server-side extensions. These extensions facilitate injection of custom semantics into the server's default execution path via a callback mechanism. Two types of user-defined callback objects are supported:
+          <p>
+          Variant server's functionality can be extended through the use of the server-side Extension API, or <em>ExtAPI</em>, which exposes Java bindings for supplying custom server-side extensions. These extensions facilitate injection of custom semantics into the server's default execution path via a callback mechanism. Two types of user-defined callback objects are supported:
+          </p>
             <ul>
               <li><b>Lifecycle Event Hooks</b> are listeners for various lifecycle events, raised by the server. They encapsulate custom, application-aware code, which takes over and alters the default handling of lifecycle events.</li>
               <li><b>Trace Event Flushers</b> handle the final ingestion of trace events. Each variation schema can have its own event flusher.</li>
             </ul>
+          <p>
             Both lifecycle hooks and event flushers are configured in the variation schema. The next two chapters explain their semantics and configuration, and <a href="#section-4.3">chapter 4.3</a> provides details on how to write them.
-
+          </p>
             <a class="header-offset" name="section-4.1"></a>
             <h2><span class="underlined">4.1<span class="indent"></span>Lifecycle Hooks</span></h2>
             <a class="header-offset" name="section-4.1.1"></a>
             <h3>4.1.1<span class="indent"></span>Lifecycle Events</h3>
+          <p>
             The following is the complete list of lifecycle events raised by Variant server:
-            <table class="table">
+          </p>
+          <table class="table">
               <tbody>
               <tr>
                 <th>Lifecycle Event</th>
@@ -962,56 +967,76 @@ $ variant.sh start -Dvariant.schemata.dir=/Users/Igor/schemata
             </table>
             <a class="header-offset" name="section-4.1.2"></a>
             <h3>4.1.2<span class="indent"></span>Hooks' Instantiation and Scope</h3>
-            Lifecycle hooks provide callback methods which are posted by Variant server whenever a lifecycle event of interest is raised. A lifecycle hook subscribes to a particular lifecycle event type by implementing the <a href="/javadoc/0.10/com/variant/server/api/lifecycle/LifecycleHook.html#getLifecycleEventClass--" target="_blank"><code>LifecycleHook.gerLifecycleEventClass()</code>&nbsp;<i class="fa fa-external-link"></i></a> method. Whenever an event of that type is raised, the hook is notified by Variant server via its callback method <a href="/javadoc/0.10/com/variant/core/lifecycle/LifecycleHook.html#post-E-" target="_blank"><code>LifecycleHook.post()</code>&nbsp;<i class="fa fa-external-link"></i></a> method.
-
+          <p>
+          Lifecycle hooks provide callback methods which are posted by Variant server whenever a lifecycle event of interest is raised. A lifecycle hook subscribes to a particular lifecycle event type by implementing the <a href="/javadoc/0.10/com/variant/server/api/lifecycle/LifecycleHook.html#getLifecycleEventClass--" target="_blank"><code>LifecycleHook.gerLifecycleEventClass()</code>&nbsp;<i class="fa fa-external-link"></i></a> method. Whenever an event of that type is raised, the hook is notified by Variant server via its callback method <a href="/javadoc/0.10/com/variant/core/lifecycle/LifecycleHook.html#post-E-" target="_blank"><code>LifecycleHook.post()</code>&nbsp;<i class="fa fa-external-link"></i></a> method.
+          </p>
+          <p>
             Hook definitions may appear in variation schema in one of three scopes:
-            <ul>
+          </p>
+          <ul>
               <li><em>Meta-scoped</em> hooks are defined inside the <a href="#section-3.3">meta section</a>. These hooks are applicable to all states and all variations in the schema. Hooks listening to lifecycle events descendant from <a href="/javadoc/0.10/com/variant/server/api/lifecycle/StateAwareLifecycleEvent.html" target="_blank"><code>StateAwareLifecycleEvent</code>&nbsp;<i class="fa fa-external-link"></i></a> will be posted for each state in the schema by every state aware lifecycle event. Hooks listening to lifecycle events descendant from <a href="/javadoc/0.10/com/variant/server/api/lifecycle/VariationAwareLifecycleEvent.html" target="_blank"><code>VariationAwareLifecycleEvent</code>&nbsp;<i class="fa fa-external-link"></i></a> will be posted for all online variations in the schema by every variation aware lifecycle event.</li>
               <li><em>State-scoped</em> hooks are defined inside the <a href="#listing-5">state definition</a>. These hooks are applicable to the enclosing state only and must listen to events descendant from <a href="/javadoc/0.10/com/variant/server/api/lifecycle/StateAwareLifecycleEvent.html" target="_blank"><code>StateAwareLifecycleEvent</code>&nbsp;<i class="fa fa-external-link"></i></a>.</li>
               <li><em>Variation-scoped</em> hooks are defined inside the <a href="#listing-7">variation definition</a>. These hooks are applicable to the enclosing variation only and must listen to events descendant from <a href="/javadoc/0.10/com/variant/server/api/lifecycle/VariationAwareLifecycleEvent.html" target="_blank"><code>VariationAwareLifecycleEvent</code>&nbsp;<i class="fa fa-external-link"></i></a>.</li>
             </ul>
             <a class="header-offset" name="section-4.1.3"></a>
             <h3>4.1.3<span class="indent"></span>Hook Chaining</h3>
+          <p>
             In any scope, any number of hooks can be defined. If more than one lifecycle hook is eligible to be posted by a lifecycle event at runtime, they form a <em>hook chain</em>.
-
+          </p>
+          <p>
             A hook chain is posted in the following order:
+          </p>
             <ul>
               <li> Variation-scoped hooks, then state-scoped hooks, then schema-scoped hooks.</li>
               <li> Within a scope, hooks are posted in the ordinal order, i.e. the order in which they are defined in the schema, in the corresponding scope.</li>
             </ul>
+          <p>
             The hooks are posted serially, until a hook's <a href="/javadoc/0.10/com/variant/server/api/lifecycle/LifecycleHook.html#post-E-" target="_blank" rel="noopener"><code>post()</code> <i class="fa fa-external-link"></i></a> method returns a non-empty <code>Optional</code>. If no custom hooks have been defined for a lifecycle event, or all returned an empty <code>Optional</code>, the default built-in hook for the event is posted, which is guaranteed to return a usable value.
-
+          </p>
+          <p>
             A hook chain is posted synchronously; the hooks' <code>post()</code> methods are invoked one at a time while the foreground user session thread is blocked. Conequently, the <code>post()</code> method need not be thread safe. A new instance of a hook is instantiated for each invocation of the <code>post()</code> method.
-
+          </p>
+          <p>
             When a hook is posted, its <a href="/javadoc/0.10/com/variant/core/lifecycle/LifecycleHook.html#post-E-" target="_blank"><code>post(E event)</code>&nbsp;<i class="fa fa-external-link"></i></a> method is called by Variant server with the actual triggering lifecycle event instance. If the <code>post(E event)</code> method returns a non-null value, Variant server ignores the rest of the hook chain, expecting the returned object to contain the information it requires to proceed. Otherwise, Variant posts the next hook on the chain.
-
+          </p>
             <a class="header-offset" name="section-4.1.4"></a>
             <h3>4.1.4<span class="indent"></span>Custom Lifecycle Hooks</h3>
+          <p>
             A custom lifecycle hook must implement the <a href="/javadoc/0.10/com/variant/server/api/lifecycle/LifecycleHook.html" target="_blank"><code>LifecycleHook</code>&nbsp;<i class="fa fa-external-link"></i></a> interface. By contract, an implementation must also provide at least one of these constructors:
-            <ul>
+          </p>
+          <ul>
               <li>Nullary constructor, if no <code>init</code> property was given in the <a href="#listing-4">hook definition</a>.</li>
               <li>Single argument constructor with argument type <a href="http://lightbend.github.io/config/latest/api/com/typesafe/config/Config.html" target="_blank">Config&nbsp;<i class="fa fa-external-link"></i></a>. If no <code>init</code> property was given and no nullary constructor is available, this constructor will be called with <code>null</code> argument; otherwise, the value of the <code>init</code> property will be parsed and passed to this constructor.</li>
             </ul>
-            Refer to <a href="#section-4.3">Section 4.3</a> for packaging details.
-
+          <p>
+          Refer to <a href="#section-4.3">Section 4.3</a> for packaging details.
+          </p>
             <a class="header-offset" name="section-4.2"></a>
             <h2><span class="underlined">4.2<span class="indent"></span>Trace Event Flushers</span></h2>
-            Trace events are generated by user traffic, as it flows through Variant variations. Event flushers handle the terminal ingestion of these events with the purpose of subsequent analysis by a downstream process. Trace events can be triggered implicitly, by Variant, or explicitly by the host application. In either case, the host application can attach attributes to these events, to aid in the downstream analysis.
-
+          <p>
+          Trace events are generated by user traffic, as it flows through Variant variations. Event flushers handle the terminal ingestion of these events with the purpose of subsequent analysis by a downstream process. Trace events can be triggered implicitly, by Variant, or explicitly by the host application. In either case, the host application can attach attributes to these events, to aid in the downstream analysis.
+          </p>
+          <p>
             Variant server automatically enriches all trace events with the following metadata:
-            <ul>
+          </p>
+          <ul>
               <li>Variant session ID by which related events can be associated.</li>
               <li>Names of sessions's live experiences.</li>
               <li>Custom event attributes.</li>
             </ul>
-            A typical event flusher writes trace events to a persistent storage mechanism, such as an external database or event stream. Whenever a trace event is triggered — implicitly by Variant server or explicitly by user code — it is picked up by the Variant's asynchronous event writer, where it is held in a memory buffer until a dedicated flusher thread becomes available. There is one event writer per Variant server, shared by all schemata. Event writer groups trace events by the schema that produced them and turns them over to the apropriate event flusher by calling its <a href="/javadoc/0.10/com/variant/server/api/TraceEventFlusher.html#flush-com.variant.server.api.FlushableTraceEvent:A-int-" target="_blank" rel="noopener"><code>flush()</code> <i class="fa fa-external-link"></i></a> method.
-
+          <p>
+          A typical event flusher writes trace events to a persistent storage mechanism, such as an external database or event stream. Whenever a trace event is triggered — implicitly by Variant server or explicitly by user code — it is picked up by the Variant's asynchronous event writer, where it is held in a memory buffer until a dedicated flusher thread becomes available. There is one event writer per Variant server, shared by all schemata. Event writer groups trace events by the schema that produced them and turns them over to the apropriate event flusher by calling its <a href="/javadoc/0.10/com/variant/server/api/TraceEventFlusher.html#flush-com.variant.server.api.FlushableTraceEvent:A-int-" target="_blank" rel="noopener"><code>flush()</code> <i class="fa fa-external-link"></i></a> method.
+          </p>
+          <p>
             Each call to the <code>flush()</code> method is scheduled to be executed asynchronously and, potentially concurrently with other similar calls, by a dedicated thread pool, whose size is configured by the <a href="#section-2.2"><code>variant.event.writer.buffer.flush.pool.size</code></a> config property. Buffers are passed to the thread pool as soon as they fill up or the <a href="#section-2.2"><code>variant.event.writer.max.delay</code></a> number of seconds has elapsed since the time when the oldest event in the buffer was triggered.
-
+          </p>
+          <p>
             Note, that it is possible that the same flusher instance is accessed by multiple threads, so it is critical that the <code>flush()</code> method you write be thread safe. In particular, avoid mutable instance state in custom event flushers.
-
+          </p>
+          <p>
             Trace event flushers are configured in the <a href="#section-3.3"><code>META</code> section</a> of the variation schema, as in the following example:
-            <pre><code>
+          </p>
+          <pre>
 {
    'meta':{
       'name':'petclinic',
@@ -1025,25 +1050,33 @@ $ variant.sh start -Dvariant.schemata.dir=/Users/Igor/schemata
    'states':[...],
    'variations':[...],
 }
-</code></pre>
-            If no event flusher is configured in the schema, the system wide default is assumed, as configured by the <a href="#section-2.2"><code>variant.event.flusher.class.*</code></a> properties.
-
+</pre>
+          <p>
+          If no event flusher is configured in the schema, the system wide default is assumed, as configured by the <a href="#section-2.2"><code>variant.event.flusher.class.*</code></a> properties.
+          </p>
+          <p>
             A number of pre-built trace event flushers come with the server, as part of the standard extension library, discussed in <a href="#section-4.4">Section 4.4</a>.
-
+          </p>
             <a class="header-offset" name="section-4.3"></a>
             <h2><span class="underlined">4.3<span class="indent"></span>Developing for the ExtAPI</span></h2>
-            Variant server extension API library <code>variant-server-extapi-&lt;release&gt;.jar</code> can be downloaded from the <a href="/get">Variant website</a>. Create a new Java project in your IDE, add this JAR file to the classpath and you are set. You must package your project as JAR. To add the packaged JAR file to Variant server's runtime classpath, copy it (and its dependencies) into the server's <code>ext/</code> directory.
 
+          <p>
+          Variant server extension API library <code>variant-server-extapi-&lt;release&gt;.jar</code> can be downloaded from the <a href="/get">Variant website</a>. Create a new Java project in your IDE, add this JAR file to the classpath and you are set. You must package your project as JAR. To add the packaged JAR file to Variant server's runtime classpath, copy it (and its dependencies) into the server's <code>ext/</code> directory.
+          </p>
+          <p>
             Alternatively, but with the same ultimate result, — you may clone the <a href="https://github.com/getvariant/variant-server-extapi" target="_blank">standard extension public repository&nbsp;<i class="fa fa-external-link"></i></a> into a local workspace, remove the source files, change the <a href="https://github.com/getvariant/variant-extapi-standard/blob/213cae2972149c852a9b0c010deb30a8c5d71404/pom.xml#L22-L24" target="_blank">groupId, artifactId and the version&nbsp;<i class="fa fa-external-link"></i></a> to suit your environment,— and you have a working shell of a brand new ExtAPI development project.
-
+          </p>
+          <p>
             Note, that a running Variant server loads all hook and flusher classes from the class path only once, when they are first encountered. Therefore, replacing classes in the server's <code>ext/</code> directory will not have any effect and may even lead to unexpected behavior. Always restart your Variant server when you redeploy your custom ExtAPI classes.
-
+          </p>
             <a class="header-offset" name="section-4.4"></a>
             <h2><span class="underlined">4.4<span class="indent"></span>The Standard Extension Library</span></h2>
-            Variant server standard extension is a library of general purpose extensions, written on top of the ExtAPI. They provide out-of-the-box functionality which is not part of the core Variant server. They are packaged as <code>variant-extapi-standard-&lt;release&gt;.jar</code> file wich is incliuded in the server distribution in the <code>ext/</code> directory.
-
+          <p>
+          Variant server standard extension is a library of general purpose extensions, written on top of the ExtAPI. They provide out-of-the-box functionality which is not part of the core Variant server. They are packaged as <code>variant-extapi-standard-&lt;release&gt;.jar</code> file wich is incliuded in the server distribution in the <code>ext/</code> directory.
+          </p>
+          <p>
             The standard extension library is an open source project, available on <a href="https://github.com/getvariant/variant-extapi-standard" rel="noopener" target="_blank">GitHub&nbsp;<i class="fa fa-external-link"></i></a> under the Apache 2 license. You may find it useful to examine the source code, before developing your own custom lifecyle event hooks and trace event flushers.
-
+          </p>
             <a class="header-offset" name="section-4.4.1"></a>
             <h3>4.4.1<span class="indent"></span>Package <code>com.variant.extapi.std.demo</code></h3>
             <code>Contains the <a href="https://getvariant.github.io/variant-extapi-standard/com/variant/extapi/std/demo/UserQualifyingHook.html" target="_blank"><code>UserQualifyingHook</code>&nbsp;<i class="fa fa-external-link"></i></a> lifecycle hook, required by the <a href="https://github.com/getvariant/variant-java-demo" target="_blank">Servlet Demo Application&nbsp;<i class="fa fa-external-link"></i></a>.
