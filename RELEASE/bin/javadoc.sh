@@ -19,7 +19,7 @@ javadoc --allow-script-in-comments -d ${javadoc_dir}  \
    -sourcepath ${core_src_dir}:${client_src_dir}:${server_src_dir} \
    -windowtitle "Variant Experience Server ${version} JavaDoc" \
    -doctitle "Variant Experiment Server ${version}" \
-   -header "<a onclick=\"window.top.location.href='http://getvariant.com';\" href=\"#\"> <img style=\"margin-bottom:5px;\" src=\"http://getvariant.com/wp-content/uploads/2016/05/VariantLogoSmall.png\"/> \</a> \
+   -header "<a onclick=\"window.top.location.href='http://getvariant.github.io/variant/';\" href=\"#\"> <img style=\"margin-bottom:5px;\" src=\"http://getvariant.github.io/variant/img/logo-small.png\"/> \</a> \
    <script> \
     (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){       \
     (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),     \
@@ -28,7 +28,7 @@ javadoc --allow-script-in-comments -d ${javadoc_dir}  \
     ga('create', 'UA-40337670-3', 'auto');                                             \
     ga('send', 'pageview');                                                            \
   </script>" \
-   -bottom "Variant Experience Server release $dot_version. Updated $(date +"%d %b %Y").<br/> Copyright &copy; 2019 <a onclick=\"window.top.location.href='http://getvariant.com';\" href=\"#\">Variant Inc.</a>" \
+   -bottom "Variant Experience Server release $dot_version. Updated $(date +"%d %b %Y").<br/> Copyright &copy; 2019 <a onclick=\"window.top.location.href='http://getvariant.github.io/variant/';\" href=\"#\">Variant Inc.</a>" \
    com.variant.core.schema            \
    com.variant.client                 \
    com.variant.server.api             \
