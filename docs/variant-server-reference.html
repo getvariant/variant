@@ -588,7 +588,7 @@ $ variant.sh start -Dvariant.schemata.dir=/Users/Igor/schemata
             <a class="header-offset" name="section-3.5"></a>
             <h2><span class="underlined">3.5<span class="indent"></span><code>SATES</code> Section</span></h2>
           <p>
-          In Code Variation Model, a state represents an <a href="variant-serveruser-guide/#section-3.1">interface state</a> of the host application where it pauses for user input. CVM states are rather abstract: the only required property is <code>name</code>, by which the state can be referenced. States form a set, not a graph, i.e. user sessions traverse states one at a time, but there is no predefined order in which these states can be visited or which states are accessible from any particular state.
+          In Code Variation Model, a state represents an <a href="variant-server-user-guide/#section-3.1">interface state</a> of the host application where it pauses for user input. CVM states are rather abstract: the only required property is <code>name</code>, by which the state can be referenced. States form a set, not a graph, i.e. user sessions traverse states one at a time, but there is no predefined order in which these states can be visited or which states are accessible from any particular state.
           </p>
             <a class="header-offset" name="listing-5"></a>
             <pre>
@@ -635,7 +635,7 @@ $ variant.sh start -Dvariant.schemata.dir=/Users/Igor/schemata
             <a class="header-offset" name="section-3.6"></a>
             <h2><span class="underlined">3.6<span class="indent"></span>State Parameters</span></h2>
           <p>
-          Although CVM is agnostic of the nature or the technology of the host application, it provides a mechanism for the test designer to attach application-specific context to states, which the host application can access at run time. This is accomplished with <a href="variant-serveruser-guide/#section-3.6">state parameters</a>. They can be specified either at the state level, as already explained in the previous section, or at the state variant level, as explained later in <a href="#section-3.7.3">Section 3.7.3</a>. Each state parameter is a name/value pair, where both the name and the value are strings.
+          Although CVM is agnostic of the nature or the technology of the host application, it provides a mechanism for the test designer to attach application-specific context to states, which the host application can access at run time. This is accomplished with <a href="variant-server-user-guide/#section-3.6">state parameters</a>. They can be specified either at the state level, as already explained in the previous section, or at the state variant level, as explained later in <a href="#section-3.7.3">Section 3.7.3</a>. Each state parameter is a name/value pair, where both the name and the value are strings.
           </p>
             <a class="header-offset" name="listing-6"></a>
             <pre>
@@ -741,7 +741,7 @@ $ variant.sh start -Dvariant.schemata.dir=/Users/Igor/schemata
             </table>
             <p class="fig-footer">Listing 7. The schema definition of a variation.</p>
           <p>
-            For each state on the <code>onStates</code> list, Variant builds a state variant space as a Cartesian product of this variation's experience set and the experience sets of all those variations mentioned on the <code>conjointVariationRefs</code> list. Refer to <a href="variant-serveruser-guide/#section-3.8">Variant Server User Guide</a> for more information on concurrent variations.
+            For each state on the <code>onStates</code> list, Variant builds a state variant space as a Cartesian product of this variation's experience set and the experience sets of all those variations mentioned on the <code>conjointVariationRefs</code> list. Refer to <a href="variant-server-user-guide/#section-3.8">Variant Server User Guide</a> for more information on concurrent variations.
           </p>
           <p>
             Each variation-scoped hook must listen to a lifecycle event descendant from <a href="/javadoc/0.10/com/variant/server/api/lifecycle/StateAwareLifecycleEvent.html" target="_blank"><code>VariationAwareLifecycleEvent</code>&nbsp;<i class="fa fa-external-link"></i></a>. For more information, see <a href="#section-4.1">Section 4.1 Lifecycle Hooks</a>.
@@ -843,9 +843,9 @@ $ variant.sh start -Dvariant.schemata.dir=/Users/Igor/schemata
           </p>
             <ol>
               <li><strong>Phantom state variants.</strong>
-                Implicitly inferred state variants are not phantom. If you need to define a state variant as phantom, you must define that state phantom explicitly. Refer to <a href="variant-serveruser-guide/#section-3.7">Server User Guide</a> for more information on mixed instrumentation.</li>
+                Implicitly inferred state variants are not phantom. If you need to define a state variant as phantom, you must define that state phantom explicitly. Refer to <a href="variant-server-user-guide/#section-3.7">Server User Guide</a> for more information on mixed instrumentation.</li>
               <li><strong>Variant-specific state parameters.</strong>
-                Implicitly inferred state variants inherit their state parameters from the base state. If you need to define variant-specific parameters, you must define them explicitly. Refer to <a href="variant-serveruser-guide/#section-3.6">Server User Guide</a> for more information on state parameter inheritence.</li>
+                Implicitly inferred state variants inherit their state parameters from the base state. If you need to define variant-specific parameters, you must define them explicitly. Refer to <a href="variant-server-user-guide/#section-3.6">Server User Guide</a> for more information on state parameter inheritence.</li>
             </ol>
             <a class="header-offset" name="section-3.7.4"></a>
             <h3>3.7.4<span class="indent"></span>State Variants</h3>
@@ -916,7 +916,7 @@ $ variant.sh start -Dvariant.schemata.dir=/Users/Igor/schemata
               <li>When a session requests a state which is phantom in a live experience, Variant will emit a runtime user error.</li>
             </ul>
           <p>
-            Refer to <a href="variant-serveruser-guide/#section-3.7">Variant Server User Guide</a> for more information on mixed instrumentation.
+            Refer to <a href="variant-server-user-guide/#section-3.7">Variant Server User Guide</a> for more information on mixed instrumentation.
           </p>
             <a class="header-offset" name="section-4"></a>
             <h1><span class="underlined">4<span class="indent"></span>Server Extension API</span></h1>
@@ -951,7 +951,7 @@ $ variant.sh start -Dvariant.schemata.dir=/Users/Igor/schemata
                 <td>Session is qualified for the variation.</td>
               </tr>
               <tr>
-                <td colspan="3">Raised when a Variant session must be <a href="variant-serveruser-guide/#section-4.2">qualified for a variation</a>. Posts all eligible schema-scoped hooks and those variation-scoped hooks whose variation matches that of triggering event. Used to qualify (or disqualify) a user session for the triggering variation, based on a custom qualification criteria.</td>
+                <td colspan="3">Raised when a Variant session must be <a href="variant-server-user-guide/#section-4.2">qualified for a variation</a>. Posts all eligible schema-scoped hooks and those variation-scoped hooks whose variation matches that of triggering event. Used to qualify (or disqualify) a user session for the triggering variation, based on a custom qualification criteria.</td>
               </tr>
               <tr>
                 <td><a href="/javadoc/0.10/com/variant/server/api/lifecycle/VariationTargetingLifecycleEvent.html" target="_blank"><code>VariationTargetingLifecycleEvent</code>&nbsp;<i class="fa fa-external-link"></i></a></td>
@@ -961,7 +961,7 @@ $ variant.sh start -Dvariant.schemata.dir=/Users/Igor/schemata
                 <td>Variation is targeted randomly, according to the <a href="#listing-8"><code>weight</code> properties</a>.</td>
               </tr>
               <tr>
-                <td colspan="3">Raised when a Variant session must be <a href="variant-serveruser-guide/#section-4.3">targeted for a variation</a>. Posts all eligible schema-scoped hooks, those state-scoped hooks whose state matches that of triggering event, and those variation-scoped hooks whose variation matches that of the triggering event. Used to provide custom targeting algorithm.</td>
+                <td colspan="3">Raised when a Variant session must be <a href="variant-server-user-guide/#section-4.3">targeted for a variation</a>. Posts all eligible schema-scoped hooks, those state-scoped hooks whose state matches that of triggering event, and those variation-scoped hooks whose variation matches that of the triggering event. Used to provide custom targeting algorithm.</td>
               </tr>
               </tbody>
             </table>
