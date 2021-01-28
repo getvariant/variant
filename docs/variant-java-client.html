@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link type="text/css" rel="stylesheet" href="css/variant.css" />
+    <meta charset="UTF-8">
+    <title>CVM Server User Guide | Variant</title>
+</head>
+<body>
+
+<div style="width: 900px; margin: auto; overflow: scroll;">
+
+    <table class="header">
+        <tr>
+            <td>
+                <a href="index.html">
+                    <img class="logo" src="img/logo-300x300.png">
+                </a>
+            </td>
+            <td>
+                <h1>Variant Java Client User Guide</h1>
+                <h3>Release 0.10.3, December 2019</h3>
+            </td>
+        </tr>
+    </table>
+
+    <div class="variant-columns">
+    <div id="variant-toc" class="variant-column variant-leftcol">
+    <h2><span class="variant-underlined">Table of Contents</span></h2>
+    <table>
+    <tbody>
+    <tr class="variant-toc-h1">
+    <td>1</td>
+    <td><a href="#section-1">Overview</a></td>
+    </tr>
+    <tr class="variant-toc-h1">
+    <td>2</td>
+    <td><a href="#section-2">Installation</a></td>
+    </tr>
+    <tr class="variant-toc-h1">
+    <td>3</td>
+    <td><a href="#section-3">Developing with Variant Java Client</a></td>
+    </tr>
+    <tr class="variant-toc-h2">
+    <td>3.1</td>
+    <td><a href="#section-3.1">Typical Usage Example</a></td>
+    </tr>
+    <tr class="variant-toc-h2">
+    <td>3.2</td>
+    <td><a href="#section-3.2">Trace Events</a></td>
+    </tr>
+    <tr class="variant-toc-h1">
+    <td>4</td>
+    <td><a href="#section-4">Deferred Dependencies</a></td>
+    </tr>
+    <tr class="variant-toc-h2">
+    <td>4.1</td>
+    <td><a href="#section-4.1">Session ID Tracker</a></td>
+    </tr>
+    <tr class="variant-toc-h2">
+    <td>4.2</td>
+    <td><a href="#section-4.2">API Methods with Deferred Signatures</a></td>
+    </tr>
+    <tr class="variant-toc-h1">
+    <td>5</td>
+    <td><a href="#section-5">Stack-Specific Adapters for Variant Client</a></td>
+    </tr>
+    <tr class="variant-toc-h2">
+    <td>5.1</td>
+    <td><a href="#section-5.1">Servlet Adapter</a></td>
+    </tr>
+    <tr class="variant-toc-h3">
+    <td>5.1.1</td>
+    <td><a href="#section-5.1.1">Overview and Installation</a></td>
+    </tr>
+    <tr class="variant-toc-h3">
+    <td>5.1.2</td>
+    <td><a href="#section-5.1.2">Servlet Adapter Wrapper API</a></td>
+    </tr>
+    <tr class="variant-toc-h3">
+    <td>5.1.3</td>
+    <td><a href="#section-5.1.3">SessionIdTrackerHttpCookie</a></td>
+    </tr>
+    <tr class="variant-toc-h2">
+    <td>5.2</td>
+    <td><a href="#section-5.2">Play! Adapter</a></td>
+    </tr>
+    </tbody>
+    </table>
+    </div>
+    <div class="variant-column variant-rightcol">
+    <div id="variant-doc-body">
+
+    <!--<a class="variant-header-offset" name="section-1"></a>-->
+    <h1><span class="variant-underlined">1<span class="indent"></span>Overview</span></h1>
+    Variant Java client is a library which enables the host application to communicate with Variant AIM server. It exposes server's functionality in a native Java API and in terms of native Java classes. It can be consumed by any host application, written in Java or another JVM language. It requires Java runtime 8 or higher.
+
+    Variant Java client is consumable by any Java program because it makes no assumptions about the technology stack of the host application. This flexibility comes at the expense of some deferred dependencies, such as a mechanism for tracking Variant session ID between state request. These deferred dependencies are provided by stack-specific adapters, as explained further. For Java stacks not (yet) supported by an adapter, application developer can supply a custom implementation.
+
+    Most Java Web applications are written on top of the Servlet API. These applications should take advantage of the <a href="#section-3">servlet adapter</a>, which implements deferred dependencies and wraps Variant client in an identical but simplified API, whose deferred methods have been re-written in terms of familiar servlet objects, like <code>HttpServletRequest</code> and <code>HttpServletResponse</code>.
+
+    <a class="variant-header-offset" name="section-2"></a>
+    <h1><span class="variant-underlined">2<span class="indent"></span>Installation</span></h1>
+    <span class="tombstone">∎</span><a class="nowrap" href="/downloads">Download</a> Variant Java client distribution.
+
+    <span class="tombstone">∎</span>Unpack the distribution:
+    <pre class="variant-code">% unzip /path/to/variant-java-&lt;release&gt;.zip
+    </pre>
+    This will inflate the following artifacts:
+    <table class="variant-table">
+    <tbody>
+    <tr>
+    <th>File</th>
+    <th>Description</th>
+    </tr>
+    <tr>
+    <td class="variant-code">variant-java-client-&lt;release&gt;.jar</td>
+    <td>Variant Java client library. Must be present on the host application's classpath.</td>
+    </tr>
+    <tr>
+    <td class="variant-code">variant-core-&lt;release&gt;.jar</td>
+    <td>Dependent Variant core library. Must be present on the host application's classpath.</td>
+    </tr>
+    </tbody>
+    </table>
+    <span class="tombstone">∎</span>If your Java application is built using a dependency management tool like Maven, you have the following options:
+    <ol>
+     	<li><strong>Install into your company's Maven repository.</strong>
+    Contact your DevOps for help. Once installed, you can reference them in your aplication's <code>pom.xml</code> file like so:
+    <pre class="variant-code">&lt;dependency&gt;
+       &lt;groupId&gt;com.variant&lt;/groupId&gt;
+       &lt;artifactId&gt;java-client&lt;/artifactId&gt;
+       &lt;version&gt;[0.10,)&lt;/version&gt;
+    &lt;/dependency&gt;
+
+    &lt;dependency&gt;
+       &lt;groupId&gt;com.variant&lt;/groupId&gt;
+       &lt;artifactId&gt;variant-core&lt;/artifactId&gt;
+       &lt;version&gt;[0.10,)&lt;/version&gt;
+    &lt;/dependency&gt;
+    </pre>
+    </li>
+     	<li><strong>Install into your private Maven repository</strong> by typing the following (replacing <code>&lt;release&gt;</code> with the particular version number you're installing, e.g. <code>0.10.2</code>):
+    <pre class="variant-code">% mvn install:install-file -Dfile=/path/to/variant-java-client-&lt;release&gt;.jar \
+       -DgroupId=com.variant -DartifactId=java-client -Dversion=&lt;release&gt; -Dpackaging=jar
+
+    % mvn install:install-file -Dfile=/path/to/variant-core-&lt;release&gt;.jar \
+       -DgroupId=com.variant -DartifactId=variant-core -Dversion=&lt;release&gt; -Dpackaging=jar
+    </pre>
+    You may now reference these artifacts the same was as in the previous paragraph.</li>
+     	<li><strong>Reference the artifacts directly from your file system</strong> by placing them in some directory, e.g. <code>lib</code>, and adding the following to your application's <code>pom.xml</code> file (replacing <code>&lt;release&gt;</code> with the particular version number you're installing, e.g. <code>0.10.2</code>):
+    <pre class="variant-code">&lt;dependency&gt;
+       &lt;groupId&gt;com.variant&lt;/groupId&gt;
+       &lt;artifactId&gt;java-client&lt;/artifactId&gt;
+       &lt;version&gt;[0.10,)&lt;/version&gt;
+       &lt;scope&gt;system&lt;/scope&gt;
+       &lt;systemPath&gt;${project.basedir}/lib/variant-java-&lt;release&gt;.jar
+    &lt;/dependency&gt;
+
+    &lt;dependency&gt;
+       &lt;groupId&gt;com.variant&lt;/groupId&gt;
+       &lt;artifactId&gt;variant-core&lt;/artifactId&gt;
+       &lt;version&gt;[0.10,)&lt;/version&gt;
+       &lt;scope&gt;system&lt;/scope&gt;
+       &lt;systemPath&gt;${project.basedir}/lib/variant-core-&lt;release&gt;.jar
+    &lt;/dependency&gt;
+
+    </pre>
+    </li>
+    </ol>
+    <span class="tombstone">∎</span>Variant Java client has two external transitive dependencies, which are not included in the distribution: <a href="https://hc.apache.org/httpcomponents-client-4.5.x/index.html" target="_blank">Apache HTTP Client (4.5+)&nbsp;<i class="fa fa-external-link"></i></a> and <a href="https://www.slf4j.org/" target="_blank">Simple Logging Facade for Java (1.7+)&nbsp;<i class="fa fa-external-link"></i></a>. If these dependencies aren't already used by your host application, you may have to add them to your application's <code>pom.xml</code> file:
+    <pre class="variant-code">&lt;dependency&gt;
+       &lt;groupId&gt;org.apache.httpcomponents&lt;/groupId&gt;
+       &lt;artifactId&gt;httpclient&lt;/artifactId&gt;
+       &lt;version&gt;4.5.1&lt;/version&gt;
+    &lt;/dependency&gt;
+
+    &lt;dependency&gt;
+       &lt;groupId&gt;org.slf4j&lt;/groupId&gt;
+       &lt;artifactId&gt;slf4j-api&lt;/artifactId&gt;
+       &lt;version&gt;1.7.12&lt;/version&gt;
+    &lt;/dependency&gt;
+    </pre>
+    <a class="variant-header-offset" name="section-3"></a>
+    <h1><span class="variant-underlined">3<span class="indent"></span>Developing with Variant Java Client</span></h1>
+    <a class="variant-header-offset" name="section-3.1"></a>
+    <h2><span class="variant-underlined">3.1<span class="indent"></span>Typical Usage Example</span></h2>
+    <strong>NOTE: Typically you will not be consuming Variant client API directly. Rather, your applicatoin will consume a stack-specific adapter, like the <a href="#section-3">servlet adapter</a>, which implements deferred dependencies and wraps Variant client in an identical but simplified API. Refer to the documentation for the Variant client adapter suitable for your technology stack. The remainder of this chapter is only apropriate for the cases when no suitable Variant adapter (yet) exists.</strong>
+
+    <span class="tombstone">∎</span>Create an instance of the <code>VariantClient</code> object by using the <a href="/javadoc/0.10/com/variant/client/VariantClient.html#builder--" target="_blank"><code>VariantClient.Builder</code>&nbsp;<i class="fa fa-external-link"></i></a> class:
+    <pre><code class="java">
+    VariantClient client = VariantClient.builder()
+       .withSessionIdTrackerClass(MyCustomSessionIdTracker.class)
+       .build();
+    </code></pre>
+    Note, that an implementation of the <a href="/javadoc/0.10/com/variant/client/SessionIdTracker.html" target="_blank"><code>SessionIdTracker</code>&nbsp;<i class="fa fa-external-link"></i></a> is required.
+
+    A re-instantiation of the <code>VariantClient</code> is never required. The host application should hold on to and reuse it for the life of the JVM.
+
+    <span class="tombstone">∎</span>Connect to a variation schema on Variant server:
+    <pre><code class="java">
+    Connection connection = client.connectTo("variant://myVariantServer.com/myschema");
+    </code></pre>
+    The Variant connection URI has the following format:
+
+    <code>[variant:]//netloc[:port]/schema</code>
+
+    The <code>variant</code> protocol spec is optional and may be omitted. If the port is omitted, 5377 is assumed. Thus, <code>localhost/myschema</code> is okay.
+
+    The host application should hold on to the connection object and reuse it for all user sessions interested in participating in code variations contained in the given schema. Variant connections are stateless, so they are reusable even after a server restart.
+
+    <span class="tombstone">∎</span>Obtain (or create) a Variant session. They are completely distinct from your host application's sessions.
+    <pre><code class="java">
+    // The meaning of userData depends on the environment.
+    Session session = connection.getOrCreateSession(userData);
+    </code></pre>
+    The <code>userData</code> argument is a deferred dependency, as discussed in the next section.
+
+    <span class="tombstone">∎</span>Obtain the schema and the state.
+    <pre><code class="java">
+    Schema schema = session.getSchema();
+    Optiona<state> loginPage = schema.getState("loginPage");
+    if (!loginPage.isPresent()) {
+       System.out.println("State loginPage is not in the schema. Falling back to control.");
+    }
+    </state></code></pre>
+    <span class="tombstone">∎</span>Target this session for the state and figure out the live experience(s) the session is targeted for.
+    <pre><code class="java">
+    ServletStateRequest request = session.targetForState(loginPage.get());
+    request.getLiveExperiences().forEach(e -&gt;
+       System.out.println(
+          String.format(
+             "We're targeted to experience %s in variation %s",
+             e.getName(),
+             e.getVariation().getName()));
+    );
+    </code></pre>
+    At this point, the application can take the code path suitable for the combination of live experience it has been targeted for. Note, that the application does not have to know the names of the variations or experiences to be targeted for a state.
+
+    <span class="tombstone">∎</span>After the host application's code path is complete, the state request must be committed (if no exceptions were encountered) or failed (if something went awry).
+    <pre><code class="java">
+    request.commit(userData);  // or .fail(userData)
+    </code></pre>
+    Here again the <code>userData</code> argument is a deferred dependency and its meaning is explained in the next section. Committing (or failing) a state request triggers the associated state visited trace event with the corresponding completion status.
+
+    <a class="variant-header-offset" name="section-3.2"></a>
+    <h2><span class="variant-underlined">3.2<span class="indent"></span>Trace Events</span></h2>
+    Trace events can be triggered implicitly by Variant server or explicitly by client code. The only implicitly triggered trace event is the state visited event, which signifies that a user session visited a particular state. (Refer to the <a href="/resources/docs/0-10/application-iteration-server/user-guide/#section-3.1">Server User Guide</a> for details on how Variant models interactive appliations.) State visited event is created by the <a href="/javadoc/0.10/com/variant/client/Session.html#targetForState-com.variant.core.schema.State-" target="_blank"><code>Session.targetForState()</code>&nbsp;<i class="fa fa-external-link"></i></a> method and is accessible via the <a href="/javadoc/0.10/com/variant/client/StateRequest.html#getStateVisitedEvent--" target="_blank"><code>StateRequest.getStateVisitedEvent()</code>&nbsp;<i class="fa fa-external-link"></i></a> method. The host application can add custom event attributes to it, which will be serialized with the event by the event flusher. The state visited event is triggered when the host applicatoin either <a href="/javadoc/0.10/com/variant/client/StateRequest.html#commit-java.lang.Object...-" target="_blank">commits &nbsp;<i class="fa fa-external-link"></i></a> or <a href="/javadoc/0.10/com/variant/client/StateRequest.html#fail-java.lang.Object...-" target="_blank">fails&nbsp;<i class="fa fa-external-link"></i></a> the request.
+
+    <a class="variant-header-offset" name="section-4"></a>
+    <h1><span class="variant-underlined">4<span class="indent"></span>Deferred Dependencies</span></h1>
+    Variant Java client makes no assumptions about host application technology stack or operational details. This generality enables broad applicability: any JVM host application can use it to access Variant server. The price of this generality is that Variant Java client must rely on the application developer to provide certain components at runtime. These are collectively known as <em>deferred dependencies</em> — the subject of this section.
+
+    <a class="variant-header-offset" name="section-4.1"></a>
+    <h2>4.1<span class="indent"></span>Session ID Tracker</h2>
+    Variant maintains its own sessions, independent from those maintained by the host application. Variant server creates and maintains these sessions, but the client must provide a way of relating two consecutive state requests to the same session. Session ID tracker does exactly that. The session state is kept on Variant server, but the host application is responsible for holding on to the session ID, by which this state can be retrieved.
+
+    To fulfill this responsibility, the application developer must supply an implementation of the <a href="/javadoc/0.10/com/variant/client/SessionIdTracker.html" target="_blank">SessionIdTracker&nbsp;<i class="fa fa-external-link"></i></a> interface. By contract, an implementation must provide the following public constructor signature and implement the following public methods:
+    <table class="variant-table-reference">
+    <tbody>
+    <tr>
+    <th><code>public MyImplClass(Object...)</code></th>
+    </tr>
+    <tr>
+    <td>The constructor Variant uses to instantiate an instance of the session ID tracker within the scope of <code>Connection.getSession(Object...)</code> or <code>Connection.getOrCreateSession(Object...)</code> methods by passing it these arguments without interpretation.</td>
+    </tr>
+    <tr>
+    <th><code>String get()</code></th>
+    </tr>
+    <tr>
+    <td> Retrieves the current value of the session ID from this tracker.</td>
+    </tr>
+    <tr>
+    <th><code>void set(String sessionId)</code></th>
+    </tr>
+    <tr>
+    <td> Sets the value of session ID.</td>
+    </tr>
+    <tr>
+    <th><code>void save(Object...userData)</code></th>
+    </tr>
+    <tr>
+    <td> Saves the currently held session ID to the underlying persistence mechanism. The meaning of <code>userData</code> is up to the implementation: Variant will pass the arguments to the enclosing call to <code>StateRequest.commit(Object...userData)</code> or <code>StateRequest.fail(Object...userData)</code> into this method without interpretation.</td>
+    </tr>
+    </tbody>
+    </table>
+    The implementing class must be placed on the host application's classpath and configured via the <a href="/javadoc/0.10/com/variant/client/VariantClient.Builder.html#withSessionIdTrackerClass-java.lang.Class-" target="_blank">withTargetingTrackerClass() method&nbsp;<i class="fa fa-external-link"></i></a>. For a sample implementation, see <a href="#section-3.3">Section 3.4</a>.
+
+    <a class="variant-header-offset" name="section-4.2"></a>
+    <h2>4.2<span class="indent"></span>API Methods with Deferred Signatures</h2>
+    The following table lists all the methods in Variant Java client whit environment dependent signatures.
+    <table class="variant-table-reference">
+    <tbody>
+    <tr>
+    <th><a href="/javadoc/0.10/com/variant/client/Connection.html#getOrCreateSession-java.lang.Object...-" target="_blank"><code>Connection.getOrCreateSession(Object...userData)</code>&nbsp;<i class="fa fa-external-link"></i></a></th>
+    </tr>
+    <tr></tr>
+    <tr>
+    <td>Get, if exists, or create, if does not exist, the Variant session with the externally tracked ID. The arguments are passed, without interpretation, to the underlying session ID tracker's <a href="/javadoc/0.10/com/variant/client/SessionIdTracker.html#init-java.lang.Object...-" target="_blank"><code>init()</code>&nbsp;<i class="fa fa-external-link"></i></a> method.</td>
+    </tr>
+    <tr>
+    <th><a href="/javadoc/0.10/com/variant/client/Connection.html#getSession-java.lang.Object...-" target="_blank"><code>Connection.getSession(Object...userData)</code>&nbsp;<i class="fa fa-external-link"></i></a></th>
+    </tr>
+    <tr>
+    <td> Get existing Variant session with the externally tracked ID. The arguments are passed, without interpretation, to the underlying session ID tracker's <a href="/javadoc/0.10/com/variant/client/SessionIdTracker.html#init-java.lang.Object...-" target="_blank"><code>init()</code>&nbsp;<i class="fa fa-external-link"></i></a> method.</td>
+    </tr>
+    <tr>
+    <th><a href="/javadoc/0.10/com/variant/client/StateRequest.html#commit-java.lang.Object...-" target="_blank"><code>StateRequest.commit(Object...userData)</code>&nbsp;<i class="fa fa-external-link"></i></a></th>
+    </tr>
+    <tr>
+    <td> Commit this state request. The arguments are passed, without interpretation, to the underlying session ID tracker's <a href="/javadoc/0.10/com/variant/client/SessionIdTracker.html#save-java.lang.Object...-" target="_blank"><code>save()</code>&nbsp;<i class="fa fa-external-link"></i></a> method.</td>
+    </tr>
+    <tr>
+    <th><a href="/javadoc/0.10/com/variant/client/StateRequest.html#fail-java.lang.Object...-" target="_blank"><code>StateRequest.fail((Object...userData)</code>&nbsp;<i class="fa fa-external-link"></i></a></th>
+    </tr>
+    <tr>
+    <td> Fail this state request. The arguments are passed, without interpretation, to the underlying session ID tracker's <a href="/javadoc/0.10/com/variant/client/SessionIdTracker.html#save-java.lang.Object...-" target="_blank"><code>save()</code>&nbsp;<i class="fa fa-external-link"></i></a> method.</td>
+    </tr>
+    </tbody>
+    </table>
+    <a class="variant-header-offset" name="section-5"></a>
+    <h1><span class="variant-underlined">5<span class="indent"></span>Stack-Specific Adapters for Variant Java Client</span></h1>
+    <a class="variant-header-offset" name="section-5.1"></a>
+    <h2><span class="variant-underlined">5.1<span class="indent"></span>Servlet Adapter</span></h2>
+    <a class="variant-header-offset" name="section-5.1.1"></a>
+    <h3>5.1.1<span class="indent"></span>Overview and Installation</h3>
+    Most Java Web applications are written on top of the Servlet API, either directly or via a servlet-based framework, such as Spring. Such applications should take advantage of the <a href="https://github.com/getvariant/variant-java-servlet-adapter" target="_blank">Servlet adapter for Variant Java client&nbsp;<i class="fa fa-external-link"></i></a> discussed here.
+
+    The servlet adapter consists of two components:
+    <ul>
+     	<li>Wrapper client API, which re-writes all deferred method signatures in terms of familiar servlet objects, like <code>HttpServletRequest</code>. See <a href="#section-5.1.2">Section 5.1.2</a> for further details</li>
+     	<li>Servlet-based implementation of the session ID tracker, utilizing HTTP cookies. See <a href="#section-5.1.3">Section 5.1.3</a> for details.</li>
+    </ul>
+    To install the servlet adapter for Variant Java client, follow <a href="https://github.com/getvariant/variant-java-servlet-adapter#2-installation">the installation instructions</a> on GitHub.
+
+    <a class="variant-header-offset" name="section-5.1.2"></a>
+    <h3>5.1.2<span class="indent"></span>Servlet Adapter Wrapper API</h3>
+    Java web applications, built on top of the servlet API, should communicate with Variant server via the <code>com.variant.client.servlet.*</code> classes, provided by <a href="https://getvariant.github.io/variant-java-servlet-adapter/" target="_blank">the servlet adapter API&nbsp;<i class="fa fa-external-link"></i></a>, instead of the <code>com.variant.client.*</code> classes, provided by <a href="/javadoc/0.10/" target="_blank">the general purpose Java API&nbsp;<i class="fa fa-external-link"></i></a>. The servlet adapter classes wrap the general purpose classes in a functionally identical API, whose only difference is that it rewrites all deferred environment-dependent method signatures with those that operate on the familiar servlet objects, like <code>HttpServletRequest</code> and <code>HttpServletResponse</code>.
+
+    Here's <a href="#section-3">the typical usage example from Section 3</a>, re-written in terms of the servlet adapter API:
+
+    <span class="tombstone">∎</span>Host application instantiates an instance of <a href="https://getvariant.github.io/variant-java-servlet-adapter/com/variant/client/servlet/ServletVariantClient.html" target="_blank"><code>ServletVariantClient</code>&nbsp;<i class="fa fa-external-link"></i></a> from the factory method:
+    <pre><code class="java">
+    ServletVariantClient client = new ServletVariantClient.Builder().build();
+    </code></pre>
+    A re-instantiation of the <code>ServletVariantClient</code> is never required. The host application should hold on to and reuse it for the life of the JVM.
+
+    <span class="tombstone">∎</span>Connect to a variation schema on Variant server:
+    <pre><code class="java">
+    ServletConnection connection = client.connectTo("variant://myVariantServer.com/myschema");
+    </code></pre>
+    The host application should hold on to the connection object and reuse it for all user sessions interested in participating in code variations contained in the given schema. Variant connections are stateless, so they are reusable even after a server restart.
+
+    <span class="tombstone">∎</span>Obtain (or create) a Variant session. They are completely distinct from your host application's sessions.
+    <pre><code class="java">
+    // request is the current HttpServletRequest
+    ServletSession session = connection.getOrCreateSession(request);
+    </code></pre>
+    <span class="tombstone">∎</span>Obtain the schema and the state.
+    <pre><code class="java">
+    Schema schema = session.getSchema();
+    Optional<state> loginPage = schema.getState("loginPage");
+    if (!loginPage.isPresent()) {
+       System.out.println("State loginPage is not in the schema. Falling back to control.");
+    }
+    </state></code></pre>
+    <span class="tombstone">∎</span>Target this session for the state and figure out the live experience(s) the session is targeted for.
+    <pre><code class="java">
+    ServletStateRequest request = session.targetForState(loginPage.get());
+    request.getLiveExperiences().forEach(e -&gt;
+       System.out.println(
+          String.format(
+             "We're targeted to experience %s in variation %s",
+             e.getName(),
+             e.getVariation().getName()))
+    );
+    </code></pre>
+    At this point, the application can take the code path suitable for the combination of live experience it has been targeted for. Note, that the application does not have to know the names of the variations or experiences to be targeted for a state.
+
+    <span class="tombstone">∎</span>After the host application's code path is complete, the state request must be committed (if no exceptions were encountered) or failed (if something went awry).
+    <pre><code class="java">
+    // response is the HttpServletResponse
+    request.commit(response);  // or .fail(response)
+    </code></pre>
+    Committing or failing a state request both implicitly trigger the associated state visited trace event with the corresponding completion status.
+
+    <a class="variant-header-offset" name="section-5.1.3"></a>
+    <h3>5.1.3<span class="indent"></span><code>SessionIdTrackerHttpCookie</code></h3>
+    Servlet adapter for Variant Java client comes with a <a href="https://github.com/getvariant/variant-java-servlet-adapter/blob/master/src/main/java/com/variant/client/servlet/SessionIdTrackerHttpCookie.java" target="_blank">concrete implementation&nbsp;<i class="fa fa-external-link"></i></a> of the <a href="/javadoc/0.10/com/variant/client/SessionIdTracker.html" target="_blank"><code>SessionIdTracker</code> interface&nbsp;<i class="fa fa-external-link"></i></a>.  It uses the HTTP cookie mechanism to track Variant session ID between state requests in the session-scoped cookie named <code>variant-ssnid</code>, much like servlet containers use the <code>JSESSIONID</code> cookie to track the HTTP session ID. No action is required to configure this session ID tracker.
+
+    <a class="variant-header-offset" name="section-5.2"></a>
+    <h2><span class="variant-underlined">5.2<span class="indent"></span>Play! Adapter</span></h2>
+    <strong>TBA</strong>
+
+    </div>
+    </div>
+    </div>
+</div>
+</body>
+</html>
