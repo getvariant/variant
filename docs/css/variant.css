@@ -166,10 +166,13 @@ pre, pre a, code {
 	margin: 0;
 	background: #fdfcfd;
 	overflow-x: scroll;
-	border: 1px solid #ddd;
 }
 
-#doc-body pre a {
+pre {
+    border: 1px solid #ddd;
+}
+
+pre a {
   color: Teal;
 }
 
