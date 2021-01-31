@@ -370,7 +370,7 @@
                 <h2><span class="underlined">2.3<span class="indent"></span>Integration With the Host Application</span></h2>
 
                 <p>
-                    A host application communicates with Variant server via a native client library, supplied by Variant and suitable for the application's language. Variant release 0.10 ships with a fully functional <a href="/resources/docs/0-10/clients/variant-java-client/">Java client</a> and a partial <a href="/resources/docs/0-10/clients/variant-javascript-client/">JavaScript client</a>, suitable for deployment to Web browsers.
+                    A host application communicates with Variant server via a native client library, supplied by Variant and suitable for the application's language. Variant release 0.10 ships with a fully functional <a href="variant-java-client.html">Java client</a> and a partial <a href="/resources/docs/0-10/clients/variant-javascript-client/">JavaScript client</a>, suitable for deployment to Web browsers.
                 </p>
                 <a class="header-offset" name="section-2.3.1"></a>
                 <h3>2.3.1<span class="indent"></span>Variant Java Client</h3>
@@ -379,10 +379,10 @@
                     Variant Java client is consumable by any host application running on a Java Virtual Machine (JVM) release 8 or later. It makes no assumptions about host application's other technology details, which makes it universally applicable to any interactive JVM host application, e.g. an HTTP server or an IVR call center. This flexibility, inevitably, comes at the expense of some runtime environment dependencies, which had to be abstracted out and surfaced in the client's API, such as a mechanism to track Variant session ID. These dependencies have to be provided at runtime.
                 </p>
                 <p>
-                    Most JVM Web applications are written on top of a Web framework, like Java Servlets or Play!. Such applications should take advantage of the available <a href="https://getvariant2.wpengine.com/resources/docs/0-10/clients/variant-java-client/#section-5.1">Servlet adapter for Variant Java client</a> or <a href="https://getvariant2.wpengine.com/resources/docs/0-10/clients/variant-java-client/#section-5.2">Play! adapter for Variant Java client</a>. (Get in touch if you want to contribute a different adapter.) These adapters wrap Variant Java client API with a functionally equivalent API, which re-writes environment-dependent method signatures in terms of particular framework classes, such as <code>javax.servlet.http.HttpServletRequest</code> and <code>play.mvc.Http.Request</code> and provides framework-specific implementations of all environment-dependent objects.
+                    Most JVM Web applications are written on top of a Web framework, like Java Servlets or Play!. Such applications should take advantage of the available <a href="https://getvariant2.wpengine.comvariant-java-client.html#section-5.1">Servlet adapter for Variant Java client</a> or <a href="https://getvariant2.wpengine.comvariant-java-client.html#section-5.2">Play! adapter for Variant Java client</a>. (Get in touch if you want to contribute a different adapter.) These adapters wrap Variant Java client API with a functionally equivalent API, which re-writes environment-dependent method signatures in terms of particular framework classes, such as <code>javax.servlet.http.HttpServletRequest</code> and <code>play.mvc.Http.Request</code> and provides framework-specific implementations of all environment-dependent objects.
                 </p>
                 <p>
-                    Refer to the Variant <a href="/resources/docs/0-10/clients/variant-java-client/">Java Client User Guide</a> for further information.
+                    Refer to the Variant <a href="variant-java-client.html">Java Client User Guide</a> for further information.
                 </p>
                 <a class="header-offset" name="section-2.3.2"></a>
                 <h3>2.3.2<span class="indent"></span>Variant JavaScript Client</h3>
@@ -836,7 +836,7 @@
                     As already explained, Code Variation Model treats interactive applications as <a href="#section-3.1">finite state machines</a>. Each user session traverses some state graph, whose nodes are the interface states, where the host application pauses for user input. In real world, state nodes can be traditional HTML pages, Angular views, IVR menus, Android activities, etc. — the points in the host application where it pauses waiting for user input.
                 </p>
                 <p>
-                    Whenever host application is about to return to the user session a particular interface state, it must determine if this state exists in more than one variant (i.e. is instrumented by any code variations), and, if so, which of these variants to return. Both of these tasks are accomplished by the <a href="javadoc/0.10/com/variant/client/Session.html#targetForState-com.variant.core.schema.State-" target="_blank" rel="noopener"><code>Session.targetForState(state)</code> <i class="fa fa-external-link"></i></a> method. It returns the <a href="javadoc/0.10/com/variant/client/StateRequest.html" target="_blank" rel="noopener"><code>StateRequest</code> <i class="fa fa-external-link"></i></a> object which may be further examined for the list of live experiences in all variations instrumenting this state.
+                    Whenever host application is about to return to the user session a particular interface state, it must determine if this state exists in more than one variant (i.e. is instrumented by any code variations), and, if so, which of these variants to return. Both of these tasks are accomplished by the <a href="javadoc/com/variant/client/Session.html#targetForState-com.variant.core.schema.State-" target="_blank" rel="noopener"><code>Session.targetForState(state)</code> <i class="fa fa-external-link"></i></a> method. It returns the <a href="javadoc/com/variant/client/StateRequest.html" target="_blank" rel="noopener"><code>StateRequest</code> <i class="fa fa-external-link"></i></a> object which may be further examined for the list of live experiences in all variations instrumenting this state.
                 </p>
                 <p>
                     Thus, a Variant session can be thought of as a succession of consecutive state requests, united into a single user experience by Variant session. At runtime, the session must be created first, before any state targeting may happen, so we consider it first in the next section, followed by a closer look at the state request.
@@ -845,7 +845,7 @@
                 <a class="header-offset" name="section-4.1.1"></a>
                 <h3>4.1.1<span class="indent"></span>Variant Session</h3>
                 <p>
-                    In order to communicate with Variant server, host application must <a href="/resources/docs/0-10/clients/variant-java-client/#section-2.4">connect to it</a> and create a Variant session as follows:
+                    In order to communicate with Variant server, host application must <a href="variant-java-client.html#section-2.4">connect to it</a> and create a Variant session as follows:
                 </p>
                 <pre><code class="java">
     // Arguments are environment-dependent
@@ -853,7 +853,7 @@
     </code></pre>
 
                 <p>
-                    The arguments to the <a href="javadoc/0.10/com/variant/client/Connection.html#getOrCreateSession-java.lang.Object...-" target="_blank" rel="noopener"><code>getOrCreateSession()</code> <i class="fa fa-external-link"></i></a> method are environment-dependent and are discussed in detail in the <a href="/resources/docs/0-10/clients/variant-java-client/#section-2.4">Java Client User Guide</a>.
+                    The arguments to the <a href="javadoc/com/variant/client/Connection.html#getOrCreateSession-java.lang.Object...-" target="_blank" rel="noopener"><code>getOrCreateSession()</code> <i class="fa fa-external-link"></i></a> method are environment-dependent and are discussed in detail in the <a href="variant-java-client.html#section-2.4">Java Client User Guide</a>.
                 </p>
                 <p>
                     Variant sessions provide
@@ -876,7 +876,7 @@
                 <h3>4.1.2<span class="indent"></span>State Request</h3>
 
                 <p>
-                    Whenever the host application is about to serve a user session a particular interface state, potentially instrumented by one or more code variation, it consults Variant server for the targeting information by calling the <a href="javadoc/0.10/com/variant/client/Session.html#targetForState-com.variant.core.schema.State-" target="_blank" rel="noopener"><code>Session.targetForState(state)</code> <i class="fa fa-external-link"></i></a> method, which returns the <a href="javadoc/0.10/com/variant/client/StateRequest.html" target="_blank" rel="noopener"><code>StateRequest</code> <i class="fa fa-external-link"></i></a> object.
+                    Whenever the host application is about to serve a user session a particular interface state, potentially instrumented by one or more code variation, it consults Variant server for the targeting information by calling the <a href="javadoc/com/variant/client/Session.html#targetForState-com.variant.core.schema.State-" target="_blank" rel="noopener"><code>Session.targetForState(state)</code> <i class="fa fa-external-link"></i></a> method, which returns the <a href="javadoc/com/variant/client/StateRequest.html" target="_blank" rel="noopener"><code>StateRequest</code> <i class="fa fa-external-link"></i></a> object.
                 </p>
                 <p>
                     Continuing with our <a href="#listing-4">Tricolor schema from the Listing 4</a>, this is how a Variant session gets targeted for the state <code>S2</code>:
@@ -930,12 +930,12 @@
                     Qualification is a distinct idea from targeting. Suppose, for example, that a newspaper wants to test promotional rates, offered on its website. This promotion cannot be combined with another promotion, so the traffic coming from other promotional offers must be disqualified from the experiment.
                 </p>
                 <p>
-                    Whenever Variant determines that the calling session's qualification for a particular vairation must be (re)established, it raises the <a href="javadoc/0.10/com/variant/server/api/lifecycle/VariationQualificationLifecycleEvent.html" target="_blank" rel="noopener"><code>VariationQualificationLifecycleEvent</code> <i class="fa fa-external-link"></i></a> lifecycle event, which posts eligible lifecycle hooks. If none were defined or none returned a usable result, the default built-in qualification hook is posted, which unconditionally qualifies all session for all variations. For more information on lifecycle hooks, refer to <a href="#section-5.1">Section 5.1</a>.
+                    Whenever Variant determines that the calling session's qualification for a particular vairation must be (re)established, it raises the <a href="javadoc/com/variant/server/api/lifecycle/VariationQualificationLifecycleEvent.html" target="_blank" rel="noopener"><code>VariationQualificationLifecycleEvent</code> <i class="fa fa-external-link"></i></a> lifecycle event, which posts eligible lifecycle hooks. If none were defined or none returned a usable result, the default built-in qualification hook is posted, which unconditionally qualifies all session for all variations. For more information on lifecycle hooks, refer to <a href="#section-5.1">Section 5.1</a>.
                 </p>
                 <p>
                     If the session is qualified for a variation, Variant proceeds to the targeting step, discussed in the next section. If the session is disqualified, it is <em>assigned</em> to the control experience, but not <em>targeted</em> for it. The differene between an assignment to the control experience outside of a variation and beting targeted to the control experience in variation is that
                 <ul>
-                    <li>The set, returned by the <a href="javadoc/0.10/com/variant/client/StateRequest.html#getLiveExperiences--" target="_blank" rel="noopener"><code>StateRequest.getLiveExperiences()</code> <i class="fa fa-external-link"></i></a> method, doesn't contain an entry for the disqualified variation;</li>
+                    <li>The set, returned by the <a href="javadoc/com/variant/client/StateRequest.html#getLiveExperiences--" target="_blank" rel="noopener"><code>StateRequest.getLiveExperiences()</code> <i class="fa fa-external-link"></i></a> method, doesn't contain an entry for the disqualified variation;</li>
                     <li>No <a href="#section-4.5">trace events</a> are triggered on behalf of disqualified variations, neither explicit nor implicit.</li>
                 </ul>
                 </p>
@@ -995,7 +995,7 @@
                     If this state is phantom in any of the experiences, these experiences must be excluded from the set of possible targets, unless there's already targeting decision to be honored, in which case, if the requested state is phantom in that experience, the session's attempt to target for this state is a user error. The complexity of the targeting algorithm grows dramatically for concurrent variations.
                 </p>
                 <p>
-                    Whenever, inside the <a href="javadoc/0.10/com/variant/client/Session.html#targetForState-com.variant.share.schema.State-" target="_blank" rel="noopener"><code>targetForState(state)</code> <i class="fa fa-external-link"></i></a> method, Variant determines that the calling session must be targeted for a particular vairation, it raises the <a href="javadoc/0.10/com/variant/server/api/lifecycle/VariationTargetingLifecycleEvent.html" target="_blank" rel="noopener"><code>VariationTargetingLifecycleEvent</code> <i class="fa fa-external-link"></i></a> lifecycle event, which posts eligible lifecycle hooks. If none were defined or none returned a usable result, the default built-in targeting hook is posted, which targets randomly, according to the weights provided in the schema, e.g
+                    Whenever, inside the <a href="javadoc/com/variant/client/Session.html#targetForState-com.variant.share.schema.State-" target="_blank" rel="noopener"><code>targetForState(state)</code> <i class="fa fa-external-link"></i></a> method, Variant determines that the calling session must be targeted for a particular vairation, it raises the <a href="javadoc/com/variant/server/api/lifecycle/VariationTargetingLifecycleEvent.html" target="_blank" rel="noopener"><code>VariationTargetingLifecycleEvent</code> <i class="fa fa-external-link"></i></a> lifecycle event, which posts eligible lifecycle hooks. If none were defined or none returned a usable result, the default built-in targeting hook is posted, which targets randomly, according to the weights provided in the schema, e.g
                 </p>
                 <pre><code class="json">
     {
@@ -1125,10 +1125,10 @@
                     Variant trace events are generated by user traffic, as it flows through Variant variations, with the purpose of subsequent analysis by a downstream process. Trace events can be triggered implicitly, by Variant, or explicitly by the host application. In either case, the host application can attach attributes to these events, to aid in the downstream analysis.
                 </p>
                 <p>
-                    The only implicit trace event is the <em>state visited event</em>. It is created at the start of the state request, <a href="#figure-3">Figure 3</a>, and triggered when <a href="javadoc/0.10/com/variant/client/StateRequest.html" target="_blank" rel="noopener"><code>StateRequest</code> <i class="fa fa-external-link"></i></a> is committed or failed. This gives the host application a chance to attach custom attributes to the event. For example, if the host application caught an exception, it may wish to set the status of the event to error, and add the name of the class that threw the exception. This information can be used downstream to exclude this session from the statistical analysis (if this is an experiment), or to shut off the variation (if this is a feature flag).
+                    The only implicit trace event is the <em>state visited event</em>. It is created at the start of the state request, <a href="#figure-3">Figure 3</a>, and triggered when <a href="javadoc/com/variant/client/StateRequest.html" target="_blank" rel="noopener"><code>StateRequest</code> <i class="fa fa-external-link"></i></a> is committed or failed. This gives the host application a chance to attach custom attributes to the event. For example, if the host application caught an exception, it may wish to set the status of the event to error, and add the name of the class that threw the exception. This information can be used downstream to exclude this session from the statistical analysis (if this is an experiment), or to shut off the variation (if this is a feature flag).
                 </p>
                 <p>
-                    Explicist trace events are triggered by calling the <a class="nowrap" href="javadoc/0.10/com/variant/client/Session.html#triggerTraceEvent-com.variant.client.TraceEvent-" target="_blank" rel="noopener"><code>Session.triggerTraceEvent()</code> <i class="fa fa-external-link"></i></a> method.
+                    Explicist trace events are triggered by calling the <a class="nowrap" href="javadoc/com/variant/client/Session.html#triggerTraceEvent-com.variant.client.TraceEvent-" target="_blank" rel="noopener"><code>Session.triggerTraceEvent()</code> <i class="fa fa-external-link"></i></a> method.
                 </p>
                 <p>
                     Trace events are egested onto external storage via <a href="#section-5.2">Trace Event Flushers</a> which are part of the Extension API, discussed next.
@@ -1161,7 +1161,7 @@
     </code></pre>
 
                 <p>
-                    Lifecycle event hooks are callback methods, executed by Variant server when correponding lifecycle events are raised. For example, when a user session must be qualified or targeted for a particular variation, two corresponding lifecycle events are raised: the session qualification event and the session targeting event. If you have defined custom hooks for these events, Variant will post them by calling their <a href="javadoc/0.10/com/variant/server/api/lifecycle/LifecycleHook.html#post-E-" target="_blank" rel="noopener"><code>post()</code> <i class="fa fa-external-link"></i></a> method.
+                    Lifecycle event hooks are callback methods, executed by Variant server when correponding lifecycle events are raised. For example, when a user session must be qualified or targeted for a particular variation, two corresponding lifecycle events are raised: the session qualification event and the session targeting event. If you have defined custom hooks for these events, Variant will post them by calling their <a href="javadoc/com/variant/server/api/lifecycle/LifecycleHook.html#post-E-" target="_blank" rel="noopener"><code>post()</code> <i class="fa fa-external-link"></i></a> method.
                 </p>
                 <p>
                     Lifecycle hooks provide a way to extend Variant server’s default behavior with application-specific semantics. They are executed in the server process’s address space and are highly reusable modules encapsulating common semantics and having their own lifecycle, independent of that of the host application.
@@ -1170,7 +1170,7 @@
                     Depending on where a hook is defined in the schema, it may have the global (or meta) scope, a state scope or a variation scope. Global hooks are defined in the <code>meta</code> section and apply to all states and all variations in this schema. A state-scoped hook only applies to the state with which it is defined, and a variation-scoped hook applies only to the variation with which it is defined.
                 </p>
                 <p>
-                    In any scope, any number of hooks can be defined. If more than one lifecycle hook is eligible to be posted by a lifecycle event at runtime, they form a <em>hook chain</em>. More locally defined hooks are posted before the global ones on the chain, and within a scope hooks are posted in ordinal order. The hooks are posted serially, until a hook's <a href="javadoc/0.10/com/variant/server/api/lifecycle/LifecycleHook.html#post-E-" target="_blank" rel="noopener"><code>post()</code> <i class="fa fa-external-link"></i></a> method returns a non-empty <code>Optional</code>. If no custom hooks have been defined for a lifecycle event, or all returned an empty <code>Optional</code>, the default built-in hook for the event is posted, which is guaranteed to return a usable value.
+                    In any scope, any number of hooks can be defined. If more than one lifecycle hook is eligible to be posted by a lifecycle event at runtime, they form a <em>hook chain</em>. More locally defined hooks are posted before the global ones on the chain, and within a scope hooks are posted in ordinal order. The hooks are posted serially, until a hook's <a href="javadoc/com/variant/server/api/lifecycle/LifecycleHook.html#post-E-" target="_blank" rel="noopener"><code>post()</code> <i class="fa fa-external-link"></i></a> method returns a non-empty <code>Optional</code>. If no custom hooks have been defined for a lifecycle event, or all returned an empty <code>Optional</code>, the default built-in hook for the event is posted, which is guaranteed to return a usable value.
                 </p>
                 <p>
                     For more information, refer to the <a href="variant-server-reference.html#section-4.1">Variant Server Reference</a>.
@@ -1178,7 +1178,7 @@
                 <a class="header-offset" name="section-5.2"></a>
                 <h2>5.2<span class="indent"></span>Trace Event Flushers</h2>
                 <p>
-                    Event flushers handle the terminal ingestion of Variant trace events. A typical event flusher writes them to a persistent storage mechanism, such as an external database or event stream. Whenever a trace event is triggered — implicitly by Variant server or explicitly by user code — it is picked up by the Variant's asynchronous event writer, where it is held in a memory buffer until a dedicated flusher thread becomes available. There is one event writer per Variant server, shared by all schemata. Event writer groups trace events by the schema that produced them and turns them over to the apropriate event flusher by calling its <a href="javadoc/0.10/com/variant/server/api/TraceEventFlusher.html#flush-com.variant.server.api.FlushableTraceEvent:A-int-" target="_blank" rel="noopener"><code>flush()</code> <i class="fa fa-external-link"></i></a> method.
+                    Event flushers handle the terminal ingestion of Variant trace events. A typical event flusher writes them to a persistent storage mechanism, such as an external database or event stream. Whenever a trace event is triggered — implicitly by Variant server or explicitly by user code — it is picked up by the Variant's asynchronous event writer, where it is held in a memory buffer until a dedicated flusher thread becomes available. There is one event writer per Variant server, shared by all schemata. Event writer groups trace events by the schema that produced them and turns them over to the apropriate event flusher by calling its <a href="javadoc/com/variant/server/api/TraceEventFlusher.html#flush-com.variant.server.api.FlushableTraceEvent:A-int-" target="_blank" rel="noopener"><code>flush()</code> <i class="fa fa-external-link"></i></a> method.
                 </p>
                 <p>
                     The size of the trace event buffer, passed to the <code>flush()</code> method, is configured by the <code>variant.event.writer.flush.size</code> server config property, whose value refers to the number of trace events held in a single flush buffer. The overall size of the event writer cache is configured by the <code>variant.event.writer.flush.buffers</code> server config property, whose value refers to the total number of flush buffers available to the event writer. The larger the number of flush buffers, the better the event writer is able cope with bursts of trace evens, but at the price of additional memory footprint.
@@ -1190,7 +1190,7 @@
                     A few ready-made event flushers, intended for saving trace events in popular databases, such as PostgreSQL and MySQL, are included in Variant server's <a href="variant-server-reference.html#section-4.4" target="_blank" rel="noopener">standard extension library<i class="fa fa-external-link"></i></a>, included with the server. These can be configured and used out of the box.
                 </p>
                 <p>
-                    It is also straightforward to create a custom event flusher by implementing the <a href="javadoc/0.10/com/variant/server/api/TraceEventFlusher.html" target="_blank" rel="noopener"><code>TraceEventFlusher</code> interface <i class="fa fa-external-link"></i></a>. See <a href="variant-server-reference.html#section-4.3">Variant Server Reference Guide</a> for more information.
+                    It is also straightforward to create a custom event flusher by implementing the <a href="javadoc/com/variant/server/api/TraceEventFlusher.html" target="_blank" rel="noopener"><code>TraceEventFlusher</code> interface <i class="fa fa-external-link"></i></a>. See <a href="variant-server-reference.html#section-4.3">Variant Server Reference Guide</a> for more information.
                 </p>
                 <a class="header-offset" name="appendix-a"></a>
                 <h1><span class="underlined">Appendix A Analyzing Variant Controlled Experiments</span></h1>
