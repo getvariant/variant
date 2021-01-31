@@ -665,7 +665,7 @@ $ variant.sh start -Dvariant.schemata.dir=/Users/Igor/schemata
             </table>
             <p class="fig-footer">Listing 6. State parameter specification.</p>
           <p>
-            Whenever the host application calls the <a href="/javadoc/0.10/com/variant/client/Session.html#targetForState-com.variant.core.schema.State-" target="_blank"><code>Session.targetForState()</code> <i class="fa fa-external-link"></i></a> method, server picks from the given state's variant space a single state variant. The state parameters defined at that state variant, if any, override the like-named parameters defined at the base state. (Remember, names are case sensitive.) These <em>resolved</em> state parameters are available to the host application via the <a href="/javadoc/0.10/com/variant/client/StateRequest.html#getResolvedParameters--" target="_blank"><code>StateRequest.getResolvedParameters()</code> <i class="fa fa-external-link"></i></a> method.
+            Whenever the host application calls the <a href="javadoc/com/variant/client/Session.html#targetForState-com.variant.core.schema.State-" target="_blank"><code>Session.targetForState()</code> <i class="fa fa-external-link"></i></a> method, server picks from the given state's variant space a single state variant. The state parameters defined at that state variant, if any, override the like-named parameters defined at the base state. (Remember, names are case sensitive.) These <em>resolved</em> state parameters are available to the host application via the <a href="javadoc/com/variant/client/StateRequest.html#getResolvedParameters--" target="_blank"><code>StateRequest.getResolvedParameters()</code> <i class="fa fa-external-link"></i></a> method.
           </p>
             <a class="header-offset" name="section-3.7"></a>
             <h2><span class="underlined">3.7<span class="indent"></span><code>VARIATIONS</code> Section</span></h2>
@@ -733,7 +733,7 @@ $ variant.sh start -Dvariant.schemata.dir=/Users/Igor/schemata
               <tr>
                 <td><code>hooks</code></td>
                 <td>Array of objects of type <a href="#listing-4"><code>hook-spec</code></a></td>
-                <td>A list of variation-scoped lifecycle hook specifications.  Hooks defined at this scope apply to this variation only and must be subscribed to a lifecycle event descendant from <a href="/javadoc/0.10/com/variant/server/api/lifecycle/VariationAwareLifecycleEvent.html" target="_blank"><code>VariationAwareLifecycleEvent</code>&nbsp;<i class="fa fa-external-link"></i></a>.</td>
+                <td>A list of variation-scoped lifecycle hook specifications.  Hooks defined at this scope apply to this variation only and must be subscribed to a lifecycle event descendant from <a href="javadoc/com/variant/server/api/lifecycle/VariationAwareLifecycleEvent.html" target="_blank"><code>VariationAwareLifecycleEvent</code>&nbsp;<i class="fa fa-external-link"></i></a>.</td>
                 <td>No</td>
                 <td>—</td>
               </tr>
@@ -744,7 +744,7 @@ $ variant.sh start -Dvariant.schemata.dir=/Users/Igor/schemata
             For each state on the <code>onStates</code> list, Variant builds a state variant space as a Cartesian product of this variation's experience set and the experience sets of all those variations mentioned on the <code>conjointVariationRefs</code> list. Refer to <a href="variant-server-user-guide.html#section-3.8">Variant Server User Guide</a> for more information on concurrent variations.
           </p>
           <p>
-            Each variation-scoped hook must listen to a lifecycle event descendant from <a href="/javadoc/0.10/com/variant/server/api/lifecycle/StateAwareLifecycleEvent.html" target="_blank"><code>VariationAwareLifecycleEvent</code>&nbsp;<i class="fa fa-external-link"></i></a>. For more information, see <a href="#section-4.1">Section 4.1 Lifecycle Hooks</a>.
+            Each variation-scoped hook must listen to a lifecycle event descendant from <a href="javadoc/com/variant/server/api/lifecycle/StateAwareLifecycleEvent.html" target="_blank"><code>VariationAwareLifecycleEvent</code>&nbsp;<i class="fa fa-external-link"></i></a>. For more information, see <a href="#section-4.1">Section 4.1 Lifecycle Hooks</a>.
           </p>
           <p>
             The <code>isOn</code> property is used to turn an experiement or a feature toggle temporarily offline without removing it from the schema. No sessions are targeted for an offline variation, as if it didn't even exist. In fact, the only differences between an offline variation and a variation that is completely removed from the schema is that if it defines its targeting or qualification persistence as durable, this information is preserved. In practice this means that, after an offline variation is taken back online, return users will see the same experience they saw before the variation was taken offline.
@@ -945,7 +945,7 @@ $ variant.sh start -Dvariant.schemata.dir=/Users/Igor/schemata
                 <th>Default Hook</th>
               </tr>
               <tr>
-                <td><a href="/javadoc/0.10/com/variant/server/api/lifecycle/VariationQualificationLifecycleEvent.html" target="_blank"><code>VariationQualificationLifecycleEvent</code>&nbsp;<i class="fa fa-external-link"></i></a></td>
+                <td><a href="javadoc/com/variant/server/api/lifecycle/VariationQualificationLifecycleEvent.html" target="_blank"><code>VariationQualificationLifecycleEvent</code>&nbsp;<i class="fa fa-external-link"></i></a></td>
                 <td>Schema
                   Variation</td>
                 <td>Session is qualified for the variation.</td>
@@ -954,7 +954,7 @@ $ variant.sh start -Dvariant.schemata.dir=/Users/Igor/schemata
                 <td colspan="3">Raised when a Variant session must be <a href="variant-server-user-guide.html#section-4.2">qualified for a variation</a>. Posts all eligible schema-scoped hooks and those variation-scoped hooks whose variation matches that of triggering event. Used to qualify (or disqualify) a user session for the triggering variation, based on a custom qualification criteria.</td>
               </tr>
               <tr>
-                <td><a href="/javadoc/0.10/com/variant/server/api/lifecycle/VariationTargetingLifecycleEvent.html" target="_blank"><code>VariationTargetingLifecycleEvent</code>&nbsp;<i class="fa fa-external-link"></i></a></td>
+                <td><a href="javadoc/com/variant/server/api/lifecycle/VariationTargetingLifecycleEvent.html" target="_blank"><code>VariationTargetingLifecycleEvent</code>&nbsp;<i class="fa fa-external-link"></i></a></td>
                 <td>Schema
                   State
                   Variation</td>
@@ -968,15 +968,15 @@ $ variant.sh start -Dvariant.schemata.dir=/Users/Igor/schemata
             <a class="header-offset" name="section-4.1.2"></a>
             <h3>4.1.2<span class="indent"></span>Hooks' Instantiation and Scope</h3>
           <p>
-          Lifecycle hooks provide callback methods which are posted by Variant server whenever a lifecycle event of interest is raised. A lifecycle hook subscribes to a particular lifecycle event type by implementing the <a href="/javadoc/0.10/com/variant/server/api/lifecycle/LifecycleHook.html#getLifecycleEventClass--" target="_blank"><code>LifecycleHook.gerLifecycleEventClass()</code>&nbsp;<i class="fa fa-external-link"></i></a> method. Whenever an event of that type is raised, the hook is notified by Variant server via its callback method <a href="/javadoc/0.10/com/variant/core/lifecycle/LifecycleHook.html#post-E-" target="_blank"><code>LifecycleHook.post()</code>&nbsp;<i class="fa fa-external-link"></i></a> method.
+          Lifecycle hooks provide callback methods which are posted by Variant server whenever a lifecycle event of interest is raised. A lifecycle hook subscribes to a particular lifecycle event type by implementing the <a href="javadoc/com/variant/server/api/lifecycle/LifecycleHook.html#getLifecycleEventClass--" target="_blank"><code>LifecycleHook.gerLifecycleEventClass()</code>&nbsp;<i class="fa fa-external-link"></i></a> method. Whenever an event of that type is raised, the hook is notified by Variant server via its callback method <a href="javadoc/com/variant/core/lifecycle/LifecycleHook.html#post-E-" target="_blank"><code>LifecycleHook.post()</code>&nbsp;<i class="fa fa-external-link"></i></a> method.
           </p>
           <p>
             Hook definitions may appear in variation schema in one of three scopes:
           </p>
           <ul>
-              <li><em>Meta-scoped</em> hooks are defined inside the <a href="#section-3.3">meta section</a>. These hooks are applicable to all states and all variations in the schema. Hooks listening to lifecycle events descendant from <a href="/javadoc/0.10/com/variant/server/api/lifecycle/StateAwareLifecycleEvent.html" target="_blank"><code>StateAwareLifecycleEvent</code>&nbsp;<i class="fa fa-external-link"></i></a> will be posted for each state in the schema by every state aware lifecycle event. Hooks listening to lifecycle events descendant from <a href="/javadoc/0.10/com/variant/server/api/lifecycle/VariationAwareLifecycleEvent.html" target="_blank"><code>VariationAwareLifecycleEvent</code>&nbsp;<i class="fa fa-external-link"></i></a> will be posted for all online variations in the schema by every variation aware lifecycle event.</li>
-              <li><em>State-scoped</em> hooks are defined inside the <a href="#listing-5">state definition</a>. These hooks are applicable to the enclosing state only and must listen to events descendant from <a href="/javadoc/0.10/com/variant/server/api/lifecycle/StateAwareLifecycleEvent.html" target="_blank"><code>StateAwareLifecycleEvent</code>&nbsp;<i class="fa fa-external-link"></i></a>.</li>
-              <li><em>Variation-scoped</em> hooks are defined inside the <a href="#listing-7">variation definition</a>. These hooks are applicable to the enclosing variation only and must listen to events descendant from <a href="/javadoc/0.10/com/variant/server/api/lifecycle/VariationAwareLifecycleEvent.html" target="_blank"><code>VariationAwareLifecycleEvent</code>&nbsp;<i class="fa fa-external-link"></i></a>.</li>
+              <li><em>Meta-scoped</em> hooks are defined inside the <a href="#section-3.3">meta section</a>. These hooks are applicable to all states and all variations in the schema. Hooks listening to lifecycle events descendant from <a href="javadoc/com/variant/server/api/lifecycle/StateAwareLifecycleEvent.html" target="_blank"><code>StateAwareLifecycleEvent</code>&nbsp;<i class="fa fa-external-link"></i></a> will be posted for each state in the schema by every state aware lifecycle event. Hooks listening to lifecycle events descendant from <a href="javadoc/com/variant/server/api/lifecycle/VariationAwareLifecycleEvent.html" target="_blank"><code>VariationAwareLifecycleEvent</code>&nbsp;<i class="fa fa-external-link"></i></a> will be posted for all online variations in the schema by every variation aware lifecycle event.</li>
+              <li><em>State-scoped</em> hooks are defined inside the <a href="#listing-5">state definition</a>. These hooks are applicable to the enclosing state only and must listen to events descendant from <a href="javadoc/com/variant/server/api/lifecycle/StateAwareLifecycleEvent.html" target="_blank"><code>StateAwareLifecycleEvent</code>&nbsp;<i class="fa fa-external-link"></i></a>.</li>
+              <li><em>Variation-scoped</em> hooks are defined inside the <a href="#listing-7">variation definition</a>. These hooks are applicable to the enclosing variation only and must listen to events descendant from <a href="javadoc/com/variant/server/api/lifecycle/VariationAwareLifecycleEvent.html" target="_blank"><code>VariationAwareLifecycleEvent</code>&nbsp;<i class="fa fa-external-link"></i></a>.</li>
             </ul>
             <a class="header-offset" name="section-4.1.3"></a>
             <h3>4.1.3<span class="indent"></span>Hook Chaining</h3>
@@ -991,18 +991,18 @@ $ variant.sh start -Dvariant.schemata.dir=/Users/Igor/schemata
               <li> Within a scope, hooks are posted in the ordinal order, i.e. the order in which they are defined in the schema, in the corresponding scope.</li>
             </ul>
           <p>
-            The hooks are posted serially, until a hook's <a href="/javadoc/0.10/com/variant/server/api/lifecycle/LifecycleHook.html#post-E-" target="_blank" rel="noopener"><code>post()</code> <i class="fa fa-external-link"></i></a> method returns a non-empty <code>Optional</code>. If no custom hooks have been defined for a lifecycle event, or all returned an empty <code>Optional</code>, the default built-in hook for the event is posted, which is guaranteed to return a usable value.
+            The hooks are posted serially, until a hook's <a href="javadoc/com/variant/server/api/lifecycle/LifecycleHook.html#post-E-" target="_blank" rel="noopener"><code>post()</code> <i class="fa fa-external-link"></i></a> method returns a non-empty <code>Optional</code>. If no custom hooks have been defined for a lifecycle event, or all returned an empty <code>Optional</code>, the default built-in hook for the event is posted, which is guaranteed to return a usable value.
           </p>
           <p>
             A hook chain is posted synchronously; the hooks' <code>post()</code> methods are invoked one at a time while the foreground user session thread is blocked. Conequently, the <code>post()</code> method need not be thread safe. A new instance of a hook is instantiated for each invocation of the <code>post()</code> method.
           </p>
           <p>
-            When a hook is posted, its <a href="/javadoc/0.10/com/variant/core/lifecycle/LifecycleHook.html#post-E-" target="_blank"><code>post(E event)</code>&nbsp;<i class="fa fa-external-link"></i></a> method is called by Variant server with the actual triggering lifecycle event instance. If the <code>post(E event)</code> method returns a non-null value, Variant server ignores the rest of the hook chain, expecting the returned object to contain the information it requires to proceed. Otherwise, Variant posts the next hook on the chain.
+            When a hook is posted, its <a href="javadoc/com/variant/core/lifecycle/LifecycleHook.html#post-E-" target="_blank"><code>post(E event)</code>&nbsp;<i class="fa fa-external-link"></i></a> method is called by Variant server with the actual triggering lifecycle event instance. If the <code>post(E event)</code> method returns a non-null value, Variant server ignores the rest of the hook chain, expecting the returned object to contain the information it requires to proceed. Otherwise, Variant posts the next hook on the chain.
           </p>
             <a class="header-offset" name="section-4.1.4"></a>
             <h3>4.1.4<span class="indent"></span>Custom Lifecycle Hooks</h3>
           <p>
-            A custom lifecycle hook must implement the <a href="/javadoc/0.10/com/variant/server/api/lifecycle/LifecycleHook.html" target="_blank"><code>LifecycleHook</code>&nbsp;<i class="fa fa-external-link"></i></a> interface. By contract, an implementation must also provide at least one of these constructors:
+            A custom lifecycle hook must implement the <a href="javadoc/com/variant/server/api/lifecycle/LifecycleHook.html" target="_blank"><code>LifecycleHook</code>&nbsp;<i class="fa fa-external-link"></i></a> interface. By contract, an implementation must also provide at least one of these constructors:
           </p>
           <ul>
               <li>Nullary constructor, if no <code>init</code> property was given in the <a href="#listing-4">hook definition</a>.</li>
@@ -1025,7 +1025,7 @@ $ variant.sh start -Dvariant.schemata.dir=/Users/Igor/schemata
               <li>Custom event attributes.</li>
             </ul>
           <p>
-          A typical event flusher writes trace events to a persistent storage mechanism, such as an external database or event stream. Whenever a trace event is triggered — implicitly by Variant server or explicitly by user code — it is picked up by the Variant's asynchronous event writer, where it is held in a memory buffer until a dedicated flusher thread becomes available. There is one event writer per Variant server, shared by all schemata. Event writer groups trace events by the schema that produced them and turns them over to the apropriate event flusher by calling its <a href="/javadoc/0.10/com/variant/server/api/TraceEventFlusher.html#flush-com.variant.server.api.FlushableTraceEvent:A-int-" target="_blank" rel="noopener"><code>flush()</code> <i class="fa fa-external-link"></i></a> method.
+          A typical event flusher writes trace events to a persistent storage mechanism, such as an external database or event stream. Whenever a trace event is triggered — implicitly by Variant server or explicitly by user code — it is picked up by the Variant's asynchronous event writer, where it is held in a memory buffer until a dedicated flusher thread becomes available. There is one event writer per Variant server, shared by all schemata. Event writer groups trace events by the schema that produced them and turns them over to the apropriate event flusher by calling its <a href="javadoc/com/variant/server/api/TraceEventFlusher.html#flush-com.variant.server.api.FlushableTraceEvent:A-int-" target="_blank" rel="noopener"><code>flush()</code> <i class="fa fa-external-link"></i></a> method.
           </p>
           <p>
             Each call to the <code>flush()</code> method is scheduled to be executed asynchronously and, potentially concurrently with other similar calls, by a dedicated thread pool, whose size is configured by the <a href="#section-2.2"><code>variant.event.writer.buffer.flush.pool.size</code></a> config property. Buffers are passed to the thread pool as soon as they fill up or the <a href="#section-2.2"><code>variant.event.writer.max.delay</code></a> number of seconds has elapsed since the time when the oldest event in the buffer was triggered.

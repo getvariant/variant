@@ -186,13 +186,13 @@
     <h2><span class="underlined">3.1<span class="indent"></span>Typical Usage Example</span></h2>
     <strong>NOTE: Typically you will not be consuming Variant client API directly. Rather, your applicatoin will consume a stack-specific adapter, like the <a href="#section-3">servlet adapter</a>, which implements deferred dependencies and wraps Variant client in an identical but simplified API. Refer to the documentation for the Variant client adapter suitable for your technology stack. The remainder of this chapter is only apropriate for the cases when no suitable Variant adapter (yet) exists.</strong>
 
-    <span class="tombstone">∎</span>Create an instance of the <code>VariantClient</code> object by using the <a href="/javadoc/0.10/com/variant/client/VariantClient.html#builder--" target="_blank"><code>VariantClient.Builder</code>&nbsp;<i class="fa fa-external-link"></i></a> class:
+    <span class="tombstone">∎</span>Create an instance of the <code>VariantClient</code> object by using the <a href="javadoc/com/variant/client/VariantClient.html#builder--" target="_blank"><code>VariantClient.Builder</code>&nbsp;<i class="fa fa-external-link"></i></a> class:
     <pre><code class="java">
     VariantClient client = VariantClient.builder()
        .withSessionIdTrackerClass(MyCustomSessionIdTracker.class)
        .build();
     </code></pre>
-    Note, that an implementation of the <a href="/javadoc/0.10/com/variant/client/SessionIdTracker.html" target="_blank"><code>SessionIdTracker</code>&nbsp;<i class="fa fa-external-link"></i></a> is required.
+    Note, that an implementation of the <a href="javadoc/com/variant/client/SessionIdTracker.html" target="_blank"><code>SessionIdTracker</code>&nbsp;<i class="fa fa-external-link"></i></a> is required.
 
     A re-instantiation of the <code>VariantClient</code> is never required. The host application should hold on to and reuse it for the life of the JVM.
 
@@ -244,7 +244,7 @@
 
     <a class="header-offset" name="section-3.2"></a>
     <h2><span class="underlined">3.2<span class="indent"></span>Trace Events</span></h2>
-    Trace events can be triggered implicitly by Variant server or explicitly by client code. The only implicitly triggered trace event is the state visited event, which signifies that a user session visited a particular state. (Refer to the <a href="/resources/docs/0-10/application-iteration-server/user-guide/#section-3.1">Server User Guide</a> for details on how Variant models interactive appliations.) State visited event is created by the <a href="/javadoc/0.10/com/variant/client/Session.html#targetForState-com.variant.core.schema.State-" target="_blank"><code>Session.targetForState()</code>&nbsp;<i class="fa fa-external-link"></i></a> method and is accessible via the <a href="/javadoc/0.10/com/variant/client/StateRequest.html#getStateVisitedEvent--" target="_blank"><code>StateRequest.getStateVisitedEvent()</code>&nbsp;<i class="fa fa-external-link"></i></a> method. The host application can add custom event attributes to it, which will be serialized with the event by the event flusher. The state visited event is triggered when the host applicatoin either <a href="/javadoc/0.10/com/variant/client/StateRequest.html#commit-java.lang.Object...-" target="_blank">commits &nbsp;<i class="fa fa-external-link"></i></a> or <a href="/javadoc/0.10/com/variant/client/StateRequest.html#fail-java.lang.Object...-" target="_blank">fails&nbsp;<i class="fa fa-external-link"></i></a> the request.
+    Trace events can be triggered implicitly by Variant server or explicitly by client code. The only implicitly triggered trace event is the state visited event, which signifies that a user session visited a particular state. (Refer to the <a href="/resources/docs/0-10/application-iteration-server/user-guide/#section-3.1">Server User Guide</a> for details on how Variant models interactive appliations.) State visited event is created by the <a href="javadoc/com/variant/client/Session.html#targetForState-com.variant.core.schema.State-" target="_blank"><code>Session.targetForState()</code>&nbsp;<i class="fa fa-external-link"></i></a> method and is accessible via the <a href="javadoc/com/variant/client/StateRequest.html#getStateVisitedEvent--" target="_blank"><code>StateRequest.getStateVisitedEvent()</code>&nbsp;<i class="fa fa-external-link"></i></a> method. The host application can add custom event attributes to it, which will be serialized with the event by the event flusher. The state visited event is triggered when the host applicatoin either <a href="javadoc/com/variant/client/StateRequest.html#commit-java.lang.Object...-" target="_blank">commits &nbsp;<i class="fa fa-external-link"></i></a> or <a href="javadoc/com/variant/client/StateRequest.html#fail-java.lang.Object...-" target="_blank">fails&nbsp;<i class="fa fa-external-link"></i></a> the request.
 
     <a class="header-offset" name="section-4"></a>
     <h1><span class="underlined">4<span class="indent"></span>Deferred Dependencies</span></h1>
@@ -254,7 +254,7 @@
     <h2>4.1<span class="indent"></span>Session ID Tracker</h2>
     Variant maintains its own sessions, independent from those maintained by the host application. Variant server creates and maintains these sessions, but the client must provide a way of relating two consecutive state requests to the same session. Session ID tracker does exactly that. The session state is kept on Variant server, but the host application is responsible for holding on to the session ID, by which this state can be retrieved.
 
-    To fulfill this responsibility, the application developer must supply an implementation of the <a href="/javadoc/0.10/com/variant/client/SessionIdTracker.html" target="_blank">SessionIdTracker&nbsp;<i class="fa fa-external-link"></i></a> interface. By contract, an implementation must provide the following public constructor signature and implement the following public methods:
+    To fulfill this responsibility, the application developer must supply an implementation of the <a href="javadoc/com/variant/client/SessionIdTracker.html" target="_blank">SessionIdTracker&nbsp;<i class="fa fa-external-link"></i></a> interface. By contract, an implementation must provide the following public constructor signature and implement the following public methods:
     <table class="table-reference">
     <tbody>
     <tr>
@@ -283,7 +283,7 @@
     </tr>
     </tbody>
     </table>
-    The implementing class must be placed on the host application's classpath and configured via the <a href="/javadoc/0.10/com/variant/client/VariantClient.Builder.html#withSessionIdTrackerClass-java.lang.Class-" target="_blank">withTargetingTrackerClass() method&nbsp;<i class="fa fa-external-link"></i></a>. For a sample implementation, see <a href="#section-3.3">Section 3.4</a>.
+    The implementing class must be placed on the host application's classpath and configured via the <a href="javadoc/com/variant/client/VariantClient.Builder.html#withSessionIdTrackerClass-java.lang.Class-" target="_blank">withTargetingTrackerClass() method&nbsp;<i class="fa fa-external-link"></i></a>. For a sample implementation, see <a href="#section-3.3">Section 3.4</a>.
 
     <a class="header-offset" name="section-4.2"></a>
     <h2>4.2<span class="indent"></span>API Methods with Deferred Signatures</h2>
@@ -291,29 +291,29 @@
     <table class="table-reference">
     <tbody>
     <tr>
-    <th><a href="/javadoc/0.10/com/variant/client/Connection.html#getOrCreateSession-java.lang.Object...-" target="_blank"><code>Connection.getOrCreateSession(Object...userData)</code>&nbsp;<i class="fa fa-external-link"></i></a></th>
+    <th><a href="javadoc/com/variant/client/Connection.html#getOrCreateSession-java.lang.Object...-" target="_blank"><code>Connection.getOrCreateSession(Object...userData)</code>&nbsp;<i class="fa fa-external-link"></i></a></th>
     </tr>
     <tr></tr>
     <tr>
-    <td>Get, if exists, or create, if does not exist, the Variant session with the externally tracked ID. The arguments are passed, without interpretation, to the underlying session ID tracker's <a href="/javadoc/0.10/com/variant/client/SessionIdTracker.html#init-java.lang.Object...-" target="_blank"><code>init()</code>&nbsp;<i class="fa fa-external-link"></i></a> method.</td>
+    <td>Get, if exists, or create, if does not exist, the Variant session with the externally tracked ID. The arguments are passed, without interpretation, to the underlying session ID tracker's <a href="javadoc/com/variant/client/SessionIdTracker.html#init-java.lang.Object...-" target="_blank"><code>init()</code>&nbsp;<i class="fa fa-external-link"></i></a> method.</td>
     </tr>
     <tr>
-    <th><a href="/javadoc/0.10/com/variant/client/Connection.html#getSession-java.lang.Object...-" target="_blank"><code>Connection.getSession(Object...userData)</code>&nbsp;<i class="fa fa-external-link"></i></a></th>
+    <th><a href="javadoc/com/variant/client/Connection.html#getSession-java.lang.Object...-" target="_blank"><code>Connection.getSession(Object...userData)</code>&nbsp;<i class="fa fa-external-link"></i></a></th>
     </tr>
     <tr>
-    <td> Get existing Variant session with the externally tracked ID. The arguments are passed, without interpretation, to the underlying session ID tracker's <a href="/javadoc/0.10/com/variant/client/SessionIdTracker.html#init-java.lang.Object...-" target="_blank"><code>init()</code>&nbsp;<i class="fa fa-external-link"></i></a> method.</td>
+    <td> Get existing Variant session with the externally tracked ID. The arguments are passed, without interpretation, to the underlying session ID tracker's <a href="javadoc/com/variant/client/SessionIdTracker.html#init-java.lang.Object...-" target="_blank"><code>init()</code>&nbsp;<i class="fa fa-external-link"></i></a> method.</td>
     </tr>
     <tr>
-    <th><a href="/javadoc/0.10/com/variant/client/StateRequest.html#commit-java.lang.Object...-" target="_blank"><code>StateRequest.commit(Object...userData)</code>&nbsp;<i class="fa fa-external-link"></i></a></th>
+    <th><a href="javadoc/com/variant/client/StateRequest.html#commit-java.lang.Object...-" target="_blank"><code>StateRequest.commit(Object...userData)</code>&nbsp;<i class="fa fa-external-link"></i></a></th>
     </tr>
     <tr>
-    <td> Commit this state request. The arguments are passed, without interpretation, to the underlying session ID tracker's <a href="/javadoc/0.10/com/variant/client/SessionIdTracker.html#save-java.lang.Object...-" target="_blank"><code>save()</code>&nbsp;<i class="fa fa-external-link"></i></a> method.</td>
+    <td> Commit this state request. The arguments are passed, without interpretation, to the underlying session ID tracker's <a href="javadoc/com/variant/client/SessionIdTracker.html#save-java.lang.Object...-" target="_blank"><code>save()</code>&nbsp;<i class="fa fa-external-link"></i></a> method.</td>
     </tr>
     <tr>
-    <th><a href="/javadoc/0.10/com/variant/client/StateRequest.html#fail-java.lang.Object...-" target="_blank"><code>StateRequest.fail((Object...userData)</code>&nbsp;<i class="fa fa-external-link"></i></a></th>
+    <th><a href="javadoc/com/variant/client/StateRequest.html#fail-java.lang.Object...-" target="_blank"><code>StateRequest.fail((Object...userData)</code>&nbsp;<i class="fa fa-external-link"></i></a></th>
     </tr>
     <tr>
-    <td> Fail this state request. The arguments are passed, without interpretation, to the underlying session ID tracker's <a href="/javadoc/0.10/com/variant/client/SessionIdTracker.html#save-java.lang.Object...-" target="_blank"><code>save()</code>&nbsp;<i class="fa fa-external-link"></i></a> method.</td>
+    <td> Fail this state request. The arguments are passed, without interpretation, to the underlying session ID tracker's <a href="javadoc/com/variant/client/SessionIdTracker.html#save-java.lang.Object...-" target="_blank"><code>save()</code>&nbsp;<i class="fa fa-external-link"></i></a> method.</td>
     </tr>
     </tbody>
     </table>
@@ -334,7 +334,7 @@
 
     <a class="header-offset" name="section-5.1.2"></a>
     <h3>5.1.2<span class="indent"></span>Servlet Adapter Wrapper API</h3>
-    Java web applications, built on top of the servlet API, should communicate with Variant server via the <code>com.variant.client.servlet.*</code> classes, provided by <a href="https://getvariant.github.io/variant-java-servlet-adapter/" target="_blank">the servlet adapter API&nbsp;<i class="fa fa-external-link"></i></a>, instead of the <code>com.variant.client.*</code> classes, provided by <a href="/javadoc/0.10/" target="_blank">the general purpose Java API&nbsp;<i class="fa fa-external-link"></i></a>. The servlet adapter classes wrap the general purpose classes in a functionally identical API, whose only difference is that it rewrites all deferred environment-dependent method signatures with those that operate on the familiar servlet objects, like <code>HttpServletRequest</code> and <code>HttpServletResponse</code>.
+    Java web applications, built on top of the servlet API, should communicate with Variant server via the <code>com.variant.client.servlet.*</code> classes, provided by <a href="https://getvariant.github.io/variant-java-servlet-adapter/" target="_blank">the servlet adapter API&nbsp;<i class="fa fa-external-link"></i></a>, instead of the <code>com.variant.client.*</code> classes, provided by <a href="javadoc/" target="_blank">the general purpose Java API&nbsp;<i class="fa fa-external-link"></i></a>. The servlet adapter classes wrap the general purpose classes in a functionally identical API, whose only difference is that it rewrites all deferred environment-dependent method signatures with those that operate on the familiar servlet objects, like <code>HttpServletRequest</code> and <code>HttpServletResponse</code>.
 
     Here's <a href="#section-3">the typical usage example from Section 3</a>, re-written in terms of the servlet adapter API:
 
@@ -385,7 +385,7 @@
 
     <a class="header-offset" name="section-5.1.3"></a>
     <h3>5.1.3<span class="indent"></span><code>SessionIdTrackerHttpCookie</code></h3>
-    Servlet adapter for Variant Java client comes with a <a href="https://github.com/getvariant/variant-java-servlet-adapter/blob/master/src/main/java/com/variant/client/servlet/SessionIdTrackerHttpCookie.java" target="_blank">concrete implementation&nbsp;<i class="fa fa-external-link"></i></a> of the <a href="/javadoc/0.10/com/variant/client/SessionIdTracker.html" target="_blank"><code>SessionIdTracker</code> interface&nbsp;<i class="fa fa-external-link"></i></a>.  It uses the HTTP cookie mechanism to track Variant session ID between state requests in the session-scoped cookie named <code>variant-ssnid</code>, much like servlet containers use the <code>JSESSIONID</code> cookie to track the HTTP session ID. No action is required to configure this session ID tracker.
+    Servlet adapter for Variant Java client comes with a <a href="https://github.com/getvariant/variant-java-servlet-adapter/blob/master/src/main/java/com/variant/client/servlet/SessionIdTrackerHttpCookie.java" target="_blank">concrete implementation&nbsp;<i class="fa fa-external-link"></i></a> of the <a href="javadoc/com/variant/client/SessionIdTracker.html" target="_blank"><code>SessionIdTracker</code> interface&nbsp;<i class="fa fa-external-link"></i></a>.  It uses the HTTP cookie mechanism to track Variant session ID between state requests in the session-scoped cookie named <code>variant-ssnid</code>, much like servlet containers use the <code>JSESSIONID</code> cookie to track the HTTP session ID. No action is required to configure this session ID tracker.
 
     <a class="header-offset" name="section-5.2"></a>
     <h2><span class="underlined">5.2<span class="indent"></span>Play! Adapter</span></h2>
