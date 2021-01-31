@@ -157,9 +157,7 @@ table.header img.logo {
 	margin: 0 6px 0;
 }
 
-#doc-body pre,
-#doc-body pre a,
-#doc-body code {
+pre, pre a, code {
     font-family: 'Fira Code', monospace;
     font-size: 14px;
     color: DarkRed;
@@ -168,6 +166,8 @@ table.header img.logo {
 	margin: 0;
 	background: #fdfcfd;
 	overflow-x: scroll;
+	border: 1px solid #ddd;
+	width: 525px;
 }
 
 #doc-body pre a {
@@ -177,8 +177,6 @@ table.header img.logo {
 #doc-body pre {
 	margin-bottom: 16px;
     padding: 8px 6px;
-	border: 1px solid #ddd;
-	width: 525px;
 }
 
 span.tombstone {
