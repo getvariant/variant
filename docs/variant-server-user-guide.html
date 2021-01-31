@@ -361,10 +361,10 @@
                 <h2><span class="underlined">2.2<span class="indent"></span>Server Configuration</span></h2>
 
                 <p>
-                    Variant server is configured using the <a href="https://github.com/lightbend/config" target="_blank" rel="noopener">Lightbend Config library <i class="fa fa-external-link"></i></a>. At startup, Variant server looks for configuration in the file <code>conf/variant.conf</code>. If it is found, its contents override <a href="/resources/docs/0-10/application-iteration-server/reference/#section-2.2">the defaults</a>. You may further override this configuration at run time by providing an alternative configuration file, or override an individual config key in a JVM system property.
+                    Variant server is configured using the <a href="https://github.com/lightbend/config" target="_blank" rel="noopener">Lightbend Config library <i class="fa fa-external-link"></i></a>. At startup, Variant server looks for configuration in the file <code>conf/variant.conf</code>. If it is found, its contents override <a href="variant-server-reference.html#section-2.2">the defaults</a>. You may further override this configuration at run time by providing an alternative configuration file, or override an individual config key in a JVM system property.
                 </p>
                 <p>
-                    Refer to the <a href="/resources/docs/0-10/application-iteration-server/reference/#section-2">Variant CVM Server Reference</a> for further information.
+                    Refer to the <a href="variant-server-reference.html#section-2">Variant CVM Server Reference</a> for further information.
                 </p>
                 <a class="header-offset" name="section-2.3"></a>
                 <h2><span class="underlined">2.3<span class="indent"></span>Integration With the Host Application</span></h2>
@@ -453,7 +453,7 @@
                 <h3>3.4.1<span class="indent"></span>Metadata for Code Varations</h3>
 
                 <p>
-                    Each variation schema is a human readable file containing complete definitions of all related code variations expressed with JSON-superset grammar. A single Variant server can manage any number of such schema files, located in the server's <code>/schemata</code> directory. This section introduces CVM's concepts by example. For a complete reference, refer to the <a href="/resources/docs/0-10/application-iteration-server/reference/#section-3">Variant CVM Server Reference</a>.
+                    Each variation schema is a human readable file containing complete definitions of all related code variations expressed with JSON-superset grammar. A single Variant server can manage any number of such schema files, located in the server's <code>/schemata</code> directory. This section introduces CVM's concepts by example. For a complete reference, refer to the <a href="variant-server-reference.html#section-3">Variant CVM Server Reference</a>.
                 </p>
                 <p>
                     The two top-level entities in CVM are <em>states</em> and <em>variations</em>. The states represent host application's <a href="#fig-2">interface states</a>. They are a rather opaque concept to CVM: all it needs to know about a state is its name and an optional set of state parameters. The state parameters are simple key/value pairs of strings, whose meaning is external to CVM and only meaningful to the host application.
@@ -1140,7 +1140,7 @@
                     Variant CVM Server’s default behavior can be extended via the server-side <em>Extension API</em>. It supports creation and configuration of user code which runs in the server’s address space, augmenting the server's default behavior with custom semantics. ExtAPI exposes two principal extension mechanisms: <em>lifecycle hooks</em> and <em>trace event flushers</em>. They are configured in the variation schema and made available to the server's JVM at run time via the <code>/ext</code> directory.
                 </p>
                 <p>
-                    Refer to the <a href="/resources/docs/0-10/application-iteration-server/reference/#section-4">Variant CVM Server Reference</a> for further details on configuring ExtAPI.
+                    Refer to the <a href="variant-server-reference.html#section-4">Variant CVM Server Reference</a> for further details on configuring ExtAPI.
                 </p>
                 <a class="header-offset" name="section-5.1"></a>
                 <h2>5.1<span class="indent"></span>Lifecycle Hooks</h2>
@@ -1173,7 +1173,7 @@
                     In any scope, any number of hooks can be defined. If more than one lifecycle hook is eligible to be posted by a lifecycle event at runtime, they form a <em>hook chain</em>. More locally defined hooks are posted before the global ones on the chain, and within a scope hooks are posted in ordinal order. The hooks are posted serially, until a hook's <a href="javadoc/0.10/com/variant/server/api/lifecycle/LifecycleHook.html#post-E-" target="_blank" rel="noopener"><code>post()</code> <i class="fa fa-external-link"></i></a> method returns a non-empty <code>Optional</code>. If no custom hooks have been defined for a lifecycle event, or all returned an empty <code>Optional</code>, the default built-in hook for the event is posted, which is guaranteed to return a usable value.
                 </p>
                 <p>
-                    For more information, refer to the <a href="/resources/docs/0-10/application-iteration-server/reference/#section-4.1">Variant Server Reference</a>.
+                    For more information, refer to the <a href="variant-server-reference.html#section-4.1">Variant Server Reference</a>.
                 </p>
                 <a class="header-offset" name="section-5.2"></a>
                 <h2>5.2<span class="indent"></span>Trace Event Flushers</h2>
@@ -1187,10 +1187,10 @@
                     Whenever the event writer is not keeping up with the event load, it will discard new events (with an error message to the server log) until a flush buffer becomes available.
                 </p>
                 <p>
-                    A few ready-made event flushers, intended for saving trace events in popular databases, such as PostgreSQL and MySQL, are included in Variant server's <a href="/resources/docs/0-10/application-iteration-server/reference/#section-4.4" target="_blank" rel="noopener">standard extension library<i class="fa fa-external-link"></i></a>, included with the server. These can be configured and used out of the box.
+                    A few ready-made event flushers, intended for saving trace events in popular databases, such as PostgreSQL and MySQL, are included in Variant server's <a href="variant-server-reference.html#section-4.4" target="_blank" rel="noopener">standard extension library<i class="fa fa-external-link"></i></a>, included with the server. These can be configured and used out of the box.
                 </p>
                 <p>
-                    It is also straightforward to create a custom event flusher by implementing the <a href="javadoc/0.10/com/variant/server/api/TraceEventFlusher.html" target="_blank" rel="noopener"><code>TraceEventFlusher</code> interface <i class="fa fa-external-link"></i></a>. See <a href="/resources/docs/0-10/application-iteration-server/reference/#section-4.3">Variant Server Reference Guide</a> for more information.
+                    It is also straightforward to create a custom event flusher by implementing the <a href="javadoc/0.10/com/variant/server/api/TraceEventFlusher.html" target="_blank" rel="noopener"><code>TraceEventFlusher</code> interface <i class="fa fa-external-link"></i></a>. See <a href="variant-server-reference.html#section-4.3">Variant Server Reference Guide</a> for more information.
                 </p>
                 <a class="header-offset" name="appendix-a"></a>
                 <h1><span class="underlined">Appendix A Analyzing Variant Controlled Experiments</span></h1>
