@@ -42,7 +42,7 @@
         To instrument a simple A/B test, you may simply take advantage of the example schema, shipped with the server in
         the file <code>schemata/example.schema</code>, and reproduced below.
         </p>
-        <pre><code>
+        <pre>
 {
    'meta':{
       'name':'example',
@@ -75,19 +75,19 @@
       }
    ]
 }
-        </code></pre>
+        </pre>
 
         <p>
         Start Variant server:
         </p>
-        <pre><code class="shell">
+        <pre>
 $ /path/to/variant/server/bin/variant start
 2019-12-26 15:23:26,412 INFO - c.v.s.boot.ConfigLoader$ - Found  config resource [/variant.conf] as [/Users/Igor/soft/variant-server-0.10.3/conf/variant.conf]
 2019-12-26 15:23:27,425 INFO - c.v.s.schema.SchemaDeployerFileSystem - Mounted schemata directory [/Users/Igor/soft/variant-server-0.10.3/schemata]
 2019-12-26 15:23:27,428 INFO - c.v.s.schema.SchemaDeployerFileSystem - [421] Deploying schema from file [/Users/Igor/soft/variant-server-0.10.3/schemata/example.schema]
 2019-12-26 15:23:27,689 INFO - c.v.s.schema.Schemata - [422] Deployed schema [exampleSchema] from file [example.schema]
 2019-12-26 15:23:27,695 INFO - c.v.s.boot.VariantServerImpl - [433] Variant AIM Server release 0.10.3 started on port [5377] in 2.63s
-        </code></pre>
+        </pre>
 
         <p>
         In your Java application, create a Variant client. You only need one per your application. Then connect to the
@@ -97,7 +97,7 @@ $ /path/to/variant/server/bin/variant start
             information you need to decide on the code path.
         </p>
 
-        <pre><code>
+        <pre>
 // Create Variant client.
 VariantClient client = VariantClient.builder()
       .withSessionIdTrackerClass(MySessionIdTracker.class) // Footnote 1 below
@@ -129,7 +129,7 @@ if (experience.getName().equals("control")) {
 else {
   // the treatment code path
 }
-        </code></pre>
+        </pre>
     </div>
 </div>
 </body>
