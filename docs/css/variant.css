@@ -167,7 +167,6 @@ pre, pre a, code {
 	background: #fdfcfd;
 	overflow-x: scroll;
 	border: 1px solid #ddd;
-	width: 525px;
 }
 
 #doc-body pre a {
@@ -177,6 +176,7 @@ pre, pre a, code {
 #doc-body pre {
 	margin-bottom: 16px;
     padding: 8px 6px;
+	width: 525px;
 }
 
 span.tombstone {
